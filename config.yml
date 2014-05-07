@@ -1,0 +1,12 @@
+# Auction plugin by SainttX
+log-auctions: false
+allow-autowin: true
+allow-cancel: true
+allow-creative: false
+
+time-between-bidding: 0
+minimum-bid-increment: 1
+minimum-auction-time: 15
+maximum-auction-time: 120
+auction-start-fee: 1
+auction-tax-percentage: 0

@@ -1,0 +1,11 @@
+name: Auction
+version: 1.0.0
+description: An auctioning plugin
+author: SainttX
+
+main: me.sainttx.Auction
+depend: [Vault]
+
+commands:
+  auction:
+    description: The base auction command
