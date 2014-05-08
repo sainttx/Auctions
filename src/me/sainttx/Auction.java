@@ -25,7 +25,7 @@ public class Auction extends JavaPlugin {
 	private YamlConfiguration names;
 	//private YamlConfiguration log;
 	private IAuction auction;
-	
+
 	public static Economy economy = null;
 
 	//	private boolean logauctions;
@@ -53,15 +53,15 @@ public class Auction extends JavaPlugin {
 		setupEconomy();
 		getCommand("auction").setExecutor(this);
 	}
-	
+
 	private boolean setupEconomy() {
-        RegisteredServiceProvider<Economy> economyProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);
-        if (economyProvider != null) {
-            economy = economyProvider.getProvider();
-        }
-        return (economy != null);
-    }
-	
+		RegisteredServiceProvider<Economy> economyProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);
+		if (economyProvider != null) {
+			economy = economyProvider.getProvider();
+		}
+		return (economy != null);
+	}
+
 	public static Economy getEconomy() {
 		return economy;
 	}
@@ -96,22 +96,24 @@ public class Auction extends JavaPlugin {
 		} else {
 			String arg1 = args[0];
 			if (arg1.equals("start")) {
-				if (ignoring.contains(username)) {
-					sender.sendMessage(getMessageFormatted("fail-start-ignoring"));
-					return false;
+				if (!ignoring.contains(username)) {
+					startAuction(sender, args);
 				} else {
-					startAuction(sender, args); // auction start <amt> <min-bid> [autowin]
+					sender.sendMessage(getMessageFormatted("fail-start-ignoring"));
 				}
 			} else if (arg1.equals("end")) {
-				if (this.auction == null) {
-					sender.sendMessage(getMessageFormatted("fail-end-no-auction"));
-					return false;
-				} else {
+				if (this.auction != null) {
 					auction.end();
 					stopAuction();
+				} else {
+					sender.sendMessage(getMessageFormatted("fail-end-no-auction"));
 				}
 			} else if (arg1.equals("info")) {
-
+				if (auction != null) {
+					sender.sendMessage(getMessageFormatted("auction-info-message"));
+				} else {
+					sender.sendMessage(getMessageFormatted("fail-info-no-auction"));
+				}
 			} else if (arg1.equals("bid")) {
 				if (auction != null) {
 					if (args.length == 2) {
@@ -131,29 +133,14 @@ public class Auction extends JavaPlugin {
 					ignoring.remove(sender.getName());
 				}
 			} else if (arg1.equals("reload")) {
-				if (!sender.hasPermission("auction.reload")) {
+				if (sender.hasPermission("auction.reload")) {
+					reloadConfig();
+					loadConfig();	
+				} else {
 					sender.sendMessage(getMessageFormatted("insufficient-permissions"));
-					return false;
 				}
-				reloadConfig();
-				loadConfig();
-			} else if (arg1.equals("test")) {
-				Player player = (Player) sender;
-				player.getItemInHand().setAmount(5);
-			} else if (arg1.equals("test1")) {
-				for (Material mat : Material.values()) {
-					ItemStack is = new ItemStack(mat);
-					
-					String search = mat.toString() + "." + is.getDurability();
-					String ret = names.getString(search);
-					if (ret == null) {
-						System.out.print(search);
-					}
-				}
-			}
-			else {
-				// invalid arg
-				sendMenu(sender);
+			} else {
+				sendMenu(sender); // invalid arg
 			}
 		}
 		return false;
@@ -168,7 +155,7 @@ public class Auction extends JavaPlugin {
 		}
 		return ret;
 	}
-	
+
 	public void messageListening(String message) {
 		FancyMessage message0 = new FancyMessage("");
 		String message1 = replace(message);

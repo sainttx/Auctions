@@ -8,4 +8,7 @@ depend: [Vault]
 
 commands:
   auction:
-    description: The base auction command
+    description: All commands for Auction
+    aliases: [auc]
+  bid:
+    description: Bid on an ongoing auction
