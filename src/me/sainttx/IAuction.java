@@ -2,8 +2,6 @@ package me.sainttx;
 
 import java.util.UUID;
 
-import net.minecraft.server.v1_7_R3.Material;
-
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -13,33 +11,33 @@ import org.bukkit.inventory.ItemStack;
 public class IAuction {
 	private Auction plugin;
 	private UUID owner;
-	private int startingAmount;
-	private int numItems;
+	private int numItems; // amount of items being auctioned
 	private int autoWin;
-	private int timeRemaining;
 	private int taskID;
 	private int timeLeft;
 	private int increment;
 	private ItemStack item;
 
 	private UUID winning;
-	private int winningAmt;
+	private int topBid;
 
 	private final int[] times = {45, 30, 10, 3, 2, 1};
 
 	public IAuction(Auction plugin, Player player, int numItems, int startingAmount, int autoWin) throws InsufficientItemsException {
 		this.plugin = plugin;
-		this.startingAmount = startingAmount;
+		topBid = startingAmount;
+
 		this.numItems = numItems;
 		this.autoWin = autoWin;
 		owner = player.getUniqueId();
 		item = player.getItemInHand().clone();
+		item.setAmount(numItems);
 		increment = plugin.getConfig().getInt("minimum-bid-increment");
 
 		timeLeft = Integer.parseInt(plugin.getConfig().getString("auction-time")); // could throw on invalid
 
 		if (searchInventory(player)) { // Check if they have enough
-			takeItems(player);
+			player.getInventory().removeItem(item);
 		} else {
 			// Doesn't have enough of the item
 			throw new InsufficientItemsException();
@@ -68,7 +66,7 @@ public class IAuction {
 	}
 
 	public void bid(Player player, int amount) {
-		if (amount <= winningAmt + increment) {
+		if (amount <= topBid + increment) {
 			player.sendMessage(plugin.getMessageFormatted("fail-bid-too-low"));
 		} else if (winning.equals(player.getName())) {
 			player.sendMessage(plugin.getMessageFormatted("fail-bid-top-bidder"));
@@ -135,67 +133,90 @@ public class IAuction {
 		return false;
 	}
 
-	private void takeItems(Player player) {
-		Inventory playerInventory = player.getInventory();
-		this.item.setAmount(numItems);
-		int count = 0;
-		for (ItemStack is : player.getInventory()) { // .all()
-			if (is.isSimilar(item)) {
-				int size = is.getAmount();
-				if (size > numItems - count) {
-					is.setAmount(size - (numItems - count));
-					count = numItems;
-				} else if(size == numItems - count) {
-					count += size;
-					playerInventory.removeItem(new ItemStack(item));
-				} else {
-					count += size;
-					playerInventory.removeItem(new ItemStack(item));
-				}
-			}
-			if (count == numItems) {
-				break;
-			}
-		}
-	}
+//	private void takeItems(Player player) {
+//		Inventory playerInventory = player.getInventory();
+//		item.setAmount(numItems);
+//		int count = 0;
+//
+//		for (ItemStack is : playerInventory.all(item.getType()).values()) {
+//			int size = is.getAmount();
+//			if (size > numItems - count) {
+//				is.setAmount(size - (numItems - count));
+//				count = numItems;
+//			} else if(size == numItems - count) {
+//				count += size;
+//				playerInventory.removeItem(new ItemStack(item));
+//			} else {
+//				count += size;
+//				playerInventory.removeItem(new ItemStack(item));
+//			}
+//			if (count == numItems) {
+//				break;
+//			}
+//		}
+//	}
 
 	public UUID getOwner() {
 		return owner;
 	}
 
-	public void setOwner(UUID owner) {
-		this.owner = owner;
+	public UUID getWinning() {
+		return winning;
 	}
 
-	public int getStartingAmount() {
-		return startingAmount;
-	}
-
-	public void setStartingAmount(int startingAmount) {
-		this.startingAmount = startingAmount;
+	public int getCurrentBid() {
+		return topBid;
 	}
 
 	public int getNumItems() {
 		return numItems;
 	}
 
-	public void setNumItems(int numItems) {
-		this.numItems = numItems;
-	}
-
 	public ItemStack getItem() {
 		return item;
-	}
-
-	public void setItem(ItemStack item) {
-		this.item = item;
 	}
 
 	public int getTimeRemaining() {
 		return timeLeft;
 	}
+
+	private final int secondsInAMinute = 60;
+	private final int secondsInAnHour = 60 * secondsInAMinute;
+	private final int secondsInADay = 24 * secondsInAnHour;
+
+	public String getFormattedTime() {
+		int time = timeLeft;
+		String formatted = "";
+		// Get days
+		int days = (int) Math.floor(time / secondsInADay);
+
+		// Get hours
+		int hourSeconds = time % secondsInADay;
+		int hours = (int) Math.floor(hourSeconds / secondsInAnHour);
+
+		// Get minutes
+		int minuteSeconds = hourSeconds % secondsInAnHour;
+		int minutes = (int) Math.floor(minuteSeconds / secondsInAMinute);
+
+		// Get seconds
+		int remainingSeconds = minuteSeconds % secondsInAMinute;
+		int seconds = (int) Math.ceil(remainingSeconds);
+
+		if (days > 0) formatted += String.format("%d day(s), ", days);
+		if (hours > 0) formatted += String.format("%d hour(s), ", hours);
+		if (minutes > 0) formatted += String.format("%d minute(s), ", minutes);
+		if (seconds > 0) formatted += String.format("%d second(s)", seconds);
+
+		return formatted;
+	}
+
+	public int getCurrentTax() {
+		int tax = plugin.getConfig().getInt("auction-tax-percentage");
+		return topBid * (tax / 100);
+	}
 }
 
+@SuppressWarnings("serial")
 class InsufficientItemsException extends Exception {
-	
+
 }

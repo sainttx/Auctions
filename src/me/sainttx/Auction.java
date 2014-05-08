@@ -3,10 +3,12 @@ package me.sainttx;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -16,7 +18,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class Auction extends JavaPlugin {
 	private ArrayList<String> ignoring = new  ArrayList<String>();
 	private YamlConfiguration messages;
-	private YamlConfiguration log;
+	//private YamlConfiguration log;
 	private IAuction auction;
 
 	//	private boolean logauctions;
@@ -121,21 +123,32 @@ public class Auction extends JavaPlugin {
 				// invalid arg
 				sendMenu(sender);
 			}
-
 		}
 		return false;
 	}
 
 	public void messageListening(String message) {
 		String message1 = messages.getString(message);
-		/* message.replaceAll("%i", "")
-			   	.replaceAll("%t", Integer.toString(auction.getTimeRemaining())
-				.replaceAll("", "")); */
+		message1 = message1.replaceAll("%i", auction.getItem().getType().toString())
+				.replaceAll("%t", auction.getFormattedTime())
+				.replaceAll("%b", Integer.toString(auction.getCurrentBid()))
+				.replaceAll("%p", UUIDtoName(auction.getOwner()));
+		try {
+			message1 = message1.replaceAll("%T", Integer.toString(auction.getCurrentTax()))
+			.replaceAll("%w", UUIDtoName(auction.getWinning()));
+		} catch (IllegalArgumentException ex1) {
+			// UUID is null
+		}
 		for (Player player : Bukkit.getOnlinePlayers()) {
 			if (!ignoring.contains(player.getName())) {
 				player.sendMessage(format(message1));
 			}
 		}
+	}
+
+	public String UUIDtoName(UUID uuid) {
+		OfflinePlayer off = Bukkit.getOfflinePlayer(uuid);
+		return Bukkit.getOfflinePlayer(uuid).getName();
 	}
 
 	public YamlConfiguration getMessages() {
