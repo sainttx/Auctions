@@ -6,7 +6,7 @@ allow-creative: false
 
 time-between-bidding: 0
 minimum-bid-increment: 1
-minimum-auction-time: 15
-maximum-auction-time: 120
+auction-time: 30
 auction-start-fee: 1
 auction-tax-percentage: 0
+default-auction-startprice: 100
