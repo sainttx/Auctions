@@ -3,6 +3,7 @@ package me.sainttx;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -22,7 +23,7 @@ public class IAuction {
 
 	private final int[] times = {45, 30, 10, 3, 2, 1};
 
-	public IAuction(Auction plugin, Player player, int numItems, int startingAmount, int autoWin) throws InsufficientItemsException {
+	public IAuction(Auction plugin, Player player, int numItems, int startingAmount, int autoWin) throws InsufficientItemsException, EmptyHandException {
 		this.plugin = plugin;
 		topBid = startingAmount;
 
@@ -35,6 +36,9 @@ public class IAuction {
 
 		timeLeft = Integer.parseInt(plugin.getConfig().getString("auction-time")); // could throw on invalid
 
+		if (item.getType() == Material.AIR) {
+			throw new EmptyHandException();
+		}
 		if (searchInventory(player)) { // Check if they have enough
 			player.getInventory().removeItem(item);
 		} else {
@@ -65,13 +69,18 @@ public class IAuction {
 	}
 
 	public void bid(Player player, int amount) {
-		if (amount <= topBid + increment) {
+		if (amount < topBid + increment) {
 			player.sendMessage(plugin.getMessageFormatted("fail-bid-too-low"));
-		} else if (winning.equals(player.getName())) {
-			player.sendMessage(plugin.getMessageFormatted("fail-bid-top-bidder"));
-		} else if (owner.equals(player.getName())) {
+			return;
+		} else if (owner.equals(player.getUniqueId())) {
 			player.sendMessage(plugin.getMessageFormatted("fail-bid-your-auction"));
 		} else {
+			if (winning != null) {
+				if (winning.equals(player.getUniqueId())) {
+					player.sendMessage(plugin.getMessageFormatted("fail-bid-top-bidder"));
+					return;
+				}
+			} 
 			// bid here
 			if (amount >= autoWin && autoWin != -1) {
 				// They win
@@ -80,6 +89,8 @@ public class IAuction {
 				winning = player.getUniqueId();
 				end();
 			}
+			winning = player.getUniqueId();
+			topBid = amount;
 			plugin.messageListening("bid-broadcast");
 		}
 	}
@@ -131,29 +142,6 @@ public class IAuction {
 		}
 		return false;
 	}
-
-//	private void takeItems(Player player) {
-//		Inventory playerInventory = player.getInventory();
-//		item.setAmount(numItems);
-//		int count = 0;
-//
-//		for (ItemStack is : playerInventory.all(item.getType()).values()) {
-//			int size = is.getAmount();
-//			if (size > numItems - count) {
-//				is.setAmount(size - (numItems - count));
-//				count = numItems;
-//			} else if(size == numItems - count) {
-//				count += size;
-//				playerInventory.removeItem(new ItemStack(item));
-//			} else {
-//				count += size;
-//				playerInventory.removeItem(new ItemStack(item));
-//			}
-//			if (count == numItems) {
-//				break;
-//			}
-//		}
-//	}
 
 	public UUID getOwner() {
 		return owner;
@@ -213,9 +201,18 @@ public class IAuction {
 		int tax = plugin.getConfig().getInt("auction-tax-percentage");
 		return topBid * (tax / 100);
 	}
+
+	public boolean hasBids() {
+		return winning != null;
+	}
 }
 
 @SuppressWarnings("serial")
 class InsufficientItemsException extends Exception {
+
+}
+
+@SuppressWarnings("serial")
+class EmptyHandException extends Exception {
 
 }

@@ -1,54 +1,63 @@
 # Legend:
 # %i - item being auctioned
+# %a - amount of item being auctioned
 # %t - time remaining in the auction
 # %p - player hosting the auction
 # %w - the current top bidder of the auction
 # %b - the current top bid
 # %T - tax being charged at the end of auction
-reload: "Auctions has been reloaded"
-insufficient-permissions: "Insufficient permissions"
-ignoring-on: "You are now ignoring auction messages"
-ignoring-off: "You are no longer ignoring auction messages"
+reload: "&aAuctions has been reloaded"
+insufficient-permissions: "&cInsufficient permissions"
+ignoring-on: "&aYou are now &cignoring &aauction messages"
+ignoring-off: "&aYou are no longer ignoring auction messages"
+
+# Workaround for fanciful difficulties
+# Change the color/style of the item text
+# color: 0-9 or a-f
+# style: k/o/n/l or none
+'%i':
+  color: c
+  style: none
 
 auction-menu:
-- "Auction menu:"
-- "/auction info"
-- "/auction start <amount> <min-bid> [autowin]"
-- "/auction end"
-auction-timer: "The auction for %i has %t remaining"
-auction-cancelled: "The auction for %i was cancelled"
-auction-start: "%p has started an auction for %i"
-auction-start-price: "The auction begins at $%b and will last for %t"
-auction-info-message: "%p is auctioning %i for $%b"
-auction-ended: "Your auction has ended. Received $%b."
-auction-ended-autowin: "The auction has ended with %w bidding $%b (autowin)"
-auction-end-tax: "A tax of $%T was charged"
-auction-end-no-bidders: "The auction ended with no bids."
+- "&aAuction menu:"
+- "&b/auction info"
+- "&b/auction start &c<amount> <min-bid> &7[autowin]"
+- "&b/auction end"
+auction-timer: "&aThe auction for &b%a %i &ahas &b%t &aremaining"
+auction-cancelled: "&aThe auction for &b&a %i &awas &ccancelled"
+auction-start: "&b%p &ahas started an auction for &c%a %i"
+auction-start-price: "&aThe auction begins at &c$%b &aand will last for &b%t"
+auction-info-message: "&b%p &ais auctioning &c%a %i for &c$%b"
+auction-ended: "&aYour auction has ended. Received &c$%b"
+auction-ended-autowin: "&aThe auction has ended with &b%w &abidding &c$%b (autowin)"
+auction-end-tax: "&aA tax of &c$%T &awas charged"
+auction-end-no-bidders: "&aThe auction for &b%a %i &aended with no bids"
 
-bid-broadcast: "%w has bid $%b on the auction for %i."
-auction-winner: "You won the auction for %i with a bid of $%b."
+bid-broadcast: "&b%w &ahas bid &c$%b on the auction for %a %i"
+auction-winner: "&aYou won the auction for %i &awith a bid of &c$%b"
 
-fail-bid-insufficient-balance: "Your bid exceeds your current balance"
-fail-bid-no-auction: "There is no auction to bid on"
-fail-bid-your-auction: "You cannot bid on your own auction"
-fail-bid-top-bidder: "You are already the top bidder"
-fail-bid-too-low: "Your bid was too low"
-fail-bid-syntax: "Usage: /auction bid <amount>"
-fail-cancel-not-yours: "You can't cancel auctions that aren't your own"
-fail-end-no-auction: "There is no auction at this time"
-fail-info-no-auction: "There is no auction at this time"
-fail-start-ignoring: "You have auctions ignored, toggle by using /auction quiet"
-fail-start-handempty: "You can't auction air"
-fail-start-not-enough-items: "You don't have enough of that item!"
-fail-start-no-funds: "You can't afford to start an auction"
-fail-start-time-tooshort: "The time you specified is too short" 
-fail-start-time-tooshort: "The time you specified is too long"
-fail-start-syntax: "Usage: /auction start <amount> <min-bid> [autowin]"
-fail-start-auction-in-progress: "There is already an auction in progress"
-fail-start-creative: "You cannot start an auction in GameMode CREATIVE"
-fail-start-unknown: "Could not start the auction"
-fail-number-format: "You provided an invalid number"
-fail-console: "Console can't use this command"
+fail-bid-insufficient-balance: "&cYour bid exceeds your current balance"
+fail-bid-no-auction: "&cThere is no auction to bid on"
+fail-bid-your-auction: "&cYou cannot bid on your own auction"
+fail-bid-top-bidder: "&cYou are already the top bidder"
+fail-bid-too-low: "&cYour bid was too low"
+fail-bid-syntax: "&cUsage: /auction bid <amount>"
+fail-cancel-not-yours: "&cYou can't cancel auctions that aren't your own"
+fail-end-no-auction: "&cThere is no auction at this time"
+fail-info-no-auction: "&c is no auction at this time"
+fail-start-ignoring: "&cYou have auctions ignored, toggle by using &n/auction quiet"
+fail-start-handempty: "&aYou can't auction air"
+fail-start-not-enough-items: "&cYou don't have enough of that item!"
+fail-start-no-funds: "&cYou can't afford to start an auction"
+fail-start-time-tooshort: "&cThe time you specified is too short" 
+fail-start-time-tooshort: "&cThe time you specified is too long"
+fail-start-syntax: "&cUsage: /auction start <amount> <min-bid> [autowin]"
+fail-start-auction-in-progress: "&cThere is already an auction in progress"
+fail-start-creative: "&cYou cannot start an auction in GameMode CREATIVE"
+fail-start-unknown: "&cCould not start the auction"
+fail-number-format: "&cYou provided an invalid number"
+fail-console: "&cConsole can't use this command"
 
-success-items-recieved: "You won the auction. Your items are in your inventory"
-success-items-no-space: "Not enough space in your inventory, dropping winnings at your feet"
+success-items-recieved: "&aYou won the auction. Your items are in your inventory"
+success-items-no-space: "&aNot enough space in your inventory, dropping winnings at your feet"

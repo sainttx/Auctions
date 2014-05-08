@@ -129,25 +129,56 @@ public class Auction extends JavaPlugin {
 	}
 
 	public void messageListening(String message) {
-		FancyMessage message0 = new FancyMessage();
-		
-//		String message1 = messages.getString(message);
-//		message1 = message1.replaceAll("%i", auction.getItem().getType().toString())
-//				.replaceAll("%t", auction.getFormattedTime())
-//				.replaceAll("%b", Integer.toString(auction.getCurrentBid()))
-//				.replaceAll("%p", UUIDtoName(auction.getOwner()));
-//		try {
-//			message1 = message1.replaceAll("%T", Integer.toString(auction.getCurrentTax()))
-//					.replaceAll("%w", UUIDtoName(auction.getWinning()));
-//		} catch (IllegalArgumentException ex1) {
-//			// UUID is null
-//		}
+		FancyMessage message0 = new FancyMessage("");
+		String message1 = replace(message);
+
+		String[] split = message1.split("%i");
+		if (message1.contains("%i")) {
+			for (int i = 0 ; i < split.length ; i++) {
+				if (i != split.length -1) {
+					message0.then(format(split[i]))
+					.then(auction.getItem().getType().toString())
+					.itemTooltip(auction.getItem());
+				} else {
+					if (message1.endsWith("%i")) {
+						if (split.length == 1) message0.then(format(split[i]));
+						message0.then(auction.getItem().getType().toString())
+						.itemTooltip(auction.getItem());
+					} else {
+						message0.then(format(split[i]));
+					}
+				}
+				message0.color(getIColor("color"));
+				if (!messages.getString("%i.style").equals("none")) {
+					message0.style(getIColor("style"));
+				}
+			}
+		} else {
+			message0.then(format(message1));
+		}
+
 		for (Player player : Bukkit.getOnlinePlayers()) {
 			if (!ignoring.contains(player.getName())) {
-				player.sendMessage(message0.then(ChatColor.GREEN + "Test").toJSONString());
-				//player.sendMessage(format(message1));
+				message0.send(player);
 			}
 		}
+	}
+
+	private ChatColor getIColor(String type) {
+		return ChatColor.getByChar(messages.getString("%i." + type));		
+	}
+
+	public String replace(String message) {
+		String ret = messages.getString(message);
+		ret = ret.replaceAll("%t", auction.getFormattedTime())
+				.replaceAll("%b", Integer.toString(auction.getCurrentBid()))
+				.replaceAll("%p", UUIDtoName(auction.getOwner()))
+				.replaceAll("%a", Integer.toString(auction.getNumItems()));
+		if (auction.hasBids()) {
+			ret = ret.replaceAll("%T", Integer.toString(auction.getCurrentTax()))
+					.replaceAll("%w", UUIDtoName(auction.getWinning()));
+		}
+		return ret;
 	}
 
 	public String UUIDtoName(UUID uuid) {
@@ -174,24 +205,24 @@ public class Auction extends JavaPlugin {
 				try {
 					int amount = Integer.parseInt(args[1]);
 					int start = Integer.parseInt(args[2]);
+					int autowin = -1;
 					if (args.length == 4) { // auction start amount startingbid autowin
-						int autowin = Integer.parseInt(args[3]);
-						this.auction = new IAuction(this, (Player) sender, amount, start, autowin);
-						this.auction.start();
-						return;
+						autowin = Integer.parseInt(args[3]);
 					}
-					this.auction = new IAuction(this, (Player) sender, amount, start, -1);
+					this.auction = new IAuction(this, (Player) sender, amount, start, autowin);
 					this.auction.start();
 				} catch (NumberFormatException ex1) {
 					sender.sendMessage(getMessageFormatted("fail-number-format"));
 				} catch (InsufficientItemsException ex2) {
 					sender.sendMessage(getMessageFormatted("fail-start-not-enough-items"));	
+				} catch (EmptyHandException ex3) {
+					sender.sendMessage(getMessageFormatted("fail-start-handempty"));	
 				}
 			} else {
 				sender.sendMessage(getMessageFormatted("fail-start-syntax"));
 			}
 		} else {
-			sender.sendMessage(messages.getString("fail-console"));
+			sender.sendMessage(getMessageFormatted("fail-console"));
 		}
 	}
 
