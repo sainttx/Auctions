@@ -15,12 +15,14 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class Auction extends JavaPlugin {
 	private ArrayList<String> ignoring = new  ArrayList<String>();
 	private YamlConfiguration messages;
+	private YamlConfiguration names;
 	//private YamlConfiguration log;
 	private IAuction auction;
 	
@@ -75,10 +77,15 @@ public class Auction extends JavaPlugin {
 		//		cost = getConfig().getInt("auction-start-fee");
 		//		percent = getConfig().getInt("auction-tax-percentage");
 		File messages = new File(getDataFolder(), "messages.yml");
+		File names = new File(getDataFolder(), "items.yml");
 		if (!messages.exists()) {
 			saveResource("messages.yml", false);
 		}
+		if (!names.exists()) {
+			saveResource("items.yml", false);
+		}
 		this.messages = YamlConfiguration.loadConfiguration(messages);
+		this.names = YamlConfiguration.loadConfiguration(names);
 	}
 
 	@Override
@@ -134,8 +141,15 @@ public class Auction extends JavaPlugin {
 				Player player = (Player) sender;
 				player.getItemInHand().setAmount(5);
 			} else if (arg1.equals("test1")) {
-				Player player = (Player) sender;
-				player.getItemInHand().setType(Material.AIR);
+				for (Material mat : Material.values()) {
+					ItemStack is = new ItemStack(mat);
+					
+					String search = mat.toString() + "." + is.getDurability();
+					String ret = names.getString(search);
+					if (ret == null) {
+						System.out.print(search);
+					}
+				}
 			}
 			else {
 				// invalid arg
@@ -145,6 +159,16 @@ public class Auction extends JavaPlugin {
 		return false;
 	}
 
+	private String itemName(ItemStack item) {
+		short durability = item.getType().getMaxDurability() > 0 ? 0 : item.getDurability();
+		String search = item.getType().toString() + "." + durability;
+		String ret = names.getString(search);
+		if (ret == null) {
+			ret = "null";
+		}
+		return ret;
+	}
+	
 	public void messageListening(String message) {
 		FancyMessage message0 = new FancyMessage("");
 		String message1 = replace(message);
@@ -154,12 +178,12 @@ public class Auction extends JavaPlugin {
 			for (int i = 0 ; i < split.length ; i++) {
 				if (i != split.length -1) {
 					message0.then(format(split[i]))
-					.then(auction.getItem().getType().toString())
+					.then(itemName(auction.getItem()))
 					.itemTooltip(auction.getItem());
 				} else {
 					if (message1.endsWith("%i")) {
 						if (split.length == 1) message0.then(format(split[i]));
-						message0.then(auction.getItem().getType().toString())
+						message0.then(itemName(auction.getItem()))
 						.itemTooltip(auction.getItem());
 					} else {
 						message0.then(format(split[i]));
