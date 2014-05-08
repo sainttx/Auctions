@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.UUID;
 
 import mkremins.fanciful.FancyMessage;
+import net.milkbowl.vault.economy.Economy;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -14,6 +15,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class Auction extends JavaPlugin {
@@ -21,6 +23,8 @@ public class Auction extends JavaPlugin {
 	private YamlConfiguration messages;
 	//private YamlConfiguration log;
 	private IAuction auction;
+	
+	public static Economy economy = null;
 
 	//	private boolean logauctions;
 	//	private boolean allowautowin;
@@ -44,7 +48,20 @@ public class Auction extends JavaPlugin {
 	public void onEnable() {
 		this.saveDefaultConfig();
 		loadConfig();
+		setupEconomy();
 		getCommand("auction").setExecutor(this);
+	}
+	
+	private boolean setupEconomy() {
+        RegisteredServiceProvider<Economy> economyProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);
+        if (economyProvider != null) {
+            economy = economyProvider.getProvider();
+        }
+        return (economy != null);
+    }
+	
+	public static Economy getEconomy() {
+		return economy;
 	}
 
 	private void loadConfig() {

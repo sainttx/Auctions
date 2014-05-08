@@ -2,6 +2,8 @@ package me.sainttx;
 
 import java.util.UUID;
 
+import net.milkbowl.vault.economy.Economy;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
@@ -20,6 +22,8 @@ public class IAuction {
 
 	private UUID winning;
 	private int topBid;
+	
+	private static Economy economy = Auction.getEconomy();
 
 	private final int[] times = {45, 30, 10, 3, 2, 1};
 
@@ -60,6 +64,7 @@ public class IAuction {
 					for (int i : times) {
 						if (i == timeLeft) {
 							plugin.messageListening("auction-timer");
+							break;
 						}
 					}
 				}
@@ -80,7 +85,7 @@ public class IAuction {
 					player.sendMessage(plugin.getMessageFormatted("fail-bid-top-bidder"));
 					return;
 				}
-			} 
+			}
 			// bid here
 			if (amount >= autoWin && autoWin != -1) {
 				// They win
@@ -89,8 +94,12 @@ public class IAuction {
 				winning = player.getUniqueId();
 				end();
 			}
+			OfflinePlayer old = Bukkit.getOfflinePlayer(winning);
+			economy.depositPlayer(old.getName(), topBid);
+			
 			winning = player.getUniqueId();
 			topBid = amount;
+			economy.withdrawPlayer(player.getName(), topBid);
 			plugin.messageListening("bid-broadcast");
 		}
 	}
@@ -108,16 +117,14 @@ public class IAuction {
 		if (winner.isOnline()) {
 			Player winner1 = (Player) winner;
 			winner1.sendMessage(plugin.getMessageFormatted("auction-winner"));
-			winner1.sendMessage(plugin.getMessageFormatted("auction-end-tax"));
-			// Give the items to the winner
-		} else {
-
+			// Give the items to the winner... Check for stacks, full inv etc
 		}
 
+		economy.depositPlayer(owner.getName(), topBid - getCurrentTax());
 		if (owner.isOnline()) {
-
-		} else {
-
+			Player player = (Player) owner;
+			player.sendMessage(plugin.getMessageFormatted("auction-ended"));
+			player.sendMessage(plugin.getMessageFormatted("auction-end-tax"));
 		}
 
 		plugin.stopAuction();
