@@ -34,7 +34,7 @@ auction-ended-autowin: "&aThe auction has ended with &b%w &abidding &c$%b (autow
 auction-end-tax: "&aA tax of &c$%T &awas charged"
 auction-end-no-bidders: "&aThe auction for &b%a %i &aended with no bids"
 
-bid-broadcast: "&b%w &ahas bid &c$%b on the auction for %a %i"
+bid-broadcast: "&b%w &ahas bid &c$%b &aon the auction for %a %i"
 auction-winner: "&aYou won the auction for %i &awith a bid of &c$%b"
 
 fail-bid-insufficient-balance: "&cYour bid exceeds your current balance"
@@ -60,4 +60,5 @@ fail-number-format: "&cYou provided an invalid number"
 fail-console: "&cConsole can't use this command"
 
 success-items-recieved: "&aYou won the auction. Your items are in your inventory"
-success-items-no-space: "&aNot enough space in your inventory, dropping winnings at your feet"
+items-no-space: "&aNot enough space, items have been dropped at your feet"
+saved-item-return: "&aYour items were saved and have been returned"

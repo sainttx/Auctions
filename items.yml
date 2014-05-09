@@ -67,10 +67,10 @@ DISPENSER:
   0: Dispenser
 SANDSTONE:
   0: Sandstone
-  1: Decorative Sandstone
+  1: Chiseled Sandstone
   2: Smooth Sandstone
 NOTE_BLOCK:
-  0: Note Lock
+  0: Note Block
 BED_BLOCK:
   0: Bed
 POWERED_RAIL:
@@ -109,7 +109,7 @@ WOOL:
   14: Red Wool
   15: Black Wool
 PISTON_MOVING_PIECE:
-  0: Block moved by Piston
+  0: Piston (moving piece)
 YELLOW_FLOWER:
   0: Dandelion
 RED_ROSE:
@@ -268,7 +268,7 @@ GLOWSTONE:
 PORTAL:
   0: Portal
 JACK_O_LANTERN:
-  0: "Jack-O-Lantern"
+  0: "Jack o'Lantern"
 CAKE_BLOCK:
   0: Cake Block
 DIODE_BLOCK_OFF:
@@ -297,9 +297,9 @@ STAINED_GLASS:
 TRAP_DOOR:
   0: Trapdoor
 MONSTER_EGGS:
-  0: Stone Hidden Silverfish
-  1: Cobblestone Hidden Silverfish
-  2: Stone Brick Hidden Silverfish
+  0: Stone (Silverfish)
+  1: Cobblestone (Silverfish)
+  2: Stone Brick (Silverfish)
 SMOOTH_BRICK:
   0: Stone Bricks
   1: Mossy Stone Bricks

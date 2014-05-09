@@ -7,6 +7,7 @@ import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -22,38 +23,73 @@ public class IAuction {
 
 	private UUID winning;
 	private int topBid;
-	
+
 	private static Economy economy = Auction.getEconomy();
 
 	private final int[] times = {45, 30, 10, 3, 2, 1};
 
 	public IAuction(Auction plugin, Player player, int numItems, int startingAmount, int autoWin) throws InsufficientItemsException, EmptyHandException {
 		this.plugin = plugin;
-		topBid = startingAmount;
-
 		this.numItems = numItems;
 		this.autoWin = autoWin;
+		topBid = startingAmount;
 		owner = player.getUniqueId();
 		item = player.getItemInHand().clone();
 		item.setAmount(numItems);
 		increment = plugin.getConfig().getInt("minimum-bid-increment");
 
-		timeLeft = Integer.parseInt(plugin.getConfig().getString("auction-time")); // could throw on invalid
+		try {
+			timeLeft = Integer.parseInt(plugin.getConfig().getString("auction-time")); // could throw on invalid
+		} catch (NumberFormatException ex1) {
+			plugin.getLogger().severe("Config value auction-time is an invalid Integer");
+		}
 
 		if (item.getType() == Material.AIR) {
 			throw new EmptyHandException();
 		}
-		if (searchInventory(player)) { // Check if they have enough
+		if (searchInventory(player)) { // Checks if they have enough of the item
 			player.getInventory().removeItem(item);
 		} else {
-			// Doesn't have enough of the item
 			throw new InsufficientItemsException();
 		}
 	}
 
+	public UUID getOwner() {
+		return owner;
+	}
+
+	public UUID getWinning() {
+		return winning;
+	}
+
+	public int getCurrentBid() {
+		return topBid;
+	}
+
+	public int getNumItems() {
+		return numItems;
+	}
+
+	public ItemStack getItem() {
+		return item;
+	}
+
+	public int getCurrentTax() {
+		int tax = plugin.getConfig().getInt("auction-tax-percentage");
+		return topBid * (tax / 100);
+	}
+
+	public boolean hasBids() {
+		return winning != null;
+	}
+
+	public String getTime() {
+		return getFormattedTime();
+	}
+
 	public void start() {
-		plugin.messageListening("auction-start");
-		plugin.messageListening("auction-start-price");
+		plugin.messageListening(plugin.getMessageFormatted("auction-start"));
+		plugin.messageListening(plugin.getMessageFormatted("auction-start-price"));
 		Runnable task = new Runnable() {
 			@Override
 			public void run() {
@@ -63,7 +99,7 @@ public class IAuction {
 					--timeLeft;
 					for (int i : times) {
 						if (i == timeLeft) {
-							plugin.messageListening("auction-timer");
+							plugin.messageListening(plugin.getMessageFormatted("auction-timer"));
 							break;
 						}
 					}
@@ -75,14 +111,14 @@ public class IAuction {
 
 	public void bid(Player player, int amount) {
 		if (amount < topBid + increment) {
-			player.sendMessage(plugin.getMessageFormatted("fail-bid-too-low"));
+			plugin.getMessageFormatted("fail-bid-too-low").send(player);
 			return;
 		} else if (owner.equals(player.getUniqueId())) {
-			player.sendMessage(plugin.getMessageFormatted("fail-bid-your-auction"));
+			plugin.getMessageFormatted("fail-bid-your-auction").send(player);
 		} else {
 			if (winning != null) {
 				if (winning.equals(player.getUniqueId())) {
-					player.sendMessage(plugin.getMessageFormatted("fail-bid-top-bidder"));
+					plugin.getMessageFormatted("fail-bid-top-bidder").send(player);
 					return;
 				}
 			}
@@ -90,43 +126,58 @@ public class IAuction {
 			if (amount >= autoWin && autoWin != -1) {
 				// They win
 				// Take away money
-				plugin.messageListening("auction-ended-autowin");
+				plugin.messageListening(plugin.getMessageFormatted("auction-ended-autowin"));
 				winning = player.getUniqueId();
 				end();
 			}
-			OfflinePlayer old = Bukkit.getOfflinePlayer(winning);
-			economy.depositPlayer(old.getName(), topBid);
-			
+			if (winning != null) {
+				OfflinePlayer old = Bukkit.getOfflinePlayer(winning);
+				economy.depositPlayer(old.getName(), topBid);
+			}
 			winning = player.getUniqueId();
 			topBid = amount;
 			economy.withdrawPlayer(player.getName(), topBid);
-			plugin.messageListening("bid-broadcast");
+			plugin.messageListening(plugin.getMessageFormatted("bid-broadcast"));
 		}
 	}
 
 	public boolean end() {
 		Bukkit.getScheduler().cancelTask(taskID);
+		OfflinePlayer owner = Bukkit.getOfflinePlayer(this.owner);
 		if (winning == null) {
-			plugin.messageListening("auction-end-no-bidders");
+			plugin.messageListening(plugin.getMessageFormatted("auction-end-no-bidders"));
 			plugin.stopAuction();
 			// Return items to owner
+			if (!owner.isOnline()) {
+				plugin.save(this.owner, item);
+			} else {
+				// return items to owner
+				Player player = (Player) owner;
+				plugin.giveItem(player, item);
+			}
 			return true;
 		}	
 		OfflinePlayer winner = Bukkit.getOfflinePlayer(winning);
-		OfflinePlayer owner = Bukkit.getOfflinePlayer(this.owner);
 		if (winner.isOnline()) {
 			Player winner1 = (Player) winner;
-			winner1.sendMessage(plugin.getMessageFormatted("auction-winner"));
+			plugin.giveItem(winner1, item);
+			plugin.getMessageFormatted("auction-winner").send(winner1);
 			// Give the items to the winner... Check for stacks, full inv etc
-		}
+		} else {
+			// Save the items
+			YamlConfiguration logoff = plugin.getLogOff();
+			if (logoff.getString(winner.getUniqueId().toString()) != null) {
 
+			} else {
+				plugin.save(winning, item);
+			}
+		}
 		economy.depositPlayer(owner.getName(), topBid - getCurrentTax());
 		if (owner.isOnline()) {
 			Player player = (Player) owner;
-			player.sendMessage(plugin.getMessageFormatted("auction-ended"));
-			player.sendMessage(plugin.getMessageFormatted("auction-end-tax"));
+			plugin.getMessageFormatted("auction-ended").send(player);
+			plugin.getMessageFormatted("auction-end-tax").send(player);
 		}
-
 		plugin.stopAuction();
 		return true;
 	}
@@ -150,51 +201,15 @@ public class IAuction {
 		return false;
 	}
 
-	public UUID getOwner() {
-		return owner;
-	}
-
-	public UUID getWinning() {
-		return winning;
-	}
-
-	public int getCurrentBid() {
-		return topBid;
-	}
-
-	public int getNumItems() {
-		return numItems;
-	}
-
-	public ItemStack getItem() {
-		return item;
-	}
-
-	public int getTimeRemaining() {
-		return timeLeft;
-	}
-
-	private final int secondsInAMinute = 60;
-	private final int secondsInAnHour = 60 * secondsInAMinute;
-	private final int secondsInADay = 24 * secondsInAnHour;
-
-	public String getFormattedTime() {
-		int time = timeLeft;
+	private String getFormattedTime() {		
 		String formatted = "";
-		// Get days
-		int days = (int) Math.floor(time / secondsInADay);
-
-		// Get hours
-		int hourSeconds = time % secondsInADay;
-		int hours = (int) Math.floor(hourSeconds / secondsInAnHour);
-
-		// Get minutes
-		int minuteSeconds = hourSeconds % secondsInAnHour;
-		int minutes = (int) Math.floor(minuteSeconds / secondsInAMinute);
-
-		// Get seconds
-		int remainingSeconds = minuteSeconds % secondsInAMinute;
-		int seconds = (int) Math.ceil(remainingSeconds);
+		int days = (int) Math.floor(timeLeft / 86400); // get days
+		int hourSeconds = timeLeft % 86400; 
+		int hours = (int) Math.floor(hourSeconds / 3600); // get hours
+		int minuteSeconds = hourSeconds % 3600;
+		int minutes = (int) Math.floor(minuteSeconds / 60); // get minutes
+		int remainingSeconds = minuteSeconds % 60;
+		int seconds = (int) Math.ceil(remainingSeconds); // get seconds
 
 		if (days > 0) formatted += String.format("%d day(s), ", days);
 		if (hours > 0) formatted += String.format("%d hour(s), ", hours);
@@ -204,22 +219,14 @@ public class IAuction {
 		return formatted;
 	}
 
-	public int getCurrentTax() {
-		int tax = plugin.getConfig().getInt("auction-tax-percentage");
-		return topBid * (tax / 100);
+	@SuppressWarnings("serial")
+	public class InsufficientItemsException extends Exception {
+
 	}
 
-	public boolean hasBids() {
-		return winning != null;
+	@SuppressWarnings("serial")
+	public class EmptyHandException extends Exception {
+
 	}
 }
 
-@SuppressWarnings("serial")
-class InsufficientItemsException extends Exception {
-
-}
-
-@SuppressWarnings("serial")
-class EmptyHandException extends Exception {
-
-}
