@@ -50,6 +50,7 @@ public class Auction extends JavaPlugin implements Listener {
 		setupEconomy();
 		loadSaved();
 		getCommand("auction").setExecutor(this);
+		getCommand("bid").setExecutor(this);
 		Bukkit.getPluginManager().registerEvents(this, this);
 	}
 
@@ -67,12 +68,12 @@ public class Auction extends JavaPlugin implements Listener {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public void log(String s) {
 		try {
 			log.setWritable(true);
 			BufferedWriter out = new BufferedWriter(new FileWriter(log.getAbsolutePath(), true));
-			out.append(s + "\n");
+			out.append(s.replaceAll(ChatColor.COLOR_CHAR + "[.]", "") + "\n");
 			out.close();
 		} catch (IOException e) {
 		}
@@ -101,6 +102,10 @@ public class Auction extends JavaPlugin implements Listener {
 	public void save(UUID uuid, ItemStack is) { 
 		logoff.set(uuid.toString(), is);
 		loggedoff.put(uuid, is);
+		try {
+			logoff.save(off);
+		} catch (IOException e) {
+		}
 	}
 
 	public void loadSaved() {
@@ -167,15 +172,20 @@ public class Auction extends JavaPlugin implements Listener {
 	@EventHandler
 	public void onJoin(PlayerJoinEvent event) {
 		Player player = event.getPlayer();
-		ItemStack saved = logoff.getItemStack(player.getUniqueId().toString());
+		ItemStack saved = loggedoff.get(player.getUniqueId());
 		if (saved != null) {
-			giveItem(player, saved);
-			getMessageFormatted("saved-item-return").send(player);
+			giveItem(player, saved, "saved-item-return");
+			loggedoff.remove(player.getUniqueId());
 			logoff.set(player.getUniqueId().toString(), null);
+			try {
+				logoff.save(off);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
-	public void giveItem(Player player, ItemStack itemstack) {
+	public void giveItem(Player player, ItemStack itemstack, String... messageentry) {
 		ItemStack[] itemstacksplit = splitStack(itemstack);
 		World world = player.getWorld();
 		boolean dropped = false;
@@ -193,7 +203,11 @@ public class Auction extends JavaPlugin implements Listener {
 		if (dropped) {
 			getMessageFormatted("items-no-space").send(player);
 		} else {
-			getMessageFormatted("success-items-recieved").send(player); // TODO: figure out which message to send
+			if (messageentry.length == 1) {
+				getMessageFormatted(messageentry[0]).send(player);	
+			} else {
+				getMessageFormatted("give-item-unkown").send(player);
+			}
 		}
 	}
 
@@ -206,10 +220,6 @@ public class Auction extends JavaPlugin implements Listener {
 		ItemStack[] itemstackarray = new ItemStack[arraysize == 0 ? 1 : arraysize];
 		if (amount > maxsize) {
 			for (int i = 0 ; i < itemstackarray.length ; i++) {
-				/*
-				 *  Goes through each slot in the array..
-				 *  Need to split every item stack to the max size unless its less
-				 */
 				if (amount <= maxsize) {
 					// last item stack = amount
 					copy.setAmount(amount);
@@ -241,66 +251,97 @@ public class Auction extends JavaPlugin implements Listener {
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		String username = sender.getName();
-		if (args.length == 0) {
+
+		if (args.length == 0 && !cmd.getLabel().toLowerCase().equals("bid")) {
 			sendMenu(sender);
 		} else {
-			if (sender instanceof ConsoleCommandSender) {
-				System.out.print("Auction commands are currently disabled from the console.");
-				return false;
-			}
-			String arg1 = args[0];
-			Player player = (Player) sender;
-			if (arg1.equals("start")) {
-				if (!ignoring.contains(username)) {
-					startAuction(player, args);
-				} else {
-					getMessageFormatted("fail-start-ignoring").send(player);
-				}
-			} else if (arg1.equals("end")) {
-				if (this.auction != null) {
-					auction.end();
-					stopAuction();
-				} else {
-					getMessageFormatted("fail-end-no-auction").send(player);
-				}
-			} else if (arg1.equals("info")) {
-				if (auction != null) {
-					getMessageFormatted("auction-info-message").send(player);
-				} else {
-					getMessageFormatted("fail-info-no-auction").send(player);
-				}
-			} else if (arg1.equals("bid")) {
-				if (auction != null) {
-					if (args.length == 2) {
-						auction.bid(player, Integer.parseInt(args[1])); // could throw
+			if (sender instanceof Player) {
+				Player player = (Player) sender;
+				if (cmd.getLabel().toLowerCase().equals("bid")) {
+					if (!player.hasPermission("auction.bid")) {
+						getMessageFormatted("insufficient-permissions").send(player);
+						return false;
+					}
+					if (args.length == 1) {
+						try {
+							if (auction != null) {
+								auction.bid(player, Integer.parseInt(args[0]));
+							}
+							else {
+								getMessageFormatted("fail-bid-no-auction").send(player);
+							}
+						} catch (NumberFormatException ex1) {
+							getMessageFormatted("fail-bid-number").send(player);
+						}
 					} else {
 						getMessageFormatted("fail-bid-syntax").send(player);
 					}
-				} else {
-					getMessageFormatted("fail-bid-no-auction").send(player);
+					return true;
 				}
-			} else if (arg1.equals("quiet") || arg1.equals("ignore")) {
-				if (!ignoring.contains(sender.getName())) {
-					getMessageFormatted("ignoring-on").send(player);
-					ignoring.add(sender.getName());
-				} else {
-					getMessageFormatted("ignoring-off").send(player);
-					ignoring.remove(sender.getName());
-				}
-			} else if (arg1.equals("reload")) {
-				if (sender.hasPermission("auction.reload")) {
-					reloadConfig();
-					loadConfig();	
-				} else {
+				String arg1 = args[0].toLowerCase();
+				if (!player.hasPermission("auction." + arg1)) {
 					getMessageFormatted("insufficient-permissions").send(player);
+					return false;
 				}
-			} else if (arg1.equals("stop")) {
-				Bukkit.getPluginManager().disablePlugin(this);
-			} else if (arg1.equals("test")) {
-
+				if (arg1.equals("start")) {
+					if (!ignoring.contains(username)) {
+						startAuction(player, args);
+					} else {
+						getMessageFormatted("fail-start-ignoring").send(player);
+					}
+				} else if (arg1.equals("end")) {
+					if (this.auction != null) {
+						auction.end();
+						stopAuction();
+					} else {
+						getMessageFormatted("fail-end-no-auction").send(player);
+					}
+				} else if (arg1.equals("info")) {
+					if (auction != null) {
+						getMessageFormatted("auction-info-message").send(player);
+					} else {
+						getMessageFormatted("fail-info-no-auction").send(player);
+					}
+				} else if (arg1.equals("bid")) {
+					if (auction != null) {
+						if (args.length == 2) {
+							try{
+								auction.bid(player, Integer.parseInt(args[1])); // could throw
+							} catch (NumberFormatException ex1) {
+								getMessageFormatted("fail-bid-number").send(player);
+							}
+						} else {
+							getMessageFormatted("fail-bid-syntax").send(player);
+						}
+					} else {
+						getMessageFormatted("fail-bid-no-auction").send(player);
+					}
+				} else if (arg1.equals("quiet") || arg1.equals("ignore")) {
+					if (!ignoring.contains(sender.getName())) {
+						getMessageFormatted("ignoring-on").send(player);
+						ignoring.add(sender.getName());
+					} else {
+						getMessageFormatted("ignoring-off").send(player);
+						ignoring.remove(sender.getName());
+					}
+				} else if (!arg1.equals("reload")) {
+					sendMenu(player);
+					return false;
+				}
 			}
-			else {
-				sendMenu(sender); // invalid arg
+			if (args[0].toLowerCase().equals("reload")) {
+				if (sender.hasPermission("auction.reload")) {
+					sender.sendMessage(ChatColor.translateAlternateColorCodes('&', messages.getString("reload")));
+					reloadConfig();
+					loadConfig();
+				} else {
+					sender.sendMessage(ChatColor.translateAlternateColorCodes('&', messages.getString("insufficient-permissions")));
+				}
+			} else {
+				if (sender instanceof ConsoleCommandSender) {
+					System.out.print("Console can't use this command.");
+					return false;
+				} 
 			}
 		}
 		return false;
@@ -354,7 +395,8 @@ public class Auction extends JavaPlugin implements Listener {
 			ret = ret.replaceAll("%t", auction.getTime())
 					.replaceAll("%b", Integer.toString(auction.getCurrentBid()))
 					.replaceAll("%p", UUIDtoName(auction.getOwner()))
-					.replaceAll("%a", Integer.toString(auction.getNumItems()));
+					.replaceAll("%a", Integer.toString(auction.getNumItems()))
+					.replaceAll("%A", Integer.toString(auction.getAutoWin()));
 			if (auction.hasBids()) {
 				ret = ret.replaceAll("%T", Integer.toString(auction.getCurrentTax()))
 						.replaceAll("%w", UUIDtoName(auction.getWinning()));

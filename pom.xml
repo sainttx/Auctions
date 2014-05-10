@@ -4,7 +4,7 @@
 
 	<groupId>Auction</groupId>
 	<artifactId>Auction</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.2-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>Auction</name>
@@ -12,6 +12,14 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
+
+	<distributionManagement>
+		<repository>
+			<id>internal.repo</id>
+			<name>staging</name>
+			<url>file://${project.build.directory}/mvn-repo</url>
+		</repository>
+	</distributionManagement>
 
 	<build>
 		<defaultGoal>clean package install</defaultGoal>

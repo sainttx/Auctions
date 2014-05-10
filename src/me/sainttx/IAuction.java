@@ -24,20 +24,21 @@ public class IAuction {
 	private UUID winning;
 	private int topBid;
 
-	private static Economy economy = Auction.getEconomy();
-
 	private final int[] times = {45, 30, 10, 3, 2, 1};
 
 	public IAuction(Auction plugin, Player player, int numItems, int startingAmount, int autoWin) throws InsufficientItemsException, EmptyHandException {
 		this.plugin = plugin;
 		this.numItems = numItems;
-		this.autoWin = autoWin;
 		topBid = startingAmount;
 		owner = player.getUniqueId();
 		item = player.getItemInHand().clone();
 		item.setAmount(numItems);
 		increment = plugin.getConfig().getInt("minimum-bid-increment");
-
+		if ((autoWin < topBid + increment) && autoWin != -1) {
+			this.autoWin = topBid + increment;
+		} else {
+			this.autoWin = autoWin;
+		}
 		try {
 			timeLeft = Integer.parseInt(plugin.getConfig().getString("auction-time")); // could throw on invalid
 		} catch (NumberFormatException ex1) {
@@ -73,6 +74,10 @@ public class IAuction {
 	public ItemStack getItem() {
 		return item;
 	}
+	
+	public int getAutoWin() {
+		return autoWin;
+	}
 
 	public int getCurrentTax() {
 		int tax = plugin.getConfig().getInt("auction-tax-percentage");
@@ -90,6 +95,9 @@ public class IAuction {
 	public void start() {
 		plugin.messageListening(plugin.getMessageFormatted("auction-start"));
 		plugin.messageListening(plugin.getMessageFormatted("auction-start-price"));
+		if (autoWin != -1) {
+			plugin.messageListening(plugin.getMessageFormatted("auction-start-autowin"));
+		}
 		Runnable task = new Runnable() {
 			@Override
 			public void run() {
@@ -110,11 +118,11 @@ public class IAuction {
 	}
 
 	public void bid(Player player, int amount) {
-		if (amount < topBid + increment) {
+		if (owner.equals(player.getUniqueId())) {
+			plugin.getMessageFormatted("fail-bid-your-auction").send(player);
+		} else if (amount < topBid + increment) {
 			plugin.getMessageFormatted("fail-bid-too-low").send(player);
 			return;
-		} else if (owner.equals(player.getUniqueId())) {
-			plugin.getMessageFormatted("fail-bid-your-auction").send(player);
 		} else {
 			if (winning != null) {
 				if (winning.equals(player.getUniqueId())) {
@@ -122,21 +130,18 @@ public class IAuction {
 					return;
 				}
 			}
-			// bid here
 			if (amount >= autoWin && autoWin != -1) {
-				// They win
-				// Take away money
 				plugin.messageListening(plugin.getMessageFormatted("auction-ended-autowin"));
 				winning = player.getUniqueId();
 				end();
 			}
 			if (winning != null) {
 				OfflinePlayer old = Bukkit.getOfflinePlayer(winning);
-				economy.depositPlayer(old.getName(), topBid);
+				Auction.getEconomy().depositPlayer(old.getName(), topBid);
 			}
 			winning = player.getUniqueId();
 			topBid = amount;
-			economy.withdrawPlayer(player.getName(), topBid);
+			Auction.getEconomy().withdrawPlayer(player.getName(), topBid);
 			plugin.messageListening(plugin.getMessageFormatted("bid-broadcast"));
 		}
 	}
@@ -149,30 +154,30 @@ public class IAuction {
 			plugin.stopAuction();
 			// Return items to owner
 			if (!owner.isOnline()) {
+				System.out.print("Saving items of " + owner.getName());
 				plugin.save(this.owner, item);
 			} else {
 				// return items to owner
 				Player player = (Player) owner;
-				plugin.giveItem(player, item);
+				plugin.giveItem(player, item, "nobidder-return");
 			}
 			return true;
-		}	
+		}
 		OfflinePlayer winner = Bukkit.getOfflinePlayer(winning);
 		if (winner.isOnline()) {
 			Player winner1 = (Player) winner;
-			plugin.giveItem(winner1, item);
+			plugin.giveItem(winner1, item, "winner-item");
 			plugin.getMessageFormatted("auction-winner").send(winner1);
-			// Give the items to the winner... Check for stacks, full inv etc
 		} else {
 			// Save the items
 			YamlConfiguration logoff = plugin.getLogOff();
 			if (logoff.getString(winner.getUniqueId().toString()) != null) {
 
 			} else {
-				plugin.save(winning, item);
+				plugin.save(winning, item); // TODO: check this out
 			}
 		}
-		economy.depositPlayer(owner.getName(), topBid - getCurrentTax());
+		Auction.getEconomy().depositPlayer(owner.getName(), topBid - getCurrentTax());
 		if (owner.isOnline()) {
 			Player player = (Player) owner;
 			plugin.getMessageFormatted("auction-ended").send(player);
@@ -211,10 +216,10 @@ public class IAuction {
 		int remainingSeconds = minuteSeconds % 60;
 		int seconds = (int) Math.ceil(remainingSeconds); // get seconds
 
-		if (days > 0) formatted += String.format("%d day(s), ", days);
-		if (hours > 0) formatted += String.format("%d hour(s), ", hours);
-		if (minutes > 0) formatted += String.format("%d minute(s), ", minutes);
-		if (seconds > 0) formatted += String.format("%d second(s)", seconds);
+		if (days > 0) formatted += String.format("%d d, ", days);
+		if (hours > 0) formatted += String.format("%d hr, ", hours);
+		if (minutes > 0) formatted += String.format("%d min, ", minutes);
+		if (seconds > 0) formatted += String.format("%d sec", seconds);
 
 		return formatted;
 	}
