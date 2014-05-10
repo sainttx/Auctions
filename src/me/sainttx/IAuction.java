@@ -2,8 +2,6 @@ package me.sainttx;
 
 import java.util.UUID;
 
-import net.milkbowl.vault.economy.Economy;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
@@ -26,7 +24,8 @@ public class IAuction {
 
 	private final int[] times = {45, 30, 10, 3, 2, 1};
 
-	public IAuction(Auction plugin, Player player, int numItems, int startingAmount, int autoWin) throws InsufficientItemsException, EmptyHandException {
+	public IAuction(Auction plugin, Player player, int numItems, int startingAmount, int autoWin)
+			throws InsufficientItemsException, EmptyHandException, UnsupportedItemException {
 		this.plugin = plugin;
 		this.numItems = numItems;
 		topBid = startingAmount;
@@ -47,6 +46,10 @@ public class IAuction {
 
 		if (item.getType() == Material.AIR) {
 			throw new EmptyHandException();
+		} 
+		System.out.print(item.getType());
+		if (item.getType() == Material.FIREWORK || item.getType() == Material.FIREWORK_CHARGE) {
+			throw new UnsupportedItemException();
 		}
 		if (searchInventory(player)) { // Checks if they have enough of the item
 			player.getInventory().removeItem(item);
@@ -74,7 +77,7 @@ public class IAuction {
 	public ItemStack getItem() {
 		return item;
 	}
-	
+
 	public int getAutoWin() {
 		return autoWin;
 	}
@@ -231,6 +234,11 @@ public class IAuction {
 
 	@SuppressWarnings("serial")
 	public class EmptyHandException extends Exception {
+
+	}
+
+	@SuppressWarnings("serial")
+	public class UnsupportedItemException extends Exception {
 
 	}
 }

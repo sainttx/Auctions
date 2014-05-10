@@ -11,6 +11,7 @@ import java.util.UUID;
 
 import me.sainttx.IAuction.EmptyHandException;
 import me.sainttx.IAuction.InsufficientItemsException;
+import me.sainttx.IAuction.UnsupportedItemException;
 import mkremins.fanciful.FancyMessage;
 import net.milkbowl.vault.economy.Economy;
 
@@ -251,7 +252,6 @@ public class Auction extends JavaPlugin implements Listener {
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		String username = sender.getName();
-
 		if (args.length == 0 && !cmd.getLabel().toLowerCase().equals("bid")) {
 			sendMenu(sender);
 		} else {
@@ -368,12 +368,13 @@ public class Auction extends JavaPlugin implements Listener {
 				getMessageFormatted("fail-start-not-enough-items").send(player);	
 			} catch (EmptyHandException ex3) {
 				getMessageFormatted("fail-start-handempty").send(player);	
+			} catch (UnsupportedItemException ex4) {
+				getMessageFormatted("unsupported-item").send(player);
 			}
 		} else {
 			getMessageFormatted("fail-start-syntax").send(player);
 		}
 	} 
-
 
 	private String itemName(ItemStack item) {
 		short durability = item.getType().getMaxDurability() > 0 ? 0 : item.getDurability();
