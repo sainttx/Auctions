@@ -17,6 +17,7 @@ import net.milkbowl.vault.economy.Economy;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -36,7 +37,7 @@ public class Auction extends JavaPlugin implements Listener {
 	public static Economy economy = null;
 
 	private ArrayList<String> ignoring = new  ArrayList<String>();
-	private static HashMap<UUID, ItemStack> loggedoff = new HashMap<UUID, ItemStack>();
+	private static HashMap<String, ItemStack> loggedoff = new HashMap<String, ItemStack>();
 
 	private File off = new File(getDataFolder(), "save.yml");
 	private YamlConfiguration messages;
@@ -102,7 +103,7 @@ public class Auction extends JavaPlugin implements Listener {
 
 	public void save(UUID uuid, ItemStack is) { 
 		logoff.set(uuid.toString(), is);
-		loggedoff.put(uuid, is);
+		loggedoff.put(uuid.toString(), is);
 		try {
 			logoff.save(off);
 		} catch (IOException e) {
@@ -110,10 +111,9 @@ public class Auction extends JavaPlugin implements Listener {
 	}
 
 	public void loadSaved() {
-		for (String string : logoff.getStringList("")) {
+		for (String string : logoff.getKeys(false)) {
 			ItemStack is = logoff.getItemStack(string);
-			UUID uuid = UUID.fromString(string);
-			loggedoff.put(uuid, is);
+			loggedoff.put(string, is);
 		}
 	}
 
@@ -173,10 +173,10 @@ public class Auction extends JavaPlugin implements Listener {
 	@EventHandler
 	public void onJoin(PlayerJoinEvent event) {
 		Player player = event.getPlayer();
-		ItemStack saved = loggedoff.get(player.getUniqueId());
+		ItemStack saved = loggedoff.get(player.getUniqueId().toString());
 		if (saved != null) {
 			giveItem(player, saved, "saved-item-return");
-			loggedoff.remove(player.getUniqueId());
+			loggedoff.remove(player.getUniqueId().toString());
 			logoff.set(player.getUniqueId().toString(), null);
 			try {
 				logoff.save(off);
@@ -285,6 +285,10 @@ public class Auction extends JavaPlugin implements Listener {
 				}
 				if (arg1.equals("start")) {
 					if (!ignoring.contains(username)) {
+						if (player.getGameMode() == GameMode.CREATIVE && !getConfig().getBoolean("allow-creative")) {
+							getMessageFormatted("fail-start-creative").send(player);
+							return false;
+						}
 						startAuction(player, args);
 					} else {
 						getMessageFormatted("fail-start-ignoring").send(player);
@@ -357,8 +361,19 @@ public class Auction extends JavaPlugin implements Listener {
 				int amount = Integer.parseInt(args[1]);
 				int start = Integer.parseInt(args[2]);
 				int autowin = -1;
+				int fee = getConfig().getInt("auction-start-fee");
+				if (fee > economy.getBalance(player.getName())) {
+					getMessageFormatted("fail-start-no-funds").send(player);
+					return;
+				}
+				economy.withdrawPlayer(player.getName(), fee);
 				if (args.length == 4) { // auction start amount startingbid autowin
-					autowin = Integer.parseInt(args[3]);
+					if (getConfig().getBoolean("allow-autowin")) {
+						autowin = Integer.parseInt(args[3]);
+					} else {
+						getMessageFormatted("fail-start-no-autowin").send(player);
+						return;
+					}
 				}
 				this.auction = new IAuction(this, player, amount, start, autowin);
 				this.auction.start();
@@ -413,32 +428,42 @@ public class Auction extends JavaPlugin implements Listener {
 	}
 
 	private FancyMessage format(String message) {
+		//"&b%w &ahas bid &c$%b &aon the auction for %a %i"
 		FancyMessage message0 = new FancyMessage("");
 		String message1 = replace(message);
 
-		String[] split = message1.split("%i");
 		if (message1.contains("%i")) {
-			for (int i = 0 ; i < split.length ; i++) {
-				if (i != split.length -1) {
-					message0.then(split[i])
-					.then(itemName(auction.getItem()))
-					.itemTooltip(auction.getItem());
-				} else {
-					if (message1.endsWith("%i")) {
-						if (split.length == 1) message0.then(split[i]);
-						message0.then(itemName(auction.getItem()))
-						.itemTooltip(auction.getItem());
-					} else {
-						message0.then(split[i]);
-					}
-				}
-				message0.color(getIColor("color"));
+			String[] split = message1.split("%i");
+			if (split.length == 1) { // %i was only at the end
+				message0.then(split[0]).then(itemName(auction.getItem())).itemTooltip(auction.getItem()).color(getIColor("color"));
+				//message0.color(getIColor("color"));
 				if (!messages.getString("%i.style").equals("none")) {
 					message0.style(getIColor("style"));
 				}
-			}
+			} else {
+				// more than 1 %i
+				if (message1.endsWith("%i")) {
+					for (int i = 0 ; i < split.length ; i++) {
+						//[asdfoam, asdofka] %i
+						message0.then(split[i]).then(itemName(auction.getItem())).itemTooltip(auction.getItem()).color(getIColor("color"));
+						//message0.color(getIColor("color"));
+						if (!messages.getString("%i.style").equals("none")) {
+							message0.style(getIColor("style"));
+						}
+					}
+				} else {
+					for (int i = 0 ; i < split.length - 1 ; i++) {
+						message0.then(split[i]).then(itemName(auction.getItem())).itemTooltip(auction.getItem()).color(getIColor("color"));
+						//message0.color(getIColor("color"));
+						if (!messages.getString("%i.style").equals("none")) {
+							message0.style(getIColor("style"));
+						}
+					}
+					message0.then(split[split.length - 1]);
+				}
+			}			
 		} else {
-			message0.then(message1);
+			return message0.then(message1);
 		}
 		return message0;
 	}

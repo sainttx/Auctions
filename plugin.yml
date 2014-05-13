@@ -1,5 +1,5 @@
 name: Auction
-version: 0.0.3
+version: 0.0.4
 description: An auctioning plugin
 author: SainttX
 
@@ -12,3 +12,36 @@ commands:
     aliases: [auc]
   bid:
     description: Bid on an ongoing auction
+    
+permissions:
+  auction.*:
+    description: Gives access to all Auction commands
+    children:
+      auction.bid: true
+      auction.start: true
+      auction.end: true
+      auction.info: true
+      auction.quiet: true
+      auction.ignore: true
+      auction.reload: true
+  auction.bid:
+    description: Allows you to bid on auctions
+    default: true
+  auction.start:
+    description: Allows you to start auctions
+    default: true
+  auction.end:
+    description: Allows you to end auctions
+    default: op
+  auction.info:
+    description: Allows you to view auction information
+    default: true
+  auction.quiet:
+    description: Allows you to ignore auction messages
+    default: true
+  auction.ignore:
+    description: Allows you to ignore auction messages
+    default: true
+  auction.reload:
+    description: Allows you to reload the auction configuration
+    default: op

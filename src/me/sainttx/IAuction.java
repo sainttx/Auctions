@@ -42,12 +42,12 @@ public class IAuction {
 			timeLeft = Integer.parseInt(plugin.getConfig().getString("auction-time")); // could throw on invalid
 		} catch (NumberFormatException ex1) {
 			plugin.getLogger().severe("Config value auction-time is an invalid Integer");
+			timeLeft = 30;
 		}
 
 		if (item.getType() == Material.AIR) {
 			throw new EmptyHandException();
 		} 
-		System.out.print(item.getType());
 		if (item.getType() == Material.FIREWORK || item.getType() == Material.FIREWORK_CHARGE) {
 			throw new UnsupportedItemException();
 		}
@@ -83,8 +83,10 @@ public class IAuction {
 	}
 
 	public int getCurrentTax() {
+		System.out.print(topBid);
 		int tax = plugin.getConfig().getInt("auction-tax-percentage");
-		return topBid * (tax / 100);
+		System.out.print(tax);
+		return (topBid * tax) / 100;
 	}
 
 	public boolean hasBids() {
@@ -121,6 +123,7 @@ public class IAuction {
 	}
 
 	public void bid(Player player, int amount) {
+		boolean autowin = false;
 		if (owner.equals(player.getUniqueId())) {
 			plugin.getMessageFormatted("fail-bid-your-auction").send(player);
 		} else if (amount < topBid + increment) {
@@ -133,19 +136,21 @@ public class IAuction {
 					return;
 				}
 			}
+			topBid = amount;
+			winning = player.getUniqueId();
 			if (amount >= autoWin && autoWin != -1) {
 				plugin.messageListening(plugin.getMessageFormatted("auction-ended-autowin"));
-				winning = player.getUniqueId();
 				end();
+				autowin = true;
 			}
 			if (winning != null) {
 				OfflinePlayer old = Bukkit.getOfflinePlayer(winning);
 				Auction.getEconomy().depositPlayer(old.getName(), topBid);
 			}
-			winning = player.getUniqueId();
-			topBid = amount;
 			Auction.getEconomy().withdrawPlayer(player.getName(), topBid);
-			plugin.messageListening(plugin.getMessageFormatted("bid-broadcast"));
+			if (!autowin) {
+				plugin.messageListening(plugin.getMessageFormatted("bid-broadcast"));
+			}
 		}
 	}
 
