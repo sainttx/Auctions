@@ -5,6 +5,7 @@ import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.World;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -12,6 +13,7 @@ import org.bukkit.inventory.ItemStack;
 public class IAuction {
 	private Auction plugin;
 	private UUID owner;
+	private String worldName;
 	private int numItems; // amount of items being auctioned
 	private int autoWin;
 	private int taskID;
@@ -33,6 +35,9 @@ public class IAuction {
 		item = player.getItemInHand().clone();
 		item.setAmount(numItems);
 		increment = plugin.getConfig().getInt("minimum-bid-increment");
+		if (Auction.getConfiguration().getBoolean("per-world-auctions")) {
+		    worldName = player.getWorld().getName();
+		}
 		if ((autoWin < topBid + increment) && autoWin != -1) {
 			this.autoWin = topBid + increment;
 		} else {
@@ -65,9 +70,17 @@ public class IAuction {
 	public UUID getWinning() {
 		return winning;
 	}
+	
+	public void setWinning(UUID winning) {
+	    this.winning = winning;
+	}
 
-	public int getCurrentBid() {
+	public int getTopBid() {
 		return topBid;
+	}
+	
+	public void setTopBid(int topBid) {
+	    this.topBid = topBid;
 	}
 
 	public int getNumItems() {
@@ -78,14 +91,16 @@ public class IAuction {
 		return item;
 	}
 
+	public int getIncrement() {
+	    return increment;
+	}
+	
 	public int getAutoWin() {
 		return autoWin;
 	}
 
 	public int getCurrentTax() {
-		System.out.print(topBid);
 		int tax = plugin.getConfig().getInt("auction-tax-percentage");
-		System.out.print(tax);
 		return (topBid * tax) / 100;
 	}
 
@@ -96,13 +111,18 @@ public class IAuction {
 	public String getTime() {
 		return getFormattedTime();
 	}
-
+	
+	public World getWorld() {
+	    return Bukkit.getWorld(worldName);
+	}
+	
 	public void start() {
-		plugin.messageListening(plugin.getMessageFormatted("auction-start"));
-		plugin.messageListening(plugin.getMessageFormatted("auction-start-price"));
+        Auction.getMessager().messageListening(this, "auction-start", true);
+        Auction.getMessager().messageListening(this, "auction-start-price", true);
 		if (autoWin != -1) {
-			plugin.messageListening(plugin.getMessageFormatted("auction-start-autowin"));
+		    Auction.getMessager().messageListening(this, "auction-start-autowin", true);
 		}
+		final IAuction auc = this;
 		Runnable task = new Runnable() {
 			@Override
 			public void run() {
@@ -112,7 +132,8 @@ public class IAuction {
 					--timeLeft;
 					for (int i : times) {
 						if (i == timeLeft) {
-							plugin.messageListening(plugin.getMessageFormatted("auction-timer"));
+						    Auction.getMessager().messageListening(auc, "auction-timer", true);
+							//plugin.messageListening(plugin.getMessageFormatted("auction-timer"));
 							break;
 						}
 					}
@@ -121,25 +142,25 @@ public class IAuction {
 		};
 		taskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, task, 0L, 20L);
 	}
-
+	
 	public void bid(Player player, int amount) {
 		boolean autowin = false;
 		if (owner.equals(player.getUniqueId())) {
-			plugin.getMessageFormatted("fail-bid-your-auction").send(player);
+		    Auction.getMessager().sendText(player, "fail-bid-your-auction", true);
 		} else if (amount < topBid + increment) {
-			plugin.getMessageFormatted("fail-bid-too-low").send(player);
+		    Auction.getMessager().sendText(player, "fail-bid-too-low", true);
 			return;
 		} else {
 			if (winning != null) {
 				if (winning.equals(player.getUniqueId())) {
-					plugin.getMessageFormatted("fail-bid-top-bidder").send(player);
+				    Auction.getMessager().sendText(player, "fail-bid-top-bidder", true);
 					return;
 				}
 			}
 			topBid = amount;
 			winning = player.getUniqueId();
 			if (amount >= autoWin && autoWin != -1) {
-				plugin.messageListening(plugin.getMessageFormatted("auction-ended-autowin"));
+			    Auction.getMessager().messageListening(this, "auction-ended-autowin", true);
 				end();
 				autowin = true;
 			}
@@ -149,7 +170,7 @@ public class IAuction {
 			}
 			Auction.getEconomy().withdrawPlayer(player.getName(), topBid);
 			if (!autowin) {
-				plugin.messageListening(plugin.getMessageFormatted("bid-broadcast"));
+			    Auction.getMessager().messageListening(this, "bid-broadcast", true);
 			}
 		}
 	}
@@ -158,8 +179,7 @@ public class IAuction {
 		Bukkit.getScheduler().cancelTask(taskID);
 		OfflinePlayer owner = Bukkit.getOfflinePlayer(this.owner);
 		if (winning == null) {
-			plugin.messageListening(plugin.getMessageFormatted("auction-end-no-bidders"));
-			plugin.stopAuction();
+		    Auction.getMessager().messageListening(this, "auction-end-no-bidders", true);
 			// Return items to owner
 			if (!owner.isOnline()) {
 				System.out.print("Saving items of " + owner.getName());
@@ -169,13 +189,15 @@ public class IAuction {
 				Player player = (Player) owner;
 				plugin.giveItem(player, item, "nobidder-return");
 			}
+			Auction.getAuctionManager().remove(this);
 			return true;
 		}
 		OfflinePlayer winner = Bukkit.getOfflinePlayer(winning);
 		if (winner.isOnline()) {
 			Player winner1 = (Player) winner;
 			plugin.giveItem(winner1, item, "winner-item");
-			plugin.getMessageFormatted("auction-winner").send(winner1);
+			Auction.getMessager().sendText(winner1, this, "auction-ended-autowin", true);
+			//plugin.getMessageFormatted("auction-winner").send(winner1);
 		} else {
 			// Save the items
 			YamlConfiguration logoff = plugin.getLogOff();
@@ -188,10 +210,12 @@ public class IAuction {
 		Auction.getEconomy().depositPlayer(owner.getName(), topBid - getCurrentTax());
 		if (owner.isOnline()) {
 			Player player = (Player) owner;
-			plugin.getMessageFormatted("auction-ended").send(player);
-			plugin.getMessageFormatted("auction-end-tax").send(player);
+			Auction.getMessager().sendText(player, this, "auction-ended", true);
+			Auction.getMessager().sendText(player, this, "auction-end-tax", true);
+			//plugin.getMessageFormatted("auction-ended").send(player);
+			//plugin.getMessageFormatted("auction-end-tax").send(player);
 		}
-		plugin.stopAuction();
+		Auction.getAuctionManager().remove(this);
 		return true;
 	}
 

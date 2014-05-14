@@ -7,3 +7,6 @@ minimum-bid-increment: 1
 auction-time: 30
 auction-start-fee: 1
 auction-tax-percentage: 0
+
+per-world-auctions: true
+broadcast-to-world-only: true
