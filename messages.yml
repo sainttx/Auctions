@@ -7,12 +7,18 @@
 # %w - the current top bidder of the auction
 # %b - the current top bid
 # %T - tax being charged at the end of auction
+# %W - worldname that the auction is in
 # unsupported-item only applies for Firework and Firework Charge right now
 reload: "&aAuctions has been reloaded"
 insufficient-permissions: "&cInsufficient permissions"
 unsupported-item: "&cThat item can't be auctioned"
 ignoring-on: "&aYou are now &cignoring &aauction messages"
 ignoring-off: "&aYou are no longer ignoring auction messages"
+
+
+auction-in-other-world: "&aAn auction for %i &awas started in world &b%W"
+fail-no-auction-world: "&cThere is no auction in your world"
+fail-start-auction-world: "&cThere is already an auction in your world"
 
 # Workaround for fanciful difficulties
 # Change the color/style of the item text
@@ -34,14 +40,15 @@ auction-cancelled: "&aThe auction for &b&a %i &awas &ccancelled"
 auction-start: "&b%p &ahas started an auction for &c%a %i"
 auction-start-price: "&aThe auction begins at &c$%b &aand will last for &b%t"
 auction-start-autowin: "&aThe host has set the autowin amount to &c$%A"
-auction-info-message: "&b%p &ais auctioning &c%a %i for &c$%b"
+auction-info-message: "&b%p &ais auctioning &c%a %i &afor &c$%b"
 auction-ended: "&aYour auction has ended. Received &c$%b"
-auction-ended-autowin: "&aThe auction has ended with &b%w &abidding &c$%b &c&n(autowin)"
+auction-ended-autowin: "&aThe auction for %i ended with &b%w &abidding &c$%b &c&n(autowin)"
 auction-end-tax: "&aA tax of &c$%T &awas charged"
 auction-end-no-bidders: "&aThe auction for &b%a %i &aended with no bids"
+auction-end-broadcast: "&b%w &awon &b%a %i &awith a bid of &b$%b"
 
-bid-broadcast: "&b%w &ahas bid &c$%b &aon the auction for %a %i"
-auction-winner: "&aYou won the auction for %i &awith a bid of &c$%b"
+bid-broadcast: "&b%w &ahas bid &c$%b &aon %a %i"
+auction-winner: "&aYou won &b%a %i &awith a bid of &c$%b"
 
 fail-bid-insufficient-balance: "&cYour bid exceeds your current balance"
 fail-bid-no-auction: "&cThere is no auction to bid on"

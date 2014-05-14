@@ -3,7 +3,7 @@ version: 0.0.6
 description: An auctioning plugin
 author: SainttX
 
-main: me.sainttx.Auction
+main: me.sainttx.auction.Auction
 depend: [Vault]
 
 commands:
@@ -23,6 +23,7 @@ permissions:
       auction.info: true
       auction.quiet: true
       auction.ignore: true
+      auction.tax.exempt: true
       auction.reload: true
   auction.bid:
     description: Allows you to bid on auctions
@@ -30,6 +31,9 @@ permissions:
   auction.start:
     description: Allows you to start auctions
     default: true
+  auction.creative:
+    description: Allows you to start auctions in CREATIVE mode
+    default: op
   auction.end:
     description: Allows you to end auctions
     default: op
@@ -42,6 +46,9 @@ permissions:
   auction.ignore:
     description: Allows you to ignore auction messages
     default: true
+  auction.tax.exempt:
+    description: Enables you to avoid auction taxes
+    default: op
   auction.reload:
     description: Allows you to reload the auction configuration
     default: op

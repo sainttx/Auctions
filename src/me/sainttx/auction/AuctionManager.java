@@ -18,9 +18,9 @@ public class AuctionManager {
     private static ArrayList<IAuction> auctions = new ArrayList<IAuction>();
 
     private AuctionManager() {
-        
+
     }
-    
+
     public static AuctionManager getAuctionManager() {
         return am == null ? am = new AuctionManager() : am;
     }
@@ -41,29 +41,42 @@ public class AuctionManager {
     }
 
     public boolean isAuctionInWorld(Player player) {
-        for (IAuction auction : auctions) {
-            if (player.getWorld().equals(auction.getWorld())) {
-                return true;
+        if (Auction.getConfiguration().getBoolean("per-world-auctions")) {
+            for (IAuction auction : auctions) {
+                if (player.getWorld().equals(auction.getWorld())) {
+                    return true;
+                }
             }
+            return false;
+        } else {
+            return auctions.size() == 1;
         }
-        return false;
     }
 
     public IAuction getAuctionInWorld(Player player) {
-        for (IAuction auction : auctions) {
-            if (player.getWorld().equals(auction.getWorld())) {
-                return auction;
+        if (Auction.getConfiguration().getBoolean("per-world-auctions")) {
+            for (IAuction auction : auctions) {
+                if (player.getWorld().equals(auction.getWorld())) {
+                    return auction;
+                }
             }
+            return null;
+        } else {
+            return auctions.get(0);
         }
-        return null;
     }
 
     public void startAuction(Player player, String[] args) {
         Messages messager = Auction.getMessager();
-        if (isAuctionInWorld(player)) {
+
+        if (isAuctionInWorld(player) && Auction.getConfiguration().getBoolean("per-world-auctions")) {
+            messager.sendText(player, "fail-start-auction-world", true);
+            return;
+        } else if (isAuctionInWorld(player) && !Auction.getConfiguration().getBoolean("per-world-auctions")) {
             messager.sendText(player, "fail-start-auction-in-progress", true);
             return;
         }
+
         if (args.length > 2) {
             try {
                 int amount = Integer.parseInt(args[1]);
@@ -84,6 +97,9 @@ public class AuctionManager {
                     }
                 }
                 IAuction auction = new IAuction(Auction.getPlugin(), player, amount, start, autowin);
+                if (!player.hasPermission("auction.tax.exempt") && !player.isOp()) {
+                    auction.setTaxable(true);
+                }
                 auction.start();
                 auctions.add(auction);
             } catch (NumberFormatException ex1) {
@@ -103,19 +119,25 @@ public class AuctionManager {
     public void bid(Player player, int amount) {
         Messages messager = Auction.getMessager();
         IAuction auction = getAuctionInWorld(player);
-        if (auction == null) {
+
+        if (auction == null && Auction.getConfiguration().getBoolean("per-world-auctions")) {
+            messager.sendText(player, "fail-no-auction-world", true);
+            return;
+        } else if (auction == null && !Auction.getConfiguration().getBoolean("per-world-auctions")) {
             messager.sendText(player, "fail-bid-no-auction", true);
             return;
         }
-        
+
         boolean autowin = false;
         if (auction.getOwner().equals(player.getUniqueId())) {
             messager.sendText(player, "fail-bid-your-auction", true);
         } else if (amount < auction.getTopBid() + auction.getIncrement()) {
             messager.sendText(player, "fail-bid-too-low", true);
             return;
+        } else if(Auction.economy.getBalance(player.getName()) < amount) {
+            messager.sendText(player, "fail-bid-insufficient-balance", true);
+            return;
         } else {
-            
             if (auction.getWinning() != null) {
                 if (auction.getWinning().equals(player.getUniqueId())) {
                     messager.sendText(player, "fail-bid-top-bidder", true);
@@ -123,26 +145,28 @@ public class AuctionManager {
                 }
             }
             // give old player his money back
-            Player oldWinner = Bukkit.getPlayer(auction.getWinning());
-            if (oldWinner != null) {
-                Auction.economy.depositPlayer(oldWinner.getName(), auction.getTopBid());
-            } else {
-                OfflinePlayer offline = Bukkit.getOfflinePlayer(auction.getWinning());
-                Auction.economy.depositPlayer(offline.getName(), auction.getTopBid());
+            if (auction.getWinning() != null) { // only if there is an old player!
+                Player oldWinner = Bukkit.getPlayer(auction.getWinning());
+                if (oldWinner != null) {
+                    Auction.economy.depositPlayer(oldWinner.getName(), auction.getTopBid());
+                } else {
+                    OfflinePlayer offline = Bukkit.getOfflinePlayer(auction.getWinning());
+                    Auction.economy.depositPlayer(offline.getName(), auction.getTopBid());
+                }
             }
-            
+
             // placing the bid
             auction.setTopBid(amount);
             auction.setWinning(player.getUniqueId());
             Auction.economy.withdrawPlayer(player.getName(), amount);
             if (amount >= auction.getAutoWin() && auction.getAutoWin() != -1) {
-                messager.messageListening(auction, "auction-ended-autowin", true);
+                messager.messageListeningWorld(auction, "auction-ended-autowin", true);
                 auction.end();
                 autowin = true;
             }
-            
+
             if (!autowin) {
-              messager.messageListening(auction, "bid-broadcast", true);
+                messager.messageListeningAll(auction, "bid-broadcast", true, true);
             }
         }
     }
@@ -150,6 +174,24 @@ public class AuctionManager {
     public void end(Player player) {
         if (isAuctionInWorld(player)) {
             getAuctionInWorld(player).end();
+        } else {
+            if (Auction.getConfiguration().getBoolean("per-world-auctions")) {
+                Messages.getMessager().sendText(player, "fail-no-auction-world", true);
+            } else {
+                Messages.getMessager().sendText(player, "fail-end-no-auction", true);    
+            }
+        }
+    }
+
+    public void sendInfo(Player player) {
+        if (isAuctionInWorld(player)) {
+            Messages.getMessager().sendText(player, getAuctionInWorld(player), "auction-info-message", true);
+        } else {
+            if (Auction.getConfiguration().getBoolean("per-world-auctions")) {
+                Messages.getMessager().sendText(player, "fail-no-auction-world", true);
+            } else {
+                Messages.getMessager().sendText(player, "fail-info-no-auction", true);    
+            }
         }
     }
 

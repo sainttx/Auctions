@@ -39,6 +39,7 @@ public class Auction extends JavaPlugin implements Listener {
 
     @Override
     public void onEnable() {
+        auction = this;
         saveDefaultConfig();
         loadConfig();
         setupEconomy();
@@ -46,7 +47,6 @@ public class Auction extends JavaPlugin implements Listener {
         getCommand("auction").setExecutor(this);
         getCommand("bid").setExecutor(this);
         Bukkit.getPluginManager().registerEvents(this, this);
-        auction = this;
         //messages = new Messages();
         manager = AuctionManager.getAuctionManager();
     }
@@ -166,15 +166,12 @@ public class Auction extends JavaPlugin implements Listener {
                 }
             }
         }
+        if (messageentry.length == 1) {
+            messages.sendText((CommandSender) player, messageentry[0], true);
+        } 
         if (dropped) {
             messages.sendText((CommandSender) player, "items-no-space", true);
-        } else {
-            if (messageentry.length == 1) {
-                messages.sendText((CommandSender) player, messageentry[0], true);
-            } else {
-                messages.sendText((CommandSender) player, "give-item-unknown", true);
-            }
-        }
+        } 
     }
 
     private ItemStack[] splitStack(ItemStack itemstack) {
@@ -226,7 +223,7 @@ public class Auction extends JavaPlugin implements Listener {
             if (sender instanceof Player) {
                 Player player = (Player) sender;
                 if (cmd.getLabel().toLowerCase().equals("bid")) {
-                    if (!player.hasPermission("auction.bid")) {
+                    if (!player.hasPermission("auction.bid") && !player.isOp()) {
                         messages.sendText(sender, "insufficient-permissions", true);
                         return false;
                     }
@@ -242,13 +239,13 @@ public class Auction extends JavaPlugin implements Listener {
                     return true;
                 }
                 String arg1 = args[0].toLowerCase();
-                if (!player.hasPermission("auction." + arg1)) {
+                if (!player.hasPermission("auction." + arg1) && !player.isOp()) {
                     messages.sendText(sender, "insufficient-permissions", true);
                     return false;
                 }
                 if (arg1.equals("start")) {
                     if (!messages.isIgnoring(username)) {
-                        if (player.getGameMode() == GameMode.CREATIVE && !getConfig().getBoolean("allow-creative")) {
+                        if (player.getGameMode() == GameMode.CREATIVE && !getConfig().getBoolean("allow-creative") && !player.hasPermission("auction.creative")) {
                             messages.sendText(sender, "fail-start-creative", true);
                             return false;
                         }
@@ -259,14 +256,10 @@ public class Auction extends JavaPlugin implements Listener {
                 } else if (arg1.equals("end")) {
                     manager.end(player);
                 } else if (arg1.equals("info")) {
-                    if (auction != null) {
-                        messages.sendText(sender, "auction-info-message", true); //TODO
-                    } else {
-                        messages.sendText(sender, "fail-info-no-auction", true);
-                    }
+                    manager.sendInfo(player);
                 } else if (arg1.equals("bid")) {
                     if (args.length == 2) {
-                        try{
+                        try  {
                             manager.bid(player, Integer.parseInt(args[1])); //TODO
                         } catch (NumberFormatException ex1) {
                             messages.sendText(sender, "fail-bid-number", true);

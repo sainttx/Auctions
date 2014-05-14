@@ -1,4 +1,7 @@
 # Auction plugin by SainttX
+per-world-auctions: false
+tell-other-worlds-auction-start: true
+
 log-auctions: false
 allow-autowin: true
 allow-creative: false
@@ -7,6 +10,3 @@ minimum-bid-increment: 1
 auction-time: 30
 auction-start-fee: 1
 auction-tax-percentage: 0
-
-per-world-auctions: true
-broadcast-to-world-only: true
