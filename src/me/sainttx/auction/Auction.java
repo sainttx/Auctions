@@ -1,4 +1,4 @@
-package me.sainttx;
+package me.sainttx.auction;
 
 import java.io.File;
 import java.io.IOException;
@@ -48,7 +48,7 @@ public class Auction extends JavaPlugin implements Listener {
         Bukkit.getPluginManager().registerEvents(this, this);
         auction = this;
         //messages = new Messages();
-        manager = new AuctionManager();
+        manager = AuctionManager.getAuctionManager();
     }
 
     @Override
@@ -71,8 +71,8 @@ public class Auction extends JavaPlugin implements Listener {
     public void reload() {
         reloadConfig();
         config = getConfig();
-        messages = new Messages();
-        manager = new AuctionManager();
+        messages = Messages.getMessager();
+        manager = AuctionManager.getAuctionManager();
     }
 
     public static FileConfiguration getConfiguration() {
@@ -124,7 +124,7 @@ public class Auction extends JavaPlugin implements Listener {
             }
         } 
         this.logoff = YamlConfiguration.loadConfiguration(off);
-        messages = new Messages();
+        messages = Messages.getMessager();
     }
 
     private boolean setupEconomy() {

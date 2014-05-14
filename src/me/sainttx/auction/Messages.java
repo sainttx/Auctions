@@ -1,4 +1,4 @@
-package me.sainttx;
+package me.sainttx.auction;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -20,20 +20,21 @@ import org.bukkit.inventory.ItemStack;
 
 public class Messages {
 
-    //private static Messages messages;
+    private static Messages messages = null;
     private YamlConfiguration messageFile;
     private YamlConfiguration names;
     private File log;
 
     private ArrayList<String> ignoring = new  ArrayList<String>();
 
-//    public static Messages getMessager() {
-//        if (messages == null) {
-//            messages = new Messages();
-//        }
-//        return messages;
-//        //return messages == null ? messages = new Messages() : messages;
-//    }
+    private Messages() {
+        
+    }
+    
+    
+    public static Messages getMessager() {
+        return messages == null ? messages = new Messages() : messages;
+    }
 
     private void loadFile() {
         File messages = new File(Auction.getPlugin().getDataFolder(), "messages.yml");

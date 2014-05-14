@@ -1,4 +1,4 @@
-package me.sainttx;
+package me.sainttx.auction;
 
 import java.util.UUID;
 

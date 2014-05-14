@@ -1,10 +1,10 @@
-package me.sainttx;
+package me.sainttx.auction;
 
 import java.util.ArrayList;
 
-import me.sainttx.IAuction.EmptyHandException;
-import me.sainttx.IAuction.InsufficientItemsException;
-import me.sainttx.IAuction.UnsupportedItemException;
+import me.sainttx.auction.IAuction.EmptyHandException;
+import me.sainttx.auction.IAuction.InsufficientItemsException;
+import me.sainttx.auction.IAuction.UnsupportedItemException;
 
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -13,17 +13,17 @@ import org.bukkit.entity.Player;
 
 public class AuctionManager {
 
-    //private static AuctionManager am;
+    private static AuctionManager am;
 
     private static ArrayList<IAuction> auctions = new ArrayList<IAuction>();
 
-//    public static AuctionManager getAuctionManager() {
-//        if (am == null) {
-//            am = new AuctionManager();
-//        }
-//        return am;
-////        return am == null ? am = new AuctionManager() : am;
-//    }
+    private AuctionManager() {
+        
+    }
+    
+    public static AuctionManager getAuctionManager() {
+        return am == null ? am = new AuctionManager() : am;
+    }
 
     public static void disable() {
         for (IAuction auction : auctions) {
