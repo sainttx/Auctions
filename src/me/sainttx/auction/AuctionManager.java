@@ -97,7 +97,7 @@ public class AuctionManager {
                     }
                 }
                 IAuction auction = new IAuction(Auction.getPlugin(), player, amount, start, autowin);
-                if (!player.hasPermission("auction.tax.exempt") && !player.isOp()) {
+                if (!player.hasPermission("auction.tax.exempt")) {
                     auction.setTaxable(true);
                 }
                 auction.start();

@@ -217,13 +217,14 @@ public class Auction extends JavaPlugin implements Listener {
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         String username = sender.getName();
+        String c = "startbidendinfoquietignorereload";
         if (args.length == 0 && !cmd.getLabel().toLowerCase().equals("bid")) {
             messages.sendMenu(sender);
         } else {
             if (sender instanceof Player) {
                 Player player = (Player) sender;
                 if (cmd.getLabel().toLowerCase().equals("bid")) {
-                    if (!player.hasPermission("auction.bid") && !player.isOp()) {
+                    if (!player.hasPermission("auction.bid")) {
                         messages.sendText(sender, "insufficient-permissions", true);
                         return false;
                     }
@@ -239,7 +240,11 @@ public class Auction extends JavaPlugin implements Listener {
                     return true;
                 }
                 String arg1 = args[0].toLowerCase();
-                if (!player.hasPermission("auction." + arg1) && !player.isOp()) {
+                if (!player.hasPermission("auction." + arg1)) {
+                    if (!c.contains(arg1)) {
+                        messages.sendMenu(sender);
+                        return true;
+                    }
                     messages.sendText(sender, "insufficient-permissions", true);
                     return false;
                 }
