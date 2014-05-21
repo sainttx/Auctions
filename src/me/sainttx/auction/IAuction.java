@@ -53,7 +53,7 @@ public class IAuction {
         if (item.getType() == Material.AIR) {
             throw new EmptyHandException();
         } 
-        if (item.getType() == Material.FIREWORK || item.getType() == Material.FIREWORK_CHARGE) {
+        if (item.getType() == Material.FIREWORK || item.getType() == Material.FIREWORK_CHARGE || AuctionManager.getBannedMaterials().contains(item.getType())) {
             throw new UnsupportedItemException();
         }
         if (searchInventory(player)) { // Checks if they have enough of the item
@@ -111,6 +111,14 @@ public class IAuction {
     public String getTime() {
         return getFormattedTime();
     }
+    
+    public void addTime(int time) {
+        timeLeft += time;
+    }
+    
+    public int getTimeLeft() {
+        return timeLeft;
+    }
 
     public World getWorld() {
         return Bukkit.getWorld(worldName);
@@ -128,7 +136,7 @@ public class IAuction {
             Messages.getMessager().messageListeningAll(this, "auction-start", true, true);
             Messages.getMessager().messageListeningAll(this, "auction-start-price", true, false);
         } else {
-            Messages.getMessager().messageListeningAll(this, "auction-start", true, true); // TODO
+            Messages.getMessager().messageListeningAll(this, "auction-start", true, true); 
             Messages.getMessager().messageListeningAll(this, "auction-start-price", true, true);
         }
         if (autoWin != -1) {
@@ -184,7 +192,7 @@ public class IAuction {
             if (logoff.getString(winner.getUniqueId().toString()) != null) {
 
             } else {
-                plugin.save(winning, item); // TODO: check this out
+                plugin.save(winning, item);
             }
         }
 

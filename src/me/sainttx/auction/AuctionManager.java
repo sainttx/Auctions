@@ -7,6 +7,7 @@ import me.sainttx.auction.IAuction.InsufficientItemsException;
 import me.sainttx.auction.IAuction.UnsupportedItemException;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -16,13 +17,26 @@ public class AuctionManager {
     private static AuctionManager am;
 
     private static ArrayList<IAuction> auctions = new ArrayList<IAuction>();
+    private static ArrayList<Material> banned = new ArrayList<Material>();
+    
+    private boolean disabled = false;
 
     private AuctionManager() {
-
+        for (String string : Auction.getConfiguration().getStringList("banned-items")) {
+            Material material = Material.getMaterial(string);
+            if (material != null) {
+                banned.add(material);
+            }
+        }
     }
 
     public static AuctionManager getAuctionManager() {
         return am == null ? am = new AuctionManager() : am;
+    }
+
+    @SuppressWarnings("unchecked")
+    public static ArrayList<Material> getBannedMaterials() {
+        return (ArrayList<Material>) banned.clone();
     }
 
     public static void disable() {
@@ -62,13 +76,30 @@ public class AuctionManager {
             }
             return null;
         } else {
+            if (auctions.isEmpty()) {
+                return null;
+            }
             return auctions.get(0);
         }
+    }
+    
+    public boolean isDisabled() {
+        return disabled;
+    }
+    
+    public void setDisabled(boolean disabled) {
+        this.disabled = disabled;
     }
 
     public void startAuction(Player player, String[] args) {
         Messages messager = Auction.getMessager();
+        int minStart = Auction.getConfiguration().getInt("min-start-price");
+        int maxStart = Auction.getConfiguration().getInt("max-start-price");
 
+        if (disabled && !player.hasPermission("auction.bypass.disable")) {
+            messager.sendText(player, "fail-start-auction-disabled", true);
+            return;
+        }
         if (isAuctionInWorld(player) && Auction.getConfiguration().getBoolean("per-world-auctions")) {
             messager.sendText(player, "fail-start-auction-world", true);
             return;
@@ -83,11 +114,17 @@ public class AuctionManager {
                 int start = Integer.parseInt(args[2]);
                 int autowin = -1;
                 int fee = getConfig().getInt("auction-start-fee");
-                if (fee > Auction.economy.getBalance(player.getName())) {
+                
+                if (start < minStart) {
+                    messager.sendText(player, "fail-start-min", true); // TODO add this message
+                    return;
+                } else if (start > maxStart) {
+                    messager.sendText(player, "fail-start-max", true); // TODO add this message
+                    return;
+                } else if (fee > Auction.economy.getBalance(player.getName())) {
                     messager.sendText(player, "fail-start-no-funds", true);
                     return;
                 }
-                Auction.economy.withdrawPlayer(player.getName(), fee);
                 if (args.length == 4) { // auction start amount startingbid autowin
                     if (getConfig().getBoolean("allow-autowin")) {
                         autowin = Integer.parseInt(args[3]);
@@ -100,6 +137,7 @@ public class AuctionManager {
                 if (!player.hasPermission("auction.tax.exempt")) {
                     auction.setTaxable(true);
                 }
+                Auction.economy.withdrawPlayer(player.getName(), fee);
                 auction.start();
                 auctions.add(auction);
             } catch (NumberFormatException ex1) {
@@ -117,13 +155,14 @@ public class AuctionManager {
     } 
 
     public void bid(Player player, int amount) {
+        FileConfiguration config = Auction.getConfiguration();
         Messages messager = Auction.getMessager();
         IAuction auction = getAuctionInWorld(player);
 
-        if (auction == null && Auction.getConfiguration().getBoolean("per-world-auctions")) {
+        if (auction == null && config.getBoolean("per-world-auctions")) {
             messager.sendText(player, "fail-no-auction-world", true);
             return;
-        } else if (auction == null && !Auction.getConfiguration().getBoolean("per-world-auctions")) {
+        } else if (auction == null && !config.getBoolean("per-world-auctions")) {
             messager.sendText(player, "fail-bid-no-auction", true);
             return;
         }
@@ -165,6 +204,13 @@ public class AuctionManager {
                 autowin = true;
             }
 
+            if (config.getBoolean("anti-snipe") && (config.getInt("anti-snipe-period") >= auction.getTimeLeft()) && !autowin) {
+                int addTime = Auction.getInt("anti-snipe-add-seconds");
+                auction.addTime(addTime);
+                String message = Auction.getMessager().getMessageFile().getString("anti-snipe-add").replaceAll("%t", String.valueOf(addTime));
+                messager.messageListeningAll(auction, message, false, true); // TODO add the message
+            }
+
             if (!autowin) {
                 messager.messageListeningAll(auction, "bid-broadcast", true, true);
             }
@@ -173,6 +219,10 @@ public class AuctionManager {
 
     public void end(Player player) {
         if (isAuctionInWorld(player)) {
+            if (!Auction.getBoolean("allow-end") && !player.hasPermission("auction.end.bypass")) {
+                Messages.getMessager().sendText(player, "fail-end-disallowed", true); // TODO add msg
+                return;
+            }
             getAuctionInWorld(player).end();
         } else {
             if (Auction.getConfiguration().getBoolean("per-world-auctions")) {

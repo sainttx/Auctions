@@ -34,6 +34,10 @@ public class Messages {
     public static Messages getMessager() {
         return messages == null ? messages = new Messages() : messages;
     }
+    
+    public YamlConfiguration getMessageFile() {
+        return messageFile;
+    }
 
     private void loadFile() {
         File messagesFile = new File(Auction.getPlugin().getDataFolder(), "messages.yml");
@@ -91,9 +95,17 @@ public class Messages {
             getFancyMessage(auction, text, configentry).send(player);
         }
     }
-
+    
     public String color(String text) {
         return ChatColor.translateAlternateColorCodes('&', text);
+    }
+    
+    public void messageListeningAll(String message) {
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            if (!ignoring.contains(player.getName())) {
+                player.sendMessage(color(message));
+            }
+        }
     }
 
     public void messageListeningAll(IAuction auction, String message, boolean configentry, boolean world) {

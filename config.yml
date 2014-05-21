@@ -1,12 +1,43 @@
 # Auction plugin by SainttX
+# Allow multiple auctions running in different worlds
+# Message users a simple notice of auctions in other worlds
+# will not show bids or end, only start
+auction-time: 30
 per-world-auctions: false
 tell-other-worlds-auction-start: true
 
+# Logging auctions
 log-auctions: false
+
+# Allow/disallow the 
 allow-autowin: true
 allow-creative: false
 
-minimum-bid-increment: 1
-auction-time: 30
+# Start fee and tax
+# If user has auction.tax.exempt, no tax charged
 auction-start-fee: 1
 auction-tax-percentage: 0
+
+# The minimum amount that player has to outbid by
+minimum-bid-increment: 100
+
+# This allows/disallows players using /bid to bid
+# the minimum-bid-increment
+allow-autobid: true
+
+## Anti Snipe
+## period is the remaining auction time
+anti-snipe: true
+anti-snipe-period: 5
+anti-snipe-add-seconds: 3
+
+## This is still under work
+allow-end: false
+
+## Minimum and maximum prices
+min-start-price: 10
+max-start-price: 100
+
+# Use http://jd.bukkit.org/rb/apidocs/org/bukkit/Material.html
+banned-items:
+- BEDROCK

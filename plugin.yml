@@ -1,5 +1,5 @@
 name: Auction
-version: 0.0.6
+version: 0.0.7
 description: An auctioning plugin
 author: SainttX
 
@@ -20,10 +20,14 @@ permissions:
       auction.bid: true
       auction.start: true
       auction.end: true
+      auction.end.bypass: true
       auction.info: true
       auction.quiet: true
       auction.ignore: true
       auction.tax.exempt: true
+      auction.disable.bypass: true
+      auction.disable:true
+      auction.enable: true
       auction.reload: true
   auction.bid:
     description: Allows you to bid on auctions
@@ -37,6 +41,9 @@ permissions:
   auction.end:
     description: Allows you to end auctions
     default: op
+  auction.end.bypass:
+    description: Allows you to end auctions when ending is disallowed
+    default: op
   auction.info:
     description: Allows you to view auction information
     default: true
@@ -48,6 +55,15 @@ permissions:
     default: true
   auction.tax.exempt:
     description: Enables you to avoid auction taxes
+    default: op
+  auction.bypass.disable:
+    description: Enables you to start auctions in disabled mode
+    default: op
+  auction.disable:
+    description: Allows you to put Auctions in permission-only mode
+    default: op
+  auction.enable:
+    description: Allows you to enable auctioning
     default: op
   auction.reload:
     description: Allows you to reload the auction configuration

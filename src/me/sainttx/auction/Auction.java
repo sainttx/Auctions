@@ -211,44 +211,69 @@ public class Auction extends JavaPlugin implements Listener {
         return total >= itemstack.getAmount();
     }
 
-
-    //TODO remove any auction != null
-
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         String username = sender.getName();
-        String c = "startbidendinfoquietignorereload";
-        if (args.length == 0 && !cmd.getLabel().toLowerCase().equals("bid")) {
-            messages.sendMenu(sender);
-        } else {
-            if (sender instanceof Player) {
+        String cmdLabel = cmd.getLabel().toLowerCase();
+        try {
+            if (cmdLabel.equals("bid") && sender instanceof Player) {
                 Player player = (Player) sender;
-                if (cmd.getLabel().toLowerCase().equals("bid")) {
-                    if (!player.hasPermission("auction.bid")) {
-                        messages.sendText(sender, "insufficient-permissions", true);
-                        return false;
-                    }
-                    if (args.length == 1) {
-                        try {
-                            manager.bid(player, Integer.parseInt(args[0]));
-                        } catch (NumberFormatException ex1) {
-                            messages.sendText(sender, "fail-bid-number", true);
-                        }
-                    } else {
-                        messages.sendText(sender, "fail-bid-syntax", true);
-                    }
-                    return true;
-                }
-                String arg1 = args[0].toLowerCase();
-                if (!player.hasPermission("auction." + arg1)) {
-                    if (!c.contains(arg1)) {
-                        messages.sendMenu(sender);
-                        return true;
-                    }
+                if (!sender.hasPermission("auction.bid")) {
                     messages.sendText(sender, "insufficient-permissions", true);
                     return false;
                 }
-                if (arg1.equals("start")) {
+                if (args.length == 0 && getConfig().getBoolean("allow-autobid")) {
+                    IAuction auction = manager.getAuctionInWorld(player);
+                    if (auction == null) {
+                        messages.sendText(sender, "fail-bid-no-auction", true);
+                        return false;
+                    }
+                    manager.bid(player, (int) (auction.getTopBid() + auction.getIncrement())); 
+                } else if (args.length == 1) {
+                    manager.bid(player, Integer.parseInt(args[0]));
+                } else {
+                    messages.sendText(sender, "fail-bid-syntax", true);
+                }
+                return false;
+            }
+            
+            if (args.length == 0) {
+                messages.sendMenu(sender);
+            } else {
+                String subCommand = args[0].toLowerCase();
+                
+                if (!sender.hasPermission("auction." + subCommand)) {
+                    messages.sendText(sender, "insufficient-permissions", true);
+                    return false;
+                }
+                if (subCommand.equals("reload")) {
+                    messages.sendText(sender, "reload", true);
+                    reloadConfig();
+                    loadConfig();
+                } else if (subCommand.equals("disable")) {
+                    if (!manager.isDisabled()) {
+                        manager.setDisabled(true);
+                        messages.messageListeningAll(messages.getMessageFile().getString("broadcast-disable"));
+                    } else {
+                        messages.sendText(sender, "already-disabled", true);
+                    }
+                } else if (subCommand.equals("enable")) {
+                    if (manager.isDisabled()) {
+                        manager.setDisabled(false);
+                        messages.messageListeningAll(messages.getMessageFile().getString("broadcast-enable"));
+                    } else {
+                        messages.sendText(sender, "already-enabled", true);
+                    }
+                } else {
+                    if (sender instanceof ConsoleCommandSender) {
+                        getLogger().info("Console can only use reload, disable, and enable");
+                        return false;
+                    }
+                }
+
+                Player player = (Player) sender;
+
+                if (subCommand.equals("start")) {
                     if (!messages.isIgnoring(username)) {
                         if (player.getGameMode() == GameMode.CREATIVE && !getConfig().getBoolean("allow-creative") && !player.hasPermission("auction.creative")) {
                             messages.sendText(sender, "fail-start-creative", true);
@@ -258,21 +283,21 @@ public class Auction extends JavaPlugin implements Listener {
                     } else {
                         messages.sendText(sender, "fail-start-ignoring", true);
                     }
-                } else if (arg1.equals("end")) {
-                    manager.end(player);
-                } else if (arg1.equals("info")) {
-                    manager.sendInfo(player);
-                } else if (arg1.equals("bid")) {
+                } else if (subCommand.equals("bid")) {
                     if (args.length == 2) {
                         try  {
-                            manager.bid(player, Integer.parseInt(args[1])); //TODO
+                            manager.bid(player, Integer.parseInt(args[1])); 
                         } catch (NumberFormatException ex1) {
                             messages.sendText(sender, "fail-bid-number", true);
                         }
                     } else {
                         messages.sendText(sender, "fail-bid-syntax", true);
                     }
-                } else if (arg1.equals("quiet") || arg1.equals("ignore")) {
+                } else if (subCommand.equals("info")) {
+                    manager.sendInfo(player);
+                } else if (subCommand.equals("end")) {
+                    manager.end(player);
+                } else if (subCommand.equals("ignore") || subCommand.equals("quiet")) {
                     if (!messages.isIgnoring(username)) {
                         messages.sendText(sender, "ignoring-on", true);
                         messages.addIgnoring(username);
@@ -280,26 +305,23 @@ public class Auction extends JavaPlugin implements Listener {
                         messages.sendText(sender, "ignoring-off", true);
                         messages.removeIgnoring(username);
                     }
-                } else if (!arg1.equals("reload")) {
-                    messages.sendMenu(player);
-                    return false;
                 }
             }
-            if (args[0].toLowerCase().equals("reload")) {
-                if (sender.hasPermission("auction.reload")) {
-                    messages.sendText(sender, "reload", true);
-                    reloadConfig();
-                    loadConfig();
-                } else {
-                    messages.sendText(sender, "insufficient-permissions", true);
-                }
-            } else {
-                if (sender instanceof ConsoleCommandSender) {
-                    System.out.print("Console can't use this command.");
-                    return false;
-                } 
-            }
+        } catch (NumberFormatException ex1) {
+            messages.sendText(sender, "fail-bid-number", true);
         }
         return false;
+    }
+
+    public static boolean getBoolean(String configpath) {
+        return config.getBoolean(configpath);
+    }
+
+    public static int getInt(String configpath) {
+        return config.getInt(configpath);
+    }
+
+    public static String getString(String configpath) {
+        return config.getString(configpath);
     }
 }

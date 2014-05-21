@@ -4,7 +4,7 @@
   <groupId>Auction</groupId>
   <artifactId>Auction</artifactId>
   <name>Auction</name>
-  <version>0.0.2-SNAPSHOT</version>
+  <version>0.0.7</version>
   <build>
     <sourceDirectory>${basedir}/src/</sourceDirectory>
     <defaultGoal>clean package install</defaultGoal>
