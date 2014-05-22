@@ -26,7 +26,7 @@ permissions:
       auction.ignore: true
       auction.tax.exempt: true
       auction.disable.bypass: true
-      auction.disable:true
+      auction.disable: true
       auction.enable: true
       auction.reload: true
   auction.bid:

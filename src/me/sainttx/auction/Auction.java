@@ -47,7 +47,6 @@ public class Auction extends JavaPlugin implements Listener {
         getCommand("auction").setExecutor(this);
         getCommand("bid").setExecutor(this);
         Bukkit.getPluginManager().registerEvents(this, this);
-        //messages = new Messages();
         manager = AuctionManager.getAuctionManager();
     }
 
@@ -152,13 +151,34 @@ public class Auction extends JavaPlugin implements Listener {
     }
 
     public void giveItem(Player player, ItemStack itemstack, String... messageentry) {
-        ItemStack[] itemstacksplit = splitStack(itemstack);
         World world = player.getWorld();
         boolean dropped = false;
-        for (ItemStack item : itemstacksplit) {
+        int maxsize = itemstack.getMaxStackSize();
+        int amount = itemstack.getAmount();
+        int stacks = amount / maxsize;
+        int remaining = amount % maxsize;
+        ItemStack[] split = new ItemStack[1];
+        if (amount > maxsize) {
+            split = new ItemStack[stacks + (remaining > 0 ? 1 : 0)];
+            // ie. 70 stack can only be 64
+            for (int i = 0 ; i < stacks ; i++) {
+                ItemStack maxStackSize = itemstack.clone();
+                maxStackSize.setAmount(maxsize);
+                split[i] = maxStackSize;
+            }
+            if (remaining > 0) {
+                ItemStack remainder = itemstack.clone();
+                remainder.setAmount(remaining);
+                split[stacks] = remainder;
+            }
+        } else {
+            split[0] = itemstack;
+        }
+        
+        for (ItemStack item : split) {            
             if (item != null) {
                 // Check their inventory space
-                if (hasSpace(player.getInventory(), itemstack)) {
+                if (hasSpace(player.getInventory(), item)) {
                     player.getInventory().addItem(item);
                 } else {
                     world.dropItem(player.getLocation(), item);
@@ -173,32 +193,8 @@ public class Auction extends JavaPlugin implements Listener {
             messages.sendText((CommandSender) player, "items-no-space", true);
         } 
     }
+    
 
-    private ItemStack[] splitStack(ItemStack itemstack) {
-        ItemStack copy = itemstack.clone();
-        int maxsize = copy.getMaxStackSize();
-        int amount = copy.getAmount();
-        int arraysize = (int) Math.ceil(amount / maxsize);
-
-        ItemStack[] itemstackarray = new ItemStack[arraysize == 0 ? 1 : arraysize];
-        if (amount > maxsize) {
-            for (int i = 0 ; i < itemstackarray.length ; i++) {
-                if (amount <= maxsize) {
-                    // last item stack = amount
-                    copy.setAmount(amount);
-                    itemstackarray[i] = copy.clone();
-                    break;
-                }
-                copy.setAmount(maxsize);
-                itemstackarray[i] = copy.clone();
-            }
-        } else {
-            itemstackarray[0] = copy;
-        }
-        return itemstackarray;
-    }
-
-    // This works
     private boolean hasSpace(Inventory inventory, ItemStack itemstack) {
         int total = 0;
         for (ItemStack is : inventory.getContents()) {

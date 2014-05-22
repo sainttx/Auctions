@@ -111,11 +111,11 @@ public class IAuction {
     public String getTime() {
         return getFormattedTime();
     }
-    
+
     public void addTime(int time) {
         timeLeft += time;
     }
-    
+
     public int getTimeLeft() {
         return timeLeft;
     }
@@ -170,7 +170,7 @@ public class IAuction {
             Messages.getMessager().messageListeningAll(this, "auction-end-no-bidders", true, true);
             // Return items to owner
             if (!owner.isOnline()) {
-                System.out.print("Saving items of " + owner.getName());
+                System.out.print("[Auction] Saving items of offline player " + owner.getName());
                 plugin.save(this.owner, item);
             } else {
                 // return items to owner
@@ -185,15 +185,10 @@ public class IAuction {
             Player winner1 = (Player) winner;
             plugin.giveItem(winner1, item);
             Messages.getMessager().sendText(winner1, this, "auction-winner", true);
-            //plugin.getMessageFormatted("auction-winner").send(winner1);
         } else {
             // Save the items
-            YamlConfiguration logoff = plugin.getLogOff();
-            if (logoff.getString(winner.getUniqueId().toString()) != null) {
-
-            } else {
-                plugin.save(winning, item);
-            }
+            System.out.print("[Auction] Saving items of offline player " + owner.getName());
+            plugin.save(winning, item);
         }
 
         double winnings = topBid;
