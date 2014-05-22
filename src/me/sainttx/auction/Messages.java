@@ -4,6 +4,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.UUID;
@@ -38,6 +39,15 @@ public class Messages {
     public YamlConfiguration getMessageFile() {
         return messageFile;
     }
+    
+    public void save() {
+        try {
+            File messagesFile = new File(Auction.getPlugin().getDataFolder(), "messages.yml");
+            messageFile.save(messagesFile);
+        } catch (IOException ex1) {
+            
+        }
+    }
 
     private void loadFile() {
         File messagesFile = new File(Auction.getPlugin().getDataFolder(), "messages.yml");
@@ -57,6 +67,12 @@ public class Messages {
             }
         }
         messageFile = YamlConfiguration.loadConfiguration(messagesFile);
+        InputStream messageStream = Auction.getPlugin().getResource("messages.yml");
+        if (messageStream != null) {
+            YamlConfiguration defMessages = YamlConfiguration.loadConfiguration(messageStream);
+            messageFile.setDefaults(defMessages);
+        }
+        
         names = YamlConfiguration.loadConfiguration(namesFile);
     }
 
@@ -73,7 +89,7 @@ public class Messages {
     }
 
     public void removeIgnoring(String name) {
-        ignoring.add(name);
+        ignoring.remove(name);
     }
 
     public void sendText(CommandSender sender, String text, boolean configentry) {

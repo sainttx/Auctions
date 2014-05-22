@@ -1,0 +1,91 @@
+# Legend:
+# %i - item being auctioned
+# %a - amount of item being auctioned
+# %A - autowin amount
+# %t - time remaining in the auction
+# %p - player hosting the auction
+# %w - the current top bidder of the auction
+# %b - the current top bid
+# %T - tax being charged at the end of auction
+# %W - worldname that the auction is in
+# unsupported-item only applies for Firework and Firework Charge right now
+reload: "&aAuctions has been reloaded"
+insufficient-permissions: "&cInsufficient permissions"
+unsupported-item: "&cThat item can't be auctioned"
+ignoring-on: "&aYou are now &cignoring &aauction messages"
+ignoring-off: "&aYou are no longer ignoring auction messages"
+
+# Workaround for fanciful difficulties
+# Change the color/style of the item text
+# color: 0-9 or a-f
+# style: k/o/n/l or none
+'%i':
+  color: c
+  style: none
+
+auction-menu:
+- "&aAuction menu:"
+- "&b/auction info"
+- "&b/auction bid &c<amount>"
+- "&b/auction start &c<amount> <min-bid> &7[autowin]"
+- "&b/auction end"
+- "&b/auction ignore"
+- "&b/auction reload"
+auction-in-other-world: "&aAn auction for %i &awas started in world &b%W"
+auction-timer: "&aThe auction for &b%a %i &ahas &b%t &aremaining"
+auction-cancelled: "&aThe auction for &b&a %i &awas &ccancelled"
+auction-start: "&b%p &astarted an auction for &c%a %i"
+auction-start-price: "&aThe auction begins at &c$%b &aand will last for &b%t"
+auction-start-autowin: "&aThe host has set the autowin amount to &c$%A"
+auction-info-message: "&b%p &ais auctioning &c%a %i &afor &c$%b"
+auction-ended: "&aYour auction has ended. Received &c$%b"
+auction-ended-autowin: "&aThe auction for %i ended with &b%w &abidding &c$%b &c&n(autowin)"
+auction-end-tax: "&aA tax of &c$%T &awas charged"
+auction-end-no-bidders: "&aThe auction for &b%a %i &aended with no bids"
+auction-end-broadcast: "&b%w &awon &b%a %i &awith a bid of &b$%b"
+
+bid-broadcast: "&b%w &ahas bid &c$%b &aon %a %i"
+auction-winner: "&aYou won &b%a %i &awith a bid of &c$%b"
+
+fail-bid-insufficient-balance: "&cYour bid exceeds your current balance"
+fail-bid-no-auction: "&cThere is no auction to bid on"
+fail-bid-your-auction: "&cYou cannot bid on your own auction"
+fail-bid-top-bidder: "&cYou are already the top bidder"
+fail-bid-too-low: "&cYour bid was too low"
+fail-bid-syntax: "&cUsage: /auction bid <amount>"
+fail-bid-number: "&cInvalid bid"
+fail-cancel-not-yours: "&cYou can't cancel auctions that aren't your own"
+fail-end-no-auction: "&cThere is no auction at this time"
+fail-info-no-auction: "&cThere is no auction at this time"
+fail-no-auction-world: "&cThere is no auction in your world"
+fail-start-auction-world: "&cThere is already an auction in your world"
+fail-start-ignoring: "&cYou have auctions ignored, toggle by using &n/auction quiet"
+fail-start-handempty: "&aYou can't auction air"
+fail-start-not-enough-items: "&cYou don't have enough of that item!"
+fail-start-no-funds: "&cYou can't afford to start an auction"
+fail-start-time-tooshort: "&cThe time you specified is too short" 
+fail-start-time-tooshort: "&cThe time you specified is too long"
+fail-start-syntax: "&cUsage: /auction start <amount> <min-bid> [autowin]"
+fail-start-auction-in-progress: "&cThere is already an auction in progress"
+fail-start-creative: "&cYou cannot start an auction in GameMode CREATIVEzzz"
+fail-start-unknown: "&cCould not start the auction"
+fail-number-format: "&cYou provided an invalid number"
+fail-console: "&cConsole can't use this command"
+
+items-no-space: "&aNot enough space, items have been dropped at your feet"
+saved-item-return: "&aYour items were saved and have been returned"
+winner-item: "&aYou won the auction and have recieved your items"
+nobidder-return: "&aThere were no bidders on your auc, your items were &arefunded"
+give-item-unknown: "&aYour items have been returned"
+
+# v0.0.7
+broadcast-disable: "&cAuctions are now disabled, only those with permission can start auctions"
+broadcast-enable: "&aAuctions have been re-enabled"
+already-disabled: "&cAuctions are already disabled"
+already-enabled: "&cAuctions are already enabled" 
+fail-start-auction-disabled: "&cAuctions are currently disabled"
+fail-start-negative-number: "&cYou can't auction a stack with negative size"
+fail-end-disallowed: "&cYou cannot end this auction"
+fail-start-max: "&cYour starting price is too high"
+fail-start-min: "&cYour starting price is too low"
+anti-snipe-add: "&cAnti-Snipe: %ts &ahas been added to the time!"

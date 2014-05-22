@@ -115,6 +115,10 @@ public class AuctionManager {
                 int autowin = -1;
                 int fee = getConfig().getInt("auction-start-fee");
                 
+                if (amount < 0) {
+                    messager.sendText(player, "fail-start-negative-number", true);
+                    return;
+                }
                 if (start < minStart) {
                     messager.sendText(player, "fail-start-min", true); // TODO add this message
                     return;

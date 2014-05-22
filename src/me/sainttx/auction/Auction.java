@@ -58,6 +58,9 @@ public class Auction extends JavaPlugin implements Listener {
                 off.createNewFile();
             }
             logoff.save(off);
+            
+            saveConfig();
+            messages.save();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -111,6 +114,7 @@ public class Auction extends JavaPlugin implements Listener {
 
     private void loadConfig() {
         config = getConfig();
+        getConfig().options().copyDefaults(true);
         File names = new File(getDataFolder(), "items.yml");
         if (!names.exists()) {
             saveResource("items.yml", false);
@@ -246,6 +250,7 @@ public class Auction extends JavaPlugin implements Listener {
                     messages.sendText(sender, "reload", true);
                     reloadConfig();
                     loadConfig();
+                    messages.reload();
                 } else if (subCommand.equals("disable")) {
                     if (!manager.isDisabled()) {
                         manager.setDisabled(true);
@@ -295,11 +300,11 @@ public class Auction extends JavaPlugin implements Listener {
                     manager.end(player);
                 } else if (subCommand.equals("ignore") || subCommand.equals("quiet")) {
                     if (!messages.isIgnoring(username)) {
-                        messages.sendText(sender, "ignoring-on", true);
                         messages.addIgnoring(username);
+                        messages.sendText(sender, "ignoring-on", true);
                     } else {
-                        messages.sendText(sender, "ignoring-off", true);
                         messages.removeIgnoring(username);
+                        messages.sendText(sender, "ignoring-off", true);
                     }
                 }
             }
