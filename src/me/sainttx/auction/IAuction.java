@@ -6,7 +6,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -177,7 +176,7 @@ public class IAuction {
                 Player player = (Player) owner;
                 plugin.giveItem(player, item, "nobidder-return");
             }
-            Auction.getAuctionManager().remove(this);
+            Auction.getAuctionManager().removeAuctionFromMemory(this);
             return true;
         }
         OfflinePlayer winner = Bukkit.getOfflinePlayer(winning);
@@ -204,7 +203,7 @@ public class IAuction {
                 Messages.getMessager().sendText(player, this, "auction-end-tax", true);
             }
         }
-        Auction.getAuctionManager().remove(this);
+        Auction.getAuctionManager().removeAuctionFromMemory(this);
         return true;
     }
 

@@ -248,14 +248,14 @@ public class Auction extends JavaPlugin implements Listener {
                 loadConfig();
                 messages.reload();
             } else if (subCommand.equals("disable")) {
-                if (!manager.isDisabled()) {
+                if (!manager.areAuctionsDisabled()) {
                     manager.setDisabled(true);
                     messages.messageListeningAll(messages.getMessageFile().getString("broadcast-disable"));
                 } else {
                     messages.sendText(sender, "already-disabled", true);
                 }
             } else if (subCommand.equals("enable")) {
-                if (manager.isDisabled()) {
+                if (manager.areAuctionsDisabled()) {
                     manager.setDisabled(false);
                     messages.messageListeningAll(messages.getMessageFile().getString("broadcast-enable"));
                 } else {
