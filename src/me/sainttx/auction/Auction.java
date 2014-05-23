@@ -13,7 +13,6 @@ import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -33,7 +32,6 @@ public class Auction extends JavaPlugin implements Listener {
 
     private File off = new File(getDataFolder(), "save.yml");
     private YamlConfiguration logoff;
-    private static FileConfiguration config;
 
     private static HashMap<String, ItemStack> loggedoff = new HashMap<String, ItemStack>();
 
@@ -72,13 +70,8 @@ public class Auction extends JavaPlugin implements Listener {
 
     public void reload() {
         reloadConfig();
-        config = getConfig();
         messages = Messages.getMessager();
         manager = AuctionManager.getAuctionManager();
-    }
-
-    public static FileConfiguration getConfiguration() {
-        return config;
     }
 
     public static Messages getMessager() {
@@ -109,7 +102,6 @@ public class Auction extends JavaPlugin implements Listener {
     }
 
     private void loadConfig() {
-        config = getConfig();
         getConfig().options().copyDefaults(true);
         File names = new File(getDataFolder(), "items.yml");
         if (!names.exists()) {
@@ -338,6 +330,10 @@ public class Auction extends JavaPlugin implements Listener {
         return getConfig().getInt("anti-snipe-period", 3);
     }
 
+    public double getIncrement() {
+        return getConfig().getDouble("minimum-bid-increment", 1D);
+    }
+    
     public int getTimeToAdd() {
         return getConfig().getInt("anti-snipe-add-seconds", 5);
     }

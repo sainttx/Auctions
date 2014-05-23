@@ -93,8 +93,8 @@ public class AuctionManager {
 
     public void prepareAuction(Player player, String[] args) {
         Messages messager = Auction.getMessager();
-        int minStartingPrice = Auction.getConfiguration().getInt("min-start-price");
-        int maxStartingPrice = Auction.getConfiguration().getInt("max-start-price");
+        int minStartingPrice = plugin.getMinimumStartingPrice();
+        int maxStartingPrice = plugin.getMaximumStartingPrice();
 
         if (disabled && !player.hasPermission("auction.bypass.disable")) {
             messager.sendText(player, "fail-start-auction-disabled", true);
@@ -102,7 +102,7 @@ public class AuctionManager {
         }
 
         if (isAuctionInWorld(player)) {
-            if (Auction.getConfiguration().getBoolean("per-world-auctions")) {
+            if (plugin.isPerWorldAuctions()) {
                 messager.sendText(player, "fail-start-auction-world", true);
                 return;
             } else {
@@ -280,7 +280,7 @@ public class AuctionManager {
     
     /* Loads all banned items into memory */
     private void storeBannedItems() { 
-        for (String string : Auction.getConfiguration().getStringList("banned-items")) {
+        for (String string : plugin.getConfig().getStringList("banned-items")) {
             Material material = Material.getMaterial(string);
             if (material != null) {
                 banned.add(material);

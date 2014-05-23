@@ -19,7 +19,7 @@ auction-start-fee: 1
 auction-tax-percentage: 0
 
 # The minimum amount that player has to outbid by
-minimum-bid-increment: 100
+minimum-bid-increment: 1
 
 # This allows/disallows players using /bid to bid
 # the minimum-bid-increment

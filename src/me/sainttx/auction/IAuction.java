@@ -8,58 +8,46 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitRunnable;
 
 public class IAuction {
     private Auction plugin;
+
     private boolean taxable = false;
-    private UUID owner;
+
     private String worldName;
-    private int numItems; // amount of items being auctioned
-    private double autoWin;
-    private int taskID;
+    private UUID owner; // The person who started the auction
+    private UUID winning; // Current top bidder
+
+    private ItemStack item; // The item being auctioned
+    private int numItems; // Amount in the ItemStack
+    private double increment; // Minimum increment to bid
+    private double autoWin; // The autowin (if set)
+    private double currentBid; // Current top bidder
+
+    private int auctionTimer;
     private int timeLeft;
-    private double increment;
-    private ItemStack item;
 
-    private UUID winning;
-    private double topBid;
-
-    private final int[] times = {45, 30, 10, 3, 2, 1};
+    private final int[] times = {45, 30, 10, 3, 2, 1}; // Countdown time to announce
 
     public IAuction(Auction plugin, Player player, int numItems, int startingAmount, int autoWin)
             throws InsufficientItemsException, EmptyHandException, UnsupportedItemException {
         this.plugin = plugin;
+        this.owner = player.getUniqueId();
         this.numItems = numItems;
-        topBid = startingAmount;
-        owner = player.getUniqueId();
-        item = player.getItemInHand().clone();
-        item.setAmount(numItems);
-        increment = plugin.getConfig().getInt("minimum-bid-increment");
-        worldName = player.getWorld().getName();
+        this.item = player.getItemInHand().clone();
+        this.item.setAmount(numItems);
+        this.currentBid = startingAmount;
+        this.increment = plugin.getIncrement();
+        this.worldName = player.getWorld().getName();
+        this.timeLeft = plugin.getAuctionStartTime();
+        this.autoWin = autoWin;
 
-        if ((autoWin < topBid + increment) && autoWin != -1) {
-            this.autoWin = topBid + increment;
-        } else {
-            this.autoWin = autoWin;
-        }
-        try {
-            timeLeft = Integer.parseInt(plugin.getConfig().getString("auction-time")); // could throw on invalid
-        } catch (NumberFormatException ex1) {
-            plugin.getLogger().severe("Config value auction-time is an invalid Integer");
-            timeLeft = 30;
+        if (autoWin < currentBid + increment && autoWin != -1) {
+            this.autoWin = currentBid + increment;
         }
 
-        if (item.getType() == Material.AIR) {
-            throw new EmptyHandException();
-        } 
-        if (item.getType() == Material.FIREWORK || item.getType() == Material.FIREWORK_CHARGE || AuctionManager.getBannedMaterials().contains(item.getType())) {
-            throw new UnsupportedItemException();
-        }
-        if (searchInventory(player)) { // Checks if they have enough of the item
-            player.getInventory().removeItem(item);
-        } else {
-            throw new InsufficientItemsException();
-        }
+        validAuction(player);
     }
 
     public UUID getOwner() {
@@ -75,11 +63,11 @@ public class IAuction {
     }
 
     public double getTopBid() {
-        return topBid;
+        return currentBid;
     }
 
     public void setTopBid(int topBid) {
-        this.topBid = topBid;
+        this.currentBid = topBid;
     }
 
     public int getNumItems() {
@@ -87,7 +75,7 @@ public class IAuction {
     }
 
     public ItemStack getItem() {
-        return item;
+        return item.clone();
     }
 
     public double getIncrement() {
@@ -99,8 +87,8 @@ public class IAuction {
     }
 
     public double getCurrentTax() {
-        int tax = plugin.getConfig().getInt("auction-tax-percentage");
-        return (topBid * tax) / 100;
+        int tax = plugin.getAuctionTaxPercentage();
+        return (currentBid * tax) / 100;
     }
 
     public boolean hasBids() {
@@ -127,44 +115,65 @@ public class IAuction {
         this.taxable = taxable;
     }
 
-    public void start() {
-        if (Auction.getConfiguration().getBoolean("tell-other-worlds-auction-start")) {
-            if (Auction.getConfiguration().getBoolean("per-world-auctions")) {
-                Messages.getMessager().messageListeningAllOther(this, "auction-in-other-world", true);
+    public void start() { // TODO: Check this 
+        final Messages messager = Messages.getMessager();
+        
+        auctionTimer = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, new AuctionTimer(this), 0L, 20L);
+        
+        if (plugin.isPerWorldAuctions()) {
+            if (plugin.getTellOtherWorldsStart()) {
+                messager.messageListeningAllOther(this, "auction-in-other-world", true);
             }
-            Messages.getMessager().messageListeningAll(this, "auction-start", true, true);
-            Messages.getMessager().messageListeningAll(this, "auction-start-price", true, false);
+            messager.messageListeningAll(this, "auction-start", true, true);
+            messager.messageListeningAll(this, "auction-start-price", true, false);
         } else {
-            Messages.getMessager().messageListeningAll(this, "auction-start", true, true); 
-            Messages.getMessager().messageListeningAll(this, "auction-start-price", true, true);
+            messager.messageListeningAll(this, "auction-start", true, true); 
+            messager.messageListeningAll(this, "auction-start-price", true, true);
         }
+        
         if (autoWin != -1) {
-            Messages.getMessager().messageListeningAll(this, "auction-start-autowin", true, true);
+            messager.messageListeningAll(this, "auction-start-autowin", true, true);
         }
-        final IAuction auc = this;
-        Runnable task = new Runnable() {
-            @Override
-            public void run() {
-                if (timeLeft <= 0) {
-                    end();
-                } else {
-                    --timeLeft;
-                    for (int i : times) {
-                        if (i == timeLeft) {
-                            Messages.getMessager().messageListeningAll(auc, "auction-timer", true, true);
-                            //plugin.messageListening(plugin.getMessageFormatted("auction-timer"));
-                            break;
-                        }
-                    }
-                }
-            }
-        };
-        taskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, task, 0L, 20L);
     }
+        
+//        
+//        if (!plugin.getTellOtherWorldsStart()) {
+//            messager.messageListeningAll(this, "auction-start", true, true); 
+//            messager.messageListeningAll(this, "auction-start-price", true, true);
+//        }
+//        
+//        if (plugin.getTellOtherWorldsStart()) {
+//            if (plugin.isPerWorldAuctions()) {
+//                messager.messageListeningAllOther(this, "auction-in-other-world", true);
+//            }
+//            messager.messageListeningAll(this, "auction-start", true, true);
+//            messager.messageListeningAll(this, "auction-start-price", true, false);
+//        } else {
+//            messager.messageListeningAll(this, "auction-start", true, true); 
+//            messager.messageListeningAll(this, "auction-start-price", true, true);
+//        }
 
-    public boolean end() {
-        Bukkit.getScheduler().cancelTask(taskID);
-        OfflinePlayer owner = Bukkit.getOfflinePlayer(this.owner);
+    public void end() {
+        Bukkit.getScheduler().cancelTask(auctionTimer);
+        
+        Player owner = Bukkit.getPlayer(this.owner);
+        
+        if (winning == null) { // Nobody placed a bid
+            
+            return;
+        }
+        
+        
+        if (owner != null) {
+            
+            
+        } else {
+            
+        }
+        
+        
+        
+        //OfflinePlayer owner = Bukkit.getOfflinePlayer(this.owner);
         if (winning == null) {
             Messages.getMessager().messageListeningAll(this, "auction-end-no-bidders", true, true);
             // Return items to owner
@@ -177,7 +186,7 @@ public class IAuction {
                 plugin.giveItem(player, item, "nobidder-return");
             }
             Auction.getAuctionManager().removeAuctionFromMemory(this);
-            return true;
+            return;
         }
         OfflinePlayer winner = Bukkit.getOfflinePlayer(winning);
         if (winner.isOnline()) {
@@ -190,7 +199,7 @@ public class IAuction {
             plugin.save(winning, item);
         }
 
-        double winnings = topBid;
+        double winnings = currentBid;
         if (taxable) {
             winnings -= getCurrentTax();
         }
@@ -204,7 +213,6 @@ public class IAuction {
             }
         }
         Auction.getAuctionManager().removeAuctionFromMemory(this);
-        return true;
     }
 
     private boolean searchInventory(Player player) {
@@ -258,5 +266,47 @@ public class IAuction {
     public class UnsupportedItemException extends Exception {
 
     }
+
+    public class AuctionTimer extends BukkitRunnable {
+
+        private IAuction auction;
+        
+        public AuctionTimer(IAuction auction) {
+            this.auction = auction;
+        }
+        
+        @Override
+        public void run() {
+            if (timeLeft <= 0) {
+                end();
+            } else {
+                --timeLeft;
+                for (int i : times) {
+                    if (i == timeLeft) {
+                        Messages.getMessager().messageListeningAll(auction, "auction-timer", true, true);
+                        //plugin.messageListening(plugin.getMessageFormatted("auction-timer"));
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+
+    /* Verifies that this auction has valid settings */
+    private void validAuction(Player player) throws EmptyHandException, UnsupportedItemException, InsufficientItemsException {
+        if (item.getType() == Material.AIR) {
+            throw new EmptyHandException();
+        } 
+        if (item.getType() == Material.FIREWORK || item.getType() == Material.FIREWORK_CHARGE || AuctionManager.getBannedMaterials().contains(item.getType())) {
+            throw new UnsupportedItemException();
+        }
+        if (searchInventory(player)) { // Checks if they have enough of the item
+            player.getInventory().removeItem(item);
+        } else {
+            throw new InsufficientItemsException();
+        }
+    }
+
 }
 

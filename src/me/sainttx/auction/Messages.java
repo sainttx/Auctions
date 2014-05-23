@@ -22,6 +22,7 @@ import org.bukkit.inventory.ItemStack;
 public class Messages {
 
     private static Messages messages = null;
+    private Auction plugin;
     private YamlConfiguration messageFile;
     private YamlConfiguration names;
     private File log;
@@ -29,6 +30,7 @@ public class Messages {
     private ArrayList<String> ignoring = new  ArrayList<String>();
 
     private Messages() {
+        plugin = Auction.getPlugin();
         loadFile();
     }
 
@@ -125,7 +127,7 @@ public class Messages {
     }
 
     public void messageListeningAll(IAuction auction, String message, boolean configentry, boolean world) {
-        if (world && Auction.getConfiguration().getBoolean("per-world-auctions")) {
+        if (world && plugin.isPerWorldAuctions()) {
             messageListeningWorld(auction, message, configentry);
             return;
         }
@@ -237,7 +239,7 @@ public class Messages {
             }
         }
 
-        if (Auction.getConfiguration().getBoolean("log-auctions")) {
+        if (plugin.isLoggingAuctionsAllowed()) {
             log(ret.replaceAll("%i", auction.getItem().getType().toString()));
         }
 
