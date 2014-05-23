@@ -88,10 +88,6 @@ public class Auction extends JavaPlugin implements Listener {
         return manager;
     }
 
-    public static Economy getEconomy() {
-        return economy;
-    }
-
     public YamlConfiguration getLogOff() {
         return logoff;
     }
@@ -154,6 +150,7 @@ public class Auction extends JavaPlugin implements Listener {
         }
     }
 
+    // TODO: Auction util
     public void giveItem(Player player, ItemStack itemstack, String... messageentry) {
         World world = player.getWorld();
         boolean dropped = false;
@@ -198,7 +195,7 @@ public class Auction extends JavaPlugin implements Listener {
         } 
     }
     
-
+    // TODO: Auction util
     private boolean hasSpace(Inventory inventory, ItemStack itemstack) {
         int total = 0;
         for (ItemStack is : inventory.getContents()) {
@@ -280,7 +277,7 @@ public class Auction extends JavaPlugin implements Listener {
                             messages.sendText(sender, "fail-start-creative", true);
                             return false;
                         }
-                        manager.startAuction(player, args);
+                        manager.prepareAuction(player, args);
                     } else {
                         messages.sendText(sender, "fail-start-ignoring", true);
                     }
@@ -314,6 +311,7 @@ public class Auction extends JavaPlugin implements Listener {
         return false;
     }
 
+    // TODO: individual config shit
     public static boolean getBoolean(String configpath) {
         return config.getBoolean(configpath);
     }

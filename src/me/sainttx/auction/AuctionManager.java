@@ -15,23 +15,31 @@ import org.bukkit.entity.Player;
 public class AuctionManager {
 
     private static AuctionManager am;
+    private static Auction plugin;
+    private Messages messager;
 
     private static ArrayList<IAuction> auctions = new ArrayList<IAuction>();
     private static ArrayList<Material> banned = new ArrayList<Material>();
-    
+
     private boolean disabled = false;
 
     private AuctionManager() {
+        plugin = Auction.getPlugin();
+        messager = Messages.getMessager();
+        getBannedItems();
+    }
+
+    public static AuctionManager getAuctionManager() {
+        return am == null ? am = new AuctionManager() : am;
+    }
+
+    public void getBannedItems() { 
         for (String string : Auction.getConfiguration().getStringList("banned-items")) {
             Material material = Material.getMaterial(string);
             if (material != null) {
                 banned.add(material);
             }
         }
-    }
-
-    public static AuctionManager getAuctionManager() {
-        return am == null ? am = new AuctionManager() : am;
     }
 
     @SuppressWarnings("unchecked")
@@ -82,80 +90,107 @@ public class AuctionManager {
             return auctions.get(0);
         }
     }
-    
+
     public boolean isDisabled() {
         return disabled;
     }
-    
+
     public void setDisabled(boolean disabled) {
         this.disabled = disabled;
     }
 
-    public void startAuction(Player player, String[] args) {
+    
+    public void startAuction(Auction plugin, Player player, int numItems, int startingPrice, int autoWin) {
+        IAuction auction = null;
+        try {
+            auction = new IAuction(Auction.getPlugin(), player, numItems, startingPrice, autoWin);
+        } catch (NumberFormatException ex1) {
+            messager.sendText(player, "fail-number-format", true);
+        } catch (InsufficientItemsException ex2) {
+            messager.sendText(player, "fail-start-not-enough-items", true);
+        } catch (EmptyHandException ex3) {
+            messager.sendText(player, "fail-start-handempty", true);
+        } catch (UnsupportedItemException ex4) {
+            messager.sendText(player, "unsupported-item", true);
+        }
+        
+        if (!player.hasPermission("auction.tax.exempt")) {
+            auction.setTaxable(true);
+        }
+
+        Auction.economy.withdrawPlayer(player.getName(), getConfig().getInt("auction-start-fee"));
+        auction.start();
+        auctions.add(auction);
+    }
+    
+    public void prepareAuction(Player player, String[] args) {
         Messages messager = Auction.getMessager();
-        int minStart = Auction.getConfiguration().getInt("min-start-price");
-        int maxStart = Auction.getConfiguration().getInt("max-start-price");
+        int minStartingPrice = Auction.getConfiguration().getInt("min-start-price");
+        int maxStartingPrice = Auction.getConfiguration().getInt("max-start-price");
 
         if (disabled && !player.hasPermission("auction.bypass.disable")) {
             messager.sendText(player, "fail-start-auction-disabled", true);
             return;
         }
-        if (isAuctionInWorld(player) && Auction.getConfiguration().getBoolean("per-world-auctions")) {
-            messager.sendText(player, "fail-start-auction-world", true);
-            return;
-        } else if (isAuctionInWorld(player) && !Auction.getConfiguration().getBoolean("per-world-auctions")) {
-            messager.sendText(player, "fail-start-auction-in-progress", true);
+
+        if (isAuctionInWorld(player)) {
+            if (Auction.getConfiguration().getBoolean("per-world-auctions")) {
+                messager.sendText(player, "fail-start-auction-world", true);
+                return;
+            } else {
+                messager.sendText(player, "fail-start-auction-in-progress", true);
+                return;
+            }
+        }
+
+        if (args.length < 2) {
+            messager.sendText(player, "fail-start-syntax", true);
             return;
         }
 
-        if (args.length > 2) {
-            try {
-                int amount = Integer.parseInt(args[1]);
-                int start = Integer.parseInt(args[2]);
-                int autowin = -1;
-                int fee = getConfig().getInt("auction-start-fee");
-                
-                if (amount < 0) {
-                    messager.sendText(player, "fail-start-negative-number", true);
-                    return;
-                }
-                if (start < minStart) {
-                    messager.sendText(player, "fail-start-min", true); // TODO add this message
-                    return;
-                } else if (start > maxStart) {
-                    messager.sendText(player, "fail-start-max", true); // TODO add this message
-                    return;
-                } else if (fee > Auction.economy.getBalance(player.getName())) {
-                    messager.sendText(player, "fail-start-no-funds", true);
-                    return;
-                }
-                if (args.length == 4) { // auction start amount startingbid autowin
-                    if (getConfig().getBoolean("allow-autowin")) {
-                        autowin = Integer.parseInt(args[3]);
-                    } else {
-                        messager.sendText(player, "fail-start-no-autowin", true);
-                        return;
-                    }
-                }
-                IAuction auction = new IAuction(Auction.getPlugin(), player, amount, start, autowin);
-                if (!player.hasPermission("auction.tax.exempt")) {
-                    auction.setTaxable(true);
-                }
-                Auction.economy.withdrawPlayer(player.getName(), fee);
-                auction.start();
-                auctions.add(auction);
-            } catch (NumberFormatException ex1) {
-                messager.sendText(player, "fail-number-format", true);
-            } catch (InsufficientItemsException ex2) {
-                messager.sendText(player, "fail-start-not-enough-items", true);
-            } catch (EmptyHandException ex3) {
-                messager.sendText(player, "fail-start-handempty", true);
-            } catch (UnsupportedItemException ex4) {
-                messager.sendText(player, "unsupported-item", true);
-            }
-        } else {
-            messager.sendText(player, "fail-start-syntax", true);
+        int numItems = -1;
+        int startingPrice = -1;
+        int autoWin = -1;
+        int fee = getConfig().getInt("auction-start-fee");
+
+        try {
+            numItems = Integer.parseInt(args[1]);
+            startingPrice = Integer.parseInt(args[2]);
+        } catch (NumberFormatException ex) {
+            messager.sendText(player, "fail-number-format", true);
         }
+
+        if (numItems < 0) {
+            messager.sendText(player, "fail-start-negative-number", true);
+            return;
+        }
+
+        if (startingPrice < minStartingPrice) {
+            messager.sendText(player, "fail-start-min", true);
+            return;
+        }
+
+        if (startingPrice > maxStartingPrice) {
+            messager.sendText(player, "fail-start-max", true);
+            return;
+        }
+
+
+        if (fee > Auction.economy.getBalance(player.getName())) {
+            messager.sendText(player, "fail-start-no-funds", true);
+            return;
+        }
+
+        if (args.length == 4) {
+            if (getConfig().getBoolean("allow-autowin")) {
+                autoWin = Integer.parseInt(args[3]);
+            } else {
+                messager.sendText(player, "fail-start-no-autowin", true);
+                return;
+            }
+        }
+        
+        startAuction(plugin, player, numItems, startingPrice, autoWin);
     } 
 
     public void bid(Player player, int amount) {

@@ -195,7 +195,7 @@ public class IAuction {
         if (taxable) {
             winnings -= getCurrentTax();
         }
-        Auction.getEconomy().depositPlayer(owner.getName(), winnings);
+        Auction.economy.depositPlayer(owner.getName(), winnings);
         Messages.getMessager().messageListeningAll(this, "auction-end-broadcast", true, true);
         if (owner.isOnline()) {
             Player player = (Player) owner;
