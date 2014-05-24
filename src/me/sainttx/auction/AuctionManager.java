@@ -92,7 +92,7 @@ public class AuctionManager {
     }
 
     public void prepareAuction(Player player, String[] args) {
-        Messages messager = Auction.getMessager();
+        Messages messager = Messages.getMessager();
         int minStartingPrice = plugin.getMinimumStartingPrice();
         int maxStartingPrice = plugin.getMaximumStartingPrice();
 

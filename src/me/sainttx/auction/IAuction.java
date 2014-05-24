@@ -12,6 +12,9 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 public class IAuction {
     private Auction plugin;
+    private AuctionManager manager;
+    private AuctionUtil autil;
+    private Messages messager;
 
     private boolean taxable = false;
 
@@ -42,7 +45,10 @@ public class IAuction {
         this.worldName = player.getWorld().getName();
         this.timeLeft = plugin.getAuctionStartTime();
         this.autoWin = autoWin;
-
+        this.manager = AuctionManager.getAuctionManager();
+        this.autil = new AuctionUtil();
+        this.messager = Messages.getMessager();
+        
         if (autoWin < currentBid + increment && autoWin != -1) {
             this.autoWin = currentBid + increment;
         }
@@ -96,7 +102,7 @@ public class IAuction {
     }
 
     public String getTime() {
-        return getFormattedTime();
+        return autil.getFormattedTime(timeLeft);
     }
 
     public void addTime(int time) {
@@ -116,10 +122,8 @@ public class IAuction {
     }
 
     public void start() { // TODO: Check this 
-        final Messages messager = Messages.getMessager();
-        
         auctionTimer = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, new AuctionTimer(this), 0L, 20L);
-        
+
         if (plugin.isPerWorldAuctions()) {
             if (plugin.getTellOtherWorldsStart()) {
                 messager.messageListeningAllOther(this, "auction-in-other-world", true);
@@ -130,71 +134,36 @@ public class IAuction {
             messager.messageListeningAll(this, "auction-start", true, true); 
             messager.messageListeningAll(this, "auction-start-price", true, true);
         }
-        
+
         if (autoWin != -1) {
             messager.messageListeningAll(this, "auction-start-autowin", true, true);
         }
     }
-        
-//        
-//        if (!plugin.getTellOtherWorldsStart()) {
-//            messager.messageListeningAll(this, "auction-start", true, true); 
-//            messager.messageListeningAll(this, "auction-start-price", true, true);
-//        }
-//        
-//        if (plugin.getTellOtherWorldsStart()) {
-//            if (plugin.isPerWorldAuctions()) {
-//                messager.messageListeningAllOther(this, "auction-in-other-world", true);
-//            }
-//            messager.messageListeningAll(this, "auction-start", true, true);
-//            messager.messageListeningAll(this, "auction-start-price", true, false);
-//        } else {
-//            messager.messageListeningAll(this, "auction-start", true, true); 
-//            messager.messageListeningAll(this, "auction-start-price", true, true);
-//        }
 
+    @SuppressWarnings("static-access")
     public void end() {
         Bukkit.getScheduler().cancelTask(auctionTimer);
+        //Player owner = Bukkit.getPlayer(this.owner);
+        OfflinePlayer owner = Bukkit.getOfflinePlayer(this.owner);
         
-        Player owner = Bukkit.getPlayer(this.owner);
-        
-        if (winning == null) { // Nobody placed a bid
-            
-            return;
-        }
-        
-        
-        if (owner != null) {
-            
-            
-        } else {
-            
-        }
-        
-        
-        
-        //OfflinePlayer owner = Bukkit.getOfflinePlayer(this.owner);
         if (winning == null) {
-            Messages.getMessager().messageListeningAll(this, "auction-end-no-bidders", true, true);
-            // Return items to owner
+            messager.messageListeningAll(this, "auction-end-no-bidders", true, true);
             if (!owner.isOnline()) {
                 System.out.print("[Auction] Saving items of offline player " + owner.getName());
                 plugin.save(this.owner, item);
             } else {
-                // return items to owner
-                Player player = (Player) owner;
-                plugin.giveItem(player, item, "nobidder-return");
+                autil.giveItem((Player) owner, item, "nobidder-return"); // return items to owner
             }
-            Auction.getAuctionManager().removeAuctionFromMemory(this);
+            manager.removeAuctionFromMemory(this);
             return;
         }
+        
         OfflinePlayer winner = Bukkit.getOfflinePlayer(winning);
         if (winner.isOnline()) {
             Player winner1 = (Player) winner;
-            plugin.giveItem(winner1, item);
-            Messages.getMessager().sendText(winner1, this, "auction-winner", true);
+            autil.giveItem(winner1, item);
+            messager.sendText(winner1, this, "auction-winner", true);
         } else {
-            // Save the items
             System.out.print("[Auction] Saving items of offline player " + owner.getName());
             plugin.save(winning, item);
         }
@@ -203,53 +172,16 @@ public class IAuction {
         if (taxable) {
             winnings -= getCurrentTax();
         }
-        Auction.economy.depositPlayer(owner.getName(), winnings);
-        Messages.getMessager().messageListeningAll(this, "auction-end-broadcast", true, true);
+        plugin.economy.depositPlayer(owner.getName(), winnings);
+        messager.messageListeningAll(this, "auction-end-broadcast", true, true);
         if (owner.isOnline()) {
             Player player = (Player) owner;
-            Messages.getMessager().sendText(player, this, "auction-ended", true);
+            messager.sendText(player, this, "auction-ended", true);
             if (taxable) {
-                Messages.getMessager().sendText(player, this, "auction-end-tax", true);
+                messager.sendText(player, this, "auction-end-tax", true);
             }
         }
-        Auction.getAuctionManager().removeAuctionFromMemory(this);
-    }
-
-    private boolean searchInventory(Player player) {
-        int count = 0;
-        for (ItemStack is : player.getInventory()) {
-            if (is != null) { 
-                if (is.isSimilar(item)) {
-                    if (is.getAmount() >= numItems) {
-                        return true;
-                    } else {
-                        count += is.getAmount();
-                    }
-                }
-            }
-        }
-        if (count >= numItems) { 
-            return true;
-        }
-        return false;
-    }
-
-    private String getFormattedTime() {		
-        String formatted = "";
-        int days = (int) Math.floor(timeLeft / 86400); // get days
-        int hourSeconds = timeLeft % 86400; 
-        int hours = (int) Math.floor(hourSeconds / 3600); // get hours
-        int minuteSeconds = hourSeconds % 3600;
-        int minutes = (int) Math.floor(minuteSeconds / 60); // get minutes
-        int remainingSeconds = minuteSeconds % 60;
-        int seconds = (int) Math.ceil(remainingSeconds); // get seconds
-
-        if (days > 0) formatted += String.format("%d d, ", days);
-        if (hours > 0) formatted += String.format("%d hr, ", hours);
-        if (minutes > 0) formatted += String.format("%d min, ", minutes);
-        if (seconds > 0) formatted += String.format("%d sec", seconds);
-
-        return formatted;
+        manager.removeAuctionFromMemory(this);
     }
 
     @SuppressWarnings("serial")
@@ -270,11 +202,11 @@ public class IAuction {
     public class AuctionTimer extends BukkitRunnable {
 
         private IAuction auction;
-        
+
         public AuctionTimer(IAuction auction) {
             this.auction = auction;
         }
-        
+
         @Override
         public void run() {
             if (timeLeft <= 0) {
@@ -283,7 +215,7 @@ public class IAuction {
                 --timeLeft;
                 for (int i : times) {
                     if (i == timeLeft) {
-                        Messages.getMessager().messageListeningAll(auction, "auction-timer", true, true);
+                        messager.messageListeningAll(auction, "auction-timer", true, true);
                         //plugin.messageListening(plugin.getMessageFormatted("auction-timer"));
                         break;
                     }
@@ -301,7 +233,7 @@ public class IAuction {
         if (item.getType() == Material.FIREWORK || item.getType() == Material.FIREWORK_CHARGE || AuctionManager.getBannedMaterials().contains(item.getType())) {
             throw new UnsupportedItemException();
         }
-        if (searchInventory(player)) { // Checks if they have enough of the item
+        if (autil.searchInventory(player, item, numItems)) { // Checks if they have enough of the item
             player.getInventory().removeItem(item);
         } else {
             throw new InsufficientItemsException();

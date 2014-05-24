@@ -9,7 +9,6 @@ import net.milkbowl.vault.economy.Economy;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
-import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
@@ -18,7 +17,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -26,8 +24,10 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class Auction extends JavaPlugin implements Listener {
 
     private static Auction auction;
-    private static Messages messages;
-    private static AuctionManager manager;
+    private Messages messages;
+    private AuctionManager manager;
+    private AuctionUtil autil;
+    
     public static Economy economy = null;
 
     private File off = new File(getDataFolder(), "save.yml");
@@ -37,15 +37,19 @@ public class Auction extends JavaPlugin implements Listener {
 
     @Override
     public void onEnable() {
-        auction = this;
-        saveDefaultConfig();
-        loadConfig();
-        setupEconomy();
-        loadSaved();
-        getCommand("auction").setExecutor(this);
-        getCommand("bid").setExecutor(this);
         Bukkit.getPluginManager().registerEvents(this, this);
+        
+        auction = this;
         manager = AuctionManager.getAuctionManager();
+        autil = new AuctionUtil();
+        
+        loadConfig();
+        loadSaved();
+        
+        setupEconomy();
+        
+        getCommand("auction");
+        getCommand("bid");
     }
 
     @Override
@@ -56,7 +60,6 @@ public class Auction extends JavaPlugin implements Listener {
                 off.createNewFile();
             }
             logoff.save(off);
-
             saveConfig();
             messages.save();
         } catch (IOException e) {
@@ -72,13 +75,6 @@ public class Auction extends JavaPlugin implements Listener {
         reloadConfig();
         messages = Messages.getMessager();
         manager = AuctionManager.getAuctionManager();
-    }
-
-    public static Messages getMessager() {
-        return messages;
-    }
-    public static AuctionManager getAuctionManager() {
-        return manager;
     }
 
     public YamlConfiguration getLogOff() {
@@ -102,6 +98,7 @@ public class Auction extends JavaPlugin implements Listener {
     }
 
     private void loadConfig() {
+        saveDefaultConfig();
         getConfig().options().copyDefaults(true);
         File names = new File(getDataFolder(), "items.yml");
         if (!names.exists()) {
@@ -131,7 +128,7 @@ public class Auction extends JavaPlugin implements Listener {
         Player player = event.getPlayer();
         ItemStack saved = loggedoff.get(player.getUniqueId().toString());
         if (saved != null) {
-            giveItem(player, saved, "saved-item-return");
+            autil.giveItem(player, saved, "saved-item-return");
             loggedoff.remove(player.getUniqueId().toString());
             logoff.set(player.getUniqueId().toString(), null);
             try {
@@ -140,64 +137,6 @@ public class Auction extends JavaPlugin implements Listener {
                 e.printStackTrace();
             }
         }
-    }
-
-    // TODO: Auction util
-    public void giveItem(Player player, ItemStack itemstack, String... messageentry) {
-        World world = player.getWorld();
-        boolean dropped = false;
-        int maxsize = itemstack.getMaxStackSize();
-        int amount = itemstack.getAmount();
-        int stacks = amount / maxsize;
-        int remaining = amount % maxsize;
-        ItemStack[] split = new ItemStack[1];
-        if (amount > maxsize) {
-            split = new ItemStack[stacks + (remaining > 0 ? 1 : 0)];
-            // ie. 70 stack can only be 64
-            for (int i = 0 ; i < stacks ; i++) {
-                ItemStack maxStackSize = itemstack.clone();
-                maxStackSize.setAmount(maxsize);
-                split[i] = maxStackSize;
-            }
-            if (remaining > 0) {
-                ItemStack remainder = itemstack.clone();
-                remainder.setAmount(remaining);
-                split[stacks] = remainder;
-            }
-        } else {
-            split[0] = itemstack;
-        }
-
-        for (ItemStack item : split) {            
-            if (item != null) {
-                // Check their inventory space
-                if (hasSpace(player.getInventory(), item)) {
-                    player.getInventory().addItem(item);
-                } else {
-                    world.dropItem(player.getLocation(), item);
-                    dropped = true;
-                }
-            }
-        }
-        if (messageentry.length == 1) {
-            messages.sendText((CommandSender) player, messageentry[0], true);
-        } 
-        if (dropped) {
-            messages.sendText((CommandSender) player, "items-no-space", true);
-        } 
-    }
-
-    // TODO: Auction util
-    private boolean hasSpace(Inventory inventory, ItemStack itemstack) {
-        int total = 0;
-        for (ItemStack is : inventory.getContents()) {
-            if (is == null) {
-                total += itemstack.getMaxStackSize();
-            } else if (is.isSimilar(itemstack)) {
-                total += itemstack.getMaxStackSize() - is.getAmount();
-            }
-        }
-        return total >= itemstack.getAmount();
     }
 
     @Override
