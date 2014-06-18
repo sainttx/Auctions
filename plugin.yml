@@ -29,6 +29,7 @@ permissions:
       auction.disable: true
       auction.enable: true
       auction.reload: true
+      auction.bypass.startdelay: true
   auction.bid:
     description: Allows you to bid on auctions
     default: true
@@ -58,6 +59,9 @@ permissions:
     default: op
   auction.bypass.disable:
     description: Enables you to start auctions in disabled mode
+    default: op
+  auction.bypass.startdelay:
+    description: Allows you to bypass the delay between auctions
     default: op
   auction.disable:
     description: Allows you to put Auctions in permission-only mode

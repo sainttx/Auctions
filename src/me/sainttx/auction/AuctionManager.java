@@ -16,11 +16,12 @@ public class AuctionManager {
     private static AuctionManager am;
     private static Auction plugin;
     private Messages messager;
-
+    
     private static ArrayList<IAuction> auctions = new ArrayList<IAuction>();
     private static ArrayList<Material> banned = new ArrayList<Material>();
 
     private boolean disabled = false;
+    private boolean canAuction = true;
 
     private AuctionManager() {
         plugin = Auction.getPlugin();
@@ -90,6 +91,10 @@ public class AuctionManager {
         }
         return null;
     }
+    
+    public void setCanAuction(boolean canAuction) {
+        this.canAuction = canAuction;
+    }
 
     public void prepareAuction(Player player, String[] args) {
         Messages messager = Messages.getMessager();
@@ -98,6 +103,11 @@ public class AuctionManager {
 
         if (disabled && !player.hasPermission("auction.bypass.disable")) {
             messager.sendText(player, "fail-start-auction-disabled", true);
+            return;
+        }
+        
+        if (!canAuction && !player.hasPermission("auction.bypass.startdelay")) {
+            messager.sendText(player, "fail-start-cant-yet", true);
             return;
         }
 
@@ -111,19 +121,19 @@ public class AuctionManager {
             }
         }
 
-        if (args.length < 2) {
+        if (args.length < 3) {
             messager.sendText(player, "fail-start-syntax", true);
             return;
         }
 
         int numItems = -1;
-        int startingPrice = -1;
-        int autoWin = -1;
+        double startingPrice = -1;
+        double autoWin = -1;
         int fee = plugin.getAuctionStartFee();
 
         try {
             numItems = Integer.parseInt(args[1]);
-            startingPrice = Integer.parseInt(args[2]);
+            startingPrice = Double.parseDouble(args[2]);
         } catch (NumberFormatException ex) {
             messager.sendText(player, "fail-number-format", true);
         }
@@ -161,7 +171,7 @@ public class AuctionManager {
         startAuction(plugin, player, numItems, startingPrice, autoWin);
     } 
 
-    public void startAuction(Auction plugin, Player player, int numItems, int startingPrice, int autoWin) {
+    public void startAuction(Auction plugin, Player player, int numItems, double startingPrice, double autoWin) {
         IAuction auction = null;
         try {
             auction = new IAuction(Auction.getPlugin(), player, numItems, startingPrice, autoWin);
@@ -174,6 +184,9 @@ public class AuctionManager {
         } catch (UnsupportedItemException ex4) {
             messager.sendText(player, "unsupported-item", true);
         }
+        
+        if (auction == null)
+            return;
 
         // TODO: test if it goes past the exceptions.. 
         if (!player.hasPermission("auction.tax.exempt")) {
@@ -182,12 +195,13 @@ public class AuctionManager {
 
         Auction.economy.withdrawPlayer(player.getName(), plugin.getAuctionStartFee());
         auction.start();
+        setCanAuction(false);
         auctions.add(auction);
     }
 
     public void prepareBid(Player player, String amount) {
         try {
-            int bid = Integer.parseInt(amount);
+            double bid = Double.parseDouble(amount);
             prepareBid(player, bid);
         } catch (NumberFormatException ex) {
             messager.sendText(player, "fail-bid-number", true);
@@ -195,7 +209,7 @@ public class AuctionManager {
     }
 
     @SuppressWarnings("static-access")
-    public void prepareBid(Player player, int amount) {
+    public void prepareBid(Player player, double amount) {
         IAuction auction = getAuctionInWorld(player);
 
         if (auction == null) {
@@ -241,7 +255,7 @@ public class AuctionManager {
         placeBid(player, auction, amount);
     }
 
-    public void placeBid(Player player, IAuction auction, int amount) {
+    public void placeBid(Player player, IAuction auction, double amount) {
         auction.setTopBid(amount);
         auction.setWinning(player.getUniqueId());
         Auction.economy.withdrawPlayer(player.getName(), amount);

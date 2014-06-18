@@ -27,44 +27,46 @@ public class Auction extends JavaPlugin implements Listener {
     private Messages messages;
     private AuctionManager manager;
     private AuctionUtil autil;
-    
+
     public static Economy economy = null;
 
-    private File off = new File(getDataFolder(), "save.yml");
+    private final File off = new File(getDataFolder(), "save.yml");
     private YamlConfiguration logoff;
 
     private static HashMap<String, ItemStack> loggedoff = new HashMap<String, ItemStack>();
 
     @Override
-    public void onEnable() {
+    public void onEnable() 
+    {
         Bukkit.getPluginManager().registerEvents(this, this);
-        
+
         auction = this;
         manager = AuctionManager.getAuctionManager();
         autil = new AuctionUtil();
-        
+
         loadConfig();
         loadSaved();
-        
+
         setupEconomy();
-        
+
         getCommand("auction");
         getCommand("bid");
     }
 
     @Override
-    public void onDisable() {
+    public void onDisable() 
+    {
         manager.endAllAuctions();
-        try {
-            if (!off.exists()) {
+
+        try 
+        {
+            if (!off.exists())
                 off.createNewFile();
-            }
+            
             logoff.save(off);
             saveConfig();
             messages.save();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        } catch (IOException e) { }
     }
 
     public static Auction getPlugin() {
@@ -84,10 +86,10 @@ public class Auction extends JavaPlugin implements Listener {
     public void save(UUID uuid, ItemStack is) { 
         logoff.set(uuid.toString(), is);
         loggedoff.put(uuid.toString(), is);
+        
         try {
             logoff.save(off);
-        } catch (IOException e) {
-        }
+        } catch (IOException e) { }
     }
 
     public void loadSaved() {
@@ -97,10 +99,12 @@ public class Auction extends JavaPlugin implements Listener {
         }
     }
 
-    private void loadConfig() {
+    private void loadConfig() 
+    {
         saveDefaultConfig();
         getConfig().options().copyDefaults(true);
         File names = new File(getDataFolder(), "items.yml");
+        
         if (!names.exists()) {
             saveResource("items.yml", false);
         }
@@ -140,88 +144,111 @@ public class Auction extends JavaPlugin implements Listener {
     }
 
     @Override
-    public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+    public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) 
+    {
         String username = sender.getName();
         String cmdLabel = cmd.getLabel().toLowerCase();
-        if (cmdLabel.equals("bid") && sender instanceof Player) {
+
+        if (cmdLabel.equals("bid") && sender instanceof Player) 
+        {    
             Player player = (Player) sender;
-            if (!sender.hasPermission("auction.bid")) {
+
+            if (!sender.hasPermission("auction.bid")) 
                 messages.sendText(sender, "insufficient-permissions", true);
-                return false;
-            }
-            if (args.length == 0 && getConfig().getBoolean("allow-autobid")) {
+
+            else if (args.length == 0 && getConfig().getBoolean("allow-autobid")) 
+            {
                 IAuction auction = manager.getAuctionInWorld(player);
-                if (auction == null) {
+
+                if (auction == null) 
                     messages.sendText(sender, "fail-bid-no-auction", true);
-                    return false;
-                }
-                manager.prepareBid(player, (int) (auction.getTopBid() + auction.getIncrement())); 
-            } else if (args.length == 1) {
+                else 
+                    manager.prepareBid(player, (int) (auction.getTopBid() + auction.getIncrement())); 
+            } 
+            else if (args.length == 1)
                 manager.prepareBid(player, args[0]);
-            } else {
+            else
                 messages.sendText(sender, "fail-bid-syntax", true);
-            }
             return false;
         }
 
-        if (args.length == 0) {
+        if (args.length == 0)
             messages.sendMenu(sender);
-        } else {
+
+        else {
             String subCommand = args[0].toLowerCase();
 
             if (!sender.hasPermission("auction." + subCommand)) {
                 messages.sendText(sender, "insufficient-permissions", true);
                 return false;
             }
-            if (subCommand.equals("reload")) {
+
+            if (subCommand.equals("reload")) 
+            {
                 messages.sendText(sender, "reload", true);
                 reloadConfig();
                 loadConfig();
                 messages.reload();
-            } else if (subCommand.equals("disable")) {
+            } 
+
+            else if (subCommand.equals("disable")) 
+            {
                 if (!manager.areAuctionsDisabled()) {
                     manager.setDisabled(true);
                     messages.messageListeningAll(messages.getMessageFile().getString("broadcast-disable"));
-                } else {
+                } else
                     messages.sendText(sender, "already-disabled", true);
-                }
-            } else if (subCommand.equals("enable")) {
+            }
+
+            else if (subCommand.equals("enable"))
+            {
                 if (manager.areAuctionsDisabled()) {
                     manager.setDisabled(false);
                     messages.messageListeningAll(messages.getMessageFile().getString("broadcast-enable"));
-                } else {
+                } else
                     messages.sendText(sender, "already-enabled", true);
-                }
-            } else {
+            } else
                 if (sender instanceof ConsoleCommandSender) {
                     getLogger().info("Console can only use reload, disable, and enable");
                     return false;
                 }
-            }
 
             Player player = (Player) sender;
 
-            if (subCommand.equals("start")) {
-                if (!messages.isIgnoring(username)) {
+            if (subCommand.equals("start")) 
+            {
+                if (!messages.isIgnoring(username))
                     if (player.getGameMode() == GameMode.CREATIVE && !getConfig().getBoolean("allow-creative") && !player.hasPermission("auction.creative")) {
                         messages.sendText(sender, "fail-start-creative", true);
                         return false;
                     }
-                    manager.prepareAuction(player, args);
-                } else {
+                    else
+                        manager.prepareAuction(player, args);
+                else
                     messages.sendText(sender, "fail-start-ignoring", true);
-                }
-            } else if (subCommand.equals("bid")) {
+            }
+            
+            else if (subCommand.equals("bid")) 
+            {
                 if (args.length == 2) {
                     manager.prepareBid(player, args[1]); 
                 } else {
                     messages.sendText(sender, "fail-bid-syntax", true);
                 }
-            } else if (subCommand.equals("info")) {
+            } 
+            
+            else if (subCommand.equals("info")) 
+            {
                 manager.sendAuctionInfo(player);
-            } else if (subCommand.equals("end")) {
+            } 
+            
+            else if (subCommand.equals("end")) 
+            {
                 manager.end(player);
-            } else if (subCommand.equals("ignore") || subCommand.equals("quiet")) {
+            } 
+            
+            else if (subCommand.equals("ignore") || subCommand.equals("quiet")) 
+            {
                 if (!messages.isIgnoring(username)) {
                     messages.addIgnoring(username);
                     messages.sendText(sender, "ignoring-on", true);
@@ -272,7 +299,7 @@ public class Auction extends JavaPlugin implements Listener {
     public double getIncrement() {
         return getConfig().getDouble("minimum-bid-increment", 1D);
     }
-    
+
     public int getTimeToAdd() {
         return getConfig().getInt("anti-snipe-add-seconds", 5);
     }

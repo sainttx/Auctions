@@ -33,7 +33,7 @@ public class IAuction {
 
     private final int[] times = {45, 30, 10, 3, 2, 1}; // Countdown time to announce
 
-    public IAuction(Auction plugin, Player player, int numItems, int startingAmount, int autoWin)
+    public IAuction(Auction plugin, Player player, int numItems, double startingAmount, double autoWin)
             throws InsufficientItemsException, EmptyHandException, UnsupportedItemException {
         this.plugin = plugin;
         this.owner = player.getUniqueId();
@@ -72,7 +72,7 @@ public class IAuction {
         return currentBid;
     }
 
-    public void setTopBid(int topBid) {
+    public void setTopBid(double topBid) {
         this.currentBid = topBid;
     }
 
@@ -143,6 +143,14 @@ public class IAuction {
     @SuppressWarnings("static-access")
     public void end() {
         Bukkit.getScheduler().cancelTask(auctionTimer);
+        
+        Bukkit.getScheduler().scheduleSyncDelayedTask(Auction.getPlugin(), new Runnable() {
+            @Override
+            public void run() {
+                AuctionManager.getAuctionManager().setCanAuction(true);
+            }
+        }, 30L);
+        
         //Player owner = Bukkit.getPlayer(this.owner);
         OfflinePlayer owner = Bukkit.getOfflinePlayer(this.owner);
         
@@ -224,12 +232,11 @@ public class IAuction {
         }
     }
 
-
     /* Verifies that this auction has valid settings */
     private void validAuction(Player player) throws EmptyHandException, UnsupportedItemException, InsufficientItemsException {
         if (item.getType() == Material.AIR) {
             throw new EmptyHandException();
-        } 
+        }
         if (item.getType() == Material.FIREWORK || item.getType() == Material.FIREWORK_CHARGE || AuctionManager.getBannedMaterials().contains(item.getType())) {
             throw new UnsupportedItemException();
         }

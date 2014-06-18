@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.UUID;
@@ -167,7 +168,7 @@ public class Messages {
     }
 
     private FancyMessage createFancyMessage(IAuction auction, String message) {
-        FancyMessage fancyMessage = new FancyMessage("");
+        FancyMessage fancyMessage = new FancyMessage(Messages.getMessager().color("&f"));
         String fancyText = replace(auction, message);
         ItemStack item = auction.getItem();
 
@@ -228,10 +229,10 @@ public class Messages {
         String ret = message;
         if (auction != null) {
             ret = ret.replaceAll("%t", auction.getTime())
-                    .replaceAll("%b", Double.toString(auction.getTopBid()))
+                    .replaceAll("%b", NumberFormat.getInstance().format(auction.getTopBid()))
                     .replaceAll("%p", UUIDtoName(auction.getOwner()))
                     .replaceAll("%a", Integer.toString(auction.getNumItems()))
-                    .replaceAll("%A", Double.toString(auction.getAutoWin()))
+                    .replaceAll("%A", NumberFormat.getInstance().format(auction.getAutoWin()))
                     .replaceAll("%W", auction.getWorld().getName());
             if (auction.hasBids()) {
                 ret = ret.replaceAll("%T", Double.toString(auction.getCurrentTax()))
