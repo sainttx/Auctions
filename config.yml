@@ -25,12 +25,6 @@ minimum-bid-increment: 1
 # the minimum-bid-increment
 allow-autobid: true
 
-## Anti Snipe
-## period is the remaining auction time
-anti-snipe: true
-anti-snipe-period: 5
-anti-snipe-add-seconds: 3
-
 ## This is still under work
 allow-end: false
 

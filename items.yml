@@ -804,70 +804,40 @@ GOLD_NUGGET:
 NETHER_STALK:
   0: Nether Wart
 POTION:
-  0: Mundane Potion
-  1: Potion of Regeneration
-  2: Potion of Swiftness
-  3: Potion of Fire Resistance
-  4: Potion of Poison
-  5: Potion of Healing
-  6: Potion of Night Vision
-  7: Clear Potion
-  8: Potion of Weakness
-  9: Potion of Strength
-  10: Potion of Slowness
-  11: Diffuse Potion
-  12: Potion of Harming
-  13: Potion of Water Breathing
-  14: Potion of Invisibility
-  15: Thin Potion
+  8192: Mundane Potion
+  8193: Potion of Regeneration (0:45)
+  8257: Potion of Regeneration (2:00)
+  8225: Potion of Regeneration II (0:22)
+  8289: Potion of Regeneration II (1:00)
+  8194: Potion of Swiftness (3:00)
+  8258: Potion of Swiftness (8:00)
+  8226: Potion of Swiftness II (1:30)
+  8195: Potion of Fire Resistance (3:00)
+  8259: Potion of Fire Resistance (8:00)
+  8196: Potion of Poison (0:45)
+  8260: Potion of Poison (2:00)
+  8228: Potion of Poison II (0:22)
+  8292: Potion of Poison II (1:00)
+  8197: Potion of Healing
+  8229: Potion of Healing II
+  8198: Potion of Night Vision (3:00)
+  8262: Potion of Night Vision (8:00)
+  8200: Potion of Weakness (1:30)
+  8264: Potion of Weakness (4:00)
+  8201: Potion of Strength (3:00)
+  8265: Potion of Strength (8:00)
+  8233: Potion of Strength II (1:30)
+  8297: Potion of Strength II (4:00)
+  8202: Potion of Slowness (1:30)
+  8266: Potion of Slowness (4:00)
+  8204: Potion of Harming
+  8236: Potion of Harming II
+  8205: Potion of Water Breathing (3:00)
+  8269: Potion of Water Breathing (8:00)
+  8206: Potion of Invisibility (3:00)
+  8270: Potion of Invisibility (8:00)
+  8203: Diffuse Potion
   16: Awkward Potion
-  17: Potion of Regeneration
-  18: Potion of Swiftness
-  19: Potion of Fire Resistance
-  20: Potion of Poison
-  21: Potion of Healing
-  22: Bungling Potion
-  23: Bungling Potion
-  24: Potion of Weakness
-  25: Potion of Strength
-  26: Potion of Slowness
-  27: Smooth Potion
-  28: Potion of Harming
-  29: Suave Potion
-  30: Debonair Potion
-  31: Debonair Potion
-  32: Thick Potion
-  33: Potion of Regeneration II
-  34: Potion of Swiftness II
-  35: Potion of Fire Resistance
-  36: Potion of Poison II
-  37: Potion of Healing II
-  38: Charming Potion
-  39: Charming Potion
-  40: Potion of Weakness
-  41: Potion of Strength II
-  42: Potion of Slowness
-  43: Refined Potion
-  44: Potion of Harming II
-  45: Potion of Water Breathing
-  46: Sparkling Potion
-  47: Sparkling Potion
-  48: Potent Potion
-  49: Potion of Regeneration II
-  50: Potion of Swiftness II
-  51: Potion of Fire Resistance
-  52: Potion of Poison II
-  53: Potion of Healing II
-  54: Potion of Night Vision
-  55: Rank Potion
-  56: Potion of Weakness
-  57: Potion of Strength II
-  58: Potion of Slowness
-  59: Acrid Potion
-  60: Potion of Harming II
-  61: Gross Potion
-  62: Potion of Invisibility
-  63: Stinky Potion
 GLASS_BOTTLE:
   0: Glass Bottle
 SPIDER_EYE:

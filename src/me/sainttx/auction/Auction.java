@@ -1,326 +1,183 @@
 package me.sainttx.auction;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.HashMap;
 import java.util.UUID;
 
-import net.milkbowl.vault.economy.Economy;
+import lombok.Getter;
+import lombok.Setter;
 
 import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.RegisteredServiceProvider;
-import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
 
-public class Auction extends JavaPlugin implements Listener {
-
-    private static Auction auction;
-    private Messages messages;
+public class Auction {
+    private AuctionPlugin plugin;
     private AuctionManager manager;
     private AuctionUtil autil;
+    private Messages messager;
 
-    public static Economy economy = null;
+    private boolean taxable = false;
 
-    private final File off = new File(getDataFolder(), "save.yml");
-    private YamlConfiguration logoff;
+    private @Getter UUID owner; // The person who started the auction
+    private @Getter @Setter UUID winning; // Current top bidder
 
-    private static HashMap<String, ItemStack> loggedoff = new HashMap<String, ItemStack>();
+    private ItemStack item; // The item being auctioned
+    private @Getter int numItems; // Amount in the ItemStack
+    private @Getter double autoWin; // The autowin (if set)
+    private @Getter @Setter double topBid; // Current top bidder
 
-    @Override
-    public void onEnable() 
-    {
-        Bukkit.getPluginManager().registerEvents(this, this);
+    private int auctionTimer;
+    private @Getter int timeLeft;
 
-        auction = this;
-        manager = AuctionManager.getAuctionManager();
-        autil = new AuctionUtil();
+    private final int[] times = {45, 30, 10, 3, 2, 1}; // Countdown time to announce
 
-        loadConfig();
-        loadSaved();
+    public Auction(AuctionPlugin plugin, Player player, int numItems, double startingAmount, double autoWin) throws Exception {
+        this.plugin = plugin;
+        this.owner = player.getUniqueId();
+        this.numItems = numItems;
+        this.item = player.getItemInHand().clone();
+        this.item.setAmount(numItems);
+        this.topBid = startingAmount;
+        this.timeLeft = plugin.getDefaultAuctionTime();
+        this.autoWin = autoWin;
+        this.manager = AuctionManager.getAuctionManager();
+        this.autil = new AuctionUtil();
+        this.messager = Messages.getMessager();
 
-        setupEconomy();
+        if (autoWin < topBid + plugin.getMinBidIncrement() && autoWin != -1) {
+            this.autoWin = topBid + plugin.getMinBidIncrement();
+        }
 
-        getCommand("auction");
-        getCommand("bid");
+        validAuction(player);
     }
 
-    @Override
-    public void onDisable() 
-    {
-        manager.endAllAuctions();
-
-        try 
-        {
-            if (!off.exists())
-                off.createNewFile();
-            
-            logoff.save(off);
-            saveConfig();
-            messages.save();
-        } catch (IOException e) { }
+    public ItemStack getItem() {
+        return item.clone();
     }
 
-    public static Auction getPlugin() {
-        return auction;
+    public double getCurrentTax() {
+        int tax = plugin.getTaxPercentage();
+        return (topBid * tax) / 100;
     }
 
-    public void reload() {
-        reloadConfig();
-        messages = Messages.getMessager();
-        manager = AuctionManager.getAuctionManager();
+    public boolean hasBids() {
+        return winning != null;
     }
 
-    public YamlConfiguration getLogOff() {
-        return logoff;
+    public String getTime() {
+        return autil.getFormattedTime(timeLeft);
     }
 
-    public void save(UUID uuid, ItemStack is) { 
-        logoff.set(uuid.toString(), is);
-        loggedoff.put(uuid.toString(), is);
-        
-        try {
-            logoff.save(off);
-        } catch (IOException e) { }
+    public void addTime(int time) {
+        timeLeft += time;
     }
 
-    public void loadSaved() {
-        for (String string : logoff.getKeys(false)) {
-            ItemStack is = logoff.getItemStack(string);
-            loggedoff.put(string, is);
+    public void setTaxable(boolean taxable) {
+        this.taxable = taxable;
+    }
+
+    public void start() { // TODO: Check this 
+        auctionTimer = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, new AuctionTimer(this), 0L, 20L);
+        messager.messageListeningAll(this, "auction-start", true); 
+        messager.messageListeningAll(this, "auction-start-price", true);
+
+        if (autoWin != -1) {
+            messager.messageListeningAll(this, "auction-start-autowin", true);
         }
     }
 
-    private void loadConfig() 
-    {
-        saveDefaultConfig();
-        getConfig().options().copyDefaults(true);
-        File names = new File(getDataFolder(), "items.yml");
-        
-        if (!names.exists()) {
-            saveResource("items.yml", false);
-        }
-        if (!off.exists()) {
-            try {
-                off.createNewFile();
-            } catch (IOException e) {
-                e.printStackTrace();
+    @SuppressWarnings("static-access")
+    public void end() {
+        Bukkit.getScheduler().cancelTask(auctionTimer);
+
+        Bukkit.getScheduler().scheduleSyncDelayedTask(AuctionPlugin.getPlugin(), new Runnable() {
+            @Override
+            public void run() {
+                AuctionManager.getAuctionManager().setCanAuction(true);
             }
-        } 
-        this.logoff = YamlConfiguration.loadConfiguration(off);
-        messages = Messages.getMessager();
-    }
+        }, 30L);
 
-    private boolean setupEconomy() {
-        RegisteredServiceProvider<Economy> economyProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);
-        if (economyProvider != null) {
-            economy = economyProvider.getProvider();
-        }
-        return (economy != null);
-    }
+        //Player owner = Bukkit.getPlayer(this.owner);
+        OfflinePlayer owner = Bukkit.getOfflinePlayer(this.owner);
 
-    @EventHandler
-    public void onJoin(PlayerJoinEvent event) {
-        Player player = event.getPlayer();
-        ItemStack saved = loggedoff.get(player.getUniqueId().toString());
-        if (saved != null) {
-            autil.giveItem(player, saved, "saved-item-return");
-            loggedoff.remove(player.getUniqueId().toString());
-            logoff.set(player.getUniqueId().toString(), null);
-            try {
-                logoff.save(off);
-            } catch (IOException e) {
-                e.printStackTrace();
+        if (winning == null) {
+            messager.messageListeningAll(this, "auction-end-no-bidders", true);
+            if (!owner.isOnline()) {
+                System.out.print("[Auction] Saving items of offline player " + owner.getName());
+                plugin.save(this.owner, item);
+            } else {
+                autil.giveItem((Player) owner, item, "nobidder-return"); // return items to owner
             }
-        }
-    }
-
-    @Override
-    public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) 
-    {
-        String username = sender.getName();
-        String cmdLabel = cmd.getLabel().toLowerCase();
-
-        if (cmdLabel.equals("bid") && sender instanceof Player) 
-        {    
-            Player player = (Player) sender;
-
-            if (!sender.hasPermission("auction.bid")) 
-                messages.sendText(sender, "insufficient-permissions", true);
-
-            else if (args.length == 0 && getConfig().getBoolean("allow-autobid")) 
-            {
-                IAuction auction = manager.getAuctionInWorld(player);
-
-                if (auction == null) 
-                    messages.sendText(sender, "fail-bid-no-auction", true);
-                else 
-                    manager.prepareBid(player, (int) (auction.getTopBid() + auction.getIncrement())); 
-            } 
-            else if (args.length == 1)
-                manager.prepareBid(player, args[0]);
-            else
-                messages.sendText(sender, "fail-bid-syntax", true);
-            return false;
+            manager.killAuction();
+            return;
         }
 
-        if (args.length == 0)
-            messages.sendMenu(sender);
+        OfflinePlayer winner = Bukkit.getOfflinePlayer(winning);
+        if (winner.isOnline()) {
+            Player winner1 = (Player) winner;
+            autil.giveItem(winner1, item);
+            messager.sendText(winner1, this, "auction-winner", true);
+        } else {
+            System.out.print("[Auction] Saving items of offline player " + owner.getName());
+            plugin.save(winning, item);
+        }
 
-        else {
-            String subCommand = args[0].toLowerCase();
-
-            if (!sender.hasPermission("auction." + subCommand)) {
-                messages.sendText(sender, "insufficient-permissions", true);
-                return false;
+        double winnings = topBid;
+        if (taxable) {
+            winnings -= getCurrentTax();
+        }
+        plugin.economy.depositPlayer(owner, winnings);
+        messager.messageListeningAll(this, "auction-end-broadcast", true);
+        if (owner.isOnline()) {
+            Player player = (Player) owner;
+            messager.sendText(player, this, "auction-ended", true);
+            if (taxable) {
+                messager.sendText(player, this, "auction-end-tax", true);
             }
+        }
+        manager.killAuction();
+    }
 
-            if (subCommand.equals("reload")) 
-            {
-                messages.sendText(sender, "reload", true);
-                reloadConfig();
-                loadConfig();
-                messages.reload();
-            } 
+    public class AuctionTimer extends BukkitRunnable {
 
-            else if (subCommand.equals("disable")) 
-            {
-                if (!manager.areAuctionsDisabled()) {
-                    manager.setDisabled(true);
-                    messages.messageListeningAll(messages.getMessageFile().getString("broadcast-disable"));
-                } else
-                    messages.sendText(sender, "already-disabled", true);
-            }
+        private Auction auction;
 
-            else if (subCommand.equals("enable"))
-            {
-                if (manager.areAuctionsDisabled()) {
-                    manager.setDisabled(false);
-                    messages.messageListeningAll(messages.getMessageFile().getString("broadcast-enable"));
-                } else
-                    messages.sendText(sender, "already-enabled", true);
-            } else
-                if (sender instanceof ConsoleCommandSender) {
-                    getLogger().info("Console can only use reload, disable, and enable");
-                    return false;
-                }
+        public AuctionTimer(Auction auction) {
+            this.auction = auction;
+        }
 
-            Player player = (Player) sender;
-
-            if (subCommand.equals("start")) 
-            {
-                if (!messages.isIgnoring(username))
-                    if (player.getGameMode() == GameMode.CREATIVE && !getConfig().getBoolean("allow-creative") && !player.hasPermission("auction.creative")) {
-                        messages.sendText(sender, "fail-start-creative", true);
-                        return false;
+        @Override
+        public void run() {
+            if (timeLeft <= 0) {
+                end();
+            } else {
+                --timeLeft;
+                for (int i : times) {
+                    if (i == timeLeft) {
+                        messager.messageListeningAll(auction, "auction-timer", true);
+                        //plugin.messageListening(plugin.getMessageFormatted("auction-timer"));
+                        break;
                     }
-                    else
-                        manager.prepareAuction(player, args);
-                else
-                    messages.sendText(sender, "fail-start-ignoring", true);
-            }
-            
-            else if (subCommand.equals("bid")) 
-            {
-                if (args.length == 2) {
-                    manager.prepareBid(player, args[1]); 
-                } else {
-                    messages.sendText(sender, "fail-bid-syntax", true);
-                }
-            } 
-            
-            else if (subCommand.equals("info")) 
-            {
-                manager.sendAuctionInfo(player);
-            } 
-            
-            else if (subCommand.equals("end")) 
-            {
-                manager.end(player);
-            } 
-            
-            else if (subCommand.equals("ignore") || subCommand.equals("quiet")) 
-            {
-                if (!messages.isIgnoring(username)) {
-                    messages.addIgnoring(username);
-                    messages.sendText(sender, "ignoring-on", true);
-                } else {
-                    messages.removeIgnoring(username);
-                    messages.sendText(sender, "ignoring-off", true);
                 }
             }
         }
-        return false;
     }
 
-    public boolean isPerWorldAuctions() {
-        return getConfig().getBoolean("per-world-auctions", true);
-    }
-
-    public boolean getTellOtherWorldsStart() {
-        return getConfig().getBoolean("tell-other-worlds-auction-start", false);
-    }
-
-    public boolean isLoggingAuctionsAllowed() {
-        return getConfig().getBoolean("log-auctions", false);
-    }
-
-    public boolean isAuctionEndingAllowed() {
-        return getConfig().getBoolean("allow-end", false);
-    }
-
-    public boolean isAutowinAllowed() {
-        return getConfig().getBoolean("allow-autowin", false);
-    }
-
-    public boolean isAutobidAllowed() {
-        return getConfig().getBoolean("allow-autobid", false);
-    }
-    public boolean isCreativeAllowed() {
-        return getConfig().getBoolean("allow-creative", false);
-    }
-
-    public boolean isAntiSnipingAllowed() {
-        return getConfig().getBoolean("anti-snipe", false);
-    }
-
-    public int getAntiSnipingPeriod() {
-        return getConfig().getInt("anti-snipe-period", 3);
-    }
-
-    public double getIncrement() {
-        return getConfig().getDouble("minimum-bid-increment", 1D);
-    }
-
-    public int getTimeToAdd() {
-        return getConfig().getInt("anti-snipe-add-seconds", 5);
-    }
-
-    public int getAuctionStartTime() {
-        return getConfig().getInt("auction-time", 30);
-    }
-
-    public int getAuctionStartFee() {
-        return getConfig().getInt("auction-start-fee", 0);
-    }
-
-    public int getAuctionTaxPercentage() {
-        return getConfig().getInt("auction-tax-percentage", 0);
-    }
-
-    public int getMinimumStartingPrice() {
-        return getConfig().getInt("min-start-price", 0);
-    }
-
-    public int getMaximumStartingPrice() {
-        return getConfig().getInt("max-start-price", Integer.MAX_VALUE);
+    /* Verifies that this auction has valid settings */
+    private void validAuction(Player player) throws Exception {
+        if (item.getType() == Material.AIR) {
+            throw new Exception("fail-start-handempty");
+        }
+        if (item.getType() == Material.FIREWORK || item.getType() == Material.FIREWORK_CHARGE || AuctionManager.getBannedMaterials().contains(item.getType())) {
+            throw new Exception("unsupported-item");
+        }
+        if (autil.searchInventory(player, item, numItems)) { // Checks if they have enough of the item
+            player.getInventory().removeItem(item);
+        } else {
+            throw new Exception("fail-start-not-enough-items");
+        }
     }
 }
+

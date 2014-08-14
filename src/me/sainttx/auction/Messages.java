@@ -14,7 +14,6 @@ import mkremins.fanciful.FancyMessage;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -23,7 +22,7 @@ import org.bukkit.inventory.ItemStack;
 public class Messages {
 
     private static Messages messages = null;
-    private Auction plugin;
+    private AuctionPlugin plugin;
     private YamlConfiguration messageFile;
     private YamlConfiguration names;
     private File log;
@@ -31,7 +30,7 @@ public class Messages {
     private ArrayList<String> ignoring = new  ArrayList<String>();
 
     private Messages() {
-        plugin = Auction.getPlugin();
+        plugin = AuctionPlugin.getPlugin();
         loadFile();
     }
 
@@ -45,7 +44,7 @@ public class Messages {
     
     public void save() {
         try {
-            File messagesFile = new File(Auction.getPlugin().getDataFolder(), "messages.yml");
+            File messagesFile = new File(AuctionPlugin.getPlugin().getDataFolder(), "messages.yml");
             messageFile.save(messagesFile);
         } catch (IOException ex1) {
             
@@ -53,29 +52,23 @@ public class Messages {
     }
 
     private void loadFile() {
-        File messagesFile = new File(Auction.getPlugin().getDataFolder(), "messages.yml");
-        File namesFile = new File(Auction.getPlugin().getDataFolder(), "items.yml");
-        log = new File(Auction.getPlugin().getDataFolder(), "log.txt");
+        File messagesFile = new File(AuctionPlugin.getPlugin().getDataFolder(), "messages.yml");
+        File namesFile = new File(AuctionPlugin.getPlugin().getDataFolder(), "items.yml");
+        log = new File(AuctionPlugin.getPlugin().getDataFolder(), "log.txt");
         if (!messagesFile.exists()) {
-            Auction.getPlugin().saveResource("messages.yml", true);
+            AuctionPlugin.getPlugin().saveResource("messages.yml", true);
         }
         if (!namesFile.exists()) {
-            Auction.getPlugin().saveResource("items.yml", false);
+            AuctionPlugin.getPlugin().saveResource("items.yml", false);
         }
         if (!log.exists()) {
             try {
                 log.createNewFile();
             } catch (IOException ex1) {
-
+                
             }
         }
         messageFile = YamlConfiguration.loadConfiguration(messagesFile);
-        InputStream messageStream = Auction.getPlugin().getResource("messages.yml");
-        if (messageStream != null) {
-            YamlConfiguration defMessages = YamlConfiguration.loadConfiguration(messageStream);
-            messageFile.setDefaults(defMessages);
-        }
-        
         names = YamlConfiguration.loadConfiguration(namesFile);
     }
 
@@ -95,79 +88,31 @@ public class Messages {
         ignoring.remove(name);
     }
 
-    public void sendText(CommandSender sender, String text, boolean configentry) {
-        if (configentry) {
-            sender.sendMessage(color(getString(text)));
-        } else {
-            sender.sendMessage(color(text));
-        }
+    public void sendText(CommandSender sender, String text, boolean configEntry) {
+        sender.sendMessage(color(configEntry ? getString(text) : text));
     }
 
     public void sendText(Player player, String text, boolean configentry) {
-        sendText((CommandSender) player, text, configentry);
+        sendText(player, text, configentry);
     }
 
-    public void sendText(Player player, IAuction auction, String text, boolean configentry) {
-        if (configentry) {
-            getFancyMessage(auction, getString(text), false).send(player);
-        } else {
-            getFancyMessage(auction, text, configentry).send(player);
-        }
+    public void sendText(Player player, Auction auction, String text, boolean configEntry) {
+        createFancyMessage(auction, configEntry ? getString(text) : text).send(player);
     }
     
     public String color(String text) {
         return ChatColor.translateAlternateColorCodes('&', text);
     }
+
+    public void messageListeningAll(Auction auction, String message, boolean configEntry) {
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            if (!ignoring.contains(player.getName())) {
+                createFancyMessage(auction, configEntry ? getString(message) : message).send(player);
+            }
+        }
+    }
     
-    public void messageListeningAll(String message) {
-        for (Player player : Bukkit.getOnlinePlayers()) {
-            if (!ignoring.contains(player.getName())) {
-                player.sendMessage(color(message));
-            }
-        }
-    }
-
-    public void messageListeningAll(IAuction auction, String message, boolean configentry, boolean world) {
-        if (world && plugin.isPerWorldAuctions()) {
-            messageListeningWorld(auction, message, configentry);
-            return;
-        }
-        for (Player player : Bukkit.getOnlinePlayers()) {
-            if (!ignoring.contains(player.getName())) {
-                getFancyMessage(auction, message, configentry).send(player);
-            }
-        }
-    }
-
-    public void messageListeningAllOther(IAuction auction, String message, boolean configentry) {
-        for (Player player : Bukkit.getOnlinePlayers()) {
-            if (!player.getWorld().equals(auction.getWorld()) && !ignoring.contains(player.getName())) {
-                getFancyMessage(auction, message, configentry).send(player);
-            }
-        }
-    }
-
-    public void messageListeningWorld(IAuction auction, String message, boolean configentry) {
-        World world = auction.getWorld();
-        if (world == null) {
-            return;
-        }
-        for (Player player : world.getPlayers()) {
-            if (!ignoring.contains(player.getName())) {
-                getFancyMessage(auction, message, configentry).send(player);;
-            }
-        }
-    }
-
-    public FancyMessage getFancyMessage(IAuction auction, String text, boolean configentry) {
-        String message = text;
-        if (configentry) {
-            message = getString(text);
-        }
-        return createFancyMessage(auction, message);
-    }
-
-    private FancyMessage createFancyMessage(IAuction auction, String message) {
+    public FancyMessage createFancyMessage(Auction auction, String message) {
         FancyMessage fancyMessage = new FancyMessage(Messages.getMessager().color("&f"));
         String fancyText = replace(auction, message);
         ItemStack item = auction.getItem();
@@ -176,7 +121,6 @@ public class Messages {
             String[] split = fancyText.split("%i");
             if (split.length == 1) { // %i was only at the end
                 fancyMessage.then(split[0]).then(getItemName(item)).itemTooltip(item).color(getIColor("color"));
-                //message0.color(getIColor("color"));
                 if (!getString("%i.style").equals("none")) {
                     fancyMessage.style(getIColor("style"));
                 }
@@ -185,7 +129,6 @@ public class Messages {
                 if (fancyText.endsWith("%i")) {
                     for (int i = 0 ; i < split.length ; i++) {
                         fancyMessage.then(split[i]).then(getItemName(item)).itemTooltip(item).color(getIColor("color"));
-                        //message0.color(getIColor("color"));
                         if (!getString("%i.style").equals("none")) {
                             fancyMessage.style(getIColor("style"));
                         }
@@ -193,7 +136,6 @@ public class Messages {
                 } else {
                     for (int i = 0 ; i < split.length - 1 ; i++) {
                         fancyMessage.then(split[i]).then(getItemName(item)).itemTooltip(item).color(getIColor("color"));
-                        //message0.color(getIColor("color"));
                         if (!getString("%i.style").equals("none")) {
                             fancyMessage.style(getIColor("style"));
                         }
@@ -225,22 +167,21 @@ public class Messages {
         return ChatColor.getByChar(getString("%i." + type));       
     }
 
-    private String replace(IAuction auction, String message) {
+    private String replace(Auction auction, String message) {
         String ret = message;
         if (auction != null) {
             ret = ret.replaceAll("%t", auction.getTime())
                     .replaceAll("%b", NumberFormat.getInstance().format(auction.getTopBid()))
                     .replaceAll("%p", UUIDtoName(auction.getOwner()))
                     .replaceAll("%a", Integer.toString(auction.getNumItems()))
-                    .replaceAll("%A", NumberFormat.getInstance().format(auction.getAutoWin()))
-                    .replaceAll("%W", auction.getWorld().getName());
+                    .replaceAll("%A", NumberFormat.getInstance().format(auction.getAutoWin()));
             if (auction.hasBids()) {
                 ret = ret.replaceAll("%T", Double.toString(auction.getCurrentTax()))
                         .replaceAll("%w", UUIDtoName(auction.getWinning()));
             }
         }
 
-        if (plugin.isLoggingAuctionsAllowed()) {
+        if (plugin.isLogging()) {
             log(ret.replaceAll("%i", auction.getItem().getType().toString()));
         }
 
