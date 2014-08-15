@@ -3,11 +3,6 @@
 # Message users a simple notice of auctions in other worlds
 # will not show bids or end, only start
 auction-time: 30
-per-world-auctions: false
-tell-other-worlds-auction-start: true
-
-# Logging auctions
-log-auctions: false
 
 # Allow/disallow the 
 allow-autowin: true
