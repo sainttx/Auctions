@@ -1,7 +1,6 @@
 package me.sainttx.auction;
 
 import java.io.File;
-import java.io.IOException;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Iterator;

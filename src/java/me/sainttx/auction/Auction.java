@@ -7,7 +7,6 @@ import lombok.Setter;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -99,7 +98,7 @@ public class Auction {
     public String getTime() {
         return AuctionUtil.getFormattedTime(timeLeft);
     }
-    
+
     /**
      * Sets whether or not the auction can be taxed
      * 
@@ -129,6 +128,7 @@ public class Auction {
     public void end() {
         Bukkit.getScheduler().cancelTask(auctionTimer);
 
+        // Delay before a new auction can be made... Prevents auction scamming
         Bukkit.getScheduler().scheduleSyncDelayedTask(AuctionPlugin.getPlugin(), new Runnable() {
             @Override
             public void run() {
@@ -136,44 +136,42 @@ public class Auction {
             }
         }, 30L);
 
-        //Player owner = Bukkit.getPlayer(this.owner);
-        OfflinePlayer owner = Bukkit.getOfflinePlayer(this.owner);
+        Player owner = Bukkit.getPlayer(this.owner);
 
-        if (winning == null) {
-            messager.messageListeningAll(this, "auction-end-no-bidders", true);
-            if (!owner.isOnline()) {
-                System.out.print("[Auction] Saving items of offline player " + owner.getName());
-                plugin.save(this.owner, item);
+        if (winning != null) { // Somebody won the auction
+            Player winner = Bukkit.getPlayer(winning);
+            
+            if (winner != null) { // The winner is online
+                AuctionUtil.giveItem(winner, item);
+                messager.sendText(winner, this, "auction-winner", true);
             } else {
+                System.out.print("[Auction] Saving items of offline player " + this.winning);
+                plugin.save(winning, item);
+            }
+
+            double winnings = topBid - (taxable ? getCurrentTax() : 0);
+            plugin.economy.depositPlayer(owner, winnings);
+            
+            messager.messageListeningAll(this, "auction-end-broadcast", true);
+            if (owner != null) { // The owner is online
+                messager.sendText(owner, this, "auction-ended", true);
+                if (taxable) {
+                    messager.sendText(owner, this, "auction-end-tax", true);
+                }
+            }
+        }
+        
+        else { // No winner
+            messager.messageListeningAll(this, "auction-end-no-bidders", true);
+            if (owner != null) {
                 AuctionUtil.giveItem((Player) owner, item, "nobidder-return"); // return items to owner
+            } else {
+                System.out.print("[Auction] Saving items of offline player " + this.owner);
+                plugin.save(this.owner, item);
             }
-            manager.killAuction();
-            return;
-        }
+        } 
 
-        OfflinePlayer winner = Bukkit.getOfflinePlayer(winning);
-        if (winner.isOnline()) {
-            Player winner1 = (Player) winner;
-            AuctionUtil.giveItem(winner1, item);
-            messager.sendText(winner1, this, "auction-winner", true);
-        } else {
-            System.out.print("[Auction] Saving items of offline player " + owner.getName());
-            plugin.save(winning, item);
-        }
-
-        double winnings = topBid;
-        if (taxable) {
-            winnings -= getCurrentTax();
-        }
-        plugin.economy.depositPlayer(owner, winnings);
-        messager.messageListeningAll(this, "auction-end-broadcast", true);
-        if (owner.isOnline()) {
-            Player player = (Player) owner;
-            messager.sendText(player, this, "auction-ended", true);
-            if (taxable) {
-                messager.sendText(player, this, "auction-end-tax", true);
-            }
-        }
+        
         manager.killAuction();
     }
 
@@ -194,7 +192,6 @@ public class Auction {
                 for (int i : times) {
                     if (i == timeLeft) {
                         messager.messageListeningAll(auction, "auction-timer", true);
-                        //plugin.messageListening(plugin.getMessageFormatted("auction-timer"));
                         break;
                     }
                 }
