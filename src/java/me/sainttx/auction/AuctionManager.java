@@ -42,7 +42,7 @@ public class AuctionManager {
         return am == null ? am = new AuctionManager() : am;
     }
 
-    
+
     @SuppressWarnings("unchecked")
     /**
      * Returns a deep copy of banned materials
@@ -217,12 +217,14 @@ public class AuctionManager {
         }
 
         else {
-            Player oldWinner = Bukkit.getPlayer(currentAuction.getWinning());
-            if (oldWinner != null) {
-                AuctionPlugin.economy.depositPlayer(oldWinner, currentAuction.getTopBid());
-            } else {
-                OfflinePlayer offline = Bukkit.getOfflinePlayer(currentAuction.getWinning());
-                AuctionPlugin.economy.depositPlayer(offline, currentAuction.getTopBid());
+            if (currentAuction.getWinning() != null) {
+                Player oldWinner = Bukkit.getPlayer(currentAuction.getWinning());
+                if (oldWinner != null) {
+                    AuctionPlugin.economy.depositPlayer(oldWinner, currentAuction.getTopBid());
+                } else {
+                    OfflinePlayer offline = Bukkit.getOfflinePlayer(currentAuction.getWinning());
+                    AuctionPlugin.economy.depositPlayer(offline, currentAuction.getTopBid());
+                }
             }
 
             placeBid(player, amount);

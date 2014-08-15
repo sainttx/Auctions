@@ -71,15 +71,15 @@ public class AuctionUtil {
      * @return True if the inventory can fit the item, false otherwise
      */
     public static boolean hasSpace(Inventory inventory, ItemStack itemstack) {
-        int total = 0;
+        int totalFree = 0;
         for (ItemStack is : inventory.getContents()) {
             if (is == null) {
-                total += itemstack.getMaxStackSize();
+                totalFree += itemstack.getMaxStackSize();
             } else if (is.isSimilar(itemstack)) {
-                total += itemstack.getMaxStackSize() - is.getAmount();
+                totalFree += is.getAmount() > itemstack.getMaxStackSize() ? 0 : itemstack.getMaxStackSize() - is.getAmount();
             }
         }
-        return total >= itemstack.getAmount();
+        return totalFree >= itemstack.getAmount();
     }
     
     /**
