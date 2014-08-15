@@ -1,10 +1,7 @@
 package me.sainttx.auction;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -37,18 +34,14 @@ public class Messages {
     public static Messages getMessager() {
         return messages == null ? messages = new Messages() : messages;
     }
-    
+
     public YamlConfiguration getMessageFile() {
         return messageFile;
     }
-    
+
     public void save() {
-        try {
-            File messagesFile = new File(AuctionPlugin.getPlugin().getDataFolder(), "messages.yml");
-            messageFile.save(messagesFile);
-        } catch (IOException ex1) {
-            
-        }
+        File messagesFile = new File(AuctionPlugin.getPlugin().getDataFolder(), "messages.yml");            
+        plugin.saveFile(messageFile, messagesFile);
     }
 
     private void loadFile() {
@@ -65,7 +58,7 @@ public class Messages {
             try {
                 log.createNewFile();
             } catch (IOException ex1) {
-                
+
             }
         }
         messageFile = YamlConfiguration.loadConfiguration(messagesFile);
@@ -89,60 +82,47 @@ public class Messages {
     }
 
     public void sendText(CommandSender sender, String text, boolean configEntry) {
-        sender.sendMessage(color(configEntry ? getString(text) : text));
-    }
-
-    public void sendText(Player player, String text, boolean configentry) {
-        sendText(player, text, configentry);
+        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', (configEntry ? getString(text) : text)));
     }
 
     public void sendText(Player player, Auction auction, String text, boolean configEntry) {
         createFancyMessage(auction, configEntry ? getString(text) : text).send(player);
     }
-    
-    public String color(String text) {
-        return ChatColor.translateAlternateColorCodes('&', text);
-    }
 
+    @SuppressWarnings("deprecation")
     public void messageListeningAll(Auction auction, String message, boolean configEntry) {
+        FancyMessage msg = createFancyMessage(auction, configEntry ? getString(message) : message);
         for (Player player : Bukkit.getOnlinePlayers()) {
             if (!ignoring.contains(player.getName())) {
-                createFancyMessage(auction, configEntry ? getString(message) : message).send(player);
+                msg.send(player);
             }
         }
     }
-    
+
     public FancyMessage createFancyMessage(Auction auction, String message) {
-        FancyMessage fancyMessage = new FancyMessage(Messages.getMessager().color("&f"));
+        FancyMessage fancyMessage = new FancyMessage(ChatColor.WHITE.toString());
         String fancyText = replace(auction, message);
         ItemStack item = auction.getItem();
 
         if (fancyText.contains("%i")) {
-            String[] split = fancyText.split("%i");
-            if (split.length == 1) { // %i was only at the end
-                fancyMessage.then(split[0]).then(getItemName(item)).itemTooltip(item).color(getIColor("color"));
-                if (!getString("%i.style").equals("none")) {
-                    fancyMessage.style(getIColor("style"));
-                }
-            } else {
-                // more than 1 %i
-                if (fancyText.endsWith("%i")) {
-                    for (int i = 0 ; i < split.length ; i++) {
-                        fancyMessage.then(split[i]).then(getItemName(item)).itemTooltip(item).color(getIColor("color"));
-                        if (!getString("%i.style").equals("none")) {
-                            fancyMessage.style(getIColor("style"));
-                        }
+            String[] split = fancyText.split(" ");
+            ChatColor last = ChatColor.WHITE;
+            for (String word : split) {
+                word = ChatColor.translateAlternateColorCodes('&', word);
+                String lastColors = ChatColor.getLastColors(word);
+                last = ChatColor.getByChar(lastColors.isEmpty() || lastColors.equals("") ? last.getChar() : lastColors.charAt(1));
+                
+                if (word.equals("%i")) {
+                    ChatColor color = getIColor("color");
+                    fancyMessage.then(getItemName(item)).itemTooltip(item).color(color);
+                    if (!getString("%i.style").equals("none")) {
+                        fancyMessage.style(getIColor("style"));
                     }
                 } else {
-                    for (int i = 0 ; i < split.length - 1 ; i++) {
-                        fancyMessage.then(split[i]).then(getItemName(item)).itemTooltip(item).color(getIColor("color"));
-                        if (!getString("%i.style").equals("none")) {
-                            fancyMessage.style(getIColor("style"));
-                        }
-                    }
-                    fancyMessage.then(split[split.length - 1]);
+                    fancyMessage.then(word).color(last);
                 }
-            }           
+                fancyMessage.then(" ");
+            }   
         } else {
             return fancyMessage.then(fancyText);
         }
@@ -164,7 +144,9 @@ public class Messages {
     }
 
     private ChatColor getIColor(String type) {
-        return ChatColor.getByChar(getString("%i." + type));       
+        ChatColor c = ChatColor.getByChar(getString("%i." + type));
+        
+        return c == null ? ChatColor.WHITE : c;       
     }
 
     private String replace(Auction auction, String message) {
@@ -180,33 +162,13 @@ public class Messages {
                         .replaceAll("%w", UUIDtoName(auction.getWinning()));
             }
         }
-
-        if (plugin.isLogging()) {
-            log(ret.replaceAll("%i", auction.getItem().getType().toString()));
-        }
-
+        
         return ChatColor.translateAlternateColorCodes('&', ret);
     }
 
     public void sendMenu(CommandSender sender) {
         for (Iterator<String> info = messageFile.getStringList("auction-menu").iterator(); info.hasNext();) {
-            sender.sendMessage(color(info.next()));
-        }
-    }
-
-    private String last = "";
-    
-    public void log(String s) {
-        if (last.equals(s)) {
-            return;
-        }
-        last = s;
-        try {
-            log.setWritable(true);
-            BufferedWriter out = new BufferedWriter(new FileWriter(log.getAbsolutePath(), true));
-            out.append(color(s).replaceAll("[" + ChatColor.COLOR_CHAR + "&][.]", "") + "\n");
-            out.close();
-        } catch (IOException e) {
+            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', info.next()));
         }
     }
 

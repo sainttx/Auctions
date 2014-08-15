@@ -31,7 +31,7 @@ public class Auction {
     private int auctionTimer;
     private @Getter int timeLeft;
 
-    private final int[] times = {45, 30, 10, 3, 2, 1}; // Countdown time to announce
+    private final int[] times = {45, 30, 15, 10, 3, 2, 1}; // Countdown time to announce
 
     public Auction(AuctionPlugin plugin, Player player, int numItems, double startingAmount, double autoWin) throws Exception {
         this.plugin = plugin;

@@ -17,11 +17,12 @@ public class AuctionUtil {
     public void giveItem(Player player, ItemStack itemstack, String... messageentry) {
         World world = player.getWorld();
         boolean dropped = false;
-        int maxsize = itemstack.getMaxStackSize();
-        int amount = itemstack.getAmount();
-        int stacks = amount / maxsize;
-        int remaining = amount % maxsize;
+        int maxsize     = itemstack.getMaxStackSize();
+        int amount      = itemstack.getAmount();
+        int stacks      = amount / maxsize;
+        int remaining   = amount % maxsize;
         ItemStack[] split = new ItemStack[1];
+        
         if (amount > maxsize) {
             split = new ItemStack[stacks + (remaining > 0 ? 1 : 0)];
             // ie. 70 stack can only be 64

@@ -1,9 +1,9 @@
 name: Auction
-version: 0.0.7
+version: 0.0.8
 description: An auctioning plugin
 author: SainttX
 
-main: me.sainttx.auction.Auction
+main: me.sainttx.auction.AuctionPlugin
 depend: [Vault]
 
 commands:
