@@ -847,7 +847,7 @@ POTION:
   16418: Splash Potion of Swiftness II
   16450: Extended Splash Potion of Swiftness
   16387: Splash Potion of Fire Resistance
-  16419: Splash Potion of Fire Resistance II
+  16419: Splash Potion of Fire Resistance
   16451: Extended Splash Potion of Fire Resistance
   16388: Splash Potion of Poison
   16420: Splash Potion of Poison II
@@ -856,7 +856,7 @@ POTION:
   16421: Splash Potion of Instant Health II
   16453: Splash Potion of Instant Health
   16390: Splash Potion of Night Vision
-  16422: Splash Potion of Night Vision II
+  16422: Splash Potion of Night Vision
   16454: Extended Splash Potion of Night Vision
   16392: Splash Potion of Weakness
   16424: Splash Potion of Weakness II
@@ -874,10 +874,10 @@ POTION:
   16428: Splash Potion of Harming II
   16460: Extended Splash Potion of Harming
   16397: Splash Potion of Water Breathing
-  16429: Splash Potion of Water Breathing II
+  16429: Splash Potion of Water Breathing
   16461: Extended Splash Potion of Water Breathing
   16398: Splash Potion of Invisibility
-  16430: Splash Potion of Invisibility II
+  16430: Splash Potion of Invisibility
   16462: Extended Splash Potion of Invisibility
 GLASS_BOTTLE:
   0: Glass Bottle

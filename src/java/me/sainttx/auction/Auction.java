@@ -39,22 +39,22 @@ public class Auction {
      * @param numItems The number of items being auctioned
      * @param startingAmount The starting amount specified by the player
      * @param autoWin The amount that will automatically end the auction
+     * 
      * @throws Exception If the player auctioned nothing, 
      *                   If the player auctioned a banned item,
      *                   If the player does not have enough items to auction
      */
     public Auction(AuctionPlugin plugin, Player player, int numItems, double startingAmount, double autoWin) throws Exception {
-        this.plugin = plugin;
-        this.owner = player.getUniqueId();
-        this.numItems = numItems;
-        this.item = player.getItemInHand().clone();
+        this.plugin     = plugin;
+        this.manager    = AuctionManager.getAuctionManager();
+        this.messager   = Messages.getMessager();
+        this.owner      = player.getUniqueId();
+        this.numItems   = numItems;
+        this.topBid     = startingAmount;
+        this.timeLeft   = plugin.getDefaultAuctionTime();
+        this.autoWin    = autoWin;
+        this.item       = player.getItemInHand().clone();
         this.item.setAmount(numItems);
-        this.topBid = startingAmount;
-        this.timeLeft = plugin.getDefaultAuctionTime();
-        this.autoWin = autoWin;
-        this.manager = AuctionManager.getAuctionManager();
-        this.messager = Messages.getMessager();
-
         if (autoWin < topBid + plugin.getMinBidIncrement() && autoWin != -1) {
             this.autoWin = topBid + plugin.getMinBidIncrement();
         }
@@ -129,18 +129,20 @@ public class Auction {
         Bukkit.getScheduler().cancelTask(auctionTimer);
 
         // Delay before a new auction can be made... Prevents auction scamming
-        Bukkit.getScheduler().scheduleSyncDelayedTask(AuctionPlugin.getPlugin(), new Runnable() {
-            @Override
-            public void run() {
-                AuctionManager.getAuctionManager().setCanAuction(true);
-            }
-        }, 30L);
+        if (plugin.isEnabled()) {
+            Bukkit.getScheduler().scheduleSyncDelayedTask(AuctionPlugin.getPlugin(), new Runnable() {
+                @Override
+                public void run() {
+                    AuctionManager.getAuctionManager().setCanAuction(true);
+                }
+            }, 30L);
+        }
 
         Player owner = Bukkit.getPlayer(this.owner);
 
         if (winning != null) { // Somebody won the auction
             Player winner = Bukkit.getPlayer(winning);
-            
+
             if (winner != null) { // The winner is online
                 AuctionUtil.giveItem(winner, item);
                 messager.sendText(winner, this, "auction-winner", true);
@@ -151,7 +153,7 @@ public class Auction {
 
             double winnings = topBid - (taxable ? getCurrentTax() : 0);
             plugin.economy.depositPlayer(owner, winnings);
-            
+
             messager.messageListeningAll(this, "auction-end-broadcast", true);
             if (owner != null) { // The owner is online
                 messager.sendText(owner, this, "auction-ended", true);
@@ -160,7 +162,7 @@ public class Auction {
                 }
             }
         }
-        
+
         else { // No winner
             messager.messageListeningAll(this, "auction-end-no-bidders", true);
             if (owner != null) {
@@ -171,7 +173,6 @@ public class Auction {
             }
         } 
 
-        
         manager.killAuction();
     }
 

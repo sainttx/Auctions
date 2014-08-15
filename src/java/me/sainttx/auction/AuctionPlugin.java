@@ -80,11 +80,13 @@ public class AuctionPlugin extends JavaPlugin implements Listener {
 
     @Override
     public void onDisable() {
-        createFile(off);
-        saveFile(logoff, off);
         saveConfig();
         Messages.getMessager().save();
-        AuctionManager.getCurrentAuction().end();
+        if (AuctionManager.getCurrentAuction() != null) {
+            AuctionManager.getCurrentAuction().end();
+        }
+        createFile(off);
+        saveFile(logoff, off);
     }
 
     /**
