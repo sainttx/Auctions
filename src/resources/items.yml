@@ -804,6 +804,9 @@ GOLD_NUGGET:
 NETHER_STALK:
   0: Nether Wart
 POTION:
+  # Regular Potions
+  16: Awkward Potion
+  8203: Diffuse Potion
   8192: Mundane Potion
   8193: Potion of Regeneration (0:45)
   8257: Potion of Regeneration (2:00)
@@ -836,8 +839,46 @@ POTION:
   8269: Potion of Water Breathing (8:00)
   8206: Potion of Invisibility (3:00)
   8270: Potion of Invisibility (8:00)
-  8203: Diffuse Potion
-  16: Awkward Potion
+  # Splash Potions
+  16385: Splash Potion of Regeneration
+  16417: Splash Potion of Regeneration II
+  16449: Extended Splash Potion of Regeneration
+  16386: Splash Potion of Swiftness
+  16418: Splash Potion of Swiftness II
+  16450: Extended Splash Potion of Swiftness
+  16387: Splash Potion of Fire Resistance
+  16419: Splash Potion of Fire Resistance II
+  16451: Extended Splash Potion of Fire Resistance
+  16388: Splash Potion of Poison
+  16420: Splash Potion of Poison II
+  16452: Extended Splash Potion of Poison
+  16389: Splash Potion of Instant Health
+  16421: Splash Potion of Instant Health II
+  16453: Splash Potion of Instant Health
+  16390: Splash Potion of Night Vision
+  16422: Splash Potion of Night Vision II
+  16454: Extended Splash Potion of Night Vision
+  16392: Splash Potion of Weakness
+  16424: Splash Potion of Weakness II
+  16456: Extended Splash Potion of Weakness
+  16393: Splash Potion of Strength
+  16425: Splash Potion of Strength II
+  16457: Extended Splash Potion of Strength
+  16394: Splash Potion of Slowness
+  16426: Splash Potion of Slowness II
+  16458: Extended Splash Potion of Slowness
+  16395: Splash Potion of Leaping
+  16427: Splash Potion of Leaping II
+  16459: Extended Splash Potion of Leaping
+  16396: Splash Potion of Harming
+  16428: Splash Potion of Harming II
+  16460: Extended Splash Potion of Harming
+  16397: Splash Potion of Water Breathing
+  16429: Splash Potion of Water Breathing II
+  16461: Extended Splash Potion of Water Breathing
+  16398: Splash Potion of Invisibility
+  16430: Splash Potion of Invisibility II
+  16462: Extended Splash Potion of Invisibility
 GLASS_BOTTLE:
   0: Glass Bottle
 SPIDER_EYE:
