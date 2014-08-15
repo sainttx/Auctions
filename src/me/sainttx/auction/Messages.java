@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.UUID;
 
+import lombok.Getter;
 import mkremins.fanciful.FancyMessage;
 
 import org.bukkit.Bukkit;
@@ -19,77 +20,112 @@ import org.bukkit.inventory.ItemStack;
 public class Messages {
 
     private static Messages messages = null;
-    private AuctionPlugin plugin;
-    private YamlConfiguration messageFile;
+    private @Getter YamlConfiguration messageFile;
     private YamlConfiguration names;
-    private File log;
 
     private ArrayList<String> ignoring = new  ArrayList<String>();
 
+    /**
+     * Instantiates the messages manager
+     */
     private Messages() {
-        plugin = AuctionPlugin.getPlugin();
-        loadFile();
+        loadFiles();
     }
 
+    /**
+     * Returns the Messager instance, creates a new messager if it has
+     * never been instantiated
+     * 
+     * @return Messages The Messages instance
+     */
+    
     public static Messages getMessager() {
         return messages == null ? messages = new Messages() : messages;
     }
 
-    public YamlConfiguration getMessageFile() {
-        return messageFile;
-    }
-
+    /**
+     * Saves the messages configuration to file
+     */
     public void save() {
         File messagesFile = new File(AuctionPlugin.getPlugin().getDataFolder(), "messages.yml");            
-        plugin.saveFile(messageFile, messagesFile);
+        AuctionPlugin.getPlugin().saveFile(messageFile, messagesFile);
     }
 
-    private void loadFile() {
+    /* Load all message files */
+    public void loadFiles() {
         File messagesFile = new File(AuctionPlugin.getPlugin().getDataFolder(), "messages.yml");
         File namesFile = new File(AuctionPlugin.getPlugin().getDataFolder(), "items.yml");
-        log = new File(AuctionPlugin.getPlugin().getDataFolder(), "log.txt");
         if (!messagesFile.exists()) {
             AuctionPlugin.getPlugin().saveResource("messages.yml", true);
         }
         if (!namesFile.exists()) {
             AuctionPlugin.getPlugin().saveResource("items.yml", false);
         }
-        if (!log.exists()) {
-            try {
-                log.createNewFile();
-            } catch (IOException ex1) {
-
-            }
-        }
+        
         messageFile = YamlConfiguration.loadConfiguration(messagesFile);
         names = YamlConfiguration.loadConfiguration(namesFile);
     }
 
-    public void reload() {
-        loadFile();
-    }
-
+    /**
+     * Returns if a player is ignoring auctions
+     * 
+     * @param name The name of the player ignoring
+     *
+     * @return True if the player is ignoring auctions, false otherwise
+     */
     public boolean isIgnoring(String name) {
         return ignoring.contains(name);
     }
 
+    /**
+     * Adds a player to the ignoring list 
+     * 
+     * @param name The name of the player thats now ignoring
+     */
     public void addIgnoring(String name) {
         ignoring.add(name);
     }
 
+    /**
+     * Removes a name from the ignoring list
+     * 
+     * @param name The name of the player not ignoring
+     */
     public void removeIgnoring(String name) {
         ignoring.remove(name);
     }
 
+    /**
+     * Sends a message to a Conversable entity
+     * 
+     * @param sender        The conversable to send the message too
+     * @param text          The message to send
+     * @param configEntry   Whether or not the message provided was in the configuration
+     */
     public void sendText(CommandSender sender, String text, boolean configEntry) {
         sender.sendMessage(ChatColor.translateAlternateColorCodes('&', (configEntry ? getString(text) : text)));
     }
 
+    /**
+     * Sends a FancyMessage to a Player
+     * 
+     * @param player        The player to send the message to
+     * @param auction       The current auction
+     * @param text          The text to be sent
+     * @param configEntry   Whether or not the message provided was in the configuration
+     */
     public void sendText(Player player, Auction auction, String text, boolean configEntry) {
         createFancyMessage(auction, configEntry ? getString(text) : text).send(player);
     }
 
     @SuppressWarnings("deprecation")
+    /**
+     * Messages all players information about the auction
+     * 
+     * @param auction       The current auction
+     * @param message       The message to be sent
+     * @param configEntry   Whether or not the message provided was in the configuration
+     */
     public void messageListeningAll(Auction auction, String message, boolean configEntry) {
         FancyMessage msg = createFancyMessage(auction, configEntry ? getString(message) : message);
         for (Player player : Bukkit.getOnlinePlayers()) {
@@ -99,6 +135,14 @@ public class Messages {
         }
     }
 
+    /**
+     * Creates a FancyMessage about an auction
+     * 
+     * @param auction The current auction
+     * @param message The message to replace information with
+     * 
+     * @return The FancyMessage created with text replaced by auction information 
+     */
     public FancyMessage createFancyMessage(Auction auction, String message) {
         FancyMessage fancyMessage = new FancyMessage(ChatColor.WHITE.toString());
         String fancyText = replace(auction, message);
@@ -129,26 +173,28 @@ public class Messages {
         return fancyMessage;
     }
 
+    /* Gets a string from the messages file */
     private String getString(String path) {
         return messageFile.getString(path);
     }
 
+    /* Gets an items name */
     private String getItemName(ItemStack item) {
         short durability = item.getType().getMaxDurability() > 0 ? 0 : item.getDurability();
         String search = item.getType().toString() + "." + durability;
         String ret = names.getString(search);
-        if (ret == null) {
-            ret = "null";
-        }
-        return ret;
+
+        return ret == null ? "null" : ret;
     }
 
+    /* Gets the color for the item */
     private ChatColor getIColor(String type) {
         ChatColor c = ChatColor.getByChar(getString("%i." + type));
         
         return c == null ? ChatColor.WHITE : c;       
     }
 
+    /* Replaces a String with Auction information */
     private String replace(Auction auction, String message) {
         String ret = message;
         if (auction != null) {
@@ -166,12 +212,24 @@ public class Messages {
         return ChatColor.translateAlternateColorCodes('&', ret);
     }
 
+    /**
+     * Sends the auction menu to a Conversable entity
+     * 
+     * @param sender The entity to send the menu too
+     */
     public void sendMenu(CommandSender sender) {
         for (Iterator<String> info = messageFile.getStringList("auction-menu").iterator(); info.hasNext();) {
             sender.sendMessage(ChatColor.translateAlternateColorCodes('&', info.next()));
         }
     }
 
+    /**
+     * Converts a UUID to a name
+     * 
+     * @param uuid The unique ID of a player
+     * 
+     * @return String The name of the player with the UUID
+     */
     public String UUIDtoName(UUID uuid) {
         Player player = Bukkit.getPlayer(uuid);
         if (player == null) {

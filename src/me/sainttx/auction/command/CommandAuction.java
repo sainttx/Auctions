@@ -35,7 +35,7 @@ public class CommandAuction implements CommandExecutor {
                 m.sendText(sender, "reload", true);
                 pl.reloadConfig();
                 pl.loadConfig();
-                m.reload();
+                m.loadFiles();
             } 
 
             else if (subCommand.equals("toggle")) 

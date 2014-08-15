@@ -43,6 +43,9 @@ public class AuctionPlugin extends JavaPlugin implements Listener {
     protected @Getter double  minimumStartPrice;
     protected @Getter double  maxiumumStartPrice;
 
+    /**
+     * Instantiates the Auction plugin
+     */
     public AuctionPlugin() {
         logging             = getConfig().getBoolean("log-auctions",    false);
         allowEnding         = getConfig().getBoolean("allow-end",       false);
@@ -84,11 +87,20 @@ public class AuctionPlugin extends JavaPlugin implements Listener {
         AuctionManager.getCurrentAuction().end();
     }
 
+    /**
+     * Reloads the configuration
+     */
     public void reload() {
         reloadConfig();
-        manager = AuctionManager.getAuctionManager();
     }
 
+    /**
+     * Saves a players auctioned item to file if the plugin was unable
+     * to return it
+     * 
+     * @param uuid  The ID of a player
+     * @param is    The item that the player auctioned
+     */
     public void save(UUID uuid, ItemStack is) { 
         logoff.set(uuid.toString(), is);
         loggedoff.put(uuid.toString(), is);
@@ -96,6 +108,9 @@ public class AuctionPlugin extends JavaPlugin implements Listener {
         saveFile(logoff, off);
     }
 
+    /**
+     * Loads the file which contains all information about saved items
+     */
     public void loadSaved() {
         for (String string : logoff.getKeys(false)) {
             ItemStack is = logoff.getItemStack(string);
@@ -103,6 +118,9 @@ public class AuctionPlugin extends JavaPlugin implements Listener {
         }
     }
 
+    /**
+     * Loads the configuration
+     */
     public void loadConfig() {
         saveDefaultConfig();
         getConfig().options().copyDefaults(true);
@@ -119,11 +137,15 @@ public class AuctionPlugin extends JavaPlugin implements Listener {
     }
 
     @EventHandler
+    /**
+     * Responsible for giving the players back items that were unable to be
+     * returned at a previous time
+     */
     public void onJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         ItemStack saved = loggedoff.get(player.getUniqueId().toString());
         if (saved != null) {
-            new AuctionUtil().giveItem(player, saved, "saved-item-return");
+            AuctionUtil.giveItem(player, saved, "saved-item-return");
             loggedoff.remove(player.getUniqueId().toString());
             logoff.set(player.getUniqueId().toString(), null);
 
@@ -131,6 +153,9 @@ public class AuctionPlugin extends JavaPlugin implements Listener {
         }
     }
 
+    /**
+     * Saves a YML file to disk
+     */
     public void saveFile(YamlConfiguration yml, File f) {
         try {
             yml.save(f);
@@ -139,6 +164,9 @@ public class AuctionPlugin extends JavaPlugin implements Listener {
         }
     }
 
+    /**
+     * Creates a file on disk
+     */
     public void createFile(File f) {
         try {
             f.createNewFile();

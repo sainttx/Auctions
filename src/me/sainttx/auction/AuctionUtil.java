@@ -8,13 +8,16 @@ import org.bukkit.inventory.ItemStack;
 
 public class AuctionUtil {
     
-    private Messages messager;
+    private static Messages messager = Messages.getMessager();
     
-    public AuctionUtil() {        
-        messager = Messages.getMessager();
-    }
-    
-    public void giveItem(Player player, ItemStack itemstack, String... messageentry) {
+    /**
+     * Gives an item to a player
+     * 
+     * @param player        The player to receive the item
+     * @param itemstack     The item to be received
+     * @param messageentry  Any messages to be sent to the player
+     */
+    public static void giveItem(Player player, ItemStack itemstack, String... messageentry) {
         World world = player.getWorld();
         boolean dropped = false;
         int maxsize     = itemstack.getMaxStackSize();
@@ -59,7 +62,15 @@ public class AuctionUtil {
         } 
     }
 
-    private boolean hasSpace(Inventory inventory, ItemStack itemstack) {
+    /**
+     * Checks if an inventory can fit a split itemstack
+     * 
+     * @param inventory The inventory to check
+     * @param itemstack The item being put into the inventory
+     * 
+     * @return True if the inventory can fit the item, false otherwise
+     */
+    public static boolean hasSpace(Inventory inventory, ItemStack itemstack) {
         int total = 0;
         for (ItemStack is : inventory.getContents()) {
             if (is == null) {
@@ -71,9 +82,18 @@ public class AuctionUtil {
         return total >= itemstack.getAmount();
     }
     
-    public boolean searchInventory(Player player, ItemStack item, int numItems) {
+    /**
+     * Returns if an inventory has enough of an item
+     * 
+     * @param player    The player to check
+     * @param item      The item to find
+     * @param numItems  The number of items searching for
+     * 
+     * @return True if the inventory has enough of the item, false otherwise  
+     */
+    public static boolean searchInventory(Inventory inv, ItemStack item, int numItems) {
         int count = 0;
-        for (ItemStack is : player.getInventory()) {
+        for (ItemStack is : inv) {
             if (is != null) { 
                 if (is.isSimilar(item)) {
                     if (is.getAmount() >= numItems) {
@@ -90,7 +110,14 @@ public class AuctionUtil {
         return false;
     }
     
-    public String getFormattedTime(int timeLeft) {     
+    /**
+     * Return a String representation of time left
+     * 
+     * @param timeLeft Time left in seconds
+     * 
+     * @return String the time left
+     */
+    public static String getFormattedTime(int timeLeft) {     
         String formatted = "";
         int days = (int) Math.floor(timeLeft / 86400); // get days
         int hourSeconds = timeLeft % 86400; 
