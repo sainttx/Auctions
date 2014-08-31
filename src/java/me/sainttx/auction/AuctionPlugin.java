@@ -83,7 +83,7 @@ public class AuctionPlugin extends JavaPlugin implements Listener {
         saveConfig();
         Messages.getMessager().save();
         if (AuctionManager.getCurrentAuction() != null) {
-            AuctionManager.getCurrentAuction().end();
+            AuctionManager.getCurrentAuction().end(true);
         }
         createFile(off);
         saveFile(logoff, off);

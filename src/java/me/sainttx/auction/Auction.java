@@ -29,7 +29,7 @@ public class Auction {
     private int auctionTimer;
     private @Getter int timeLeft;
 
-    private final int[] times = {45, 30, 15, 10, 3, 2, 1}; // Countdown time to announce
+    private final int[] times = { 45, 30, 15, 10, 3, 2, 1 }; // Countdown time to announce
 
     /**
      * Instantiate an Auction
@@ -59,7 +59,7 @@ public class Auction {
             this.autoWin = topBid + plugin.getMinBidIncrement();
         }
 
-        validAuction(player);
+        validateAuction(player);
     }
 
     /**
@@ -124,8 +124,10 @@ public class Auction {
     @SuppressWarnings("static-access")
     /**
      * Ends the auction
+     * 
+     * @param broadcast Whether or not to broadcast messages that this auction has ended
      */
-    public void end() {
+    public void end(boolean broadcast) {
         Bukkit.getScheduler().cancelTask(auctionTimer);
 
         // Delay before a new auction can be made... Prevents auction scamming
@@ -133,17 +135,24 @@ public class Auction {
             Bukkit.getScheduler().scheduleSyncDelayedTask(AuctionPlugin.getPlugin(), new Runnable() {
                 @Override
                 public void run() {
-                    AuctionManager.getAuctionManager().setCanAuction(true);
+                    manager.setCanAuction(true);
+                    
+                    // Start the next auction in the queue
+                    if (AuctionManager.getCurrentAuction() == null) {
+                        manager.startNextAuction();
+                    }
                 }
             }, 30L);
         }
 
         Player owner = Bukkit.getPlayer(this.owner);
 
-        if (winning != null) { // Somebody won the auction
+        // Check if somebody won the auction
+        if (winning != null) {
             Player winner = Bukkit.getPlayer(winning);
 
-            if (winner != null) { // The winner is online
+            // Check if the winner is online
+            if (winner != null) {
                 AuctionUtil.giveItem(winner, item);
                 messager.sendText(winner, this, "auction-winner", true);
             } else {
@@ -154,8 +163,12 @@ public class Auction {
             double winnings = topBid - (taxable ? getCurrentTax() : 0);
             plugin.economy.depositPlayer(owner, winnings);
 
-            messager.messageListeningAll(this, "auction-end-broadcast", true);
-            if (owner != null) { // The owner is online
+            if (broadcast) {
+                messager.messageListeningAll(this, "auction-end-broadcast", true);
+            }
+            
+            // Check if the owner of the auction is online
+            if (owner != null) { 
                 messager.sendText(owner, this, "auction-ended", true);
                 if (taxable) {
                     messager.sendText(owner, this, "auction-end-tax", true);
@@ -163,17 +176,23 @@ public class Auction {
             }
         }
 
-        else { // No winner
-            messager.messageListeningAll(this, "auction-end-no-bidders", true);
+        // There was no winner
+        else {
+            if (broadcast) {
+                messager.messageListeningAll(this, "auction-end-no-bidders", true);
+            } 
+            
+            // Check if we can give the items back to the owner (if they're online)
             if (owner != null) {
-                AuctionUtil.giveItem((Player) owner, item, "nobidder-return"); // return items to owner
+                AuctionUtil.giveItem((Player) owner, item, "nobidder-return");
             } else {
                 System.out.print("[Auction] Saving items of offline player " + this.owner);
                 plugin.save(this.owner, item);
             }
         } 
 
-        manager.killAuction();
+        // Set the current auction to null
+        manager.killAuction(); 
     }
 
     public class AuctionTimer extends BukkitRunnable {
@@ -187,7 +206,7 @@ public class Auction {
         @Override
         public void run() {
             if (timeLeft <= 0) {
-                end();
+                end(true);
             } else {
                 --timeLeft;
                 for (int i : times) {
@@ -201,14 +220,19 @@ public class Auction {
     }
 
     /* Verifies that this auction has valid settings */
-    private void validAuction(Player player) throws Exception {
+    private void validateAuction(Player player) throws Exception {
+        // Check if they actually auctioned an item
         if (item.getType() == Material.AIR) {
             throw new Exception("fail-start-handempty");
         }
+        
+        // Check if the item is allowed
         if (item.getType() == Material.FIREWORK || item.getType() == Material.FIREWORK_CHARGE || AuctionManager.getBannedMaterials().contains(item.getType())) {
             throw new Exception("unsupported-item");
         }
-        if (AuctionUtil.searchInventory(player.getInventory(), item, numItems)) { // Checks if they have enough of the item
+        
+        // Check if they have enough of the item
+        if (AuctionUtil.searchInventory(player.getInventory(), item, numItems)) {
             player.getInventory().removeItem(item);
         } else {
             throw new Exception("fail-start-not-enough-items");

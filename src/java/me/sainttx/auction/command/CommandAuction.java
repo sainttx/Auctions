@@ -30,16 +30,14 @@ public class CommandAuction implements CommandExecutor {
                 return false;
             }
 
-            if (subCommand.equals("reload")) 
-            {
+            if (subCommand.equals("reload")) {
                 m.sendText(sender, "reload", true);
                 pl.reloadConfig();
                 pl.loadConfig();
                 m.loadFiles();
             } 
 
-            else if (subCommand.equals("toggle")) 
-            {
+            else if (subCommand.equals("toggle")) {
                 pl.manager.setDisabled(!pl.manager.isDisabled());
                 pl.getServer().broadcastMessage(pl.manager.isDisabled() 
                         ? m.getMessageFile().getString("broadcast-disable")
