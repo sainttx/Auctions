@@ -14,7 +14,7 @@ import org.bukkit.entity.Player;
 
 public class AuctionManager {
 
-    private static AuctionManager am;
+    private static AuctionManager manager;
     private static AuctionPlugin plugin;
     private Messages messager;
 
@@ -42,7 +42,7 @@ public class AuctionManager {
      * @return AuctionManager The AuctionManager instance
      */
     public static AuctionManager getAuctionManager() {
-        return am == null ? am = new AuctionManager() : am;
+        return manager == null ? manager = new AuctionManager() : manager;
     }
 
 
@@ -54,6 +54,35 @@ public class AuctionManager {
      */
     public static ArrayList<Material> getBannedMaterials() {
         return (ArrayList<Material>) banned.clone();
+    }
+    
+    /**
+     * Returns whether or not a player has an auction queued
+     * 
+     * @param p A player who may have an auction queued
+     * 
+     * @return True if the player has an auction queued, false otherwise
+     */
+    public static boolean hasAuctionQueued(Player p) {
+        for (Auction queued : manager.auctionQueue) {
+            if (queued.getOwner().equals(p.getUniqueId())) {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+    
+    /**
+     * Returns whether or not a player is participating in an auction
+     * 
+     * @param p A player who may be participating in an auction
+     * 
+     * @return True if the player is the owner of the current auction or if 
+     *         the player has an active bid on the current auction
+     */
+    public static boolean isAuctionParticipant(Player p) {
+        return currentAuction == null ? false : currentAuction.getOwner().equals(p.getUniqueId()) || currentAuction.getWinning().equals(p.getUniqueId());
     }
 
     /**
@@ -90,9 +119,9 @@ public class AuctionManager {
             messager.sendText(player, "fail-start-cant-yet", true);
         }
 
-       // else if (currentAuction != null) {
-       //     messager.sendText(player, "fail-start-auction-in-progress", true);
-       //  }
+        // else if (currentAuction != null) {
+        //     messager.sendText(player, "fail-start-auction-in-progress", true);
+        // }
 
         // Check if the player provided the minimum amount of arguments
         else if (args.length < 3) {
@@ -131,7 +160,7 @@ public class AuctionManager {
             else if (fee > AuctionPlugin.economy.getBalance(player)) { 
                 messager.sendText(player, "fail-start-no-funds", true);
             }
-            
+
             // Check if the queue is full
             else if (auctionQueue.size() > 5) {
                 // TODO: Message that the queue is full
@@ -149,16 +178,19 @@ public class AuctionManager {
                 }
 
                 Auction auction = createAuction(plugin, player, numItems, startingPrice, autoWin);
-                
+
                 // Decide whether to immediately start the auction or place it in the queue
                 if (currentAuction == null && this.canAuction) {
                     startAuction(auction);
+                } else if (hasAuctionQueued(player)) {
+                    // TODO: Msg saying they already have an auction queued
                 } else {
                     auctionQueue.add(auction);
+                    // TODO: Msg saying their auction was added to the queue
                 }
             }
         }
-    } 
+    }
 
     /**
      * Starts an auction and withdraws the starting fee
@@ -175,18 +207,18 @@ public class AuctionManager {
         setCanAuction(false);
         currentAuction = auction;
     }
-    
+
     /**
      * Starts the next auction in the queue
      */
     public void startNextAuction() {
         Auction next = auctionQueue.poll();
-        
+
         if (next != null) {
             startAuction(next);
         }
     }
-    
+
     /**
      * Creates an auction and verifies it was properly specified
      * 
@@ -207,11 +239,11 @@ public class AuctionManager {
         } catch (Exception ex2) {
             messager.sendText(player, ex2.getMessage(), true);
         }
-        
+
         if (!player.hasPermission("auction.tax.exempt")) {
             auction.setTaxable(true);
         }
-        
+
         return auction;
     }
 
