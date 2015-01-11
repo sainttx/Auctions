@@ -155,7 +155,7 @@ public class Auction {
             }
 
             double winnings = topBid - (taxable ? getCurrentTax() : 0);
-            plugin.economy.depositPlayer(owner, winnings);
+            AuctionPlugin.getEconomy().depositPlayer(owner, winnings);
 
             if (broadcast) {
                 TextUtil.sendMessage(TextUtil.replace(this, TextUtil.getConfigMessage("auction-end-broadcast")), Bukkit.getOnlinePlayers().toArray(new Player[0]));

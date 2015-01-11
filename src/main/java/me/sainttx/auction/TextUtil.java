@@ -9,6 +9,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
+import java.io.IOException;
 import java.text.NumberFormat;
 import java.util.HashSet;
 import java.util.Set;
@@ -52,8 +53,13 @@ public class TextUtil {
      * Saves the messages configuration to file
      */
     public static void save() {
-        File messagesFile = new File(AuctionPlugin.getPlugin().getDataFolder(), "messages.yml");            
-        AuctionPlugin.getPlugin().saveFile(messageFile, messagesFile);
+        File messagesFile = new File(AuctionPlugin.getPlugin().getDataFolder(), "messages.yml");
+
+        try {
+            messageFile.save(messagesFile);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
     }
 
     /**

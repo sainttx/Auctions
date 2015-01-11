@@ -4,12 +4,13 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Listener;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Queue;
 
-public class AuctionManager {
+public class AuctionManager implements Listener {
 
     /*
      * Auction plugin and manager instances
@@ -66,7 +67,7 @@ public class AuctionManager {
     public static ArrayList<Material> getBannedMaterials() {
         return (ArrayList<Material>) banned.clone();
     }
-    
+
     /**
      * Returns whether or not a player has an auction queued
      * 
@@ -167,7 +168,7 @@ public class AuctionManager {
             }
 
             // Check if the player has enough money
-            else if (fee > AuctionPlugin.economy.getBalance(player)) {
+            else if (fee > AuctionPlugin.getEconomy().getBalance(player)) {
                 TextUtil.sendMessage(TextUtil.getConfigMessage("fail-start-no-funds"), player);
             }
 
@@ -212,7 +213,7 @@ public class AuctionManager {
             return;
         }
 
-        AuctionPlugin.economy.withdrawPlayer(Bukkit.getOfflinePlayer(auction.getOwner()), plugin.getStartFee());
+        AuctionPlugin.getEconomy().withdrawPlayer(Bukkit.getOfflinePlayer(auction.getOwner()), plugin.getStartFee());
         currentAuction = auction;
         auction.start();
         setCanAuction(false);
@@ -298,7 +299,7 @@ public class AuctionManager {
         }
 
         // Check if they have enough money to bid
-        else if (plugin.economy.getBalance(player) < amount) {
+        else if (AuctionPlugin.getEconomy().getBalance(player) < amount) {
             TextUtil.sendMessage(TextUtil.getConfigMessage("fail-bid-insufficient-balance"), player);
         }
 
@@ -311,10 +312,10 @@ public class AuctionManager {
             if (currentAuction.getWinning() != null) {
                 Player oldWinner = Bukkit.getPlayer(currentAuction.getWinning());
                 if (oldWinner != null) {
-                    AuctionPlugin.economy.depositPlayer(oldWinner, currentAuction.getTopBid());
+                    AuctionPlugin.getEconomy().depositPlayer(oldWinner, currentAuction.getTopBid());
                 } else {
                     OfflinePlayer offline = Bukkit.getOfflinePlayer(currentAuction.getWinning());
-                    AuctionPlugin.economy.depositPlayer(offline, currentAuction.getTopBid());
+                    AuctionPlugin.getEconomy().depositPlayer(offline, currentAuction.getTopBid());
                 }
             }
 
@@ -332,7 +333,7 @@ public class AuctionManager {
     public void placeBid(Player player, double amount) {
         currentAuction.setTopBid(amount);
         currentAuction.setWinning(player.getUniqueId());
-        AuctionPlugin.economy.withdrawPlayer(player, amount);
+        AuctionPlugin.getEconomy().withdrawPlayer(player, amount);
 
         // Check if the auction isn't won due to autowin
         if (amount >= currentAuction.getAutoWin() && currentAuction.getAutoWin() != -1) {

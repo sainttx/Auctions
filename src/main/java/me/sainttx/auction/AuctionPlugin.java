@@ -18,12 +18,16 @@ import java.util.UUID;
 
 public class AuctionPlugin extends JavaPlugin implements Listener {
 
-    // General
+    /*
+     * General
+     */
     private static AuctionPlugin plugin;
     public AuctionManager manager;
-    public static Economy economy = null;
+    private static Economy economy;
 
-    // Offline item saving
+    /*
+     * Offline item saving
+     */
     private final File off = new File(getDataFolder(), "save.yml");
     protected YamlConfiguration logoff;
     private static HashMap<String, ItemStack> loggedoff = new HashMap<String, ItemStack>();
@@ -46,10 +50,10 @@ public class AuctionPlugin extends JavaPlugin implements Listener {
      */
     public AuctionPlugin() {
         logging             = getConfig().getBoolean("log-auctions",    false);
-        allowEnding         = getConfig().getBoolean("allow-end",       false);
+        allowEnding         = getConfig().getBoolean("allow-end", false);
         allowAutowin        = getConfig().getBoolean("allow-autowin",   false);
         allowAutobid        = getConfig().getBoolean("allow-autobid",   false);
-        allowCreative       = getConfig().getBoolean("allow-creative",  false);
+        allowCreative       = getConfig().getBoolean("allow-creative", false);
 
         defaultAuctionTime  = getConfig().getInt("auction-time",           30);
         taxPercentage       = getConfig().getInt("auction-tax-percentage", 0);
@@ -63,14 +67,19 @@ public class AuctionPlugin extends JavaPlugin implements Listener {
     @Override
     public void onEnable() {
         plugin = this;
+        manager = AuctionManager.getAuctionManager();
         economy = getServer().getServicesManager().getRegistration(Economy.class).getProvider();
 
         // Setup
         getServer().getPluginManager().registerEvents(this, this);
-        manager = AuctionManager.getAuctionManager();
         loadConfig();
-        loadSaved();
         TextUtil.load(this);
+
+        // Load offline player items
+        for (String string : logoff.getKeys(false)) {
+            ItemStack is = logoff.getItemStack(string);
+            loggedoff.put(string, is);
+        }
 
         // Commands
         getCommand("auction").setExecutor(new CommandAuction(this));
@@ -79,20 +88,29 @@ public class AuctionPlugin extends JavaPlugin implements Listener {
 
     @Override
     public void onDisable() {
-        saveConfig();
         TextUtil.save();
         if (AuctionManager.getCurrentAuction() != null) {
             AuctionManager.getCurrentAuction().end(true);
         }
-        createFile(off);
-        saveFile(logoff, off);
+
+        // Logoff file
+        try {
+            if (!off.exists()) {
+                off.createNewFile();
+            }
+            logoff.save(off);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
     }
 
     /**
-     * Reloads the configuration
+     * Returns the Vault Economy provider
+     *
+     * @return Vault's economy hook
      */
-    public void reload() {
-        reloadConfig();
+    public static Economy getEconomy() {
+        return economy;
     }
 
     /**
@@ -106,16 +124,10 @@ public class AuctionPlugin extends JavaPlugin implements Listener {
         logoff.set(uuid.toString(), is);
         loggedoff.put(uuid.toString(), is);
 
-        saveFile(logoff, off);
-    }
-
-    /**
-     * Loads the file which contains all information about saved items
-     */
-    public void loadSaved() {
-        for (String string : logoff.getKeys(false)) {
-            ItemStack is = logoff.getItemStack(string);
-            loggedoff.put(string, is);
+        try {
+            logoff.save(off);
+        } catch (IOException ex) {
+            ex.printStackTrace();
         }
     }
 
@@ -131,7 +143,11 @@ public class AuctionPlugin extends JavaPlugin implements Listener {
             saveResource("items.yml", false);
         }
         if (!off.exists()) {
-            this.createFile(off);
+            try {
+                off.createNewFile();
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
         }
 
         this.logoff = YamlConfiguration.loadConfiguration(off);
@@ -150,29 +166,11 @@ public class AuctionPlugin extends JavaPlugin implements Listener {
             loggedoff.remove(player.getUniqueId().toString());
             logoff.set(player.getUniqueId().toString(), null);
 
-            saveFile(logoff, off);
-        }
-    }
-
-    /**
-     * Saves a YML file to disk
-     */
-    public void saveFile(YamlConfiguration yml, File f) {
-        try {
-            yml.save(f);
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-    }
-
-    /**
-     * Creates a file on disk
-     */
-    public void createFile(File f) {
-        try {
-            f.createNewFile();
-        } catch (IOException ex) {
-            ex.printStackTrace();
+            try {
+                logoff.save(off);
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
         }
     }
 
