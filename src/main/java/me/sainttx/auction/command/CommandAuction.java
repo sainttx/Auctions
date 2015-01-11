@@ -1,7 +1,7 @@
 package me.sainttx.auction.command;
 
 import me.sainttx.auction.AuctionPlugin;
-import me.sainttx.auction.Messages;
+import me.sainttx.auction.TextUtil;
 
 import org.bukkit.GameMode;
 import org.bukkit.command.Command;
@@ -11,14 +11,14 @@ import org.bukkit.entity.Player;
 
 public class CommandAuction implements CommandExecutor {
 
-    private AuctionPlugin pl;
+    private AuctionPlugin plugin;
 
-    public CommandAuction(AuctionPlugin pl) {
-        this.pl = pl;
+    public CommandAuction(AuctionPlugin plugin) {
+        this.plugin = plugin;
     }
 
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        Messages m = Messages.getMessager();
+        TextUtil m = TextUtil.getMessager();
 
         if (args.length == 0) {
             m.sendMenu(sender);
@@ -32,14 +32,14 @@ public class CommandAuction implements CommandExecutor {
 
             if (subCommand.equals("reload")) {
                 m.sendText(sender, "reload", true);
-                pl.reloadConfig();
-                pl.loadConfig();
+                plugin.reloadConfig();
+                plugin.loadConfig();
                 m.loadFiles();
             } 
 
             else if (subCommand.equals("toggle")) {
-                pl.manager.setDisabled(!pl.manager.isDisabled());
-                pl.getServer().broadcastMessage(pl.manager.isDisabled() 
+                plugin.manager.setDisabled(!plugin.manager.isDisabled());
+                plugin.getServer().broadcastMessage(plugin.manager.isDisabled()
                         ? m.getMessageFile().getString("broadcast-disable")
                                 : m.getMessageFile().getString("broadcast-enable"));
             }
@@ -50,27 +50,27 @@ public class CommandAuction implements CommandExecutor {
                 if (subCommand.equals("start")) {
                     if (m.isIgnoring(sender.getName())) {
                         m.sendText(sender, "fail-start-ignoring", true);
-                    } else if (player.getGameMode() == GameMode.CREATIVE && !pl.isAllowCreative() && !player.hasPermission("auction.creative")) {
+                    } else if (player.getGameMode() == GameMode.CREATIVE && !plugin.isAllowCreative() && !player.hasPermission("auction.creative")) {
                         m.sendText(sender, "fail-start-creative", true);
                     } else {
-                        pl.manager.prepareAuction(player, args);
+                        plugin.manager.prepareAuction(player, args);
                     }
                 }
 
                 else if (subCommand.equals("bid")) {
                     if (args.length == 2) {
-                        pl.manager.prepareBid(player, args[1]); 
+                        plugin.manager.prepareBid(player, args[1]);
                     } else {
                         m.sendText(sender, "fail-bid-syntax", true);
                     }
                 } 
 
                 else if (subCommand.equals("info")) {
-                    pl.manager.sendAuctionInfo(player);
+                    plugin.manager.sendAuctionInfo(player);
                 } 
 
                 else if (subCommand.equals("end")) {
-                    pl.manager.end(player);
+                    plugin.manager.end(player);
                 } 
 
                 else if (subCommand.equals("ignore") || subCommand.equals("quiet")) {

@@ -79,7 +79,7 @@ public class AuctionPlugin extends JavaPlugin implements Listener {
     @Override
     public void onDisable() {
         saveConfig();
-        Messages.getMessager().save();
+        TextUtil.getMessager().save();
         if (AuctionManager.getCurrentAuction() != null) {
             AuctionManager.getCurrentAuction().end(true);
         }

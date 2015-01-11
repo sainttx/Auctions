@@ -11,7 +11,7 @@ import java.util.UUID;
 public class Auction {
     private AuctionPlugin plugin;
     private AuctionManager manager;
-    private Messages messager;
+    private TextUtil messager;
 
     private boolean taxable = false;
 
@@ -45,7 +45,7 @@ public class Auction {
     public Auction(AuctionPlugin plugin, Player player, int numItems, double startingAmount, double autoWin) throws Exception {
         this.plugin     = plugin;
         this.manager    = AuctionManager.getAuctionManager();
-        this.messager   = Messages.getMessager();
+        this.messager   = TextUtil.getMessager();
         this.owner      = player.getUniqueId();
         this.numItems   = numItems;
         this.topBid     = startingAmount;

@@ -13,7 +13,7 @@ public class AuctionManager {
 
     private static AuctionManager manager;
     private static AuctionPlugin plugin;
-    private Messages messager;
+    private TextUtil messager;
 
     private static Auction currentAuction;
     private Queue<Auction> auctionQueue = new ArrayDeque<Auction>();
@@ -29,7 +29,7 @@ public class AuctionManager {
      */
     private AuctionManager() {
         plugin = AuctionPlugin.getPlugin();
-        messager = Messages.getMessager();
+        messager = TextUtil.getMessager();
         storeBannedItems();
     }
 
@@ -103,7 +103,7 @@ public class AuctionManager {
      * @param args   Arguments relative to the auction provided by the player
      */
     public void prepareAuction(Player player, String[] args) {
-        Messages messager = Messages.getMessager();
+        TextUtil messager = TextUtil.getMessager();
         double minStartingPrice = plugin.getMinimumStartPrice();
         double maxStartingPrice = plugin.getMaxiumumStartPrice();
 
@@ -339,9 +339,9 @@ public class AuctionManager {
      */
     public void end(Player player) {
         if (currentAuction == null) {
-            Messages.getMessager().sendText(player, "fail-end-no-auction", true);    
+            TextUtil.getMessager().sendText(player, "fail-end-no-auction", true);
         } else if (!plugin.isAllowEnding() && !player.hasPermission("auction.end.bypass")) {
-            Messages.getMessager().sendText(player, "fail-end-disallowed", true);
+            TextUtil.getMessager().sendText(player, "fail-end-disallowed", true);
         } else if (!currentAuction.getOwner().equals(player.getUniqueId()) && !player.hasPermission("auction.end.bypass")) {
             // TODO: Can't end other players auction
         } else {

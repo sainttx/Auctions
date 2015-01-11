@@ -8,7 +8,7 @@ import org.bukkit.inventory.ItemStack;
 
 public class AuctionUtil {
     
-    private static Messages messager = Messages.getMessager();
+    private static TextUtil messager = TextUtil.getMessager();
     
     /**
      * Gives an item to a player

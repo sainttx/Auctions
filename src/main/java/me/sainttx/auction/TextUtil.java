@@ -14,9 +14,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.UUID;
 
-public class Messages {
+public class TextUtil {
 
-    private static Messages messages = null;
+    private static TextUtil textUtil = null;
 
     private YamlConfiguration messageFile;
     private YamlConfiguration names;
@@ -26,7 +26,7 @@ public class Messages {
     /**
      * Instantiates the messages manager
      */
-    private Messages() {
+    private TextUtil() {
         loadFiles();
     }
 
@@ -37,8 +37,8 @@ public class Messages {
      * @return Messages The Messages instance
      */
     
-    public static Messages getMessager() {
-        return messages == null ? messages = new Messages() : messages;
+    public static TextUtil getMessager() {
+        return textUtil == null ? textUtil = new TextUtil() : textUtil;
     }
 
     /**

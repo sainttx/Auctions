@@ -3,7 +3,7 @@ package me.sainttx.auction.command;
 import me.sainttx.auction.Auction;
 import me.sainttx.auction.AuctionManager;
 import me.sainttx.auction.AuctionPlugin;
-import me.sainttx.auction.Messages;
+import me.sainttx.auction.TextUtil;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -20,7 +20,7 @@ public class CommandBid implements CommandExecutor {
 
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         Player player = (Player) sender;
-        Messages m = Messages.getMessager();
+        TextUtil m = TextUtil.getMessager();
 
         if (!sender.hasPermission("auction.bid")) {
             m.sendText(sender, "insufficient-permissions", true);
