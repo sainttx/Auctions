@@ -198,9 +198,9 @@ public class AuctionManager {
         }
 
         AuctionPlugin.economy.withdrawPlayer(Bukkit.getOfflinePlayer(auction.getOwner()), plugin.getStartFee());
+        currentAuction = auction;
         auction.start();
         setCanAuction(false);
-        currentAuction = auction;
     }
 
     /**

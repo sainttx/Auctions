@@ -105,10 +105,19 @@ public class TextUtil {
                 ChatColor color = ChatColor.getByChar(messageFile.getString("itemColor.color"));
                 ChatColor style = messageFile.getString("itemColor.style").equalsIgnoreCase("none") ? null
                         : ChatColor.getByChar(messageFile.getString("itemColor.style"));
-                // TODO: Get the item shit
+
+                Auction auction = AuctionManager.getAuctionManager().getCurrentAuction();
+                if (auction != null) {
+                    fancy.then(getItemName(auction.getItem())).color(color != null ? current = color : current).itemTooltip(auction.getItem());
+                    if (style != null && style.isFormat()) {
+                        fancy.style(style);
+                    }
+                }
             } else {
-                fancy.then(str + " ").color(current);
+                fancy.then(str).color(current);
             }
+
+            fancy.then(" "); // Add a space after every word
         }
 
         // Send the message to the players
