@@ -10,7 +10,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class CommandBid implements CommandExecutor {
+public class BidCommand implements CommandExecutor {
 
     /*
      * The Auction plugin
@@ -20,7 +20,7 @@ public class CommandBid implements CommandExecutor {
     /**
      * Create the bid command controller
      */
-    public CommandBid(AuctionPlugin plugin) {
+    public BidCommand(AuctionPlugin plugin) {
         this.plugin = plugin;
     }
 

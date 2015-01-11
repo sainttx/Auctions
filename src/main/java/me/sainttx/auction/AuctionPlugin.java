@@ -1,7 +1,7 @@
 package me.sainttx.auction;
 
-import me.sainttx.auction.command.CommandAuction;
-import me.sainttx.auction.command.CommandBid;
+import me.sainttx.auction.command.AuctionCommand;
+import me.sainttx.auction.command.BidCommand;
 import me.sainttx.auction.util.AuctionUtil;
 import me.sainttx.auction.util.TextUtil;
 import net.milkbowl.vault.economy.Economy;
@@ -67,8 +67,8 @@ public class AuctionPlugin extends JavaPlugin implements Listener {
         }
 
         // Commands
-        getCommand("auction").setExecutor(new CommandAuction(this));
-        getCommand("bid").setExecutor(new CommandBid(this));
+        getCommand("auction").setExecutor(new AuctionCommand(this));
+        getCommand("bid").setExecutor(new BidCommand(this));
     }
 
     @Override

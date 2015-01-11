@@ -9,7 +9,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class CommandAuction implements CommandExecutor {
+public class AuctionCommand implements CommandExecutor {
 
     /*
      * The Auction plugin
@@ -19,7 +19,7 @@ public class CommandAuction implements CommandExecutor {
     /**
      * Create the auction command controller
      */
-    public CommandAuction(AuctionPlugin plugin) {
+    public AuctionCommand(AuctionPlugin plugin) {
         this.plugin = plugin;
     }
 
