@@ -1,4 +1,4 @@
-package me.sainttx.auction;
+package java.me.sainttx.auction;
 
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;

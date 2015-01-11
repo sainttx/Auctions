@@ -1,4 +1,4 @@
-package net.amoebaman.util;
+package java.net.amoebaman.util;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;

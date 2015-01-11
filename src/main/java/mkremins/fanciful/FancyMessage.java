@@ -1,4 +1,4 @@
-package mkremins.fanciful;
+package java.mkremins.fanciful;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -13,9 +13,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
-import static mkremins.fanciful.TextualComponent.rawText;
-import net.amoebaman.util.ArrayWrapper;
-import net.amoebaman.util.Reflection;
+import static java.mkremins.fanciful.TextualComponent.rawText;
+import java.net.amoebaman.util.ArrayWrapper;
+import java.net.amoebaman.util.Reflection;
 import org.bukkit.Achievement;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;

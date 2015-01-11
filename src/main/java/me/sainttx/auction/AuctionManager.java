@@ -1,4 +1,4 @@
-package me.sainttx.auction;
+package java.me.sainttx.auction;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;

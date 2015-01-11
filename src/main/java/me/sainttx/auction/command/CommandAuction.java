@@ -1,7 +1,7 @@
-package me.sainttx.auction.command;
+package java.me.sainttx.auction.command;
 
-import me.sainttx.auction.AuctionPlugin;
-import me.sainttx.auction.Messages;
+import java.me.sainttx.auction.AuctionPlugin;
+import java.me.sainttx.auction.Messages;
 
 import org.bukkit.GameMode;
 import org.bukkit.command.Command;

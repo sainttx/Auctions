@@ -1,9 +1,9 @@
-package me.sainttx.auction.command;
+package java.me.sainttx.auction.command;
 
-import me.sainttx.auction.Auction;
-import me.sainttx.auction.AuctionManager;
-import me.sainttx.auction.AuctionPlugin;
-import me.sainttx.auction.Messages;
+import java.me.sainttx.auction.Auction;
+import java.me.sainttx.auction.AuctionManager;
+import java.me.sainttx.auction.AuctionPlugin;
+import java.me.sainttx.auction.Messages;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;

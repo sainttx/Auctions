@@ -1,4 +1,4 @@
-package mkremins.fanciful;
+package java.mkremins.fanciful;
 
 import java.util.ArrayList;
 import java.util.HashMap;

@@ -1,13 +1,13 @@
-package me.sainttx.auction;
+package java.me.sainttx.auction;
 
 import java.io.File;
+import java.mkremins.fanciful.FancyMessage;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.UUID;
 
 import lombok.Getter;
-import mkremins.fanciful.FancyMessage;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;

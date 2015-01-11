@@ -1,4 +1,4 @@
-package me.sainttx.auction;
+package java.me.sainttx.auction;
 
 import java.io.File;
 import java.io.IOException;
@@ -6,8 +6,8 @@ import java.util.HashMap;
 import java.util.UUID;
 
 import lombok.Getter;
-import me.sainttx.auction.command.CommandAuction;
-import me.sainttx.auction.command.CommandBid;
+import java.me.sainttx.auction.command.CommandAuction;
+import java.me.sainttx.auction.command.CommandBid;
 import net.milkbowl.vault.economy.Economy;
 
 import org.bukkit.configuration.file.YamlConfiguration;
