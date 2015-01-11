@@ -51,7 +51,7 @@ public class AuctionManager implements Listener {
     /**
      * Returns the AuctionManager instance, creates a new manager if it has
      * never been instantiated
-     * 
+     *
      * @return AuctionManager The AuctionManager instance
      */
     public static AuctionManager getAuctionManager() {
@@ -62,7 +62,7 @@ public class AuctionManager implements Listener {
     @SuppressWarnings("unchecked")
     /**
      * Returns a deep copy of banned materials
-     * 
+     *
      * @return ArrayList<Material> Materials not allowed in auctions
      */
     public static ArrayList<Material> getBannedMaterials() {
@@ -71,9 +71,9 @@ public class AuctionManager implements Listener {
 
     /**
      * Returns whether or not a player has an auction queued
-     * 
+     *
      * @param p A player who may have an auction queued
-     * 
+     *
      * @return True if the player has an auction queued, false otherwise
      */
     public static boolean hasAuctionQueued(Player p) {
@@ -82,15 +82,15 @@ public class AuctionManager implements Listener {
                 return true;
             }
         }
-        
+
         return false;
     }
-    
+
     /**
      * Returns whether or not a player is participating in an auction
-     * 
+     *
      * @param p A player who may be participating in an auction
-     * 
+     *
      * @return True if the player is the owner of the current auction or if 
      *         the player has an active bid on the current auction
      */
@@ -100,7 +100,7 @@ public class AuctionManager implements Listener {
 
     /**
      * Gives information about the auction to a Player
-     * 
+     *
      * @param player The player to receive auction information
      */
     public void sendAuctionInfo(Player player) {
@@ -113,7 +113,7 @@ public class AuctionManager implements Listener {
 
     /**
      * Performs pre-checks for creating an auction started by a player
-     * 
+     *
      * @param player The player who started the auction
      * @param args   Arguments relative to the auction provided by the player
      */
@@ -185,18 +185,20 @@ public class AuctionManager implements Listener {
                     }
                 }
 
-                Auction auction = createAuction(plugin, player, numItems, startingPrice, autoWin);
-
                 // Decide whether to immediately start the auction or place it in the queue
-                if (currentAuction == null && this.canAuction) {
-                    startAuction(auction);
-                } else if (currentAuction != null && currentAuction.getOwner().equals(player.getUniqueId())) {
+                if (currentAuction != null && currentAuction.getOwner().equals(player.getUniqueId())) {
                     TextUtil.sendMessage(TextUtil.getConfigMessage("fail-start-already-auctioning"), player);
                 } else if (hasAuctionQueued(player)) {
                     TextUtil.sendMessage(TextUtil.getConfigMessage("fail-start-already-queued"), player);
                 } else {
-                    auctionQueue.add(auction);
-                    TextUtil.sendMessage(TextUtil.getConfigMessage("auction-queued"), player);
+                    Auction auction = createAuction(plugin, player, numItems, startingPrice, autoWin);
+
+                    if (currentAuction == null && this.canAuction) {
+                        startAuction(auction);
+                    } else {
+                        auctionQueue.add(auction);
+                        TextUtil.sendMessage(TextUtil.getConfigMessage("auction-queued"), player);
+                    }
                 }
             }
         }
@@ -204,7 +206,7 @@ public class AuctionManager implements Listener {
 
     /**
      * Starts an auction and withdraws the starting fee
-     * 
+     *
      * @param auction The auction to begin
      */
     public void startAuction(Auction auction) {
@@ -231,13 +233,13 @@ public class AuctionManager implements Listener {
 
     /**
      * Creates an auction and verifies it was properly specified
-     * 
+     *
      * @param plugin        The Auction plugin
      * @param player        The player starting the auction
      * @param numItems      The number of items the player is auctioning
      * @param startingPrice The starting price of the auction
      * @param autoWin       The amount required to bid to automatically win
-     * 
+     *
      * @return The auction result, null if something went wrong
      */
     public Auction createAuction(AuctionPlugin plugin, Player player, int numItems, double startingPrice, double autoWin) {
@@ -260,7 +262,7 @@ public class AuctionManager implements Listener {
     /**
      * Formats String input provided by a player before proceeding to pre-bid
      * checking
-     * 
+     *
      * @param player The player bidding
      * @param amount The amount bid by the player
      */
@@ -277,7 +279,7 @@ public class AuctionManager implements Listener {
     /**
      * Prepares a bid by a player and verifies they have met requirements before
      * bidding
-     * 
+     *
      * @param player The player bidding
      * @param amount The amount bid by the player
      */
@@ -325,7 +327,7 @@ public class AuctionManager implements Listener {
 
     /**
      * Places a bid on the current auction by the player
-     * 
+     *
      * @param player The player placing the bid
      * @param amount The amount bid by the player
      */
@@ -345,7 +347,7 @@ public class AuctionManager implements Listener {
 
     /**
      * Called when a player ends an auction
-     * 
+     *
      * @param player The player who ended the auction
      */
     public void end(Player player) {
@@ -371,7 +373,7 @@ public class AuctionManager implements Listener {
     /* 
      * Loads all banned items into memory 
      */
-    private void storeBannedItems() { 
+    private void storeBannedItems() {
         for (String string : plugin.getConfig().getStringList("banned-items")) {
             Material material = Material.getMaterial(string);
             if (material != null) {
