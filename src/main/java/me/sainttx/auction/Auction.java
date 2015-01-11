@@ -15,6 +15,7 @@ public class Auction {
 
     private boolean taxable = false;
 
+    private String ownerName; // The name of the person that started the auction
     private UUID owner; // The person who started the auction
     private UUID winning; // Current top bidder
 
@@ -45,7 +46,7 @@ public class Auction {
     public Auction(AuctionPlugin plugin, Player player, int numItems, double startingAmount, double autoWin) throws Exception {
         this.plugin     = plugin;
         this.manager    = AuctionManager.getAuctionManager();
-        this.messager   = TextUtil.getMessager();
+        this.ownerName  = player.getName();
         this.owner      = player.getUniqueId();
         this.numItems   = numItems;
         this.topBid     = startingAmount;
@@ -111,11 +112,11 @@ public class Auction {
      */
     public void start() {
         auctionTimer = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, new AuctionTimer(this), 0L, 20L);
-        messager.messageListeningAll(this, "auction-start", true); 
-        messager.messageListeningAll(this, "auction-start-price", true);
+        TextUtil.sendMessage(TextUtil.getConfigMessage("auction-start"), Bukkit.getOnlinePlayers().toArray(new Player[0]));
+        TextUtil.sendMessage(TextUtil.getConfigMessage("auction-start-price"), Bukkit.getOnlinePlayers().toArray(new Player[0]));
 
         if (autoWin != -1) {
-            messager.messageListeningAll(this, "auction-start-autowin", true);
+            TextUtil.sendMessage(TextUtil.getConfigMessage("auction-start-autowin"), Bukkit.getOnlinePlayers().toArray(new Player[0]));
         }
     }
 
@@ -152,9 +153,9 @@ public class Auction {
             // Check if the winner is online
             if (winner != null) {
                 AuctionUtil.giveItem(winner, item);
-                messager.sendText(winner, this, "auction-winner", true);
+                TextUtil.sendMessage(TextUtil.replace(this, TextUtil.getConfigMessage("auction-winner")), winner);
             } else {
-                System.out.print("[Auction] Saving items of offline player " + this.winning);
+                Bukkit.getLogger().info("[Auction] Saving items of offline player " + this.winning);
                 plugin.save(winning, item);
             }
 
@@ -162,14 +163,14 @@ public class Auction {
             plugin.economy.depositPlayer(owner, winnings);
 
             if (broadcast) {
-                messager.messageListeningAll(this, "auction-end-broadcast", true);
+                TextUtil.sendMessage(TextUtil.getConfigMessage("auction-end-broadcast"), Bukkit.getOnlinePlayers().toArray(new Player[0]));
             }
             
             // Check if the owner of the auction is online
-            if (owner != null) { 
-                messager.sendText(owner, this, "auction-ended", true);
+            if (owner != null) {
+                TextUtil.sendMessage(TextUtil.replace(this, TextUtil.getConfigMessage("auction-ended")), owner);
                 if (taxable) {
-                    messager.sendText(owner, this, "auction-end-tax", true);
+                    TextUtil.sendMessage(TextUtil.replace(this, TextUtil.getConfigMessage("auction-end-tax")), owner);
                 }
             }
         }
@@ -177,14 +178,14 @@ public class Auction {
         // There was no winner
         else {
             if (broadcast) {
-                messager.messageListeningAll(this, "auction-end-no-bidders", true);
-            } 
+                TextUtil.sendMessage(TextUtil.getConfigMessage("auction-end-no-bidders"), Bukkit.getOnlinePlayers().toArray(new Player[0]));
+            }
             
             // Check if we can give the items back to the owner (if they're online)
             if (owner != null) {
                 AuctionUtil.giveItem((Player) owner, item, "nobidder-return");
             } else {
-                System.out.print("[Auction] Saving items of offline player " + this.owner);
+                Bukkit.getLogger().info("[Auction] Saving items of offline player " + this.owner);
                 plugin.save(this.owner, item);
             }
         } 
@@ -209,7 +210,7 @@ public class Auction {
                 --timeLeft;
                 for (int i : times) {
                     if (i == timeLeft) {
-                        messager.messageListeningAll(auction, "auction-timer", true);
+                        TextUtil.sendMessage(TextUtil.replace(auction, TextUtil.getConfigMessage("auction-timer")), Bukkit.getOnlinePlayers().toArray(new Player[0]));
                         break;
                     }
                 }
@@ -235,6 +236,10 @@ public class Auction {
         } else {
             throw new Exception("fail-start-not-enough-items");
         }
+    }
+
+    public String getOwnerName() {
+        return ownerName;
     }
 
     public double getTopBid() {

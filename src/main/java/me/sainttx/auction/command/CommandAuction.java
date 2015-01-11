@@ -18,74 +18,55 @@ public class CommandAuction implements CommandExecutor {
     }
 
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        TextUtil m = TextUtil.getMessager();
-
         if (args.length == 0) {
-            m.sendMenu(sender);
+            TextUtil.sendMenu(sender);
         } else {
             String subCommand = args[0].toLowerCase();
 
             if (!sender.hasPermission("auction." + subCommand)) {
-                m.sendText(sender, "insufficient-permissions", true);
-                return false;
-            }
-
-            if (subCommand.equals("reload")) {
-                m.sendText(sender, "reload", true);
+                sender.sendMessage(TextUtil.getConfigMessage("insufficient-permissions"));
+            } else if (subCommand.equals("reload")) {
+                sender.sendMessage(TextUtil.getConfigMessage("reload"));
                 plugin.reloadConfig();
                 plugin.loadConfig();
-                m.loadFiles();
-            } 
-
-            else if (subCommand.equals("toggle")) {
+                TextUtil.load(plugin);
+            } else if (subCommand.equals("toggle")) {
                 plugin.manager.setDisabled(!plugin.manager.isDisabled());
                 plugin.getServer().broadcastMessage(plugin.manager.isDisabled()
-                        ? m.getMessageFile().getString("broadcast-disable")
-                                : m.getMessageFile().getString("broadcast-enable"));
-            }
-
-            else if (Player.class.isAssignableFrom(sender.getClass())) {
+                        ? TextUtil.getConfigMessage("broadcast-disable")
+                                : TextUtil.getConfigMessage("broadcast-enable"));
+            } else if (sender instanceof Player) {
                 Player player = (Player) sender;
 
                 if (subCommand.equals("start")) {
-                    if (m.isIgnoring(sender.getName())) {
-                        m.sendText(sender, "fail-start-ignoring", true);
+                    if (TextUtil.isIgnoring(player.getUniqueId())) {
+                        TextUtil.sendMessage(TextUtil.getConfigMessage("fail-start-ignoring"), player);
                     } else if (player.getGameMode() == GameMode.CREATIVE && !plugin.isAllowCreative() && !player.hasPermission("auction.creative")) {
-                        m.sendText(sender, "fail-start-creative", true);
+                        TextUtil.sendMessage(TextUtil.getConfigMessage("fail-start-creative"), player);
                     } else {
                         plugin.manager.prepareAuction(player, args);
                     }
-                }
-
-                else if (subCommand.equals("bid")) {
+                } else if (subCommand.equals("bid")) {
                     if (args.length == 2) {
                         plugin.manager.prepareBid(player, args[1]);
                     } else {
-                        m.sendText(sender, "fail-bid-syntax", true);
+                        TextUtil.sendMessage(TextUtil.getConfigMessage("fail-bid-syntax"), player);
                     }
-                } 
-
-                else if (subCommand.equals("info")) {
+                } else if (subCommand.equals("info")) {
                     plugin.manager.sendAuctionInfo(player);
-                } 
-
-                else if (subCommand.equals("end")) {
+                } else if (subCommand.equals("end")) {
                     plugin.manager.end(player);
-                } 
-
-                else if (subCommand.equals("ignore") || subCommand.equals("quiet")) {
-                    if (!m.isIgnoring(sender.getName())) {
-                        m.addIgnoring(sender.getName());
-                        m.sendText(sender, "ignoring-on", true);
+                } else if (subCommand.equals("ignore") || subCommand.equals("quiet")) {
+                    if (!TextUtil.isIgnoring(player.getUniqueId())) {
+                        TextUtil.addIgnoring(player.getUniqueId());
+                        TextUtil.sendMessage(TextUtil.getConfigMessage("ignoring-on"), player);
                     } else {
-                        m.removeIgnoring(sender.getName());
-                        m.sendText(sender, "ignoring-off", true);
+                        TextUtil.removeIgnoring(player.getUniqueId());
+                        TextUtil.sendMessage(TextUtil.getConfigMessage("ignoring-off"), player);
                     }
                 }
-            } 
-            
-            else {
-                m.sendMenu(sender);
+            } else {
+                TextUtil.sendMenu(sender);
             }
         }
         return false;

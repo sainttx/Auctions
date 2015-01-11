@@ -19,29 +19,27 @@ public class CommandBid implements CommandExecutor {
     }
 
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        Player player = (Player) sender;
-        TextUtil m = TextUtil.getMessager();
-
-        if (!sender.hasPermission("auction.bid")) {
-            m.sendText(sender, "insufficient-permissions", true);
+        if (!(sender instanceof Player)) {
+            sender.sendMessage("Only players may use this command!");
+            return false;
         }
 
-        else if (args.length == 0 && pl.isAllowAutobid()) {
+        Player player = (Player) sender;
+
+        if (!sender.hasPermission("auction.bid")) {
+            TextUtil.sendMessage(TextUtil.getConfigMessage("insufficient-permissions"), player);
+        } else if (args.length == 0 && pl.isAllowAutobid()) {
             Auction auction = AuctionManager.getCurrentAuction();
 
             if (auction != null) {
                 pl.manager.prepareBid(player, (int) (auction.getTopBid() + pl.getMinBidIncrement()));
-            } else { 
-                m.sendText(sender, "fail-bid-no-auction", true);
+            } else {
+                TextUtil.sendMessage(TextUtil.getConfigMessage("fail-bid-no-auction"), player);
             }
-        } 
-
-        else if (args.length == 1) {
+        } else if (args.length == 1) {
             pl.manager.prepareBid(player, args[0]);
-        }
-
-        else {
-            m.sendText(sender, "fail-bid-syntax", true);
+        } else {
+            TextUtil.sendMessage(TextUtil.getConfigMessage("fail-bid-syntax"), player);
         }
 
         return false;

@@ -1,23 +1,20 @@
 package me.sainttx.auction;
 
 import org.bukkit.World;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 public class AuctionUtil {
     
-    private static TextUtil messager = TextUtil.getMessager();
-    
     /**
      * Gives an item to a player
      * 
      * @param player        The player to receive the item
      * @param itemstack     The item to be received
-     * @param messageentry  Any messages to be sent to the player
+     * @param messages  Any messages to be sent to the player
      */
-    public static void giveItem(Player player, ItemStack itemstack, String... messageentry) {
+    public static void giveItem(Player player, ItemStack itemstack, String... messages) {
         World world = player.getWorld();
         boolean dropped = false;
         int maxsize     = itemstack.getMaxStackSize();
@@ -54,11 +51,11 @@ public class AuctionUtil {
                 }
             }
         }
-        if (messageentry.length == 1) {
-            messager.sendText((CommandSender) player, messageentry[0], true);
+        if (messages.length == 1) {
+            TextUtil.sendMessage(TextUtil.getConfigMessage(messages[0]), player);
         } 
         if (dropped) {
-            messager.sendText((CommandSender) player, "items-no-space", true);
+            TextUtil.sendMessage(TextUtil.getConfigMessage("items-no-space"), player);
         } 
     }
 
@@ -85,7 +82,7 @@ public class AuctionUtil {
     /**
      * Returns if an inventory has enough of an item
      * 
-     * @param player    The player to check
+     * @param inv       The inventory to check
      * @param item      The item to find
      * @param numItems  The number of items searching for
      * 

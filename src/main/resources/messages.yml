@@ -19,9 +19,9 @@ ignoring-off: "&aYou are no longer ignoring auction messages"
 # Change the color/style of the item text
 # color: 0-9 or a-f
 # style: k/o/n/l or none
-'%i':
+itemColor:
   color: c
-  style: none
+  style: l
 
 auction-menu:
 - "&aAuction menu:"
