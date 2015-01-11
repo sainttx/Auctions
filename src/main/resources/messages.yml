@@ -7,7 +7,6 @@
 # %w - the current top bidder of the auction
 # %b - the current top bid
 # %T - tax being charged at the end of auction
-# %W - worldname that the auction is in
 # unsupported-item only applies for Firework and Firework Charge right now
 reload: "&aAuctions has been reloaded"
 insufficient-permissions: "&cInsufficient permissions"
@@ -31,7 +30,6 @@ auction-menu:
 - "&b/auction end"
 - "&b/auction ignore"
 - "&b/auction reload"
-auction-in-other-world: "&aAn auction for %i &awas started in world &b%W"
 auction-timer: "&aThe auction for &b%a %i &ahas &b%t &aremaining"
 auction-cancelled: "&aThe auction for &b&a %i &awas &ccancelled"
 auction-start: "&b%p &astarted an auction for &c%a %i"
@@ -57,26 +55,22 @@ fail-bid-number: "&cInvalid bid"
 fail-cancel-not-yours: "&cYou can't cancel auctions that aren't your own"
 fail-end-no-auction: "&cThere is no auction at this time"
 fail-info-no-auction: "&cThere is no auction at this time"
-fail-no-auction-world: "&cThere is no auction in your world"
-fail-start-auction-world: "&cThere is already an auction in your world"
 fail-start-cant-yet: "&cYou cannot start at an auction at this time"
 fail-start-ignoring: "&cYou have auctions ignored, toggle by using &n/auction quiet"
-fail-start-handempty: "&aYou can't auction air"
+fail-start-hand-empty: "&aYou can't auction air"
 fail-start-not-enough-items: "&cYou don't have enough of that item!"
 fail-start-no-funds: "&cYou can't afford to start an auction"
-fail-start-time-tooshort: "&cThe time you specified is too short" 
-fail-start-time-tooshort: "&cThe time you specified is too long"
 fail-start-syntax: "&cUsage: /auction start <amount> <min-bid> [autowin]"
 fail-start-auction-in-progress: "&cThere is already an auction in progress"
-fail-start-creative: "&cYou cannot start an auction in GameMode CREATIVEzzz"
+fail-start-creative: "&cYou cannot start an auction in GameMode CREATIVE"
 fail-start-unknown: "&cCould not start the auction"
 fail-number-format: "&cYou provided an invalid number"
 fail-console: "&cConsole can't use this command"
 
 items-no-space: "&aNot enough space, items have been dropped at your feet"
 saved-item-return: "&aYour items were saved and have been returned"
-winner-item: "&aYou won the auction and have recieved your items"
-nobidder-return: "&aThere were no bidders on your auc, your items were &arefunded"
+winner-item: "&aYou won the auction and have received your items"
+no-bidder-return: "&aThere were no bidders on your auc, your items were &arefunded"
 give-item-unknown: "&aYour items have been returned"
 
 # v0.0.7

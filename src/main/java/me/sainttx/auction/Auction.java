@@ -192,7 +192,7 @@ public class Auction {
 
             // Check if we can give the items back to the owner (if they're online)
             if (owner != null) {
-                AuctionUtil.giveItem(owner, item, "nobidder-return");
+                AuctionUtil.giveItem(owner, item, "no-bidder-return");
             } else {
                 Bukkit.getLogger().info("[Auction] Saving items of offline player " + this.owner);
                 plugin.saveOfflinePlayer(this.owner, item);
@@ -252,7 +252,7 @@ public class Auction {
     private void validateAuction(Player player) throws Exception {
         // Check if they actually auctioned an item
         if (item.getType() == Material.AIR) {
-            throw new Exception("fail-start-handempty");
+            throw new Exception("fail-start-hand-empty");
         }
 
         // Check if the item is allowed
