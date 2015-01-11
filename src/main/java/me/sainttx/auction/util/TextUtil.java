@@ -39,13 +39,13 @@ public class TextUtil {
      * Loads the messages file and names file from a plugin
      */
     public static void load(JavaPlugin plugin) {
-        File messagesFile = new File(AuctionPlugin.getPlugin().getDataFolder(), "messages.yml");
-        File namesFile = new File(AuctionPlugin.getPlugin().getDataFolder(), "items.yml");
+        File messagesFile = new File(plugin.getDataFolder(), "messages.yml");
+        File namesFile = new File(plugin.getDataFolder(), "items.yml");
         if (!messagesFile.exists()) {
-            AuctionPlugin.getPlugin().saveResource("messages.yml", true);
+            plugin.saveResource("messages.yml", true);
         }
         if (!namesFile.exists()) {
-            AuctionPlugin.getPlugin().saveResource("items.yml", false);
+            plugin.saveResource("items.yml", false);
         }
 
         messageFile = YamlConfiguration.loadConfiguration(messagesFile);

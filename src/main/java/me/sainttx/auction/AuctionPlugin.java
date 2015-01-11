@@ -31,7 +31,7 @@ public class AuctionPlugin extends JavaPlugin implements Listener {
     /*
      * Offline item saving
      */
-    private final File offlineFile = new File(getDataFolder(), "saveOfflinePlayer.yml");
+    private final File offlineFile = new File(getDataFolder(), "offline.yml");
     private YamlConfiguration offlineConfiguration;
     private static HashMap<String, ItemStack> offlinePlayers = new HashMap<String, ItemStack>();
 
