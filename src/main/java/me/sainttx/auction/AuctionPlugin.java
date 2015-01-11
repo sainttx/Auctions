@@ -28,40 +28,23 @@ public class AuctionPlugin extends JavaPlugin implements Listener {
     /*
      * Offline item saving
      */
-    private final File off = new File(getDataFolder(), "save.yml");
+    private final File off = new File(getDataFolder(), "saveOfflinePlayer.yml");
     protected YamlConfiguration logoff;
     private static HashMap<String, ItemStack> loggedoff = new HashMap<String, ItemStack>();
 
-    // Configuration
-    protected boolean logging;
-    protected boolean allowEnding;
-    protected boolean allowAutowin;
-    protected boolean allowAutobid;
-    protected boolean allowCreative;
-    protected int     defaultAuctionTime;
-    protected int     taxPercentage;
-    protected double  startFee;
-    protected double  minBidIncrement;
-    protected double  minimumStartPrice;
-    protected double  maxiumumStartPrice;
+    /*
+     * Configuration
+     */
+    private YamlConfiguration config = this.getConfig();
+
 
     /**
-     * Instantiates the Auction plugin
+     * Returns the Auction Plugin instance
+     *
+     * @return The auction plugin instance
      */
-    public AuctionPlugin() {
-        logging             = getConfig().getBoolean("log-auctions",    false);
-        allowEnding         = getConfig().getBoolean("allow-end", false);
-        allowAutowin        = getConfig().getBoolean("allow-autowin",   false);
-        allowAutobid        = getConfig().getBoolean("allow-autobid",   false);
-        allowCreative       = getConfig().getBoolean("allow-creative", false);
-
-        defaultAuctionTime  = getConfig().getInt("auction-time",           30);
-        taxPercentage       = getConfig().getInt("auction-tax-percentage", 0);
-
-        startFee            = getConfig().getDouble("auction-start-fee",     0);
-        minBidIncrement     = getConfig().getDouble("minimum-bid-increment", 1D);
-        minimumStartPrice   = getConfig().getDouble("min-start-price",       0);
-        maxiumumStartPrice  = getConfig().getDouble("max-start-price",       Integer.MAX_VALUE);
+    public static AuctionPlugin getPlugin() {
+        return plugin;
     }
 
     @Override
@@ -114,13 +97,22 @@ public class AuctionPlugin extends JavaPlugin implements Listener {
     }
 
     /**
+     * Returns the plugins configuration file
+     *
+     * @return The plugins configuration file
+     */
+    public YamlConfiguration getConfig() {
+        return config;
+    }
+
+    /**
      * Saves a players auctioned item to file if the plugin was unable
      * to return it
      * 
      * @param uuid  The ID of a player
      * @param is    The item that the player auctioned
      */
-    public void save(UUID uuid, ItemStack is) { 
+    public void saveOfflinePlayer(UUID uuid, ItemStack is) {
         logoff.set(uuid.toString(), is);
         loggedoff.put(uuid.toString(), is);
 
@@ -172,55 +164,5 @@ public class AuctionPlugin extends JavaPlugin implements Listener {
                 ex.printStackTrace();
             }
         }
-    }
-
-    // Getters and setters
-
-    public boolean isLogging() {
-        return logging;
-    }
-
-    public boolean isAllowEnding() {
-        return allowEnding;
-    }
-
-    public boolean isAllowAutowin() {
-        return allowAutowin;
-    }
-
-    public boolean isAllowAutobid() {
-        return allowAutobid;
-    }
-
-    public boolean isAllowCreative() {
-        return allowCreative;
-    }
-
-    public int getDefaultAuctionTime() {
-        return defaultAuctionTime;
-    }
-
-    public int getTaxPercentage() {
-        return taxPercentage;
-    }
-
-    public double getStartFee() {
-        return startFee;
-    }
-
-    public double getMinBidIncrement() {
-        return minBidIncrement;
-    }
-
-    public double getMinimumStartPrice() {
-        return minimumStartPrice;
-    }
-
-    public double getMaxiumumStartPrice() {
-        return maxiumumStartPrice;
-    }
-
-    public static AuctionPlugin getPlugin() {
-        return plugin;
     }
 }

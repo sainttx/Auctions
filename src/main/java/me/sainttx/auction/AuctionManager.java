@@ -117,8 +117,8 @@ public class AuctionManager implements Listener {
      * @param args   Arguments relative to the auction provided by the player
      */
     public void prepareAuction(Player player, String[] args) {
-        double minStartingPrice = plugin.getMinimumStartPrice();
-        double maxStartingPrice = plugin.getMaxiumumStartPrice();
+        double minStartingPrice = plugin.getConfig().getDouble("min-start-price", 0);
+        double maxStartingPrice = plugin.getConfig().getDouble("max-start-price", Integer.MAX_VALUE);
 
         // Check if auctioning is allowed
         if (disabled && !player.hasPermission("auction.bypass.disable")) {
@@ -143,7 +143,7 @@ public class AuctionManager implements Listener {
             int numItems = -1;
             double startingPrice = -1;
             double autoWin = -1;
-            double fee = plugin.getStartFee();
+            double fee = plugin.getConfig().getDouble("auction-start-fee", 0);
 
             try {
                 numItems = Integer.parseInt(args[1]);
@@ -179,11 +179,11 @@ public class AuctionManager implements Listener {
 
             else {
                 if (args.length == 4) {
-                    double aw = Integer.parseInt(args[3]); // Autowin
-                    autoWin = plugin.isAllowAutowin() ? aw : -1;
+                    double autowinAmount = Integer.parseInt(args[3]); // Autowin
+                    autoWin = plugin.getConfig().getBoolean("allow-autowin", false) ? autowinAmount : -1;
 
                     // Check if the player is allowed to specify an autowin
-                    if (!plugin.isAllowAutowin()) {
+                    if (!plugin.getConfig().getBoolean("allow-autowin", false)) {
                         TextUtil.sendMessage(TextUtil.getConfigMessage("fail-start-no-autowin"), player);
                     }
                 }
@@ -213,7 +213,7 @@ public class AuctionManager implements Listener {
             return;
         }
 
-        AuctionPlugin.getEconomy().withdrawPlayer(Bukkit.getOfflinePlayer(auction.getOwner()), plugin.getStartFee());
+        AuctionPlugin.getEconomy().withdrawPlayer(Bukkit.getOfflinePlayer(auction.getOwner()), plugin.getConfig().getDouble("auction-start-fee", 0));
         currentAuction = auction;
         auction.start();
         setCanAuction(false);
@@ -294,7 +294,7 @@ public class AuctionManager implements Listener {
         }
 
         // Check if they bid enough
-        else if (amount < currentAuction.getTopBid() + plugin.getMinBidIncrement()) {
+        else if (amount < currentAuction.getTopBid() + plugin.getConfig().getDouble("minimum-bid-increment", 1D)) {
             TextUtil.sendMessage(TextUtil.getConfigMessage("fail-bid-too-low"), player);
         }
 
@@ -352,7 +352,7 @@ public class AuctionManager implements Listener {
     public void end(Player player) {
         if (currentAuction == null) {
             TextUtil.sendMessage(TextUtil.getConfigMessage("fail-end-no-auction"), player);
-        } else if (!plugin.isAllowEnding() && !player.hasPermission("auction.end.bypass")) {
+        } else if (!plugin.getConfig().getBoolean("allow-end", false) && !player.hasPermission("auction.end.bypass")) {
             TextUtil.sendMessage(TextUtil.getConfigMessage("fail-end-disallowed"), player);
         } else if (!currentAuction.getOwner().equals(player.getUniqueId()) && !player.hasPermission("auction.end.bypass")) {
             // TODO: Can't end other players auction

@@ -35,11 +35,11 @@ public class CommandBid implements CommandExecutor {
 
         if (!sender.hasPermission("auction.bid")) {
             TextUtil.sendMessage(TextUtil.getConfigMessage("insufficient-permissions"), player);
-        } else if (args.length == 0 && plugin.isAllowAutobid()) {
+        } else if (args.length == 0 && plugin.getConfig().getBoolean("allow-autobid", false)) {
             Auction auction = AuctionManager.getCurrentAuction();
 
             if (auction != null) {
-                AuctionManager.getAuctionManager().prepareBid(player, (int) (auction.getTopBid() + plugin.getMinBidIncrement()));
+                AuctionManager.getAuctionManager().prepareBid(player, (int) (auction.getTopBid() + plugin.getConfig().getDouble("minimum-bid-increment", 1D)));
             } else {
                 TextUtil.sendMessage(TextUtil.getConfigMessage("fail-bid-no-auction"), player);
             }

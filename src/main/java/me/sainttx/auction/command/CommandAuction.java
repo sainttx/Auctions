@@ -48,7 +48,7 @@ public class CommandAuction implements CommandExecutor {
                 if (subCommand.equals("start")) {
                     if (TextUtil.isIgnoring(player.getUniqueId())) {
                         TextUtil.sendMessage(TextUtil.getConfigMessage("fail-start-ignoring"), player);
-                    } else if (player.getGameMode() == GameMode.CREATIVE && !plugin.isAllowCreative() && !player.hasPermission("auction.creative")) {
+                    } else if (player.getGameMode() == GameMode.CREATIVE && !plugin.getConfig().getBoolean("allow-creative", false) && !player.hasPermission("auction.creative")) {
                         TextUtil.sendMessage(TextUtil.getConfigMessage("fail-start-creative"), player);
                     } else {
                         plugin.manager.prepareAuction(player, args);

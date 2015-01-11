@@ -45,12 +45,12 @@ public class Auction {
         this.owner      = player.getUniqueId();
         this.numItems   = numItems;
         this.topBid     = startingAmount;
-        this.timeLeft   = plugin.getDefaultAuctionTime();
+        this.timeLeft   = plugin.getConfig().getInt("auction-time", 30);
         this.autoWin    = autoWin;
         this.item       = player.getItemInHand().clone();
         this.item.setAmount(numItems);
-        if (autoWin < topBid + plugin.getMinBidIncrement() && autoWin != -1) {
-            this.autoWin = topBid + plugin.getMinBidIncrement();
+        if (autoWin < topBid + plugin.getConfig().getDouble("minimum-bid-increment", 1D) && autoWin != -1) {
+            this.autoWin = topBid + plugin.getConfig().getDouble("minimum-bid-increment", 1D);
         }
 
         validateAuction(player);
@@ -71,7 +71,7 @@ public class Auction {
      * @return Double the tax on the auction
      */
     public double getCurrentTax() {
-        int tax = plugin.getTaxPercentage();
+        int tax = plugin.getConfig().getInt("auction-tax-percentage", 0);
         return (topBid * tax) / 100;
     }
 
@@ -151,7 +151,7 @@ public class Auction {
                 TextUtil.sendMessage(TextUtil.replace(this, TextUtil.getConfigMessage("auction-winner")), winner);
             } else {
                 Bukkit.getLogger().info("[Auction] Saving items of offline player " + this.winning);
-                plugin.save(winning, item);
+                plugin.saveOfflinePlayer(winning, item);
             }
 
             double winnings = topBid - (taxable ? getCurrentTax() : 0);
@@ -181,7 +181,7 @@ public class Auction {
                 AuctionUtil.giveItem(owner, item, "nobidder-return");
             } else {
                 Bukkit.getLogger().info("[Auction] Saving items of offline player " + this.owner);
-                plugin.save(this.owner, item);
+                plugin.saveOfflinePlayer(this.owner, item);
             }
         }
 
