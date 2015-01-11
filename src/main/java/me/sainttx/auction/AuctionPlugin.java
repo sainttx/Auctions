@@ -17,6 +17,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.UUID;
 
 public class AuctionPlugin extends JavaPlugin implements Listener {
@@ -77,6 +78,13 @@ public class AuctionPlugin extends JavaPlugin implements Listener {
             AuctionManager.getCurrentAuction().end(true);
         }
 
+        // End all auctions that are queued
+        for (Iterator<Auction> auctionIterator = AuctionManager.getAuctionManager().getAuctionQueue().iterator() ; auctionIterator.hasNext() ; ) {
+            Auction auction = auctionIterator.next();
+            auction.end(false);
+            auctionIterator.remove();
+        }
+
         // Logoff file
         try {
             if (!offlineFile.exists()) {
@@ -109,7 +117,7 @@ public class AuctionPlugin extends JavaPlugin implements Listener {
     /**
      * Saves a players auctioned item to file if the plugin was unable
      * to return it
-     * 
+     *
      * @param uuid  The ID of a player
      * @param is    The item that the player auctioned
      */

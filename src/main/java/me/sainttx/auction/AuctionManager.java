@@ -70,6 +70,15 @@ public class AuctionManager implements Listener {
     }
 
     /**
+     * Returns the Auction queue
+     *
+     * @return All of the auctions that are currently queued
+     */
+    public Queue<Auction> getAuctionQueue() {
+        return this.auctionQueue;
+    }
+
+    /**
      * Returns whether or not a player has an auction queued
      *
      * @param p A player who may have an auction queued
