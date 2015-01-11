@@ -70,6 +70,7 @@ public class AuctionPlugin extends JavaPlugin implements Listener {
         manager = AuctionManager.getAuctionManager();
         loadConfig();
         loadSaved();
+        TextUtil.load(this);
 
         // Commands
         getCommand("auction").setExecutor(new CommandAuction(this));
