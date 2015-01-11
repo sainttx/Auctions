@@ -92,7 +92,7 @@ public class TextUtil {
      * @param players The players who will receive the message
      */
     public static void sendMessage(String message, Player... players) {
-        FancyMessage fancy = new FancyMessage();
+        FancyMessage fancy = new FancyMessage(ChatColor.WHITE.toString());
         String[] split = message.split(" ");
 
         ChatColor current = ChatColor.WHITE;
