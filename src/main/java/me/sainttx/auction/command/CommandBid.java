@@ -3,7 +3,7 @@ package me.sainttx.auction.command;
 import me.sainttx.auction.Auction;
 import me.sainttx.auction.AuctionManager;
 import me.sainttx.auction.AuctionPlugin;
-import me.sainttx.auction.TextUtil;
+import me.sainttx.auction.util.TextUtil;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;

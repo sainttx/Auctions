@@ -1,4 +1,4 @@
-package me.sainttx.auction;
+package me.sainttx.auction.util;
 
 import org.bukkit.World;
 import org.bukkit.entity.Player;

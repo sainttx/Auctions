@@ -1,5 +1,7 @@
 package me.sainttx.auction;
 
+import me.sainttx.auction.util.AuctionUtil;
+import me.sainttx.auction.util.TextUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;

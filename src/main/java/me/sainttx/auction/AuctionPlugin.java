@@ -2,6 +2,8 @@ package me.sainttx.auction;
 
 import me.sainttx.auction.command.CommandAuction;
 import me.sainttx.auction.command.CommandBid;
+import me.sainttx.auction.util.AuctionUtil;
+import me.sainttx.auction.util.TextUtil;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;

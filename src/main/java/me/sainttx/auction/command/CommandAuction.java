@@ -1,7 +1,7 @@
 package me.sainttx.auction.command;
 
 import me.sainttx.auction.AuctionPlugin;
-import me.sainttx.auction.TextUtil;
+import me.sainttx.auction.util.TextUtil;
 
 import org.bukkit.GameMode;
 import org.bukkit.command.Command;
