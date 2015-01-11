@@ -12,12 +12,19 @@ import org.bukkit.entity.Player;
 
 public class CommandBid implements CommandExecutor {
 
-    private AuctionPlugin pl;
+    /*
+     * The Auction plugin
+     */
+    private AuctionPlugin plugin;
 
-    public CommandBid(AuctionPlugin pl) {
-        this.pl = pl;
+    /**
+     * Create the bid command controller
+     */
+    public CommandBid(AuctionPlugin plugin) {
+        this.plugin = plugin;
     }
 
+    @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player)) {
             sender.sendMessage("Only players may use this command!");
@@ -28,16 +35,16 @@ public class CommandBid implements CommandExecutor {
 
         if (!sender.hasPermission("auction.bid")) {
             TextUtil.sendMessage(TextUtil.getConfigMessage("insufficient-permissions"), player);
-        } else if (args.length == 0 && pl.isAllowAutobid()) {
+        } else if (args.length == 0 && plugin.isAllowAutobid()) {
             Auction auction = AuctionManager.getCurrentAuction();
 
             if (auction != null) {
-                pl.manager.prepareBid(player, (int) (auction.getTopBid() + pl.getMinBidIncrement()));
+                AuctionManager.getAuctionManager().prepareBid(player, (int) (auction.getTopBid() + plugin.getMinBidIncrement()));
             } else {
                 TextUtil.sendMessage(TextUtil.getConfigMessage("fail-bid-no-auction"), player);
             }
         } else if (args.length == 1) {
-            pl.manager.prepareBid(player, args[0]);
+            AuctionManager.getAuctionManager().prepareBid(player, args[0]);
         } else {
             TextUtil.sendMessage(TextUtil.getConfigMessage("fail-bid-syntax"), player);
         }

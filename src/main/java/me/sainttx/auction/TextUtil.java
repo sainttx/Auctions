@@ -137,12 +137,16 @@ public class TextUtil {
         return ChatColor.translateAlternateColorCodes('&', string);
     }
 
-    /* Gets a string from the messages file */
+    /*
+     * Gets a string from the messages file
+     */
     public static String getConfigMessage(String path) {
         return color(messageFile.getString(path));
     }
 
-    /* Gets an items name */
+    /*
+     * Gets an items name
+     */
     private static String getItemName(ItemStack item) {
         short durability = item.getType().getMaxDurability() > 0 ? 0 : item.getDurability();
         String search = item.getType().toString() + "." + durability;
@@ -151,7 +155,9 @@ public class TextUtil {
         return ret == null ? "null" : ret;
     }
 
-    /* Replaces a String with Auction information */
+    /*
+     * Replaces a String with Auction information
+     */
     public static String replace(Auction auction, String message) {
         String ret = message;
         if (auction != null) {

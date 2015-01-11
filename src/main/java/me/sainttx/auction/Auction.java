@@ -4,27 +4,26 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.UUID;
 
 public class Auction {
     private AuctionPlugin plugin;
-    private AuctionManager manager;
-
-    private boolean taxable = false;
 
     private String ownerName; // The name of the person that started the auction
     private UUID owner; // The person who started the auction
     private UUID winning; // Current top bidder
 
     private ItemStack item; // The item being auctioned
-    private int numItems; // Amount in the ItemStack
+
+    /*
+     * Auction information
+     */
+    private boolean taxable = false; // Whether or not taxes should be applied on this auction
     private double autoWin; // The autowin (if set)
-
     private double topBid; // Current top bidder
-
-    private int auctionTimer;
+    private int numItems; // Amount in the ItemStack
+    private int auctionTimer; // The auction timer task id
     private int timeLeft;
 
     /**
@@ -42,7 +41,6 @@ public class Auction {
      */
     public Auction(AuctionPlugin plugin, Player player, int numItems, double startingAmount, double autoWin) throws Exception {
         this.plugin     = plugin;
-        this.manager    = AuctionManager.getAuctionManager();
         this.ownerName  = player.getName();
         this.owner      = player.getUniqueId();
         this.numItems   = numItems;
@@ -131,11 +129,11 @@ public class Auction {
             Bukkit.getScheduler().scheduleSyncDelayedTask(AuctionPlugin.getPlugin(), new Runnable() {
                 @Override
                 public void run() {
-                    manager.setCanAuction(true);
+                    AuctionManager.getAuctionManager().setCanAuction(true);
 
                     // Start the next auction in the queue
                     if (AuctionManager.getCurrentAuction() == null) {
-                        manager.startNextAuction();
+                        AuctionManager.getAuctionManager().startNextAuction();
                     }
                 }
             }, 30L);
@@ -188,18 +186,30 @@ public class Auction {
         }
 
         // Set the current auction to null
-        manager.killAuction();
+        AuctionManager.getAuctionManager().killAuction();
     }
 
-    public class AuctionTimer extends BukkitRunnable {
+    /**
+     * An Auction timer that counts down an Auction until it's over
+     */
+    protected class AuctionTimer implements Runnable {
 
+        /*
+         * The Auction to count down
+         */
         private Auction auction;
 
+        /**
+         * Create an Auction timer
+         */
         public AuctionTimer(Auction auction) {
             this.auction = auction;
         }
 
         @Override
+        /*
+         * Decrement the current time left until the auction ends
+         */
         public void run() {
             if (timeLeft <= 0) {
                 end(true);
@@ -222,7 +232,9 @@ public class Auction {
         }
     }
 
-    /* Verifies that this auction has valid settings */
+    /*
+     * Verifies that this auction has valid settings
+     */
     private void validateAuction(Player player) throws Exception {
         // Check if they actually auctioned an item
         if (item.getType() == Material.AIR) {

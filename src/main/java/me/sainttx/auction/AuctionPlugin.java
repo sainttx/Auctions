@@ -63,7 +63,7 @@ public class AuctionPlugin extends JavaPlugin implements Listener {
     @Override
     public void onEnable() {
         plugin = this;
-        economy = getServer().getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class).getProvider();
+        economy = getServer().getServicesManager().getRegistration(Economy.class).getProvider();
 
         // Setup
         getServer().getPluginManager().registerEvents(this, this);

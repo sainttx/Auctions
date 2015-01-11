@@ -11,16 +11,31 @@ import java.util.Queue;
 
 public class AuctionManager {
 
-    private static AuctionManager manager;
+    /*
+     * Auction plugin and manager instances
+     */
     private static AuctionPlugin plugin;
+    private static AuctionManager manager;
 
+    /*
+     * The current ongoing auction
+     */
     private static Auction currentAuction;
+
+    /*
+     * The auction queue
+     */
     private Queue<Auction> auctionQueue = new ArrayDeque<Auction>();
 
+    /*
+     * Banned materials in an auction
+     */
     private static ArrayList<Material> banned = new ArrayList<Material>();
 
+    /*
+     * Information on whether an auction can be started
+     */
     private boolean disabled    = false;
-
     private boolean canAuction  = true;
 
     /**
@@ -365,18 +380,38 @@ public class AuctionManager {
         }
     }
 
+    /**
+     * Returns the current ongoing Auction
+     *
+     * @return The current Auction
+     */
     public static Auction getCurrentAuction() {
         return currentAuction;
     }
 
+    /**
+     * Returns whether or not auctioning is disabled
+     *
+     * @return True if auctioning is disabled, false otherwise
+     */
     public boolean isDisabled() {
         return disabled;
     }
 
+    /**
+     * Sets the disabled status of the Auction plugin
+     *
+     * @param disabled The new Auction plugin status
+     */
     public void setDisabled(boolean disabled) {
         this.disabled = disabled;
     }
 
+    /**
+     * Sets whether players can auction or not
+     *
+     * @param canAuction The new value of auctioning availability
+     */
     public void setCanAuction(boolean canAuction) {
         this.canAuction = canAuction;
     }

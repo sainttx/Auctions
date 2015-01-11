@@ -11,12 +11,19 @@ import org.bukkit.entity.Player;
 
 public class CommandAuction implements CommandExecutor {
 
+    /*
+     * The Auction plugin
+     */
     private AuctionPlugin plugin;
 
+    /**
+     * Create the auction command controller
+     */
     public CommandAuction(AuctionPlugin plugin) {
         this.plugin = plugin;
     }
 
+    @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (args.length == 0) {
             TextUtil.sendMenu(sender);
