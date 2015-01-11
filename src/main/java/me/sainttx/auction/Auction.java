@@ -11,7 +11,6 @@ import java.util.UUID;
 public class Auction {
     private AuctionPlugin plugin;
     private AuctionManager manager;
-    private TextUtil messager;
 
     private boolean taxable = false;
 
@@ -28,17 +27,15 @@ public class Auction {
     private int auctionTimer;
     private int timeLeft;
 
-    private final int[] times = { 45, 30, 15, 10, 3, 2, 1 }; // Countdown time to announce
-
     /**
      * Instantiate an Auction
-     * 
+     *
      * @param plugin The AuctionPlugin auction
      * @param player The player who begun the auction
      * @param numItems The number of items being auctioned
      * @param startingAmount The starting amount specified by the player
      * @param autoWin The amount that will automatically end the auction
-     * 
+     *
      * @throws Exception If the player auctioned nothing, 
      *                   If the player auctioned a banned item,
      *                   If the player does not have enough items to auction
@@ -63,7 +60,7 @@ public class Auction {
 
     /**
      * Returns a cloned copy of the item being auctioned
-     * 
+     *
      * @return ItemStack the item being auctioned
      */
     public ItemStack getItem() {
@@ -72,7 +69,7 @@ public class Auction {
 
     /**
      * Returns the current taxation on the auction
-     * 
+     *
      * @return Double the tax on the auction
      */
     public double getCurrentTax() {
@@ -82,7 +79,7 @@ public class Auction {
 
     /**
      * Returns whether or not the auction has bids placed on it
-     * 
+     *
      * @return True if somebody has bid on the auction, false otherwise
      */
     public boolean hasBids() {
@@ -91,7 +88,7 @@ public class Auction {
 
     /**
      * Gets the time remaining as a String
-     * 
+     *
      * @return String a formatted representation of time left
      */
     public String getTime() {
@@ -100,7 +97,7 @@ public class Auction {
 
     /**
      * Sets whether or not the auction can be taxed
-     * 
+     *
      * @param taxable If the auction can be taxed
      */
     public void setTaxable(boolean taxable) {
@@ -123,7 +120,7 @@ public class Auction {
     @SuppressWarnings("static-access")
     /**
      * Ends the auction
-     * 
+     *
      * @param broadcast Whether or not to broadcast messages that this auction has ended
      */
     public void end(boolean broadcast) {
@@ -135,7 +132,7 @@ public class Auction {
                 @Override
                 public void run() {
                     manager.setCanAuction(true);
-                    
+
                     // Start the next auction in the queue
                     if (AuctionManager.getCurrentAuction() == null) {
                         manager.startNextAuction();
@@ -165,7 +162,7 @@ public class Auction {
             if (broadcast) {
                 TextUtil.sendMessage(TextUtil.replace(this, TextUtil.getConfigMessage("auction-end-broadcast")), Bukkit.getOnlinePlayers().toArray(new Player[0]));
             }
-            
+
             // Check if the owner of the auction is online
             if (owner != null) {
                 TextUtil.sendMessage(TextUtil.replace(this, TextUtil.getConfigMessage("auction-ended")), owner);
@@ -180,7 +177,7 @@ public class Auction {
             if (broadcast) {
                 TextUtil.sendMessage(TextUtil.replace(this, TextUtil.getConfigMessage("auction-end-no-bidders")), Bukkit.getOnlinePlayers().toArray(new Player[0]));
             }
-            
+
             // Check if we can give the items back to the owner (if they're online)
             if (owner != null) {
                 AuctionUtil.giveItem(owner, item, "nobidder-return");
@@ -188,10 +185,10 @@ public class Auction {
                 Bukkit.getLogger().info("[Auction] Saving items of offline player " + this.owner);
                 plugin.save(this.owner, item);
             }
-        } 
+        }
 
         // Set the current auction to null
-        manager.killAuction(); 
+        manager.killAuction();
     }
 
     public class AuctionTimer extends BukkitRunnable {
@@ -208,11 +205,18 @@ public class Auction {
                 end(true);
             } else {
                 --timeLeft;
-                for (int i : times) {
-                    if (i == timeLeft) {
+                switch(timeLeft) {
+                    case 120:
+                    case 90:
+                    case 60:
+                    case 45:
+                    case 30:
+                    case 15:
+                    case 10:
+                    case 3:
+                    case 2:
+                    case 1:
                         TextUtil.sendMessage(TextUtil.replace(auction, TextUtil.getConfigMessage("auction-timer")), Bukkit.getOnlinePlayers().toArray(new Player[0]));
-                        break;
-                    }
                 }
             }
         }
@@ -224,12 +228,12 @@ public class Auction {
         if (item.getType() == Material.AIR) {
             throw new Exception("fail-start-handempty");
         }
-        
+
         // Check if the item is allowed
         if (item.getType() == Material.FIREWORK || item.getType() == Material.FIREWORK_CHARGE || AuctionManager.getBannedMaterials().contains(item.getType())) {
             throw new Exception("unsupported-item");
         }
-        
+
         // Check if they have enough of the item
         if (AuctionUtil.searchInventory(player.getInventory(), item, numItems)) {
             player.getInventory().removeItem(item);
