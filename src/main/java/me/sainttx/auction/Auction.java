@@ -112,11 +112,11 @@ public class Auction {
      */
     public void start() {
         auctionTimer = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, new AuctionTimer(this), 0L, 20L);
-        TextUtil.sendMessage(TextUtil.getConfigMessage("auction-start"), Bukkit.getOnlinePlayers().toArray(new Player[0]));
-        TextUtil.sendMessage(TextUtil.getConfigMessage("auction-start-price"), Bukkit.getOnlinePlayers().toArray(new Player[0]));
+        TextUtil.sendMessage(TextUtil.replace(this, TextUtil.getConfigMessage("auction-start")), Bukkit.getOnlinePlayers().toArray(new Player[0]));
+        TextUtil.sendMessage(TextUtil.replace(this, TextUtil.getConfigMessage("auction-start-price")), Bukkit.getOnlinePlayers().toArray(new Player[0]));
 
         if (autoWin != -1) {
-            TextUtil.sendMessage(TextUtil.getConfigMessage("auction-start-autowin"), Bukkit.getOnlinePlayers().toArray(new Player[0]));
+            TextUtil.sendMessage(TextUtil.replace(this, TextUtil.getConfigMessage("auction-start-autowin")), Bukkit.getOnlinePlayers().toArray(new Player[0]));
         }
     }
 
@@ -163,7 +163,7 @@ public class Auction {
             plugin.economy.depositPlayer(owner, winnings);
 
             if (broadcast) {
-                TextUtil.sendMessage(TextUtil.getConfigMessage("auction-end-broadcast"), Bukkit.getOnlinePlayers().toArray(new Player[0]));
+                TextUtil.sendMessage(TextUtil.replace(this, TextUtil.getConfigMessage("auction-end-broadcast")), Bukkit.getOnlinePlayers().toArray(new Player[0]));
             }
             
             // Check if the owner of the auction is online
@@ -178,12 +178,12 @@ public class Auction {
         // There was no winner
         else {
             if (broadcast) {
-                TextUtil.sendMessage(TextUtil.getConfigMessage("auction-end-no-bidders"), Bukkit.getOnlinePlayers().toArray(new Player[0]));
+                TextUtil.sendMessage(TextUtil.replace(this, TextUtil.getConfigMessage("auction-end-no-bidders")), Bukkit.getOnlinePlayers().toArray(new Player[0]));
             }
             
             // Check if we can give the items back to the owner (if they're online)
             if (owner != null) {
-                AuctionUtil.giveItem((Player) owner, item, "nobidder-return");
+                AuctionUtil.giveItem(owner, item, "nobidder-return");
             } else {
                 Bukkit.getLogger().info("[Auction] Saving items of offline player " + this.owner);
                 plugin.save(this.owner, item);

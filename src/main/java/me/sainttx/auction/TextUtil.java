@@ -94,20 +94,20 @@ public class TextUtil {
     public static void sendMessage(String message, Player... players) {
         FancyMessage fancy = new FancyMessage(ChatColor.WHITE.toString());
         String[] split = message.split(" ");
-
         ChatColor current = ChatColor.WHITE;
 
         for (String str : split) {
-            str = ChatColor.getLastColors(color(str)); // Color the word
-            current = ChatColor.getByChar(str.isEmpty() ||str.equals("") ? current.getChar() : str.charAt(1)); // Change the last color
+            str = color(str); // Color the word
+            String currentColor = ChatColor.getLastColors(str);
+            current = ChatColor.getByChar(currentColor.isEmpty() ? current.getChar() : currentColor.charAt(1));
 
-            if (str.equalsIgnoreCase("[item]")) {
+            if (str.equalsIgnoreCase("%i")) {
                 ChatColor color = ChatColor.getByChar(messageFile.getString("itemColor.color"));
                 ChatColor style = messageFile.getString("itemColor.style").equalsIgnoreCase("none") ? null
                         : ChatColor.getByChar(messageFile.getString("itemColor.style"));
                 // TODO: Get the item shit
             } else {
-                fancy.then(str).color(current);
+                fancy.then(str + " ").color(current);
             }
         }
 
