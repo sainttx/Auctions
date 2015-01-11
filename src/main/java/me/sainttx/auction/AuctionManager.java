@@ -1,16 +1,13 @@
 package me.sainttx.auction;
 
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Queue;
-
-import lombok.Getter;
-import lombok.Setter;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
+
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Queue;
 
 public class AuctionManager {
 
@@ -18,13 +15,14 @@ public class AuctionManager {
     private static AuctionPlugin plugin;
     private Messages messager;
 
-    private static @Getter Auction currentAuction;
+    private static Auction currentAuction;
     private Queue<Auction> auctionQueue = new ArrayDeque<Auction>();
 
     private static ArrayList<Material> banned = new ArrayList<Material>();
 
-    private @Getter @Setter boolean disabled    = false;
-    private @Getter @Setter boolean canAuction  = true;
+    private boolean disabled    = false;
+
+    private boolean canAuction  = true;
 
     /**
      * Creates the Auction Manager
@@ -369,5 +367,21 @@ public class AuctionManager {
                 banned.add(material);
             }
         }
+    }
+
+    public static Auction getCurrentAuction() {
+        return currentAuction;
+    }
+
+    public boolean isDisabled() {
+        return disabled;
+    }
+
+    public void setDisabled(boolean disabled) {
+        this.disabled = disabled;
+    }
+
+    public void setCanAuction(boolean canAuction) {
+        this.canAuction = canAuction;
     }
 }

@@ -1,14 +1,6 @@
 package me.sainttx.auction;
 
-import java.io.File;
-import java.mkremins.fanciful.FancyMessage;
-import java.text.NumberFormat;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.UUID;
-
-import lombok.Getter;
-
+import mkremins.fanciful.FancyMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -16,10 +8,17 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import java.io.File;
+import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.UUID;
+
 public class Messages {
 
     private static Messages messages = null;
-    private @Getter YamlConfiguration messageFile;
+
+    private YamlConfiguration messageFile;
     private YamlConfiguration names;
 
     private ArrayList<String> ignoring = new  ArrayList<String>();
@@ -236,5 +235,9 @@ public class Messages {
         } else {
             return player.getName();
         }
+    }
+
+    public YamlConfiguration getMessageFile() {
+        return messageFile;
     }
 }

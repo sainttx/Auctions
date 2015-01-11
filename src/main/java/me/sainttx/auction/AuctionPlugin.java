@@ -1,15 +1,8 @@
 package me.sainttx.auction;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.UUID;
-
-import lombok.Getter;
-import java.me.sainttx.auction.command.CommandAuction;
-import java.me.sainttx.auction.command.CommandBid;
+import me.sainttx.auction.command.CommandAuction;
+import me.sainttx.auction.command.CommandBid;
 import net.milkbowl.vault.economy.Economy;
-
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -18,30 +11,35 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.UUID;
+
 public class AuctionPlugin extends JavaPlugin implements Listener {
 
     // General
-    private static @Getter AuctionPlugin plugin;
+    private static AuctionPlugin plugin;
     public AuctionManager manager;
     public static Economy economy = null;
 
     // Offline item saving
     private final File off = new File(getDataFolder(), "save.yml");
     protected YamlConfiguration logoff;
-    private static @Getter HashMap<String, ItemStack> loggedoff = new HashMap<String, ItemStack>();
+    private static HashMap<String, ItemStack> loggedoff = new HashMap<String, ItemStack>();
 
     // Configuration
-    protected @Getter boolean logging;
-    protected @Getter boolean allowEnding;
-    protected @Getter boolean allowAutowin;
-    protected @Getter boolean allowAutobid;
-    protected @Getter boolean allowCreative;
-    protected @Getter int     defaultAuctionTime;
-    protected @Getter int     taxPercentage;
-    protected @Getter double  startFee;
-    protected @Getter double  minBidIncrement;
-    protected @Getter double  minimumStartPrice;
-    protected @Getter double  maxiumumStartPrice;
+    protected boolean logging;
+    protected boolean allowEnding;
+    protected boolean allowAutowin;
+    protected boolean allowAutobid;
+    protected boolean allowCreative;
+    protected int     defaultAuctionTime;
+    protected int     taxPercentage;
+    protected double  startFee;
+    protected double  minBidIncrement;
+    protected double  minimumStartPrice;
+    protected double  maxiumumStartPrice;
 
     /**
      * Instantiates the Auction plugin
@@ -175,5 +173,55 @@ public class AuctionPlugin extends JavaPlugin implements Listener {
         } catch (IOException ex) {
             ex.printStackTrace();
         }
+    }
+
+    // Getters and setters
+
+    public boolean isLogging() {
+        return logging;
+    }
+
+    public boolean isAllowEnding() {
+        return allowEnding;
+    }
+
+    public boolean isAllowAutowin() {
+        return allowAutowin;
+    }
+
+    public boolean isAllowAutobid() {
+        return allowAutobid;
+    }
+
+    public boolean isAllowCreative() {
+        return allowCreative;
+    }
+
+    public int getDefaultAuctionTime() {
+        return defaultAuctionTime;
+    }
+
+    public int getTaxPercentage() {
+        return taxPercentage;
+    }
+
+    public double getStartFee() {
+        return startFee;
+    }
+
+    public double getMinBidIncrement() {
+        return minBidIncrement;
+    }
+
+    public double getMinimumStartPrice() {
+        return minimumStartPrice;
+    }
+
+    public double getMaxiumumStartPrice() {
+        return maxiumumStartPrice;
+    }
+
+    public static AuctionPlugin getPlugin() {
+        return plugin;
     }
 }

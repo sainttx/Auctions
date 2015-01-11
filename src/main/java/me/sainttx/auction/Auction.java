@@ -1,15 +1,12 @@
 package me.sainttx.auction;
 
-import java.util.UUID;
-
-import lombok.Getter;
-import lombok.Setter;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
+
+import java.util.UUID;
 
 public class Auction {
     private AuctionPlugin plugin;
@@ -18,16 +15,17 @@ public class Auction {
 
     private boolean taxable = false;
 
-    private @Getter UUID owner; // The person who started the auction
-    private @Getter @Setter UUID winning; // Current top bidder
+    private UUID owner; // The person who started the auction
+    private UUID winning; // Current top bidder
 
     private ItemStack item; // The item being auctioned
-    private @Getter int numItems; // Amount in the ItemStack
-    private @Getter double autoWin; // The autowin (if set)
-    private @Getter @Setter double topBid; // Current top bidder
+    private int numItems; // Amount in the ItemStack
+    private double autoWin; // The autowin (if set)
+
+    private double topBid; // Current top bidder
 
     private int auctionTimer;
-    private @Getter int timeLeft;
+    private int timeLeft;
 
     private final int[] times = { 45, 30, 15, 10, 3, 2, 1 }; // Countdown time to announce
 
@@ -237,6 +235,34 @@ public class Auction {
         } else {
             throw new Exception("fail-start-not-enough-items");
         }
+    }
+
+    public double getTopBid() {
+        return topBid;
+    }
+
+    public UUID getWinning() {
+        return winning;
+    }
+
+    public UUID getOwner() {
+        return owner;
+    }
+
+    public int getNumItems() {
+        return numItems;
+    }
+
+    public double getAutoWin() {
+        return autoWin;
+    }
+
+    public void setWinning(UUID winning) {
+        this.winning = winning;
+    }
+
+    public void setTopBid(double topBid) {
+        this.topBid = topBid;
     }
 }
 
