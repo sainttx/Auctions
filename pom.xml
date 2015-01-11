@@ -40,7 +40,7 @@
                     <relocations>
                         <relocation>
                             <pattern>mkremins.fanciful</pattern>
-                            <shadedPattern>co.jailed.auction.libs.mkremins.fanciful</shadedPattern>
+                            <shadedPattern>me.sainttx.auction.libs.mkremins.fanciful</shadedPattern>
                         </relocation>
                     </relocations>
                 </configuration>
