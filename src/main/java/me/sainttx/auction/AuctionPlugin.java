@@ -5,6 +5,7 @@ import me.sainttx.auction.command.BidCommand;
 import me.sainttx.auction.util.AuctionUtil;
 import me.sainttx.auction.util.TextUtil;
 import net.milkbowl.vault.economy.Economy;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -36,7 +37,7 @@ public class AuctionPlugin extends JavaPlugin implements Listener {
     /*
      * Configuration
      */
-    private YamlConfiguration config = this.getConfig();
+    private FileConfiguration config;
 
 
     /**
@@ -101,7 +102,7 @@ public class AuctionPlugin extends JavaPlugin implements Listener {
      *
      * @return The plugins configuration file
      */
-    public YamlConfiguration getConfig() {
+    public FileConfiguration getConfig() {
         return config;
     }
 
@@ -128,6 +129,7 @@ public class AuctionPlugin extends JavaPlugin implements Listener {
      */
     public void loadConfig() {
         saveDefaultConfig();
+        config = super.getConfig();
         getConfig().options().copyDefaults(true);
         File names = new File(getDataFolder(), "items.yml");
 
