@@ -171,7 +171,7 @@ public class AuctionManager implements Listener {
 
             // Check if the queue is full
             else if (auctionQueue.size() > 5) {
-                // TODO: Message that the queue is full
+                TextUtil.sendMessage(TextUtil.getConfigMessage("fail-start-queue-full"), player);
             }
 
             else {
@@ -190,11 +190,13 @@ public class AuctionManager implements Listener {
                 // Decide whether to immediately start the auction or place it in the queue
                 if (currentAuction == null && this.canAuction) {
                     startAuction(auction);
+                } else if (currentAuction != null && currentAuction.getOwner().equals(player.getUniqueId())) {
+                    TextUtil.sendMessage(TextUtil.getConfigMessage("fail-start-already-auctioning"), player);
                 } else if (hasAuctionQueued(player)) {
-                    // TODO: Msg saying they already have an auction queued
+                    TextUtil.sendMessage(TextUtil.getConfigMessage("fail-start-already-queued"), player);
                 } else {
                     auctionQueue.add(auction);
-                    // TODO: Msg saying their auction was added to the queue
+                    TextUtil.sendMessage(TextUtil.getConfigMessage("auction-queued"), player);
                 }
             }
         }
@@ -329,7 +331,7 @@ public class AuctionManager implements Listener {
      */
     public void placeBid(Player player, double amount) {
         currentAuction.setTopBid(amount);
-        currentAuction.setWinning(player.getUniqueId());
+        currentAuction.setWinning(player);
         AuctionPlugin.getEconomy().withdrawPlayer(player, amount);
 
         // Check if the auction isn't won due to autowin
@@ -352,7 +354,7 @@ public class AuctionManager implements Listener {
         } else if (!plugin.getConfig().getBoolean("allow-end", false) && !player.hasPermission("auction.end.bypass")) {
             TextUtil.sendMessage(TextUtil.getConfigMessage("fail-end-disallowed"), player);
         } else if (!currentAuction.getOwner().equals(player.getUniqueId()) && !player.hasPermission("auction.end.bypass")) {
-            // TODO: Can't end other players auction
+            TextUtil.sendMessage(TextUtil.getConfigMessage("fail-end-not-your-auction"), player);
         } else {
             currentAuction.end(true);
             killAuction();

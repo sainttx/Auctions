@@ -16,9 +16,17 @@ public class Auction {
      */
     private AuctionPlugin plugin;
 
+    /*
+     * Auction owner information
+     */
     private String ownerName; // The name of the person that started the auction
-    private UUID owner; // The person who started the auction
-    private UUID winning; // Current top bidder
+    private UUID owner; // The UUID of the person who started the auction
+
+    /*
+     * Current top bidder information
+     */
+    private String winningName; // Current top bidders name
+    private UUID winning; // Current top bidders UUID
 
     private ItemStack item; // The item being auctioned
 
@@ -26,7 +34,7 @@ public class Auction {
      * Auction information
      */
     private boolean taxable = false; // Whether or not taxes should be applied on this auction
-    private double autoWin; // The autowin (if set)
+    private double autoWin; // The auto-win amount (if set)
     private double topBid; // Current top bidder
     private int numItems; // Amount in the ItemStack
     private int auctionTimer; // The auction timer task id
@@ -289,6 +297,15 @@ public class Auction {
     }
 
     /**
+     * Returns the name of the current top bidder
+     *
+     * @return The name of the current top bidder
+     */
+    public String getWinningName() {
+        return this.winningName;
+    }
+
+    /**
      * Returns the ID of the player who currently has the highest bid
      *
      * @return the UUID of the current highest bidder
@@ -298,12 +315,13 @@ public class Auction {
     }
 
     /**
-     * The new top bidders UUID
+     * The new top bidder
      *
-     * @param winning The new UUID of the top bidder
+     * @param winning The new top bidder
      */
-    public void setWinning(UUID winning) {
-        this.winning = winning;
+    public void setWinning(Player winning) {
+        this.winning = winning.getUniqueId();
+        this.winningName = winning.getName();
     }
 
     /**

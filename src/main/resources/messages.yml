@@ -90,3 +90,10 @@ fail-end-disallowed: "&cYou cannot end this auction"
 fail-start-max: "&cYour starting price is too high"
 fail-start-min: "&cYour starting price is too low"
 anti-snipe-add: "&cAnti-Snipe: %ts &ahas been added to the time!"
+
+# v0.8.0
+auction-queued: "&aYour auction has been queued"
+fail-end-not-your-auction: "&cYou can't end other players auctions"
+fail-start-already-auctioning: "&cYou already have an ongoing auction"
+fail-start-already-queued: "&cYou already have an ongoing auction"
+fail-start-queue-full: "&cThe auction queue is currently full"

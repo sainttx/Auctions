@@ -176,8 +176,8 @@ public class TextUtil {
                     .replaceAll("%a", Integer.toString(auction.getNumItems()))
                     .replaceAll("%A", NumberFormat.getInstance().format(auction.getAutoWin()));
             if (auction.hasBids()) {
-                ret = ret.replaceAll("%T", Double.toString(auction.getCurrentTax()));
-                        // .replaceAll("%w", UUIDtoName(auction.getWinning())); TODO: setWinningName
+                ret = ret.replaceAll("%T", Double.toString(auction.getCurrentTax()))
+                        .replaceAll("%w", auction.getWinningName());
             }
         }
         
