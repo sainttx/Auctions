@@ -1,5 +1,6 @@
 package me.sainttx.auction.command;
 
+import me.sainttx.auction.AuctionManager;
 import me.sainttx.auction.AuctionPlugin;
 import me.sainttx.auction.util.TextUtil;
 
@@ -29,6 +30,7 @@ public class AuctionCommand implements CommandExecutor {
             TextUtil.sendMenu(sender);
         } else {
             String subCommand = args[0].toLowerCase();
+            AuctionManager manager = AuctionManager.getAuctionManager();
 
             if (!sender.hasPermission("auction." + subCommand)) {
                 sender.sendMessage(TextUtil.getConfigMessage("insufficient-permissions"));
@@ -38,8 +40,8 @@ public class AuctionCommand implements CommandExecutor {
                 plugin.loadConfig();
                 TextUtil.load(plugin);
             } else if (subCommand.equals("toggle")) {
-                plugin.manager.setDisabled(!plugin.manager.isDisabled());
-                plugin.getServer().broadcastMessage(plugin.manager.isDisabled()
+                manager.setDisabled(!manager.isDisabled());
+                plugin.getServer().broadcastMessage(manager.isDisabled()
                         ? TextUtil.getConfigMessage("broadcast-disable")
                                 : TextUtil.getConfigMessage("broadcast-enable"));
             } else if (sender instanceof Player) {
@@ -51,18 +53,18 @@ public class AuctionCommand implements CommandExecutor {
                     } else if (player.getGameMode() == GameMode.CREATIVE && !plugin.getConfig().getBoolean("allow-creative", false) && !player.hasPermission("auction.creative")) {
                         TextUtil.sendMessage(TextUtil.getConfigMessage("fail-start-creative"), player);
                     } else {
-                        plugin.manager.prepareAuction(player, args);
+                        manager.prepareAuction(player, args);
                     }
                 } else if (subCommand.equals("bid")) {
                     if (args.length == 2) {
-                        plugin.manager.prepareBid(player, args[1]);
+                        manager.prepareBid(player, args[1]);
                     } else {
                         TextUtil.sendMessage(TextUtil.getConfigMessage("fail-bid-syntax"), player);
                     }
                 } else if (subCommand.equals("info")) {
-                    plugin.manager.sendAuctionInfo(player);
+                    manager.sendAuctionInfo(player);
                 } else if (subCommand.equals("end")) {
-                    plugin.manager.end(player);
+                    manager.end(player);
                 } else if (subCommand.equals("ignore") || subCommand.equals("quiet")) {
                     if (!TextUtil.isIgnoring(player.getUniqueId())) {
                         TextUtil.addIgnoring(player.getUniqueId());

@@ -24,15 +24,14 @@ public class AuctionPlugin extends JavaPlugin implements Listener {
      * General
      */
     private static AuctionPlugin plugin;
-    public AuctionManager manager;
     private static Economy economy;
 
     /*
      * Offline item saving
      */
-    private final File off = new File(getDataFolder(), "saveOfflinePlayer.yml");
-    protected YamlConfiguration logoff;
-    private static HashMap<String, ItemStack> loggedoff = new HashMap<String, ItemStack>();
+    private final File offlineFile = new File(getDataFolder(), "saveOfflinePlayer.yml");
+    private YamlConfiguration offlineConfiguration;
+    private static HashMap<String, ItemStack> offlinePlayers = new HashMap<String, ItemStack>();
 
     /*
      * Configuration
@@ -52,7 +51,6 @@ public class AuctionPlugin extends JavaPlugin implements Listener {
     @Override
     public void onEnable() {
         plugin = this;
-        manager = AuctionManager.getAuctionManager();
         economy = getServer().getServicesManager().getRegistration(Economy.class).getProvider();
 
         // Setup
@@ -61,9 +59,9 @@ public class AuctionPlugin extends JavaPlugin implements Listener {
         TextUtil.load(this);
 
         // Load offline player items
-        for (String string : logoff.getKeys(false)) {
-            ItemStack is = logoff.getItemStack(string);
-            loggedoff.put(string, is);
+        for (String string : offlineConfiguration.getKeys(false)) {
+            ItemStack is = offlineConfiguration.getItemStack(string);
+            offlinePlayers.put(string, is);
         }
 
         // Commands
@@ -80,10 +78,10 @@ public class AuctionPlugin extends JavaPlugin implements Listener {
 
         // Logoff file
         try {
-            if (!off.exists()) {
-                off.createNewFile();
+            if (!offlineFile.exists()) {
+                offlineFile.createNewFile();
             }
-            logoff.save(off);
+            offlineConfiguration.save(offlineFile);
         } catch (IOException ex) {
             ex.printStackTrace();
         }
@@ -115,11 +113,11 @@ public class AuctionPlugin extends JavaPlugin implements Listener {
      * @param is    The item that the player auctioned
      */
     public void saveOfflinePlayer(UUID uuid, ItemStack is) {
-        logoff.set(uuid.toString(), is);
-        loggedoff.put(uuid.toString(), is);
+        offlineConfiguration.set(uuid.toString(), is);
+        offlinePlayers.put(uuid.toString(), is);
 
         try {
-            logoff.save(off);
+            offlineConfiguration.save(offlineFile);
         } catch (IOException ex) {
             ex.printStackTrace();
         }
@@ -136,15 +134,15 @@ public class AuctionPlugin extends JavaPlugin implements Listener {
         if (!names.exists()) {
             saveResource("items.yml", false);
         }
-        if (!off.exists()) {
+        if (!offlineFile.exists()) {
             try {
-                off.createNewFile();
+                offlineFile.createNewFile();
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
         }
 
-        this.logoff = YamlConfiguration.loadConfiguration(off);
+        this.offlineConfiguration = YamlConfiguration.loadConfiguration(offlineFile);
     }
 
     @EventHandler
@@ -154,14 +152,14 @@ public class AuctionPlugin extends JavaPlugin implements Listener {
      */
     public void onJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
-        ItemStack saved = loggedoff.get(player.getUniqueId().toString());
+        ItemStack saved = offlinePlayers.get(player.getUniqueId().toString());
         if (saved != null) {
             AuctionUtil.giveItem(player, saved, "saved-item-return");
-            loggedoff.remove(player.getUniqueId().toString());
-            logoff.set(player.getUniqueId().toString(), null);
+            offlinePlayers.remove(player.getUniqueId().toString());
+            offlineConfiguration.set(player.getUniqueId().toString(), null);
 
             try {
-                logoff.save(off);
+                offlineConfiguration.save(offlineFile);
             } catch (IOException ex) {
                 ex.printStackTrace();
             }

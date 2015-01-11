@@ -131,10 +131,6 @@ public class AuctionManager implements Listener {
             TextUtil.sendMessage(TextUtil.getConfigMessage("fail-start-cant-yet"), player);
         }
 
-        // else if (currentAuction != null) {
-        //     messager.sendText(player, "fail-start-auction-in-progress", true);
-        // }
-
         // Check if the player provided the minimum amount of arguments
         else if (args.length < 3) {
             TextUtil.sendMessage(TextUtil.getConfigMessage("fail-start-syntax"), player);

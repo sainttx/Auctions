@@ -10,6 +10,10 @@ import org.bukkit.inventory.ItemStack;
 import java.util.UUID;
 
 public class Auction {
+
+    /*
+     * The auction plugin
+     */
     private AuctionPlugin plugin;
 
     private String ownerName; // The name of the person that started the auction
@@ -26,7 +30,7 @@ public class Auction {
     private double topBid; // Current top bidder
     private int numItems; // Amount in the ItemStack
     private int auctionTimer; // The auction timer task id
-    private int timeLeft;
+    private int timeLeft; // The amount of time left in this auction
 
     /**
      * Instantiate an Auction
@@ -256,34 +260,75 @@ public class Auction {
         }
     }
 
-    public String getOwnerName() {
-        return ownerName;
-    }
 
-    public double getTopBid() {
-        return topBid;
-    }
-
-    public UUID getWinning() {
-        return winning;
-    }
-
+    /**
+     * Returns the owner's UUID
+     *
+     * @return The player that started this auction's UUID
+     */
     public UUID getOwner() {
         return owner;
     }
 
-    public int getNumItems() {
-        return numItems;
+    /**
+     * Returns the Auction owners name
+     *
+     * @return the name of the Player that started this Auction
+     */
+    public String getOwnerName() {
+        return ownerName;
     }
 
-    public double getAutoWin() {
-        return autoWin;
+    /**
+     * Returns the current top bid
+     *
+     * @return The value of the highest bid
+     */
+    public double getTopBid() {
+        return topBid;
     }
 
+    /**
+     * Returns the ID of the player who currently has the highest bid
+     *
+     * @return the UUID of the current highest bidder
+     */
+    public UUID getWinning() {
+        return winning;
+    }
+
+    /**
+     * The new top bidders UUID
+     *
+     * @param winning The new UUID of the top bidder
+     */
     public void setWinning(UUID winning) {
         this.winning = winning;
     }
 
+    /**
+     * Gets the number of items in the auction
+     *
+     * @return The ItemStacks amount value
+     */
+    public int getNumItems() {
+        return numItems;
+    }
+
+    /**
+     * Gets the auto win amount
+     *
+     * @return The auto win amount
+     */
+    public double getAutoWin() {
+        return autoWin;
+    }
+
+    /**
+     * Sets the new top bid for this Auction
+     *
+     * @param topBid the new top bid value
+     */
     public void setTopBid(double topBid) {
         this.topBid = topBid;
     }
