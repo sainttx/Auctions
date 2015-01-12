@@ -79,6 +79,26 @@ public class AuctionManager implements Listener {
     }
 
     /**
+     * Returns the position a player is in the queue
+     *
+     * @param player The player to check
+     *
+     * @return The position in the queue that the player is in, -1 if not in the queue
+     */
+    public int getQueuePosition(Player player) {
+        Auction[] queueArray = auctionQueue.toArray(new Auction[0]);
+
+        for (int i = 0 ; i < queueArray.length ; i++) {
+            Auction auc = queueArray[i];
+            if (auc != null && auc.getOwner().equals(player.getUniqueId())) {
+                return i + 1;
+            }
+        }
+
+        return -1;
+    }
+
+    /**
      * Returns whether or not a player has an auction queued
      *
      * @param p A player who may have an auction queued
@@ -115,6 +135,11 @@ public class AuctionManager implements Listener {
     public void sendAuctionInfo(Player player) {
         if (currentAuction != null) {
             TextUtil.sendMessage(TextUtil.replace(currentAuction, TextUtil.getConfigMessage("auction-info-message")), player);
+
+            int queuePosition = getQueuePosition(player);
+            if (queuePosition > 0) {
+                TextUtil.sendMessage(TextUtil.replace(currentAuction, TextUtil.getConfigMessage("auction-queue-position").replaceAll("%q", Integer.toString(queuePosition))), player);
+            }
         } else {
             TextUtil.sendMessage(TextUtil.getConfigMessage("fail-info-no-auction"), player);
         }
@@ -133,11 +158,6 @@ public class AuctionManager implements Listener {
         // Check if auctioning is allowed
         if (disabled && !player.hasPermission("auction.bypass.disable")) {
             TextUtil.sendMessage(TextUtil.getConfigMessage("fail-start-auction-disabled"), player);
-        }
-
-        // Check if the player can bypass the start delay
-        else if (!canAuction && !player.hasPermission("auction.bypass.startdelay")) {
-            TextUtil.sendMessage(TextUtil.getConfigMessage("fail-start-cant-yet"), player);
         }
 
         // Check if the player provided the minimum amount of arguments

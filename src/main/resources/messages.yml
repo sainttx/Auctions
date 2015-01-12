@@ -6,6 +6,7 @@
 # %p - player hosting the auction
 # %w - the current top bidder of the auction
 # %b - the current top bid
+# %q - the position a player is in the queue
 # %T - tax being charged at the end of auction
 # unsupported-item only applies for Firework and Firework Charge right now
 reload: "&aAuctions has been reloaded"
@@ -87,6 +88,7 @@ anti-snipe-add: "&cAnti-Snipe: %ts &ahas been added to the time!"
 
 # v0.8.0
 auction-queued: "&aYour auction has been queued"
+auction-queue-position: "&aYour auction is &c#%q &ain the auction queue"
 fail-end-not-your-auction: "&cYou can't end other players auctions"
 fail-start-already-auctioning: "&cYou already have an ongoing auction"
 fail-start-already-queued: "&cYou already have an ongoing auction"
