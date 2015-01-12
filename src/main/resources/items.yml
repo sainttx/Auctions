@@ -1017,3 +1017,91 @@ RECORD_11:
   0: 11 Disc
 RECORD_12:
   0: Wait Disc
+
+# 1.8 items
+SLIME_BLOCK:
+  0: Slime Block
+BARRIER:
+  0: Barrier
+STANDING_BANNER:
+  0: Banner
+WALL_BANNER:
+  0: Banner
+IRON_TRAPDOOR:
+  0: Iron Trapdoor
+PRISMARINE:
+  0: Prismarine
+SEA_LANTERN:
+  0: Sea Lantern
+DAYLIGHT_DETECTOR_INVERTED:
+  0: Daylight Sensor
+RED_SANDSTONE:
+  0: Red Sandstone
+RED_SANDSTONE_STAIRS:
+  0: Red Sandstone Stairs
+DOUBLE_STONE_SLAB2:
+  0: Double Red Sandstone Slab
+STONE_SLAB2:
+  0: Red Sandstone Slab
+SPRUCE_FENCE_GATE:
+  0: Spruce Fence Gate
+BIRCH_FENCE_GATE:
+  0: Birch Fence Gate
+JUNGLE_FENCE_GATE:
+  0: Jungle Fence Gate
+DARK_OAK_FENCE_GATE:
+  0: Dark Oak Fence Gate
+ACACIA_FENCE_GATE:
+  0: Acacia Fence Gate
+SPRUCE_FENCE:
+  0: Spruce Fence
+BIRCH_FENCE:
+  0: Birch Fence
+JUNGLE_FENCE:
+  0: Jungle Fence
+DARK_OAK_FENCE:
+  0: Dark Oak Fence
+ACACIA_FENCE:
+  0: Acacia Fence
+SPRUCE_DOOR:
+  0: Spruce Door
+BIRCH_DOOR:
+  0: Birch Door
+JUNGLE_DOOR:
+  0: Jungle Door
+ACACIA_DOOR:
+  0: Acacia Door
+DARK_OAK_DOOR:
+  0: Dark Oak Door
+PRISMARINE_SHARD:
+  0: Prismarine Shard
+PRISMARINE_CRYSTALS:
+  0: Prismarine Crystals
+RABBIT:
+  0: Raw Rabbit
+COOKED_RABBIT:
+  0: Cooked Rabbit
+RABBIT_STEW:
+  0: Rabbit Stew
+RABBIT_FOOT:
+  0: Rabbit's Foot
+RABBIT_HIDE:
+  0: Rabbit Hide
+ARMOR_STAND:
+  0: Armor Stand
+MUTTON:
+  0: Raw Mutton
+COOKED_MUTTON:
+  0: Cooked Mutton
+BANNER:
+  0: Banner
+SPRUCE_DOOR_ITEM:
+  0: Spruce Door
+BIRCH_DOOR_ITEM:
+  0: Birch Door
+JUNGLE_DOOR_ITEM:
+  0: Jungle Door
+ACACIA_DOOR_ITEM:
+  0: Acacia Door
+DARK_OAK_DOOR_ITEM:
+  0: Dark Oak Door
