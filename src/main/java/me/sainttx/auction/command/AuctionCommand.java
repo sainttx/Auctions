@@ -73,6 +73,8 @@ public class AuctionCommand implements CommandExecutor {
                         TextUtil.removeIgnoring(player.getUniqueId());
                         TextUtil.sendMessage(TextUtil.getConfigMessage("ignoring-off"), player);
                     }
+                } else {
+                    TextUtil.sendMenu(sender);
                 }
             } else {
                 TextUtil.sendMenu(sender);
