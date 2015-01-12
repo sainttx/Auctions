@@ -124,7 +124,13 @@ public class TextUtil {
                     }
                 }
             } else {
-                fancy.then(str).color(current);
+                fancy.then(str);
+
+                if (current.isColor()) {
+                    fancy.color(current);
+                } else {
+                    fancy.style(current);
+                }
             }
 
             fancy.then(" "); // Add a space after every word
