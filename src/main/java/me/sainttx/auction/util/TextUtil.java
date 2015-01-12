@@ -209,4 +209,15 @@ public class TextUtil {
             sender.sendMessage(color(message));
         }
     }
+
+    /**
+     * Sends the auction help text to a sender
+     *
+     * @param sender The sender to send the menu too
+     */
+    public static void sendHelp(CommandSender sender) {
+        for (String message : messageFile.getStringList("auction-help")) {
+            sender.sendMessage(color(message));
+        }
+    }
 }

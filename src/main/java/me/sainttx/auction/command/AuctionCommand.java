@@ -65,6 +65,12 @@ public class AuctionCommand implements CommandExecutor {
                     manager.sendAuctionInfo(player);
                 } else if (subCommand.equals("end")) {
                     manager.end(player);
+                } else if (subCommand.equals("help")) {
+                    if (plugin.getConfig().getBoolean("allow-help-command", false)) {
+                        TextUtil.sendHelp(sender);
+                    } else {
+                        TextUtil.sendMenu(sender);
+                    }
                 } else if (subCommand.equals("ignore") || subCommand.equals("quiet")) {
                     if (!TextUtil.isIgnoring(player.getUniqueId())) {
                         TextUtil.addIgnoring(player.getUniqueId());

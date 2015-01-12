@@ -31,6 +31,10 @@ auction-menu:
 - "&b/auction end"
 - "&b/auction ignore"
 - "&b/auction reload"
+auction-help:
+- You can configure your custom help messages here
+- Make sure allow-help-command in config.yml is set to true, otherwise
+- you'll just see auction-menu
 auction-timer: "&aThe auction for &b%a %i &ahas &b%t &aremaining"
 auction-cancelled: "&aThe auction for &b&a %i &awas &ccancelled"
 auction-start: "&b%p &astarted an auction for &c%a %i"
@@ -87,6 +91,7 @@ fail-start-min: "&cYour starting price is too low"
 anti-snipe-add: "&cAnti-Snipe: %ts &ahas been added to the time!"
 
 # v0.8.0
+# allow-auction-help below auction-menu was added in v0.8.0 as well
 auction-queued: "&aYour auction has been queued"
 auction-queue-position: "&aYour auction is &c#%q &ain the auction queue"
 fail-end-not-your-auction: "&cYou can't end other players auctions"
