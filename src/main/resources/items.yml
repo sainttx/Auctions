@@ -806,8 +806,10 @@ NETHER_STALK:
 POTION:
   # Regular Potions
   16: Awkward Potion
-  8203: Diffuse Potion
   8192: Mundane Potion
+  8203: Potion of Leaping (3:00)
+  8235: Potion of Leaping II (1:30)
+  8267: Potion of Leaping (8:00)
   8193: Potion of Regeneration (0:45)
   8257: Potion of Regeneration (2:00)
   8225: Potion of Regeneration II (0:22)
@@ -840,6 +842,9 @@ POTION:
   8206: Potion of Invisibility (3:00)
   8270: Potion of Invisibility (8:00)
   # Splash Potions
+  16395: Splash Potion of Leaping
+  16427: Splash Potion of Leaping II
+  16459: Extended Splash Potion of Leaping
   16385: Splash Potion of Regeneration
   16417: Splash Potion of Regeneration II
   16449: Extended Splash Potion of Regeneration

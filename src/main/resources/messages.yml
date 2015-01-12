@@ -66,7 +66,7 @@ fail-console: "&cConsole can't use this command"
 items-no-space: "&6Not enough space, items have been dropped at your feet"
 saved-item-return: "&6Your items were saved and have been returned"
 winner-item: "&6You won the auction and have received your items"
-no-bidder-return: "&6There were no bidders on your auc, your items were &6refunded"
+no-bidder-return: "&6Your items were refunded as nobody bid on your auction"
 give-item-unknown: "&6Your items have been returned"
 
 # v0.0.7
