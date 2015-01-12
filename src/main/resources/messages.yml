@@ -6,50 +6,42 @@
 # %p - player hosting the auction
 # %w - the current top bidder of the auction
 # %b - the current top bid
-# %q - the position a player is in the queue
+# %q - the position a player is in the queue (only works with auction-queue-position message)
 # %T - tax being charged at the end of auction
 # unsupported-item only applies for Firework and Firework Charge right now
 reload: "&aAuctions has been reloaded"
-insufficient-permissions: "&cInsufficient permissions"
-unsupported-item: "&cThat item can't be auctioned"
-ignoring-on: "&aYou are now &cignoring &aauction messages"
-ignoring-off: "&aYou are no longer ignoring auction messages"
-
-# Workaround for fanciful difficulties
-# Change the color/style of the item text
-# color: 0-9 or a-f
-# style: k/o/n/l or none
+insufficient-permissions: "&cYou don''t have enough permissions"
+unsupported-item: "&cThat item can''t be auctioned"
+ignoring-on: "&6You are now &cignoring &6auction messages"
+ignoring-off: "&6You are no longer ignoring auction messages"
 itemColor:
   color: c
   style: l
-
 auction-menu:
-- "&aAuction menu:"
-- "&b/auction info"
-- "&b/auction bid &c<amount>"
-- "&b/auction start &c<amount> <min-bid> &7[autowin]"
-- "&b/auction end"
-- "&b/auction ignore"
-- "&b/auction reload"
+- "&6&lAuction Help Menu - Commands:"
+- "&6/auction info &e- &cDisplays current auction information"
+- "&6/auction bid &7<amount> &e- &cBid on an auction"
+- "&6/auction start &7<amount> <min-bid> [autowin] &e- &cStart an auction"
+- "&6/auction end &e- &cEnd your current auction"
+- "&6/auction ignore &e- &cIgnore plugin messages"
+- "&6/auction reload &e- &cReload auction configuration"
 auction-help:
-- You can configure your custom help messages here
-- Make sure allow-help-command in config.yml is set to true, otherwise
-- you'll just see auction-menu
-auction-timer: "&aThe auction for &b%a %i &ahas &b%t &aremaining"
-auction-cancelled: "&aThe auction for &b&a %i &awas &ccancelled"
-auction-start: "&b%p &astarted an auction for &c%a %i"
-auction-start-price: "&aThe auction begins at &c$%b &aand will last for &b%t"
-auction-start-autowin: "&aThe host has set the autowin amount to &c$%A"
-auction-info-message: "&b%p &ais auctioning &c%a %i &afor &c$%b"
-auction-ended: "&aYour auction has ended. Received &c$%b"
-auction-ended-autowin: "&aThe auction for %i ended with &b%w &abidding &c$%b &c&n(autowin)"
-auction-end-tax: "&aA tax of &c$%T &awas charged"
-auction-end-no-bidders: "&aThe auction for &b%a %i &aended with no bids"
-auction-end-broadcast: "&b%w &awon &b%a %i &awith a bid of &b$%b"
-
-bid-broadcast: "&b%w &ahas bid &c$%b &aon %a %i"
-auction-winner: "&aYou won &b%a %i &awith a bid of &c$%b"
-
+- "You can configure your custom help messages here"
+- "Make sure allow-help-command in config.yml is set to true, otherwise"
+- "you'll just see auction-menu"
+auction-timer: "&6The auction for &c%a %i &6has &c%t &6remaining"
+auction-cancelled: "&6The auction for &c&6 %i &6was &ccancelled"
+auction-start: "&c%p &6started an auction for &c%a %i"
+auction-start-price: "&6The auction begins at &c$%b &6and will last for &c%t"
+auction-start-autowin: "&6The host has set the autowin amount to &c$%A"
+auction-info-message: "&c%p &6is auctioning &c%a %i &6for &c$%b"
+auction-ended: "&6Your auction has ended. Received &c$%b"
+auction-ended-autowin: "&6The auction for %i ended with &c%w &6bidding &c$%b &c&n(autowin)"
+auction-end-tax: "&6A tax of &c$%T &6was charged"
+auction-end-no-bidders: "&6The auction for &c%a %i &6ended with no bids"
+auction-end-broadcast: "&c%w &6won &c%a %i &6with a bid of &c$%b"
+bid-broadcast: "&c%w &6has bid &c$%b &6on %a %i"
+auction-winner: "&6You won &c%a %i &6with a bid of &c$%b"
 fail-bid-insufficient-balance: "&cYour bid exceeds your current balance"
 fail-bid-no-auction: "&cThere is no auction to bid on"
 fail-bid-your-auction: "&cYou cannot bid on your own auction"
@@ -57,44 +49,44 @@ fail-bid-top-bidder: "&cYou are already the top bidder"
 fail-bid-too-low: "&cYour bid was too low"
 fail-bid-syntax: "&cUsage: /auction bid <amount>"
 fail-bid-number: "&cInvalid bid"
-fail-cancel-not-yours: "&cYou can't cancel auctions that aren't your own"
+fail-cancel-not-yours: "&cYou can''t cancel auctions that aren''t your own"
 fail-end-no-auction: "&cThere is no auction at this time"
 fail-info-no-auction: "&cThere is no auction at this time"
 fail-start-cant-yet: "&cYou cannot start at an auction at this time"
 fail-start-ignoring: "&cYou have auctions ignored, toggle by using &n/auction quiet"
-fail-start-hand-empty: "&aYou can't auction air"
-fail-start-not-enough-items: "&cYou don't have enough of that item!"
-fail-start-no-funds: "&cYou can't afford to start an auction"
+fail-start-hand-empty: "&6You can''t auction air"
+fail-start-not-enough-items: "&cYou don''t have enough of that item!"
+fail-start-no-funds: "&cYou can''t afford to start an auction"
 fail-start-syntax: "&cUsage: /auction start <amount> <min-bid> [autowin]"
 fail-start-auction-in-progress: "&cThere is already an auction in progress"
 fail-start-creative: "&cYou cannot start an auction in GameMode CREATIVE"
 fail-start-unknown: "&cCould not start the auction"
 fail-number-format: "&cYou provided an invalid number"
-fail-console: "&cConsole can't use this command"
-
-items-no-space: "&aNot enough space, items have been dropped at your feet"
-saved-item-return: "&aYour items were saved and have been returned"
-winner-item: "&aYou won the auction and have received your items"
-no-bidder-return: "&aThere were no bidders on your auc, your items were &arefunded"
-give-item-unknown: "&aYour items have been returned"
+fail-console: "&cConsole can''t use this command"
+items-no-space: "&6Not enough space, items have been dropped at your feet"
+saved-item-return: "&6Your items were saved and have been returned"
+winner-item: "&6You won the auction and have received your items"
+no-bidder-return: "&6There were no bidders on your auc, your items were &6refunded"
+give-item-unknown: "&6Your items have been returned"
 
 # v0.0.7
-broadcast-disable: "&cAuctions are now disabled, only those with permission can start auctions"
-broadcast-enable: "&aAuctions have been re-enabled"
+broadcast-disable: "&cAuctions are now disabled, only those with permission can start
+  auctions"
+broadcast-enable: "&6Auctions have been re-enabled"
 already-disabled: "&cAuctions are already disabled"
-already-enabled: "&cAuctions are already enabled" 
+already-enabled: "&cAuctions are already enabled"
 fail-start-auction-disabled: "&cAuctions are currently disabled"
-fail-start-negative-number: "&cYou can't auction a stack with negative size"
+fail-start-negative-number: "&cYou can''t auction a stack with negative size"
 fail-end-disallowed: "&cYou cannot end this auction"
 fail-start-max: "&cYour starting price is too high"
 fail-start-min: "&cYour starting price is too low"
-anti-snipe-add: "&cAnti-Snipe: %ts &ahas been added to the time!"
+anti-snipe-add: "&cAnti-Snipe: %ts &6has been added to the time!"
 
 # v0.8.0
 # allow-auction-help below auction-menu was added in v0.8.0 as well
-auction-queued: "&aYour auction has been queued"
-auction-queue-position: "&aYour auction is &c#%q &ain the auction queue"
-fail-end-not-your-auction: "&cYou can't end other players auctions"
+auction-queued: "&6Your auction has been queued"
+auction-queue-position: "&6Your auction is &c#%q &6in the auction queue"
+fail-end-not-your-auction: "&cYou can''t end other players auctions"
 fail-start-already-auctioning: "&cYou already have an ongoing auction"
 fail-start-already-queued: "&cYou already have an ongoing auction"
 fail-start-queue-full: "&cThe auction queue is currently full"
