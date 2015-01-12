@@ -367,10 +367,10 @@ public class AuctionManager implements Listener {
 
         // Check if the auction isn't won due to autowin
         if (amount >= currentAuction.getAutoWin() && currentAuction.getAutoWin() != -1) {
-            TextUtil.sendMessage(TextUtil.getConfigMessage("auction-ended-autowin"), Bukkit.getOnlinePlayers().toArray(new Player[0]));
+            TextUtil.sendMessage(TextUtil.replace(currentAuction, TextUtil.getConfigMessage("auction-ended-autowin")), Bukkit.getOnlinePlayers().toArray(new Player[0]));
             currentAuction.end(true);
         } else {
-            TextUtil.sendMessage(TextUtil.getConfigMessage("bid-broadcast"), Bukkit.getOnlinePlayers().toArray(new Player[0]));
+            TextUtil.sendMessage(TextUtil.replace(currentAuction, TextUtil.getConfigMessage("bid-broadcast")), Bukkit.getOnlinePlayers().toArray(new Player[0]));
         }
     }
 
