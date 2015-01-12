@@ -5,6 +5,7 @@ import me.sainttx.auction.AuctionManager;
 import me.sainttx.auction.AuctionPlugin;
 import mkremins.fanciful.FancyMessage;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -161,7 +162,21 @@ public class TextUtil {
         String search = item.getType().toString() + "." + durability;
         String ret = itemsFile.getString(search);
 
-        return ret == null ? "null" : ret;
+        return ret == null ? getMaterialName(item.getType()) : ret;
+    }
+
+    /*
+     * Converts a material to a string (ie. ARMOR_STAND = Armor Stand)
+     */
+    private static String getMaterialName(Material material) {
+        String[] split = material.toString().toLowerCase().split("_");
+        StringBuilder builder = new StringBuilder();
+
+        for (String str : split) {
+            builder.append(str.substring(0, 1).toUpperCase() + str.substring(1) + " ");
+        }
+
+        return builder.toString().trim();
     }
 
     /*
