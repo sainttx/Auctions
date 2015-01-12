@@ -4,7 +4,7 @@
 # will not show bids or end, only start
 auction-time: 30
 
-# Allow/disallow the 
+# Allow/disallow
 allow-autowin: true
 allow-creative: false
 
@@ -26,6 +26,9 @@ allow-end: false
 ## Minimum and maximum prices
 min-start-price: 10
 max-start-price: 100
+
+## Auction queues
+queue-limit: 3
 
 # Use http://jd.bukkit.org/rb/apidocs/org/bukkit/Material.html
 banned-items:

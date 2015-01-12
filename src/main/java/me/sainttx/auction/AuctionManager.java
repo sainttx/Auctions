@@ -179,7 +179,7 @@ public class AuctionManager implements Listener {
             }
 
             // Check if the queue is full
-            else if (auctionQueue.size() > 5) {
+            else if (auctionQueue.size() > plugin.getConfig().getInt("queue-limit", 3)) {
                 TextUtil.sendMessage(TextUtil.getConfigMessage("fail-start-queue-full"), player);
             }
 
