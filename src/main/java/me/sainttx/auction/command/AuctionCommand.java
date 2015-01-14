@@ -32,6 +32,11 @@ public class AuctionCommand implements CommandExecutor {
             String subCommand = args[0].toLowerCase();
             AuctionManager manager = AuctionManager.getAuctionManager();
 
+            // TODO: This is only temporary
+            if (subCommand.equalsIgnoreCase("quiet")) {
+                subCommand = "ignore";
+            }
+
             if (!sender.hasPermission("auction." + subCommand)) {
                 sender.sendMessage(TextUtil.getConfigMessage("insufficient-permissions"));
             } else if (subCommand.equals("reload")) {

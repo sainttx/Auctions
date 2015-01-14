@@ -22,7 +22,6 @@ permissions:
       auction.end: true
       auction.end.bypass: true
       auction.info: true
-      auction.quiet: true
       auction.ignore: true
       auction.tax.exempt: true
       auction.disable.bypass: true
@@ -47,9 +46,6 @@ permissions:
     default: op
   auction.info:
     description: Allows you to view auction information
-    default: true
-  auction.quiet:
-    description: Allows you to ignore auction messages
     default: true
   auction.ignore:
     description: Allows you to ignore auction messages
