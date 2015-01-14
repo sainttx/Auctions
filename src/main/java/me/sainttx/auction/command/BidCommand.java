@@ -34,19 +34,21 @@ public class BidCommand implements CommandExecutor {
         Player player = (Player) sender;
 
         if (!sender.hasPermission("auction.bid")) {
-            TextUtil.sendMessage(TextUtil.getConfigMessage("insufficient-permissions"), player);
+            TextUtil.sendMessage(TextUtil.getConfigMessage("insufficient-permissions"), true, player);
+        } else if (TextUtil.isIgnoring(player.getUniqueId())) {
+            TextUtil.sendMessage(TextUtil.getConfigMessage("fail-start-ignoring"), true, player);
         } else if (args.length == 0 && plugin.getConfig().getBoolean("allow-autobid", false)) {
             Auction auction = AuctionManager.getCurrentAuction();
 
             if (auction != null) {
                 AuctionManager.getAuctionManager().prepareBid(player, (int) (auction.getTopBid() + plugin.getConfig().getDouble("minimum-bid-increment", 1D)));
             } else {
-                TextUtil.sendMessage(TextUtil.getConfigMessage("fail-bid-no-auction"), player);
+                TextUtil.sendMessage(TextUtil.getConfigMessage("fail-bid-no-auction"), true, player);
             }
         } else if (args.length == 1) {
             AuctionManager.getAuctionManager().prepareBid(player, args[0]);
         } else {
-            TextUtil.sendMessage(TextUtil.getConfigMessage("fail-bid-syntax"), player);
+            TextUtil.sendMessage(TextUtil.getConfigMessage("fail-bid-syntax"), true, player);
         }
 
         return false;

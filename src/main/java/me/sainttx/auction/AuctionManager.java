@@ -134,14 +134,14 @@ public class AuctionManager implements Listener {
      */
     public void sendAuctionInfo(Player player) {
         if (currentAuction != null) {
-            TextUtil.sendMessage(TextUtil.replace(currentAuction, TextUtil.getConfigMessage("auction-info-message")), player);
+            TextUtil.sendMessage(TextUtil.replace(currentAuction, TextUtil.getConfigMessage("auction-info-message")), true, player);
 
             int queuePosition = getQueuePosition(player);
             if (queuePosition > 0) {
-                TextUtil.sendMessage(TextUtil.replace(currentAuction, TextUtil.getConfigMessage("auction-queue-position").replaceAll("%q", Integer.toString(queuePosition))), player);
+                TextUtil.sendMessage(TextUtil.replace(currentAuction, TextUtil.getConfigMessage("auction-queue-position").replaceAll("%q", Integer.toString(queuePosition))), true, player);
             }
         } else {
-            TextUtil.sendMessage(TextUtil.getConfigMessage("fail-info-no-auction"), player);
+            TextUtil.sendMessage(TextUtil.getConfigMessage("fail-info-no-auction"), true, player);
         }
     }
 
@@ -157,12 +157,12 @@ public class AuctionManager implements Listener {
 
         // Check if auctioning is allowed
         if (disabled && !player.hasPermission("auction.bypass.disable")) {
-            TextUtil.sendMessage(TextUtil.getConfigMessage("fail-start-auction-disabled"), player);
+            TextUtil.sendMessage(TextUtil.getConfigMessage("fail-start-auction-disabled"), true, player);
         }
 
         // Check if the player provided the minimum amount of arguments
         else if (args.length < 3) {
-            TextUtil.sendMessage(TextUtil.getConfigMessage("fail-start-syntax"), player);
+            TextUtil.sendMessage(TextUtil.getConfigMessage("fail-start-syntax"), true, player);
         }
 
         else {
@@ -175,32 +175,32 @@ public class AuctionManager implements Listener {
                 numItems = Integer.parseInt(args[1]);
                 startingPrice = Double.parseDouble(args[2]);
             } catch (NumberFormatException ex) {
-                TextUtil.sendMessage(TextUtil.getConfigMessage("fail-number-format"), player);
+                TextUtil.sendMessage(TextUtil.getConfigMessage("fail-number-format"), true, player);
             }
 
             // Check if the player has provided a positive amount of items
             if (numItems < 0) {
-                TextUtil.sendMessage(TextUtil.getConfigMessage("fail-start-negative-number"), player);
+                TextUtil.sendMessage(TextUtil.getConfigMessage("fail-start-negative-number"), true, player);
             }
 
             // Check if the player has specified a correct starting price (lower bound)
             else if (startingPrice < minStartingPrice) {
-                TextUtil.sendMessage(TextUtil.getConfigMessage("fail-start-min"), player);
+                TextUtil.sendMessage(TextUtil.getConfigMessage("fail-start-min"), true, player);
             }
 
             // Check if the player has specified a correct starting price (upper bound)
             else if (startingPrice > maxStartingPrice) {
-                TextUtil.sendMessage(TextUtil.getConfigMessage("fail-start-max"), player);
+                TextUtil.sendMessage(TextUtil.getConfigMessage("fail-start-max"), true, player);
             }
 
             // Check if the player has enough money
             else if (fee > AuctionPlugin.getEconomy().getBalance(player)) {
-                TextUtil.sendMessage(TextUtil.getConfigMessage("fail-start-no-funds"), player);
+                TextUtil.sendMessage(TextUtil.getConfigMessage("fail-start-no-funds"), true, player);
             }
 
             // Check if the queue is full
             else if (auctionQueue.size() > plugin.getConfig().getInt("queue-limit", 3)) {
-                TextUtil.sendMessage(TextUtil.getConfigMessage("fail-start-queue-full"), player);
+                TextUtil.sendMessage(TextUtil.getConfigMessage("fail-start-queue-full"), true, player);
             }
 
             else {
@@ -210,15 +210,15 @@ public class AuctionManager implements Listener {
 
                     // Check if the player is allowed to specify an autowin
                     if (!plugin.getConfig().getBoolean("allow-autowin", false)) {
-                        TextUtil.sendMessage(TextUtil.getConfigMessage("fail-start-no-autowin"), player);
+                        TextUtil.sendMessage(TextUtil.getConfigMessage("fail-start-no-autowin"), true, player);
                     }
                 }
 
                 // Decide whether to immediately start the auction or place it in the queue
                 if (currentAuction != null && currentAuction.getOwner().equals(player.getUniqueId())) {
-                    TextUtil.sendMessage(TextUtil.getConfigMessage("fail-start-already-auctioning"), player);
+                    TextUtil.sendMessage(TextUtil.getConfigMessage("fail-start-already-auctioning"), true, player);
                 } else if (hasAuctionQueued(player)) {
-                    TextUtil.sendMessage(TextUtil.getConfigMessage("fail-start-already-queued"), player);
+                    TextUtil.sendMessage(TextUtil.getConfigMessage("fail-start-already-queued"), true, player);
                 } else {
                     Auction auction = createAuction(plugin, player, numItems, startingPrice, autoWin);
 
@@ -226,7 +226,7 @@ public class AuctionManager implements Listener {
                         startAuction(auction);
                     } else {
                         auctionQueue.add(auction);
-                        TextUtil.sendMessage(TextUtil.getConfigMessage("auction-queued"), player);
+                        TextUtil.sendMessage(TextUtil.getConfigMessage("auction-queued"), true, player);
                     }
                 }
             }
@@ -276,9 +276,9 @@ public class AuctionManager implements Listener {
         try {
             auction = new Auction(AuctionPlugin.getPlugin(), player, numItems, startingPrice, autoWin);
         } catch (NumberFormatException ex1) {
-            TextUtil.sendMessage(TextUtil.getConfigMessage("fail-number-format"), player);
+            TextUtil.sendMessage(TextUtil.getConfigMessage("fail-number-format"), true, player);
         } catch (Exception ex2) {
-            TextUtil.sendMessage(TextUtil.getConfigMessage(ex2.getMessage()), player);
+            TextUtil.sendMessage(TextUtil.getConfigMessage(ex2.getMessage()), true, player);
         }
 
         if (!player.hasPermission("auction.tax.exempt")) {
@@ -300,7 +300,7 @@ public class AuctionManager implements Listener {
             double bid = Double.parseDouble(amount);
             prepareBid(player, bid);
         } catch (NumberFormatException ex) {
-            TextUtil.sendMessage(TextUtil.getConfigMessage("fail-bid-number"), player);
+            TextUtil.sendMessage(TextUtil.getConfigMessage("fail-bid-number"), true, player);
         }
     }
 
@@ -315,27 +315,27 @@ public class AuctionManager implements Listener {
     public void prepareBid(Player player, double amount) {
         // Check if there's an auction to bid on
         if (currentAuction == null) {
-            TextUtil.sendMessage(TextUtil.getConfigMessage("fail-bid-no-auction"), player);
+            TextUtil.sendMessage(TextUtil.getConfigMessage("fail-bid-no-auction"), true, player);
         }
 
         // Check if the auction isn't their own
         else if (currentAuction.getOwner().equals(player.getUniqueId())) {
-            TextUtil.sendMessage(TextUtil.getConfigMessage("fail-bid-your-auction"), player);
+            TextUtil.sendMessage(TextUtil.getConfigMessage("fail-bid-your-auction"), true, player);
         }
 
         // Check if they bid enough
         else if (amount < currentAuction.getTopBid() + plugin.getConfig().getDouble("minimum-bid-increment", 1D)) {
-            TextUtil.sendMessage(TextUtil.getConfigMessage("fail-bid-too-low"), player);
+            TextUtil.sendMessage(TextUtil.getConfigMessage("fail-bid-too-low"), true, player);
         }
 
         // Check if they have enough money to bid
         else if (AuctionPlugin.getEconomy().getBalance(player) < amount) {
-            TextUtil.sendMessage(TextUtil.getConfigMessage("fail-bid-insufficient-balance"), player);
+            TextUtil.sendMessage(TextUtil.getConfigMessage("fail-bid-insufficient-balance"), true, player);
         }
 
         // Check if they're already the top bidder
         else if (currentAuction.getWinning() != null && currentAuction.getWinning().equals(player.getUniqueId())) {
-            TextUtil.sendMessage(TextUtil.getConfigMessage("fail-bid-top-bidder"), player);
+            TextUtil.sendMessage(TextUtil.getConfigMessage("fail-bid-top-bidder"), true, player);
         }
 
         else {
@@ -367,10 +367,10 @@ public class AuctionManager implements Listener {
 
         // Check if the auction isn't won due to autowin
         if (amount >= currentAuction.getAutoWin() && currentAuction.getAutoWin() != -1) {
-            TextUtil.sendMessage(TextUtil.replace(currentAuction, TextUtil.getConfigMessage("auction-ended-autowin")), Bukkit.getOnlinePlayers().toArray(new Player[0]));
+            TextUtil.sendMessage(TextUtil.replace(currentAuction, TextUtil.getConfigMessage("auction-ended-autowin")), false, Bukkit.getOnlinePlayers().toArray(new Player[0]));
             currentAuction.end(true);
         } else {
-            TextUtil.sendMessage(TextUtil.replace(currentAuction, TextUtil.getConfigMessage("bid-broadcast")), Bukkit.getOnlinePlayers().toArray(new Player[0]));
+            TextUtil.sendMessage(TextUtil.replace(currentAuction, TextUtil.getConfigMessage("bid-broadcast")), false, Bukkit.getOnlinePlayers().toArray(new Player[0]));
         }
     }
 
@@ -381,11 +381,11 @@ public class AuctionManager implements Listener {
      */
     public void end(Player player) {
         if (currentAuction == null) {
-            TextUtil.sendMessage(TextUtil.getConfigMessage("fail-end-no-auction"), player);
+            TextUtil.sendMessage(TextUtil.getConfigMessage("fail-end-no-auction"), true, player);
         } else if (!plugin.getConfig().getBoolean("allow-end", false) && !player.hasPermission("auction.end.bypass")) {
-            TextUtil.sendMessage(TextUtil.getConfigMessage("fail-end-disallowed"), player);
+            TextUtil.sendMessage(TextUtil.getConfigMessage("fail-end-disallowed"), true, player);
         } else if (!currentAuction.getOwner().equals(player.getUniqueId()) && !player.hasPermission("auction.end.bypass")) {
-            TextUtil.sendMessage(TextUtil.getConfigMessage("fail-end-not-your-auction"), player);
+            TextUtil.sendMessage(TextUtil.getConfigMessage("fail-end-not-your-auction"), true, player);
         } else {
             currentAuction.end(true);
             killAuction();

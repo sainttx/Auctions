@@ -52,10 +52,10 @@ public class AuctionUtil {
             }
         }
         if (messages.length == 1) {
-            TextUtil.sendMessage(TextUtil.getConfigMessage(messages[0]), player);
+            TextUtil.sendMessage(TextUtil.getConfigMessage(messages[0]), true, player);
         } 
         if (dropped) {
-            TextUtil.sendMessage(TextUtil.getConfigMessage("items-no-space"), player);
+            TextUtil.sendMessage(TextUtil.getConfigMessage("items-no-space"), true, player);
         } 
     }
 

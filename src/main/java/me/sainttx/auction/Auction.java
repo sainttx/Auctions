@@ -121,11 +121,11 @@ public class Auction {
      */
     public void start() {
         auctionTimer = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, new AuctionTimer(this), 0L, 20L);
-        TextUtil.sendMessage(TextUtil.replace(this, TextUtil.getConfigMessage("auction-start")), Bukkit.getOnlinePlayers().toArray(new Player[0]));
-        TextUtil.sendMessage(TextUtil.replace(this, TextUtil.getConfigMessage("auction-start-price")), Bukkit.getOnlinePlayers().toArray(new Player[0]));
+        TextUtil.sendMessage(TextUtil.replace(this, TextUtil.getConfigMessage("auction-start")), false, Bukkit.getOnlinePlayers().toArray(new Player[0]));
+        TextUtil.sendMessage(TextUtil.replace(this, TextUtil.getConfigMessage("auction-start-price")), false, Bukkit.getOnlinePlayers().toArray(new Player[0]));
 
         if (autoWin != -1) {
-            TextUtil.sendMessage(TextUtil.replace(this, TextUtil.getConfigMessage("auction-start-autowin")), Bukkit.getOnlinePlayers().toArray(new Player[0]));
+            TextUtil.sendMessage(TextUtil.replace(this, TextUtil.getConfigMessage("auction-start-autowin")), false, Bukkit.getOnlinePlayers().toArray(new Player[0]));
         }
     }
 
@@ -162,7 +162,7 @@ public class Auction {
             // Check if the winner is online
             if (winner != null) {
                 AuctionUtil.giveItem(winner, item);
-                TextUtil.sendMessage(TextUtil.replace(this, TextUtil.getConfigMessage("auction-winner")), winner);
+                TextUtil.sendMessage(TextUtil.replace(this, TextUtil.getConfigMessage("auction-winner")), true, winner);
             } else {
                 Bukkit.getLogger().info("[Auction] Saving items of offline player " + this.winning);
                 plugin.saveOfflinePlayer(winning, item);
@@ -172,14 +172,14 @@ public class Auction {
             AuctionPlugin.getEconomy().depositPlayer(owner, winnings);
 
             if (broadcast) {
-                TextUtil.sendMessage(TextUtil.replace(this, TextUtil.getConfigMessage("auction-end-broadcast")), Bukkit.getOnlinePlayers().toArray(new Player[0]));
+                TextUtil.sendMessage(TextUtil.replace(this, TextUtil.getConfigMessage("auction-end-broadcast")), false, Bukkit.getOnlinePlayers().toArray(new Player[0]));
             }
 
             // Check if the owner of the auction is online
             if (owner != null) {
-                TextUtil.sendMessage(TextUtil.replace(this, TextUtil.getConfigMessage("auction-ended")), owner);
+                TextUtil.sendMessage(TextUtil.replace(this, TextUtil.getConfigMessage("auction-ended")), true, owner);
                 if (taxable) {
-                    TextUtil.sendMessage(TextUtil.replace(this, TextUtil.getConfigMessage("auction-end-tax")), owner);
+                    TextUtil.sendMessage(TextUtil.replace(this, TextUtil.getConfigMessage("auction-end-tax")), true, owner);
                 }
             }
         }
@@ -187,7 +187,7 @@ public class Auction {
         // There was no winner
         else {
             if (broadcast) {
-                TextUtil.sendMessage(TextUtil.replace(this, TextUtil.getConfigMessage("auction-end-no-bidders")), Bukkit.getOnlinePlayers().toArray(new Player[0]));
+                TextUtil.sendMessage(TextUtil.replace(this, TextUtil.getConfigMessage("auction-end-no-bidders")), false, Bukkit.getOnlinePlayers().toArray(new Player[0]));
             }
 
             // Check if we can give the items back to the owner (if they're online)
@@ -240,7 +240,7 @@ public class Auction {
                     case 3:
                     case 2:
                     case 1:
-                        TextUtil.sendMessage(TextUtil.replace(auction, TextUtil.getConfigMessage("auction-timer")), Bukkit.getOnlinePlayers().toArray(new Player[0]));
+                        TextUtil.sendMessage(TextUtil.replace(auction, TextUtil.getConfigMessage("auction-timer")), false, Bukkit.getOnlinePlayers().toArray(new Player[0]));
                 }
             }
         }

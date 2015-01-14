@@ -99,9 +99,10 @@ public class TextUtil {
      * Sends a FancyMessage to a player
      *
      * @param message The message to send
+     * @param force Whether or not to bypass a users ignored status
      * @param players The players who will receive the message
      */
-    public static void sendMessage(String message, Player... players) {
+    public static void sendMessage(String message, boolean force, Player... players) {
         FancyMessage fancy = new FancyMessage(ChatColor.WHITE.toString());
         String[] split = message.split(" ");
         ChatColor current = ChatColor.WHITE;
@@ -138,7 +139,9 @@ public class TextUtil {
 
         // Send the message to the players
         for (Player player : players) {
-            fancy.send(player);
+            if (force || !ignoredUsers.contains(player.getUniqueId())) {
+                fancy.send(player);
+            }
         }
     }
 

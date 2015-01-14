@@ -47,11 +47,19 @@ public class AuctionCommand implements CommandExecutor {
             } else if (sender instanceof Player) {
                 Player player = (Player) sender;
 
-                if (subCommand.equals("start")) {
-                    if (TextUtil.isIgnoring(player.getUniqueId())) {
-                        TextUtil.sendMessage(TextUtil.getConfigMessage("fail-start-ignoring"), player);
-                    } else if (player.getGameMode() == GameMode.CREATIVE && !plugin.getConfig().getBoolean("allow-creative", false) && !player.hasPermission("auction.creative")) {
-                        TextUtil.sendMessage(TextUtil.getConfigMessage("fail-start-creative"), player);
+                if (subCommand.equals("ignore")) {
+                    if (!TextUtil.isIgnoring(player.getUniqueId())) {
+                        TextUtil.addIgnoring(player.getUniqueId());
+                        TextUtil.sendMessage(TextUtil.getConfigMessage("ignoring-on"), true, player);
+                    } else {
+                        TextUtil.removeIgnoring(player.getUniqueId());
+                        TextUtil.sendMessage(TextUtil.getConfigMessage("ignoring-off"), true, player);
+                    }
+                } else if (TextUtil.isIgnoring(player.getUniqueId())) {
+                    TextUtil.sendMessage(TextUtil.getConfigMessage("fail-start-ignoring"), true, player);
+                } else if (subCommand.equals("start")) {
+                    if (player.getGameMode() == GameMode.CREATIVE && !plugin.getConfig().getBoolean("allow-creative", false) && !player.hasPermission("auction.creative")) {
+                        TextUtil.sendMessage(TextUtil.getConfigMessage("fail-start-creative"), true, player);
                     } else {
                         manager.prepareAuction(player, args);
                     }
@@ -59,7 +67,7 @@ public class AuctionCommand implements CommandExecutor {
                     if (args.length == 2) {
                         manager.prepareBid(player, args[1]);
                     } else {
-                        TextUtil.sendMessage(TextUtil.getConfigMessage("fail-bid-syntax"), player);
+                        TextUtil.sendMessage(TextUtil.getConfigMessage("fail-bid-syntax"), true, player);
                     }
                 } else if (subCommand.equals("info")) {
                     manager.sendAuctionInfo(player);
@@ -70,14 +78,6 @@ public class AuctionCommand implements CommandExecutor {
                         TextUtil.sendHelp(sender);
                     } else {
                         TextUtil.sendMenu(sender);
-                    }
-                } else if (subCommand.equals("ignore") || subCommand.equals("quiet")) {
-                    if (!TextUtil.isIgnoring(player.getUniqueId())) {
-                        TextUtil.addIgnoring(player.getUniqueId());
-                        TextUtil.sendMessage(TextUtil.getConfigMessage("ignoring-on"), player);
-                    } else {
-                        TextUtil.removeIgnoring(player.getUniqueId());
-                        TextUtil.sendMessage(TextUtil.getConfigMessage("ignoring-off"), player);
                     }
                 } else {
                     TextUtil.sendMenu(sender);
