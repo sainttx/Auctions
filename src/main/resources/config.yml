@@ -3,11 +3,13 @@
 # Message users a simple notice of auctions in other worlds
 # will not show bids or end, only start
 auction-time: 30
+delay-between-auctions-seconds: 5
 
 # Allow/disallow
 allow-autowin: true
 allow-creative: false
 allow-help-command: false
+allow-end: false
 
 # Start fee and tax
 # If user has auction.tax.exempt, no tax charged
@@ -20,9 +22,6 @@ minimum-bid-increment: 1
 # This allows/disallows players using /bid to bid
 # the minimum-bid-increment
 allow-autobid: true
-
-## This is still under work
-allow-end: false
 
 ## Minimum and maximum prices
 min-start-price: 10

@@ -150,7 +150,7 @@ public class Auction {
                         AuctionManager.getAuctionManager().startNextAuction();
                     }
                 }
-            }, 30L);
+            }, plugin.getConfig().getLong("delay-between-auctions-seconds", 5L) * 20L);
         }
 
         Player owner = Bukkit.getPlayer(this.owner);
