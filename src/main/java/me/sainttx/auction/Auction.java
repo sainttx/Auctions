@@ -39,6 +39,7 @@ public class Auction {
     private int numItems; // Amount in the ItemStack
     private int auctionTimer; // The auction timer task id
     private int timeLeft; // The amount of time left in this auction
+    private int antiSniped; // The amount of times anti-snipe has gone off for this auction
 
     /**
      * Instantiate an Auction
@@ -114,6 +115,40 @@ public class Auction {
      */
     public void setTaxable(boolean taxable) {
         this.taxable = taxable;
+    }
+
+    /**
+     * Returns the time, in seconds, left in the auction
+     *
+     * @return The time, in seconds, until the auction ends
+     */
+    public int getTimeLeft() {
+        return this.timeLeft;
+    }
+
+    /**
+     * Adds seconds to the auctions timer
+     *
+     * @param seconds The amount of seconds to add
+     */
+    public void addSeconds(int seconds) {
+        this.timeLeft += seconds;
+    }
+
+    /**
+     * Returns the amount of times anti-snipe has activated on the auction
+     *
+     * @return the
+     */
+    public int getAntiSniped() {
+        return this.antiSniped;
+    }
+
+    /**
+     * Increments the amount of times this auction has been sniped
+     */
+    public void incrementAntiSniped() {
+        this.antiSniped++;
     }
 
     /**

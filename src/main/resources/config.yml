@@ -23,12 +23,19 @@ minimum-bid-increment: 1
 # the minimum-bid-increment
 allow-autobid: true
 
-## Minimum and maximum prices
+# Minimum and maximum prices
 min-start-price: 10
 max-start-price: 100
 
-## Auction queues
+# Auction queues
 queue-limit: 3
+
+# Anti-snipe
+# max-per-auction is the max amount of times an auction can have time added
+# add-seconds is the amount of time in seconds to add each time the auction is sniped
+enable-anti-snipe: true
+anti-snipe-max-per-auction: 3
+anti-snipe-add-seconds: 5
 
 # Use http://jd.bukkit.org/rb/apidocs/org/bukkit/Material.html
 banned-items:

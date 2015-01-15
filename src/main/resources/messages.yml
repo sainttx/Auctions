@@ -80,10 +80,10 @@ fail-start-negative-number: "&cYou can't auction a stack with negative size"
 fail-end-disallowed: "&cYou cannot end this auction"
 fail-start-max: "&cYour starting price is too high"
 fail-start-min: "&cYour starting price is too low"
-anti-snipe-add: "&cAnti-Snipe: %ts &6has been added to the time!"
 
 # v0.8.0
 # allow-auction-help below auction-menu was added in v0.8.0 as well
+anti-snipe-add: "&6ANTI-SNIPE &e- &c%t &6seconds have been added to the auction!"
 auction-queued: "&6Your auction has been queued"
 auction-queue-position: "&6Your auction is &c#%q &6in the auction queue"
 fail-end-not-your-auction: "&cYou can't end other players auctions"
