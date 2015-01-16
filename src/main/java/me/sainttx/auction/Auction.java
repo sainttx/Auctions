@@ -179,7 +179,7 @@ public class Auction {
 
         // Return the item to the owner
         if (owner != null) {
-            AuctionUtil.giveItem(owner, item, "auction-cancelled");
+            AuctionUtil.giveItem(owner, item);
         } else {
             Bukkit.getLogger().info("[Auction] Saving items of offline player " + this.owner);
             plugin.saveOfflinePlayer(this.owner, item);
@@ -191,7 +191,7 @@ public class Auction {
             AuctionPlugin.getEconomy().depositPlayer(owner, topBid);
         }
 
-        TextUtil.sendMessage(TextUtil.replace(this, TextUtil.getConfigMessage("auction-cancelled-broadcast")), false, Bukkit.getOnlinePlayers().toArray(new Player[0]));
+        TextUtil.sendMessage(TextUtil.replace(this, TextUtil.getConfigMessage("auction-cancelled")), false, Bukkit.getOnlinePlayers().toArray(new Player[0]));
     }
 
     @SuppressWarnings("static-access")
