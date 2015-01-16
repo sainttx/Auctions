@@ -4,6 +4,7 @@ import me.sainttx.auction.util.AuctionUtil;
 import me.sainttx.auction.util.TextUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -164,6 +165,35 @@ public class Auction {
         }
     }
 
+    /**
+     * Cancels this auction
+     */
+    public void cancel() {
+        // Schedule stuff
+        Bukkit.getScheduler().cancelTask(auctionTimer);
+        if (plugin.isEnabled()) {
+            runNextAuctionTimer();
+        }
+
+        Player owner = Bukkit.getPlayer(this.owner);
+
+        // Return the item to the owner
+        if (owner != null) {
+            AuctionUtil.giveItem(owner, item, "auction-cancelled");
+        } else {
+            Bukkit.getLogger().info("[Auction] Saving items of offline player " + this.owner);
+            plugin.saveOfflinePlayer(this.owner, item);
+        }
+
+        // Give back the top bidders money
+        if (winning != null) {
+            OfflinePlayer topBidder = Bukkit.getPlayer(winning);
+            AuctionPlugin.getEconomy().depositPlayer(owner, topBid);
+        }
+
+        TextUtil.sendMessage(TextUtil.replace(this, TextUtil.getConfigMessage("auction-cancelled-broadcast")), false, Bukkit.getOnlinePlayers().toArray(new Player[0]));
+    }
+
     @SuppressWarnings("static-access")
     /**
      * Ends the auction
@@ -175,17 +205,7 @@ public class Auction {
 
         // Delay before a new auction can be made... Prevents auction scamming
         if (plugin.isEnabled()) {
-            Bukkit.getScheduler().scheduleSyncDelayedTask(AuctionPlugin.getPlugin(), new Runnable() {
-                @Override
-                public void run() {
-                    AuctionManager.getAuctionManager().setCanAuction(true);
-
-                    // Start the next auction in the queue
-                    if (AuctionManager.getCurrentAuction() == null) {
-                        AuctionManager.getAuctionManager().startNextAuction();
-                    }
-                }
-            }, plugin.getConfig().getLong("delay-between-auctions-seconds", 5L) * 20L);
+            runNextAuctionTimer();
         }
 
         Player owner = Bukkit.getPlayer(this.owner);
@@ -236,6 +256,26 @@ public class Auction {
 
         // Set the current auction to null
         AuctionManager.getAuctionManager().killAuction();
+    }
+
+    /*
+     * Runs the timer that schedules a new auction after an auction is ended
+     */
+    private void runNextAuctionTimer() {
+        // Delay before a new auction can be made... Prevents auction scamming
+        if (plugin.isEnabled()) {
+            Bukkit.getScheduler().scheduleSyncDelayedTask(AuctionPlugin.getPlugin(), new Runnable() {
+                @Override
+                public void run() {
+                    AuctionManager.getAuctionManager().setCanAuction(true);
+
+                    // Start the next auction in the queue
+                    if (AuctionManager.getCurrentAuction() == null) {
+                        AuctionManager.getAuctionManager().startNextAuction();
+                    }
+                }
+            }, plugin.getConfig().getLong("delay-between-auctions-seconds", 5L) * 20L);
+        }
     }
 
     /**

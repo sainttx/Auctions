@@ -265,6 +265,21 @@ public class AuctionManager implements Listener {
         }
     }
 
+    public void cancelCurrentAuction(Player player) {
+        if (currentAuction == null) {
+            // No auction
+            TextUtil.sendMessage(TextUtil.getConfigMessage("fail-cancel-no-auction"), true, player);
+        } else if (currentAuction.getTimeLeft() < plugin.getConfig().getInt("must-cancel-before", 15) && !!player.hasPermission("auction.cancel.bypass")) {
+            // Can't cancel
+            TextUtil.sendMessage(TextUtil.getConfigMessage("fail-cancel-time"), true, player);
+        } else if (!currentAuction.getOwner().equals(player.getUniqueId()) && !player.hasPermission("auction.cancel.bypass")) {
+            // Can't cancel other peoples auction
+            TextUtil.sendMessage(TextUtil.getConfigMessage("fail-cancel-not-yours"), true, player);
+        } else {
+            currentAuction.cancel();
+        }
+    }
+
     /**
      * Creates an auction and verifies it was properly specified
      *

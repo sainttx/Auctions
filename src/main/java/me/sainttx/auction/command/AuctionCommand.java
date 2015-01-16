@@ -39,7 +39,6 @@ public class AuctionCommand implements CommandExecutor {
             } else if (!(sender instanceof Player) && subCommand.isPlayerCommand()) {
                 sender.sendMessage("You must be a player to use this sub-command!");
             } else {
-
                 Player player = null;
 
                 try {
@@ -95,6 +94,9 @@ public class AuctionCommand implements CommandExecutor {
                             TextUtil.sendMenu(sender);
                         }
                         break;
+                    case CANCEL:
+                        manager.cancelCurrentAuction(player);
+                        break;
                 }
             }
         }
@@ -107,14 +109,15 @@ public class AuctionCommand implements CommandExecutor {
      * that can be executed by the Auction plugin
      */
     private enum SubCommand {
-        RELOAD("auction.reload", false, "reload"),
+        BID("auction.bid", true, "bid", "b"),
+        CANCEL("auction.cancel", false, "cancel", "c"),
+        END("auction.end", false, "end", "e"),
+        HELP("auction.help", false, "help"),
         IGNORE("auction.ignore", true, "ignore", "quiet"),
         INFO("auction.info", true, "info", "i"),
-        BID("auction.bid", true, "bid", "b"),
+        RELOAD("auction.reload", false, "reload"),
         START("auction.start", true, "start", "s"),
-        END("auction.end", false, "end"),
-        TOGGLE("auction.toggle", false, "toggle"),
-        HELP("auction.help", false, "help");
+        TOGGLE("auction.toggle", false, "toggle");
 
         /*
          * The permission node required

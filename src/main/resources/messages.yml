@@ -90,3 +90,10 @@ fail-end-not-your-auction: "&cYou can't end other players auctions"
 fail-start-already-auctioning: "&cYou already have an ongoing auction"
 fail-start-already-queued: "&cYou already have an ongoing auction"
 fail-start-queue-full: "&cThe auction queue is currently full"
+
+# v0.8.4
+auction-cancelled: "&6Your auction has been cancelled"
+auction-cancelled-broadcast: "&6The Auction has been cancelled"
+fail-cancel-no-auction: "&cThere is no auction to cancel"
+fail-cancel-time: "&cYou can't cancel the auction at this point"
+fail-cancel-not-yours: "&cYou can't cancel this auction, it isn't yours!"

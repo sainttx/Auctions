@@ -30,6 +30,9 @@ max-start-price: 100
 # Auction queues
 queue-limit: 3
 
+# The minimum amount of time needed in an Auction to cancel it
+must-cancel-before: 15
+
 # Anti-snipe
 # max-per-auction is the max amount of times an auction can have time added
 # add-seconds is the amount of time in seconds to add each time the auction is sniped
