@@ -339,6 +339,11 @@ public class Auction {
             throw new Exception("unsupported-item");
         }
 
+        // Check if the item is damaged and users can auction damaged items
+        if (item.getType().getMaxDurability() > 0 && item.getDurability() > 0 && !plugin.getConfig().getBoolean("allow-damaged-items", true)) {
+            throw new Exception("fail-start-damaged-item");
+        }
+
         // Check if they have enough of the item
         if (AuctionUtil.searchInventory(player.getInventory(), item, numItems)) {
             player.getInventory().removeItem(item);

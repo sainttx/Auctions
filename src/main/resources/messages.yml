@@ -95,3 +95,6 @@ fail-start-queue-full: "&cThe auction queue is currently full"
 fail-cancel-no-auction: "&cThere is no auction to cancel"
 fail-cancel-time: "&cYou can't cancel the auction at this point"
 fail-cancel-disabled: "&cAuction cancelling is disabled"
+
+# v0.9.0
+fail-start-damaged-item: "&cYou can't auction damaged items!"

@@ -209,6 +209,8 @@ public class AuctionManager implements Listener {
                 TextUtil.sendMessage(TextUtil.getConfigMessage("fail-start-queue-full"), true, player);
             }
 
+            // Check if the item is damaged
+
             else {
                 if (args.length == 4) {
                     try {

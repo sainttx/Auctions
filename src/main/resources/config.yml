@@ -16,6 +16,7 @@ allow-auction-help-command: true
 allow-auction-end-command: false
 allow-auction-cancel-command: true
 allow-using-bid-auto-command: true
+allow-damaged-items: true
 
 # Other
 auction-queue-limit: 3
