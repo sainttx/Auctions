@@ -40,7 +40,6 @@ public class AuctionPlugin extends JavaPlugin implements Listener {
      */
     private FileConfiguration config;
 
-
     /**
      * Returns the Auction Plugin instance
      *

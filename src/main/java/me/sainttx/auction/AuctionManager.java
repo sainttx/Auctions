@@ -181,6 +181,7 @@ public class AuctionManager implements Listener {
                 startingPrice = Double.parseDouble(args[2]);
             } catch (NumberFormatException ex) {
                 TextUtil.sendMessage(TextUtil.getConfigMessage("fail-number-format"), true, player);
+                return;
             }
 
             // Check if the player has provided a positive amount of items
@@ -210,8 +211,13 @@ public class AuctionManager implements Listener {
 
             else {
                 if (args.length == 4) {
-                    double autowinAmount = Integer.parseInt(args[3]); // Autowin
-                    autoWin = plugin.getConfig().getBoolean("allow-auction-auto-winning", false) ? autowinAmount : -1;
+                    try {
+                        double autowinAmount = Integer.parseInt(args[3]); // Autowin
+                        autoWin = plugin.getConfig().getBoolean("allow-auction-auto-winning", false) ? autowinAmount : -1;
+                    } catch (NumberFormatException exception) {
+                        TextUtil.sendMessage(TextUtil.getConfigMessage("fail-number-format"), true, player);
+                        return;
+                    }
 
                     // Check if the player is allowed to specify an autowin
                     if (!plugin.getConfig().getBoolean("allow-auction-auto-winning", false)) {
