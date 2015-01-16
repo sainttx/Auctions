@@ -14,7 +14,7 @@ allow-auction-auto-winning: true
 allow-creative-auctioning: false
 allow-auction-help-command: true
 allow-auction-end-command: false
-allow-auction-cancel-command: true # TODO - DO THIS
+allow-auction-cancel-command: true
 allow-using-bid-auto-command: true
 
 # Other

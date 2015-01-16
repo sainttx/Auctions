@@ -272,6 +272,9 @@ public class AuctionManager implements Listener {
         } else if (TextUtil.isIgnoring(player.getUniqueId())) {
             // Ignoring
             TextUtil.sendMessage(TextUtil.getConfigMessage("fail-start-ignoring"), true, player);
+        } else if (!plugin.getConfig().getBoolean("allow-auction-cancel-command", true) && !player.hasPermission("auction.cancel.bypass")) {
+            // Can't cancel
+            TextUtil.sendMessage(TextUtil.getConfigMessage("fail-cancel-disabled"), true, player);
         } else if (currentAuction.getTimeLeft() < plugin.getConfig().getInt("must-cancel-auction-before", 15) && !player.hasPermission("auction.cancel.bypass")) {
             // Can't cancel
             TextUtil.sendMessage(TextUtil.getConfigMessage("fail-cancel-time"), true, player);

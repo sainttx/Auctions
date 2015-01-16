@@ -94,4 +94,4 @@ fail-start-queue-full: "&cThe auction queue is currently full"
 # v0.8.4
 fail-cancel-no-auction: "&cThere is no auction to cancel"
 fail-cancel-time: "&cYou can't cancel the auction at this point"
-fail-cancel-not-yours: "&cYou can't cancel this auction, it isn't yours!"
+fail-cancel-disabled: "&cAuction cancelling is disabled"
