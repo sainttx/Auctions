@@ -61,12 +61,12 @@ public class Auction {
         this.owner      = player.getUniqueId();
         this.numItems   = numItems;
         this.topBid     = startingAmount;
-        this.timeLeft   = plugin.getConfig().getInt("auction-time", 30);
+        this.timeLeft   = plugin.getConfig().getInt("default-auction-start-time", 30);
         this.autoWin    = autoWin;
         this.item       = player.getItemInHand().clone();
         this.item.setAmount(numItems);
-        if (autoWin < topBid + plugin.getConfig().getDouble("minimum-bid-increment", 1D) && autoWin != -1) {
-            this.autoWin = topBid + plugin.getConfig().getDouble("minimum-bid-increment", 1D);
+        if (autoWin < topBid + plugin.getConfig().getDouble("default-bid-increment", 10D) && autoWin != -1) {
+            this.autoWin = topBid + plugin.getConfig().getDouble("default-bid-increment", 10D);
         }
 
         validateAuction(player);

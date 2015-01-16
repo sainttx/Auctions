@@ -152,8 +152,8 @@ public class AuctionManager implements Listener {
      * @param args   Arguments relative to the auction provided by the player
      */
     public void prepareAuction(Player player, String[] args) {
-        double minStartingPrice = plugin.getConfig().getDouble("min-start-price", 0);
-        double maxStartingPrice = plugin.getConfig().getDouble("max-start-price", Integer.MAX_VALUE);
+        double minStartingPrice = plugin.getConfig().getDouble("minimum-auction-start-price", 0);
+        double maxStartingPrice = plugin.getConfig().getDouble("maximum-auction-start-price", Integer.MAX_VALUE);
 
         // Check if auctioning is allowed
         if (disabled && !player.hasPermission("auction.bypass.disable")) {
@@ -211,10 +211,10 @@ public class AuctionManager implements Listener {
             else {
                 if (args.length == 4) {
                     double autowinAmount = Integer.parseInt(args[3]); // Autowin
-                    autoWin = plugin.getConfig().getBoolean("allow-autowin", false) ? autowinAmount : -1;
+                    autoWin = plugin.getConfig().getBoolean("allow-auction-auto-winning", false) ? autowinAmount : -1;
 
                     // Check if the player is allowed to specify an autowin
-                    if (!plugin.getConfig().getBoolean("allow-autowin", false)) {
+                    if (!plugin.getConfig().getBoolean("allow-auction-auto-winning", false)) {
                         TextUtil.sendMessage(TextUtil.getConfigMessage("fail-start-no-autowin"), true, player);
                     }
                 }
@@ -272,7 +272,7 @@ public class AuctionManager implements Listener {
         } else if (TextUtil.isIgnoring(player.getUniqueId())) {
             // Ignoring
             TextUtil.sendMessage(TextUtil.getConfigMessage("fail-start-ignoring"), true, player);
-        } else if (currentAuction.getTimeLeft() < plugin.getConfig().getInt("must-cancel-before", 15) && !player.hasPermission("auction.cancel.bypass")) {
+        } else if (currentAuction.getTimeLeft() < plugin.getConfig().getInt("must-cancel-auction-before", 15) && !player.hasPermission("auction.cancel.bypass")) {
             // Can't cancel
             TextUtil.sendMessage(TextUtil.getConfigMessage("fail-cancel-time"), true, player);
         } else if (!currentAuction.getOwner().equals(player.getUniqueId()) && !player.hasPermission("auction.cancel.bypass")) {
@@ -352,7 +352,7 @@ public class AuctionManager implements Listener {
         }
 
         // Check if they bid enough
-        else if (amount < currentAuction.getTopBid() + plugin.getConfig().getDouble("minimum-bid-increment", 1D)) {
+        else if (amount < currentAuction.getTopBid() + plugin.getConfig().getDouble("default-bid-increment", 10D)) {
             TextUtil.sendMessage(TextUtil.getConfigMessage("fail-bid-too-low"), true, player);
         }
 
@@ -419,7 +419,7 @@ public class AuctionManager implements Listener {
     public void end(Player player) {
         if (currentAuction == null) {
             TextUtil.sendMessage(TextUtil.getConfigMessage("fail-end-no-auction"), true, player);
-        } else if (!plugin.getConfig().getBoolean("allow-end", false) && !player.hasPermission("auction.end.bypass")) {
+        } else if (!plugin.getConfig().getBoolean("allow-auction-end-command", false) && !player.hasPermission("auction.end.bypass")) {
             TextUtil.sendMessage(TextUtil.getConfigMessage("fail-end-disallowed"), true, player);
         } else if (!currentAuction.getOwner().equals(player.getUniqueId()) && !player.hasPermission("auction.end.bypass")) {
             TextUtil.sendMessage(TextUtil.getConfigMessage("fail-end-not-your-auction"), true, player);

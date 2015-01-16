@@ -1,37 +1,25 @@
 # Auction plugin by SainttX
-# Allow multiple auctions running in different worlds
-# Message users a simple notice of auctions in other worlds
-# will not show bids or end, only start
-auction-time: 30
-delay-between-auctions-seconds: 5
 
-# Allow/disallow
-allow-autowin: true
-allow-creative: false
-allow-help-command: false
-allow-end: false
-
-# Start fee and tax
-# If user has auction.tax.exempt, no tax charged
-auction-start-fee: 1
+# General Auction information
+auction-start-fee: 0
 auction-tax-percentage: 0
+default-auction-start-time: 30
+delay-between-auctions-seconds: 5
+default-bid-increment: 10
+minimum-auction-start-price: 10
+maximum-auction-start-price: 30000
 
-# The minimum amount that player has to outbid by
-minimum-bid-increment: 1
+# Enabling and disabling certain features
+allow-auction-auto-winning: true
+allow-creative-auctioning: false
+allow-auction-help-command: true
+allow-auction-end-command: false
+allow-auction-cancel-command: true # TODO - DO THIS
+allow-using-bid-auto-command: true
 
-# This allows/disallows players using /bid to bid
-# the minimum-bid-increment
-allow-autobid: true
-
-# Minimum and maximum prices
-min-start-price: 10
-max-start-price: 100
-
-# Auction queues
-queue-limit: 3
-
-# The minimum amount of time needed in an Auction to cancel it
-must-cancel-before: 15
+# Other
+auction-queue-limit: 3
+must-cancel-auction-before: 15
 
 # Anti-snipe
 # max-per-auction is the max amount of times an auction can have time added

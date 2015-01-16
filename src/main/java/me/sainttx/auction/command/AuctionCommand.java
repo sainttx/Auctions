@@ -68,7 +68,7 @@ public class AuctionCommand implements CommandExecutor {
                         }
                         break;
                     case START:
-                        if (player.getGameMode() == GameMode.CREATIVE && !plugin.getConfig().getBoolean("allow-creative", false) && !player.hasPermission("auction.creative")) {
+                        if (player.getGameMode() == GameMode.CREATIVE && !plugin.getConfig().getBoolean("allow-creative-auctioning", false) && !player.hasPermission("auction.creative")) {
                             TextUtil.sendMessage(TextUtil.getConfigMessage("fail-start-creative"), true, player);
                         } else {
                             manager.prepareAuction(player, args);
@@ -88,7 +88,7 @@ public class AuctionCommand implements CommandExecutor {
                         manager.end(player);
                         break;
                     case HELP:
-                        if (plugin.getConfig().getBoolean("allow-help-command", false)) {
+                        if (plugin.getConfig().getBoolean("allow-auction-help-command", false)) {
                             TextUtil.sendHelp(sender);
                         } else {
                             TextUtil.sendMenu(sender);
