@@ -191,7 +191,11 @@ public class Auction {
             AuctionPlugin.getEconomy().depositPlayer(owner, topBid);
         }
 
+        // Broadcast
         TextUtil.sendMessage(TextUtil.replace(this, TextUtil.getConfigMessage("auction-cancelled")), false, Bukkit.getOnlinePlayers().toArray(new Player[0]));
+
+        // Set the current auction to null
+        AuctionManager.getAuctionManager().killAuction();
     }
 
     @SuppressWarnings("static-access")

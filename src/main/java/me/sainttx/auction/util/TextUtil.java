@@ -112,7 +112,7 @@ public class TextUtil {
             String currentColor = ChatColor.getLastColors(str);
             current = ChatColor.getByChar(currentColor.isEmpty() ? current.getChar() : currentColor.charAt(1));
 
-            if (str.equalsIgnoreCase("%i")) {
+            if (str.toLowerCase().contains("%i")) {
                 ChatColor color = ChatColor.getByChar(messageFile.getString("itemColor.color"));
                 ChatColor style = messageFile.getString("itemColor.style").equalsIgnoreCase("none") ? null
                         : ChatColor.getByChar(messageFile.getString("itemColor.style"));

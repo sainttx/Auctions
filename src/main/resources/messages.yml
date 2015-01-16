@@ -30,7 +30,7 @@ auction-help:
 - "Make sure allow-help-command in config.yml is set to true, otherwise"
 - "you'll just see auction-menu"
 auction-timer: "&6The auction for &c%a %i &6has &c%t &6remaining"
-auction-cancelled: "&6The auction for &c&6%i &6was &ccancelled"
+auction-cancelled: "&6The auction for %i &6was &ccancelled"
 auction-start: "&c%p &6started an auction for &c%a %i"
 auction-start-price: "&6The auction begins at &c$%b &6and will last for &c%t"
 auction-start-autowin: "&6The host has set the autowin amount to &c$%A"
