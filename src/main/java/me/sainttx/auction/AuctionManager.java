@@ -165,6 +165,11 @@ public class AuctionManager implements Listener {
             TextUtil.sendMessage(TextUtil.getConfigMessage("fail-start-syntax"), true, player);
         }
 
+        // Check if the player is ignoring
+        else if (TextUtil.isIgnoring(player.getUniqueId())) {
+            TextUtil.sendMessage(TextUtil.getConfigMessage("fail-start-ignoring"), true, player);
+        }
+
         else {
             int numItems = -1;
             double startingPrice = -1;
@@ -316,6 +321,11 @@ public class AuctionManager implements Listener {
         // Check if there's an auction to bid on
         if (currentAuction == null) {
             TextUtil.sendMessage(TextUtil.getConfigMessage("fail-bid-no-auction"), true, player);
+        }
+
+        // Check if the player is ignoring
+        else if (TextUtil.isIgnoring(player.getUniqueId())) {
+            TextUtil.sendMessage(TextUtil.getConfigMessage("fail-start-ignoring"), true, player);
         }
 
         // Check if the auction isn't their own
