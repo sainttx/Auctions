@@ -241,10 +241,7 @@ public class Auction {
                     TextUtil.sendMessage(TextUtil.replace(this, TextUtil.getConfigMessage("auction-end-tax")), true, owner);
                 }
             }
-        }
-
-        // There was no winner
-        else {
+        } else { // There was no winner
             if (broadcast) {
                 TextUtil.sendMessage(TextUtil.replace(this, TextUtil.getConfigMessage("auction-end-no-bidders")), false, Bukkit.getOnlinePlayers().toArray(new Player[0]));
             }

@@ -155,24 +155,18 @@ public class AuctionManager implements Listener {
         double minStartingPrice = plugin.getConfig().getDouble("minimum-auction-start-price", 0);
         double maxStartingPrice = plugin.getConfig().getDouble("maximum-auction-start-price", Integer.MAX_VALUE);
 
-        // Check if auctioning is allowed
         if (disabled && !player.hasPermission("auction.bypass.disable")) {
+            // Auctioning is disabled at the moment
             TextUtil.sendMessage(TextUtil.getConfigMessage("fail-start-auction-disabled"), true, player);
-        }
-
-        // Check if the player provided the minimum amount of arguments
-        else if (args.length < 3) {
+        } else if (args.length < 3) {
+            // Arguments don't match the required length
             TextUtil.sendMessage(TextUtil.getConfigMessage("fail-start-syntax"), true, player);
-        }
-
-        // Check if the player is ignoring
-        else if (TextUtil.isIgnoring(player.getUniqueId())) {
+        } else if (TextUtil.isIgnoring(player.getUniqueId())) {
+            // The player is ignoring auctions
             TextUtil.sendMessage(TextUtil.getConfigMessage("fail-start-ignoring"), true, player);
-        }
-
-        else {
-            int numItems = -1;
-            double startingPrice = -1;
+        } else {
+            int numItems;
+            double startingPrice;
             double autoWin = -1;
             double fee = plugin.getConfig().getDouble("auction-start-fee", 0);
 
@@ -184,34 +178,22 @@ public class AuctionManager implements Listener {
                 return;
             }
 
-            // Check if the player has provided a positive amount of items
             if (numItems < 0) {
+                // Item amount provided was negative
                 TextUtil.sendMessage(TextUtil.getConfigMessage("fail-start-negative-number"), true, player);
-            }
-
-            // Check if the player has specified a correct starting price (lower bound)
-            else if (startingPrice < minStartingPrice) {
+            } else if (startingPrice < minStartingPrice) {
+                // Invalid price (under the minimum)
                 TextUtil.sendMessage(TextUtil.getConfigMessage("fail-start-min"), true, player);
-            }
-
-            // Check if the player has specified a correct starting price (upper bound)
-            else if (startingPrice > maxStartingPrice) {
+            } else if (startingPrice > maxStartingPrice) {
+                // Invalid price (over the maximum)
                 TextUtil.sendMessage(TextUtil.getConfigMessage("fail-start-max"), true, player);
-            }
-
-            // Check if the player has enough money
-            else if (fee > AuctionPlugin.getEconomy().getBalance(player)) {
+            } else if (fee > AuctionPlugin.getEconomy().getBalance(player)) {
+                // Player doesn't have enough money
                 TextUtil.sendMessage(TextUtil.getConfigMessage("fail-start-no-funds"), true, player);
-            }
-
-            // Check if the queue is full
-            else if (auctionQueue.size() > plugin.getConfig().getInt("queue-limit", 3)) {
+            } else if (auctionQueue.size() > plugin.getConfig().getInt("queue-limit", 3)) {
+                // The Auction queue is full
                 TextUtil.sendMessage(TextUtil.getConfigMessage("fail-start-queue-full"), true, player);
-            }
-
-            // Check if the item is damaged
-
-            else {
+            } else {
                 if (args.length == 4) {
                     try {
                         double autowinAmount = Integer.parseInt(args[3]); // Autowin
@@ -230,7 +212,7 @@ public class AuctionManager implements Listener {
                 // Decide whether to immediately start the auction or place it in the queue
                 if (currentAuction != null && currentAuction.getOwner().equals(player.getUniqueId())) {
                     TextUtil.sendMessage(TextUtil.getConfigMessage("fail-start-already-auctioning"), true, player);
-                } else if (hasAuctionQueued(player)) {
+                } else if (hasAuctionQueued(player)) { // The player already has an auction queued
                     TextUtil.sendMessage(TextUtil.getConfigMessage("fail-start-already-queued"), true, player);
                 } else {
                     Auction auction = createAuction(plugin, player, numItems, startingPrice, autoWin);
@@ -347,37 +329,25 @@ public class AuctionManager implements Listener {
      * @param amount The amount bid by the player
      */
     public void prepareBid(Player player, double amount) {
-        // Check if there's an auction to bid on
         if (currentAuction == null) {
+            // There is no auction to bid on
             TextUtil.sendMessage(TextUtil.getConfigMessage("fail-bid-no-auction"), true, player);
-        }
-
-        // Check if the player is ignoring
-        else if (TextUtil.isIgnoring(player.getUniqueId())) {
+        } else if (TextUtil.isIgnoring(player.getUniqueId())) {
+            // Player is ignoring Auctions
             TextUtil.sendMessage(TextUtil.getConfigMessage("fail-start-ignoring"), true, player);
-        }
-
-        // Check if the auction isn't their own
-        else if (currentAuction.getOwner().equals(player.getUniqueId())) {
+        } else if (currentAuction.getOwner().equals(player.getUniqueId())) {
+            // Players aren't allowed to bid on their own auction
             TextUtil.sendMessage(TextUtil.getConfigMessage("fail-bid-your-auction"), true, player);
-        }
-
-        // Check if they bid enough
-        else if (amount < currentAuction.getTopBid() + plugin.getConfig().getDouble("default-bid-increment", 10D)) {
+        } else if (amount < currentAuction.getTopBid() + plugin.getConfig().getDouble("default-bid-increment", 10D)) {
+            // The player didn't bid enough
             TextUtil.sendMessage(TextUtil.getConfigMessage("fail-bid-too-low"), true, player);
-        }
-
-        // Check if they have enough money to bid
-        else if (AuctionPlugin.getEconomy().getBalance(player) < amount) {
+        } else if (AuctionPlugin.getEconomy().getBalance(player) < amount) {
+            // The bid exceeds their balance
             TextUtil.sendMessage(TextUtil.getConfigMessage("fail-bid-insufficient-balance"), true, player);
-        }
-
-        // Check if they're already the top bidder
-        else if (currentAuction.getWinning() != null && currentAuction.getWinning().equals(player.getUniqueId())) {
+        } else if (currentAuction.getWinning() != null && currentAuction.getWinning().equals(player.getUniqueId())) {
+            // The player already holds the highest bid
             TextUtil.sendMessage(TextUtil.getConfigMessage("fail-bid-top-bidder"), true, player);
-        }
-
-        else {
+        } else {
             if (currentAuction.getWinning() != null) {
                 Player oldWinner = Bukkit.getPlayer(currentAuction.getWinning());
                 if (oldWinner != null) {
