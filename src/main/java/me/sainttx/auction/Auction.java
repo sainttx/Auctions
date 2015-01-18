@@ -228,7 +228,7 @@ public class Auction {
             }
 
             double winnings = topBid - (taxable ? getCurrentTax() : 0);
-            AuctionPlugin.getEconomy().depositPlayer(owner, winnings);
+            AuctionPlugin.getEconomy().depositPlayer(owner == null ? Bukkit.getOfflinePlayer(this.owner) : owner, winnings);
 
             if (broadcast) {
                 TextUtil.sendMessage(TextUtil.replace(this, TextUtil.getConfigMessage("auction-end-broadcast")), false, Bukkit.getOnlinePlayers().toArray(new Player[0]));
