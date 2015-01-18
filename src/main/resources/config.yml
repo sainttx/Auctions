@@ -18,6 +18,12 @@ allow-auction-cancel-command: true
 allow-using-bid-auto-command: true
 allow-damaged-items: true
 
+# Blocking commands
+block-commands-when-auctioning: false
+block-commands-if-auction-queued: false
+blocked-commands:
+- "/test"
+
 # Other
 auction-queue-limit: 3
 must-cancel-auction-before: 15

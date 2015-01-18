@@ -98,3 +98,5 @@ fail-cancel-disabled: "&cAuction cancelling is disabled"
 
 # v0.9.0
 fail-start-damaged-item: "&cYou can't auction damaged items!"
+command-blocked-auctioning: "&cYou can't use this command while auctioning an item"
+command-blocked-auction-queued: "&cYou can't use this command while having an auction queued"

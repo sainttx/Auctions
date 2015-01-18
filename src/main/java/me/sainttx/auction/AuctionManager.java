@@ -5,13 +5,12 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Listener;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Queue;
 
-public class AuctionManager implements Listener {
+public class AuctionManager {
 
     /*
      * Auction plugin and manager instances
@@ -101,13 +100,13 @@ public class AuctionManager implements Listener {
     /**
      * Returns whether or not a player has an auction queued
      *
-     * @param p A player who may have an auction queued
+     * @param player A player who may have an auction queued
      *
      * @return True if the player has an auction queued, false otherwise
      */
-    public static boolean hasAuctionQueued(Player p) {
+    public static boolean hasAuctionQueued(Player player) {
         for (Auction queued : manager.auctionQueue) {
-            if (queued.getOwner().equals(p.getUniqueId())) {
+            if (queued.getOwner().equals(player.getUniqueId())) {
                 return true;
             }
         }
@@ -116,15 +115,14 @@ public class AuctionManager implements Listener {
     }
 
     /**
-     * Returns whether or not a player is participating in an auction
+     * Returns whether or not a player is hosting an active auction
      *
-     * @param p A player who may be participating in an auction
+     * @param player A player who may be participating in an auction
      *
-     * @return True if the player is the owner of the current auction or if 
-     *         the player has an active bid on the current auction
+     * @return True if the player is the owner of the current auction
      */
-    public static boolean isAuctionParticipant(Player p) {
-        return currentAuction == null ? false : currentAuction.getOwner().equals(p.getUniqueId()) || currentAuction.getWinning().equals(p.getUniqueId());
+    public static boolean isAuctioningItem(Player player) {
+        return currentAuction != null && currentAuction.getOwner().equals(player.getUniqueId());
     }
 
     /**

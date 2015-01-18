@@ -10,6 +10,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -174,4 +175,23 @@ public class AuctionPlugin extends JavaPlugin implements Listener {
             }
         }
     }
+
+    @EventHandler(ignoreCancelled = true)
+    /**
+     * Cancels a players command if they're auctioning
+     */
+    public void onCommand(PlayerCommandPreprocessEvent event) {
+        if (getConfig().getBoolean("block-commands-when-auctioning", false) && getConfig().getStringList("blocked-commands").contains(event.getMessage().split(" ")[0])) {
+            Player player = event.getPlayer();
+
+            if (AuctionManager.isAuctioningItem(player)) {
+                event.setCancelled(true);
+                TextUtil.sendMessage(TextUtil.getConfigMessage("command-blocked-auctioning"), true, player);
+            } else if (getConfig().getBoolean("block-commands-if-auction-queued", false) && AuctionManager.hasAuctionQueued(player)) {
+                event.setCancelled(true);
+                TextUtil.sendMessage(TextUtil.getConfigMessage("command-blocked-auction-queued"), true, player);
+            }
+        }
+    }
+
 }
