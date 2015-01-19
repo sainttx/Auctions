@@ -20,28 +20,28 @@ public class Auction {
     /*
      * Auction owner information
      */
-    private String ownerName; // The name of the person that started the auction
-    private UUID owner; // The UUID of the person who started the auction
+    private String ownerName;   // The name of the person that started the auction
+    private UUID owner;         // The UUID of the person who started the auction
 
     /*
      * Bidder information
      */
     private String winningName; // Current top bidders name
-    private UUID winning; // Current top bidders UUID
-    private double topBid; // Current top bid amount
+    private UUID winning;       // Current top bidders UUID
+    private double topBid;      // Current top bid amount
 
 
     /*
      * Auction information
      */
-    private ItemStack item; // The item being auctioned
+    private ItemStack item;          // The item being auctioned
     private boolean taxable = false; // Whether or not taxes should be applied on this auction
-    private double autoWin; // The auto-win amount (if set)
-    private double bidIncrement; // The bid increment
-    private int numItems; // Amount in the ItemStack
-    private int auctionTimer; // The auction timer task id
-    private int timeLeft; // The amount of time left in this auction
-    private int antiSniped; // The amount of times anti-snipe has gone off for this auction
+    private double autoWin;          // The auto-win amount (if set)
+    private int bidIncrement;        // The bid increment
+    private int numItems;            // Amount in the ItemStack
+    private int auctionTimer;        // The auction timer task id
+    private int timeLeft;            // The amount of time left in this auction
+    private int antiSniped;          // The amount of times anti-snipe has gone off for this auction
 
     /**
      * Instantiate an Auction
@@ -56,7 +56,7 @@ public class Auction {
      *                   If the player auctioned a banned item,
      *                   If the player does not have enough items to auction
      */
-    public Auction(AuctionPlugin plugin, Player player, int numItems, double startingAmount, double bidIncrement, double autoWin) throws Exception {
+    public Auction(AuctionPlugin plugin, Player player, int numItems, double startingAmount, int bidIncrement, double autoWin) throws Exception {
         this.plugin         = plugin;
         this.ownerName      = player.getName();
         this.owner          = player.getUniqueId();
@@ -161,6 +161,7 @@ public class Auction {
         auctionTimer = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, new AuctionTimer(this), 0L, 20L);
         TextUtil.sendMessage(TextUtil.replace(this, TextUtil.getConfigMessage("auction-start")), false, Bukkit.getOnlinePlayers().toArray(new Player[0]));
         TextUtil.sendMessage(TextUtil.replace(this, TextUtil.getConfigMessage("auction-start-price")), false, Bukkit.getOnlinePlayers().toArray(new Player[0]));
+        TextUtil.sendMessage(TextUtil.replace(this, TextUtil.getConfigMessage("auction-start-increment")), true, Bukkit.getOnlinePlayers().toArray(new Player[0]));
 
         if (autoWin != -1) {
             TextUtil.sendMessage(TextUtil.replace(this, TextUtil.getConfigMessage("auction-start-autowin")), false, Bukkit.getOnlinePlayers().toArray(new Player[0]));

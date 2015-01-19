@@ -133,6 +133,7 @@ public class AuctionManager {
     public void sendAuctionInfo(Player player) {
         if (currentAuction != null) {
             TextUtil.sendMessage(TextUtil.replace(currentAuction, TextUtil.getConfigMessage("auction-info-message")), true, player);
+            TextUtil.sendMessage(TextUtil.replace(currentAuction, TextUtil.getConfigMessage("auction-start-increment")), true, player);
 
             int queuePosition = getQueuePosition(player);
             if (queuePosition > 0) {
@@ -165,7 +166,7 @@ public class AuctionManager {
         } else {
             int numItems;
             double startingPrice;
-            double bidIncrement = plugin.getConfig().getDouble("default-bid-increment", 50D);
+            int bidIncrement = plugin.getConfig().getInt("default-bid-increment", 50);
             double autoWin = -1;
             double fee = plugin.getConfig().getDouble("auction-start-fee", 0);
 
@@ -298,7 +299,7 @@ public class AuctionManager {
      *
      * @return The auction result, null if something went wrong
      */
-    public Auction createAuction(AuctionPlugin plugin, Player player, int numItems, double startingPrice, double bidIncrement, double autoWin) {
+    public Auction createAuction(AuctionPlugin plugin, Player player, int numItems, double startingPrice, int bidIncrement, double autoWin) {
         Auction auction = null;
         try {
             auction = new Auction(AuctionPlugin.getPlugin(), player, numItems, startingPrice, bidIncrement, autoWin);
