@@ -41,7 +41,7 @@ public class BidCommand implements CommandExecutor {
             Auction auction = AuctionManager.getCurrentAuction();
 
             if (auction != null) {
-                AuctionManager.getAuctionManager().prepareBid(player, (int) (auction.getTopBid() + plugin.getConfig().getDouble("default-bid-increment", 1D)));
+                AuctionManager.getAuctionManager().prepareBid(player, (int) (auction.getTopBid() + auction.getBidIncrement()));
             } else {
                 TextUtil.sendMessage(TextUtil.getConfigMessage("fail-bid-no-auction"), true, player);
             }

@@ -37,6 +37,7 @@ public class Auction {
     private ItemStack item; // The item being auctioned
     private boolean taxable = false; // Whether or not taxes should be applied on this auction
     private double autoWin; // The auto-win amount (if set)
+    private double bidIncrement; // The bid increment
     private int numItems; // Amount in the ItemStack
     private int auctionTimer; // The auction timer task id
     private int timeLeft; // The amount of time left in this auction
@@ -55,15 +56,16 @@ public class Auction {
      *                   If the player auctioned a banned item,
      *                   If the player does not have enough items to auction
      */
-    public Auction(AuctionPlugin plugin, Player player, int numItems, double startingAmount, double autoWin) throws Exception {
-        this.plugin     = plugin;
-        this.ownerName  = player.getName();
-        this.owner      = player.getUniqueId();
-        this.numItems   = numItems;
-        this.topBid     = startingAmount;
-        this.timeLeft   = plugin.getConfig().getInt("default-auction-start-time", 30);
-        this.autoWin    = autoWin;
-        this.item       = player.getItemInHand().clone();
+    public Auction(AuctionPlugin plugin, Player player, int numItems, double startingAmount, double bidIncrement, double autoWin) throws Exception {
+        this.plugin         = plugin;
+        this.ownerName      = player.getName();
+        this.owner          = player.getUniqueId();
+        this.numItems       = numItems;
+        this.topBid         = startingAmount;
+        this.timeLeft       = plugin.getConfig().getInt("default-auction-start-time", 30);
+        this.bidIncrement   = bidIncrement;
+        this.autoWin        = autoWin;
+        this.item           = player.getItemInHand().clone();
         this.item.setAmount(numItems);
         if (autoWin < topBid + plugin.getConfig().getDouble("default-bid-increment", 10D) && autoWin != -1) {
             this.autoWin = topBid + plugin.getConfig().getDouble("default-bid-increment", 10D);
@@ -430,6 +432,15 @@ public class Auction {
      */
     public void setTopBid(double topBid) {
         this.topBid = topBid;
+    }
+
+    /**
+     * Returns this auctions bid increment
+     *
+     * @return The bid increment for this auction
+     */
+    public double getBidIncrement() {
+        return bidIncrement;
     }
 }
 

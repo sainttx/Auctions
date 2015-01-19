@@ -21,7 +21,7 @@ auction-menu:
 - "&6&lAuction Help Menu - Commands:"
 - "&6/auction info &e- &cDisplays current auction information"
 - "&6/auction bid &7<amount> &e- &cBid on an auction"
-- "&6/auction start &7<amount> <min-bid> [autowin] &e- &cStart an auction"
+- "&6/auction start &7<amount> <min-bid> [bid-incrmnt] [autowin] &e- &cStart an auction"
 - "&6/auction end &e- &cEnd your current auction"
 - "&6/auction ignore &e- &cIgnore plugin messages"
 - "&6/auction reload &e- &cReload auction configuration"
@@ -98,5 +98,6 @@ fail-cancel-disabled: "&cAuction cancelling is disabled"
 
 # v0.9.0
 fail-start-damaged-item: "&cYou can't auction damaged items!"
+fail-start-bid-increment: "&cYour bid increment was either too high or too low"
 command-blocked-auctioning: "&cYou can't use this command while auctioning an item"
 command-blocked-auction-queued: "&cYou can't use this command while having an auction queued"
