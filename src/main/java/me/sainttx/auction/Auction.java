@@ -191,7 +191,7 @@ public class Auction {
         // Give back the top bidders money
         if (winning != null) {
             OfflinePlayer topBidder = Bukkit.getPlayer(winning);
-            AuctionPlugin.getEconomy().depositPlayer(owner, topBid);
+            AuctionPlugin.getEconomy().depositPlayer(topBidder, topBid);
         }
 
         // Broadcast
