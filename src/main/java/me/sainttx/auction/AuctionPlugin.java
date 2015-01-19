@@ -181,7 +181,7 @@ public class AuctionPlugin extends JavaPlugin implements Listener {
      * Cancels a players command if they're auctioning
      */
     public void onCommand(PlayerCommandPreprocessEvent event) {
-        if (getConfig().getBoolean("block-commands-when-auctioning", false) && getConfig().getStringList("blocked-commands").contains(event.getMessage().split(" ")[0])) {
+        if (getConfig().getBoolean("block-commands-when-auctioning", false) && getConfig().getStringList("blocked-commands").contains(event.getMessage().split(" ")[0].toLowerCase())) {
             Player player = event.getPlayer();
 
             if (AuctionManager.isAuctioningItem(player)) {
