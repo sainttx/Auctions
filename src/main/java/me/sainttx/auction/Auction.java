@@ -24,19 +24,19 @@ public class Auction {
     private UUID owner; // The UUID of the person who started the auction
 
     /*
-     * Current top bidder information
+     * Bidder information
      */
     private String winningName; // Current top bidders name
     private UUID winning; // Current top bidders UUID
+    private double topBid; // Current top bid amount
 
-    private ItemStack item; // The item being auctioned
 
     /*
      * Auction information
      */
+    private ItemStack item; // The item being auctioned
     private boolean taxable = false; // Whether or not taxes should be applied on this auction
     private double autoWin; // The auto-win amount (if set)
-    private double topBid; // Current top bidder
     private int numItems; // Amount in the ItemStack
     private int auctionTimer; // The auction timer task id
     private int timeLeft; // The amount of time left in this auction

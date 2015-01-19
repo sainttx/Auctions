@@ -295,7 +295,7 @@ public class AuctionManager {
             TextUtil.sendMessage(TextUtil.getConfigMessage(ex2.getMessage()), true, player);
         }
 
-        if (!player.hasPermission("auction.tax.exempt")) {
+        if (auction != null && !player.hasPermission("auction.tax.exempt")) {
             auction.setTaxable(true);
         }
 
