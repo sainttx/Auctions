@@ -160,7 +160,7 @@ public class Auction {
         auctionTimer = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, new AuctionTimer(this), 0L, 20L);
         TextUtil.sendMessage(TextUtil.replace(this, TextUtil.getConfigMessage("auction-start")), false, Bukkit.getOnlinePlayers().toArray(new Player[0]));
         TextUtil.sendMessage(TextUtil.replace(this, TextUtil.getConfigMessage("auction-start-price")), false, Bukkit.getOnlinePlayers().toArray(new Player[0]));
-        TextUtil.sendMessage(TextUtil.replace(this, TextUtil.getConfigMessage("auction-start-increment")), true, Bukkit.getOnlinePlayers().toArray(new Player[0]));
+        TextUtil.sendMessage(TextUtil.replace(this, TextUtil.getConfigMessage("auction-start-increment")), false, Bukkit.getOnlinePlayers().toArray(new Player[0]));
 
         if (autoWin != -1) {
             TextUtil.sendMessage(TextUtil.replace(this, TextUtil.getConfigMessage("auction-start-autowin")), false, Bukkit.getOnlinePlayers().toArray(new Player[0]));
