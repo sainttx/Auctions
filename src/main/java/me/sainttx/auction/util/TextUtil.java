@@ -16,6 +16,7 @@ import java.io.File;
 import java.io.IOException;
 import java.text.NumberFormat;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Set;
 import java.util.UUID;
 
@@ -195,10 +196,10 @@ public class TextUtil {
         String ret = message;
         if (auction != null) {
             ret = ret.replaceAll("%t", auction.getTime())
-                    .replaceAll("%b", NumberFormat.getInstance().format(auction.getTopBid()))
+                    .replaceAll("%b", NumberFormat.getInstance(Locale.ENGLISH).format(auction.getTopBid()))
                     .replaceAll("%p", auction.getOwnerName())
                     .replaceAll("%a", Integer.toString(auction.getNumItems()))
-                    .replaceAll("%A", NumberFormat.getInstance().format(auction.getAutoWin()))
+                    .replaceAll("%A", NumberFormat.getInstance(Locale.ENGLISH).format(auction.getAutoWin()))
                     .replaceAll("%B", Integer.toString((int) auction.getBidIncrement()));
             if (auction.hasBids()) {
                 ret = ret.replaceAll("%T", Double.toString(auction.getCurrentTax()))

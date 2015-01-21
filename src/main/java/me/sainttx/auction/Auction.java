@@ -30,7 +30,6 @@ public class Auction {
     private UUID winning;       // Current top bidders UUID
     private double topBid;      // Current top bid amount
 
-
     /*
      * Auction information
      */
