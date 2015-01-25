@@ -104,6 +104,11 @@ public class TextUtil {
      * @param players The players who will receive the message
      */
     public static void sendMessage(String message, boolean force, Player... players) {
+        // Ignore disabled config lines
+        if (message == null || message.isEmpty()) {
+            return;
+        }
+
         FancyMessage fancy = new FancyMessage(ChatColor.WHITE.toString());
         String[] split = message.split(" ");
         ChatColor current = ChatColor.WHITE;
