@@ -172,7 +172,7 @@ public class TextUtil {
             Bukkit.getLogger().info("Could not find auction message with path \"" + path + "\", using default instead");
             return color(messageFileDefault.getString(path));
         }
-        
+
         return color(messageFile.getString(path));
     }
 
