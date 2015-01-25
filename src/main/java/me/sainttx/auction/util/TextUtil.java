@@ -4,6 +4,7 @@ import me.sainttx.auction.Auction;
 import me.sainttx.auction.AuctionManager;
 import me.sainttx.auction.AuctionPlugin;
 import mkremins.fanciful.FancyMessage;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
@@ -25,7 +26,7 @@ public class TextUtil {
     /*
      * The file containing all the configurable messages in the plugin
      */
-    private static YamlConfiguration messageFile;
+    private static YamlConfiguration messageFile, messageFileDefault;
 
     /*
      * The file containing item names
@@ -50,6 +51,7 @@ public class TextUtil {
             plugin.saveResource("items.yml", false);
         }
 
+        messageFileDefault = YamlConfiguration.loadConfiguration(plugin.getResource("messages.yml"));
         messageFile = YamlConfiguration.loadConfiguration(messagesFile);
         itemsFile = YamlConfiguration.loadConfiguration(namesFile);
     }
@@ -166,6 +168,11 @@ public class TextUtil {
      * Gets a string from the messages file
      */
     public static String getConfigMessage(String path) {
+        if (!messageFile.isString(path)) {
+            Bukkit.getLogger().info("Could not find auction message with path \"" + path + "\", using default instead");
+            return color(messageFileDefault.getString(path));
+        }
+        
         return color(messageFile.getString(path));
     }
 
