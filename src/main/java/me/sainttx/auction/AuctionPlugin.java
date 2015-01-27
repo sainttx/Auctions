@@ -5,6 +5,7 @@ import me.sainttx.auction.command.BidCommand;
 import me.sainttx.auction.util.AuctionUtil;
 import me.sainttx.auction.util.TextUtil;
 import net.milkbowl.vault.economy.Economy;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -53,7 +54,14 @@ public class AuctionPlugin extends JavaPlugin implements Listener {
     @Override
     public void onEnable() {
         plugin = this;
-        economy = getServer().getServicesManager().getRegistration(Economy.class).getProvider();
+
+        // Set the economy in the next tick so that all plugins are loaded
+        Bukkit.getScheduler().runTask(this, new Runnable() {
+            @Override
+            public void run() {
+                economy = getServer().getServicesManager().getRegistration(Economy.class).getProvider();
+            }
+        });
 
         // Setup
         getServer().getPluginManager().registerEvents(this, this);

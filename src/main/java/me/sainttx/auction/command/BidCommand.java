@@ -37,7 +37,7 @@ public class BidCommand implements CommandExecutor {
             TextUtil.sendMessage(TextUtil.getConfigMessage("insufficient-permissions"), true, player);
         } else if (TextUtil.isIgnoring(player.getUniqueId())) {
             TextUtil.sendMessage(TextUtil.getConfigMessage("fail-start-ignoring"), true, player);
-        } else if (args.length == 0 && plugin.getConfig().getBoolean("allow-using-bid-auto-command", false)) {
+        } else if (args.length == 0 && plugin.getConfig().getBoolean("allow-using-bid-auto-command", true)) {
             Auction auction = AuctionManager.getCurrentAuction();
 
             if (auction != null) {
