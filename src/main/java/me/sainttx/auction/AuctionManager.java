@@ -6,9 +6,9 @@ import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class AuctionManager {
 
@@ -26,7 +26,7 @@ public class AuctionManager {
     /*
      * The auction queue
      */
-    private Queue<Auction> auctionQueue = new ArrayDeque<Auction>();
+    private Queue<Auction> auctionQueue = new ConcurrentLinkedQueue<Auction>();
 
     /*
      * Banned materials in an auction
