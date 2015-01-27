@@ -71,7 +71,7 @@ public class TextUtil {
 
     /**
      * Returns if a player is ignoring auctions
-     * 
+     *
      * @param uuid The ID of the player ignoring
      *
      * @return True if the player is ignoring auctions, false otherwise
@@ -82,7 +82,7 @@ public class TextUtil {
 
     /**
      * Adds a player to the ignoring list 
-     * 
+     *
      * @param uuid The ID of the player thats now ignoring
      */
     public static void addIgnoring(UUID uuid) {
@@ -91,7 +91,7 @@ public class TextUtil {
 
     /**
      * Removes a name from the ignoring list
-     * 
+     *
      * @param uuid The uuid of the player not ignoring
      */
     public static void removeIgnoring(UUID uuid) {
@@ -164,16 +164,21 @@ public class TextUtil {
         return ChatColor.translateAlternateColorCodes('&', string);
     }
 
-    /*
+    /**
      * Gets a string from the messages file
+     *
+     * @param path The path inside the message file
      */
     public static String getConfigMessage(String path) {
-        if (!messageFile.isString(path)) {
-            Bukkit.getLogger().info("Could not find auction message with path \"" + path + "\", using default instead");
+        if (messageFile.isString(path)) {
+            return color(messageFile.getString(path));
+        } else if (messageFileDefault.isString(path)) {
+            Bukkit.getLogger().warning("Could not find auction message with path \"" + path + "\", using default instead");
             return color(messageFileDefault.getString(path));
+        } else {
+            Bukkit.getLogger().warning("Could not find auction message with path \"" + path + "\" anywhere, message ignored");
+            return "";
         }
-
-        return color(messageFile.getString(path));
     }
 
     /*
@@ -218,13 +223,13 @@ public class TextUtil {
                         .replaceAll("%w", auction.getWinningName());
             }
         }
-        
+
         return ChatColor.translateAlternateColorCodes('&', ret);
     }
 
     /**
      * Sends the auction menu to a sender
-     * 
+     *
      * @param sender The sender to send the menu too
      */
     public static void sendMenu(CommandSender sender) {
