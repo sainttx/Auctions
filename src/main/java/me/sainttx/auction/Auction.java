@@ -8,6 +8,8 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class Auction {
@@ -16,6 +18,11 @@ public class Auction {
      * The auction plugin
      */
     private AuctionPlugin plugin;
+
+    /*
+     * Used for the AuctionTimer
+     */
+    protected static List<Integer> broadcastTimes = new ArrayList<Integer>();
 
     /*
      * Auction owner information
@@ -306,19 +313,8 @@ public class Auction {
             if (timeLeft <= 0) {
                 end(true);
             } else {
-                --timeLeft;
-                switch(timeLeft) {
-                    case 120:
-                    case 90:
-                    case 60:
-                    case 45:
-                    case 30:
-                    case 15:
-                    case 10:
-                    case 3:
-                    case 2:
-                    case 1:
-                        TextUtil.sendMessage(TextUtil.replace(auction, TextUtil.getConfigMessage("auction-timer")), false, Bukkit.getOnlinePlayers().toArray(new Player[0]));
+                if (broadcastTimes.contains(--timeLeft)) {
+                    TextUtil.sendMessage(TextUtil.replace(auction, TextUtil.getConfigMessage("auction-timer")), false, Bukkit.getOnlinePlayers().toArray(new Player[0]));
                 }
             }
         }

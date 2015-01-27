@@ -141,6 +141,18 @@ public class AuctionPlugin extends JavaPlugin implements Listener {
         getConfig().options().copyDefaults(true);
         File names = new File(getDataFolder(), "items.yml");
 
+        // Clear & set up auction broadcast times
+        Auction.broadcastTimes.clear();
+        for (String broadcastTime : getConfig().getStringList("broadcast-times")) {
+            try {
+                Integer time = Integer.parseInt(broadcastTime);
+                Auction.broadcastTimes.add(time);
+            } catch (NumberFormatException ex) {
+                getLogger().info("String \"" + broadcastTime + "\" is an invalid Integer, skipping");
+            }
+        }
+
+        // Save items file name
         if (!names.exists()) {
             saveResource("items.yml", false);
         }
