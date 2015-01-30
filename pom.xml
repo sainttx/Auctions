@@ -14,7 +14,7 @@
 
     <build>
         <defaultGoal>clean package install</defaultGoal>
-        <finalName>Auction</finalName>
+        <finalName>Auction-${version}</finalName>
         <sourceDirectory>${basedir}/src/main/java</sourceDirectory>
         <resources>
             <resource>
