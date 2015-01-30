@@ -114,21 +114,7 @@ public class AuctionUtil {
      * 
      * @return String the time left
      */
-    public static String getFormattedTime(int timeLeft) {     
-        String formatted = "";
-        int days = (int) Math.floor(timeLeft / 86400); // get days
-        int hourSeconds = timeLeft % 86400; 
-        int hours = (int) Math.floor(hourSeconds / 3600); // get hours
-        int minuteSeconds = hourSeconds % 3600;
-        int minutes = (int) Math.floor(minuteSeconds / 60); // get minutes
-        int remainingSeconds = minuteSeconds % 60;
-        int seconds = (int) Math.ceil(remainingSeconds); // get seconds
-
-        if (days > 0) formatted += String.format("%d d, ", days);
-        if (hours > 0) formatted += String.format("%d hr, ", hours);
-        if (minutes > 0) formatted += String.format("%d min, ", minutes);
-        if (seconds > 0) formatted += String.format("%d sec", seconds);
-
-        return formatted;
+    public static String getFormattedTime(int timeLeft) {
+        return TimeUtil.formatDateDiff(System.currentTimeMillis() + (timeLeft * 1000L));
     }
 }
