@@ -66,7 +66,7 @@ public class Auction {
         this.owner          = player.getUniqueId();
         this.numItems       = numItems;
         this.topBid         = startingAmount;
-        this.timeLeft       = plugin.getConfig().getInt("default-auction-start-time", 30);
+        this.timeLeft       = plugin.getConfig().getInt("auction-time", 30);
         this.bidIncrement   = bidIncrement;
         this.item           = item.clone();
         this.item.setAmount(numItems);
