@@ -274,13 +274,15 @@ public class AuctionManager {
         try {
             auction = new Auction(AuctionPlugin.getPlugin(), player, item, numItems, startingPrice, bidIncrement);
         } catch (NumberFormatException ex1) {
-            TextUtil.sendMessage(TextUtil.getConfigMessage("fail-number-format"), true, player);
-        } catch (Exception ex2) {
-            TextUtil.sendMessage(TextUtil.getConfigMessage(ex2.getMessage()), true, player);
-        } finally {
             ItemStack give = item.clone();
             give.setAmount(numItems);
             AuctionUtil.giveItem(player, give);
+            TextUtil.sendMessage(TextUtil.getConfigMessage("fail-number-format"), true, player);
+        } catch (Exception ex2) {
+            ItemStack give = item.clone();
+            give.setAmount(numItems);
+            AuctionUtil.giveItem(player, give);
+            TextUtil.sendMessage(TextUtil.getConfigMessage(ex2.getMessage()), true, player);
         }
 
         if (auction != null && !player.hasPermission("auction.tax.exempt")) {
