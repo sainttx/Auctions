@@ -1,6 +1,7 @@
 package me.sainttx.auction;
 
 import me.sainttx.auction.inventory.AuctionInventory;
+import me.sainttx.auction.util.AuctionUtil;
 import me.sainttx.auction.util.TextUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -276,6 +277,10 @@ public class AuctionManager {
             TextUtil.sendMessage(TextUtil.getConfigMessage("fail-number-format"), true, player);
         } catch (Exception ex2) {
             TextUtil.sendMessage(TextUtil.getConfigMessage(ex2.getMessage()), true, player);
+        } finally {
+            ItemStack give = item.clone();
+            give.setAmount(numItems);
+            AuctionUtil.giveItem(player, give);
         }
 
         if (auction != null && !player.hasPermission("auction.tax.exempt")) {

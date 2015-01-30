@@ -10,9 +10,7 @@ minimum-auction-start-price: 10
 maximum-auction-start-price: 30000
 
 # Enabling and disabling certain features
-allow-auction-auto-winning: true
 allow-creative-auctioning: false
-allow-auction-help-command: true
 allow-auction-end-command: false
 allow-auction-cancel-command: true
 allow-using-bid-auto-command: true
