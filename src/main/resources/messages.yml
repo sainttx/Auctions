@@ -102,3 +102,4 @@ command-blocked-auction-queued: "&cYou can't use this command while having an au
 
 # disc - custom
 different-item: "&cYour items must all be the same!"
+inventory-title: "Add your items"

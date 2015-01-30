@@ -205,7 +205,7 @@ public class AuctionManager {
             } else if (hasAuctionQueued(player)) { // The player already has an auction queued
                 TextUtil.sendMessage(TextUtil.getConfigMessage("fail-start-already-queued"), true, player);
             } else {
-                AuctionInventory inventory = new AuctionInventory(6, "Add your items @" + player.getName(), player.getUniqueId(), startingPrice);
+                AuctionInventory inventory = new AuctionInventory(6, TextUtil.getConfigMessage("inventory-title"), player.getUniqueId(), startingPrice);
                 inventory.open(player);
             }
         }
