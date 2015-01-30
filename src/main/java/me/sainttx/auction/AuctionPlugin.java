@@ -2,6 +2,7 @@ package me.sainttx.auction;
 
 import me.sainttx.auction.command.AuctionCommand;
 import me.sainttx.auction.command.BidCommand;
+import me.sainttx.auction.inventory.InventoryListener;
 import me.sainttx.auction.util.AuctionUtil;
 import me.sainttx.auction.util.TextUtil;
 import net.milkbowl.vault.economy.Economy;
@@ -64,6 +65,7 @@ public class AuctionPlugin extends JavaPlugin implements Listener {
         });
 
         // Setup
+        getServer().getPluginManager().registerEvents(new InventoryListener(this), this);
         getServer().getPluginManager().registerEvents(this, this);
         loadConfig();
         TextUtil.load(this);

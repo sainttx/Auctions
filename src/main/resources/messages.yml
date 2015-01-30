@@ -1,7 +1,6 @@
 # Legend:
 # %i - item being auctioned
 # %a - amount of item being auctioned
-# %A - autowin amount
 # %t - time remaining in the auction
 # %p - player hosting the auction
 # %w - the current top bidder of the auction
@@ -22,7 +21,7 @@ auction-menu:
 - "&6&lAuction Help Menu - Commands:"
 - "&6/auction info &e- &cDisplays current auction information"
 - "&6/auction bid &7<amount> &e- &cBid on an auction"
-- "&6/auction start &7<amount> <start-price> [bid-incrmnt] [autowin] &e- &cStart an auction"
+- "&6/auction start &7<price> &e- &cStart an auction"
 - "&6/auction end &e- &cEnd your current auction"
 - "&6/auction ignore &e- &cIgnore plugin messages"
 - "&6/auction reload &e- &cReload auction configuration"
@@ -34,10 +33,8 @@ auction-timer: "&6The auction for &c%a %i &6has &c%t &6remaining"
 auction-cancelled: "&6The auction for %i &6was &ccancelled"
 auction-start: "&c%p &6started an auction for &c%a %i"
 auction-start-price: "&6The &cauction &6begins at &c$%b &6and will last for &c%t"
-auction-start-autowin: "&6The host has set the autowin amount to &c$%A"
 auction-info-message: "&c%p &6is auctioning &c%a %i &6for &c$%b"
 auction-ended: "&6Your auction has ended. Received &c$%b"
-auction-ended-autowin: "&6The auction for %i ended with &c%w &6bidding &c$%b &c&n(autowin)"
 auction-end-tax: "&6A tax of &c$%T &6was charged"
 auction-end-no-bidders: "&6The auction for &c%a %i &6ended with no bids"
 auction-end-broadcast: "&c%w &6won &c%a %i &6with a bid of &c$%b"
@@ -58,7 +55,7 @@ fail-start-ignoring: "&cYou have auctions ignored, toggle by using /auction igno
 fail-start-hand-empty: "&cYou can't auction air"
 fail-start-not-enough-items: "&cYou don't have enough of that item!"
 fail-start-no-funds: "&cYou can't afford to start an auction"
-fail-start-syntax: "&cUsage: /auction start <amount> <initial price> [bid incrmnt] [autowin]"
+fail-start-syntax: "&cUsage: /auction start <price>"
 fail-start-auction-in-progress: "&cThere is already an auction in progress"
 fail-start-creative: "&cYou cannot start an auction in GameMode CREATIVE"
 fail-start-unknown: "&cCould not start the auction"
@@ -102,3 +99,6 @@ fail-start-damaged-item: "&cYou can't auction damaged items!"
 fail-start-bid-increment: "&cYour bid increment was either too high or too low"
 command-blocked-auctioning: "&cYou can't use this command while auctioning an item"
 command-blocked-auction-queued: "&cYou can't use this command while having an auction queued"
+
+# disc - custom
+different-item: "&cYour items must all be the same!"

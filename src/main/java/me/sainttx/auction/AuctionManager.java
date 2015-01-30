@@ -1,10 +1,12 @@
 package me.sainttx.auction;
 
+import me.sainttx.auction.inventory.AuctionInventory;
 import me.sainttx.auction.util.TextUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.Queue;
@@ -115,6 +117,15 @@ public class AuctionManager {
     }
 
     /**
+     * Adds an auction to the queue
+     *
+     * @param auction The auction to be added
+     */
+    public void queueAuction(Auction auction) {
+        this.auctionQueue.add(auction);
+    }
+
+    /**
      * Returns whether or not a player is hosting an active auction
      *
      * @param player A player who may be participating in an auction
@@ -169,7 +180,7 @@ public class AuctionManager {
             double fee = plugin.getConfig().getDouble("auction-start-fee", 0);
 
             try {
-                startingPrice = Double.parseDouble(args[2]);
+                startingPrice = Double.parseDouble(args[1]);
             } catch (NumberFormatException ex) {
                 TextUtil.sendMessage(TextUtil.getConfigMessage("fail-number-format"), true, player);
                 return;
@@ -193,15 +204,8 @@ public class AuctionManager {
             } else if (hasAuctionQueued(player)) { // The player already has an auction queued
                 TextUtil.sendMessage(TextUtil.getConfigMessage("fail-start-already-queued"), true, player);
             } else {
-                // TODO: Create the GUI for entering items
-                Auction auction = createAuction(plugin, player, 1, startingPrice, bidIncrement, -1);
-
-                if (currentAuction == null && this.canAuction) {
-                    startAuction(auction);
-                } else {
-                    auctionQueue.add(auction);
-                    TextUtil.sendMessage(TextUtil.getConfigMessage("auction-queued"), true, player);
-                }
+                AuctionInventory inventory = new AuctionInventory(6, "Add your items @" + player.getName(), player.getUniqueId(), startingPrice);
+                inventory.open(player);
             }
         }
     }
@@ -261,14 +265,13 @@ public class AuctionManager {
      * @param player        The player starting the auction
      * @param numItems      The number of items the player is auctioning
      * @param startingPrice The starting price of the auction
-     * @param autoWin       The amount required to bid to automatically win
      *
      * @return The auction result, null if something went wrong
      */
-    public Auction createAuction(AuctionPlugin plugin, Player player, int numItems, double startingPrice, int bidIncrement, double autoWin) {
+    public Auction createAuction(Player player, ItemStack item, int numItems, double startingPrice, int bidIncrement) {
         Auction auction = null;
         try {
-            auction = new Auction(AuctionPlugin.getPlugin(), player, numItems, startingPrice, bidIncrement, autoWin);
+            auction = new Auction(AuctionPlugin.getPlugin(), player, item, numItems, startingPrice, bidIncrement);
         } catch (NumberFormatException ex1) {
             TextUtil.sendMessage(TextUtil.getConfigMessage("fail-number-format"), true, player);
         } catch (Exception ex2) {
@@ -353,19 +356,14 @@ public class AuctionManager {
         AuctionPlugin.getEconomy().withdrawPlayer(player, amount);
 
         // Check if the auction isn't won due to autowin
-        if (amount >= currentAuction.getAutoWin() && currentAuction.getAutoWin() != -1) {
-            TextUtil.sendMessage(TextUtil.replace(currentAuction, TextUtil.getConfigMessage("auction-ended-autowin")), false, Bukkit.getOnlinePlayers().toArray(new Player[0]));
-            currentAuction.end(true);
-        } else {
-            TextUtil.sendMessage(TextUtil.replace(currentAuction, TextUtil.getConfigMessage("bid-broadcast")), false, Bukkit.getOnlinePlayers().toArray(new Player[0]));
+        TextUtil.sendMessage(TextUtil.replace(currentAuction, TextUtil.getConfigMessage("bid-broadcast")), false, Bukkit.getOnlinePlayers().toArray(new Player[0]));
 
-            if (currentAuction.getTimeLeft() <= 3 && plugin.getConfig().getBoolean("enable-anti-snipe", true) && currentAuction.getAntiSniped() + 1 <= plugin.getConfig().getInt("anti-snipe-max-per-auction")) {
-                int time = plugin.getConfig().getInt("anti-snipe-add-seconds", 5);
-                if (time > 0) {
-                    TextUtil.sendMessage(TextUtil.replace(currentAuction, TextUtil.getConfigMessage("anti-snipe-add").replace("%t", Integer.toString(time))), false, Bukkit.getOnlinePlayers().toArray(new Player[0]));
-                    currentAuction.addSeconds(time);
-                    currentAuction.incrementAntiSniped();
-                }
+        if (currentAuction.getTimeLeft() <= 3 && plugin.getConfig().getBoolean("enable-anti-snipe", true) && currentAuction.getAntiSniped() + 1 <= plugin.getConfig().getInt("anti-snipe-max-per-auction")) {
+            int time = plugin.getConfig().getInt("anti-snipe-add-seconds", 5);
+            if (time > 0) {
+                TextUtil.sendMessage(TextUtil.replace(currentAuction, TextUtil.getConfigMessage("anti-snipe-add").replace("%t", Integer.toString(time))), false, Bukkit.getOnlinePlayers().toArray(new Player[0]));
+                currentAuction.addSeconds(time);
+                currentAuction.incrementAntiSniped();
             }
         }
     }
@@ -432,6 +430,15 @@ public class AuctionManager {
      */
     public void setDisabled(boolean disabled) {
         this.disabled = disabled;
+    }
+
+    /**
+     * Returns whether players can auction or not
+     *
+     * @return The value of auctioning availability
+     */
+    public boolean canAuction() {
+        return canAuction;
     }
 
     /**

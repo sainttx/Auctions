@@ -216,7 +216,6 @@ public class TextUtil {
                     .replaceAll("%b", NumberFormat.getInstance(Locale.ENGLISH).format(auction.getTopBid()))
                     .replaceAll("%p", auction.getOwnerName())
                     .replaceAll("%a", Integer.toString(auction.getNumItems()))
-                    .replaceAll("%A", NumberFormat.getInstance(Locale.ENGLISH).format(auction.getAutoWin()))
                     .replaceAll("%B", Integer.toString((int) auction.getBidIncrement()));
             if (auction.hasBids()) {
                 ret = ret.replaceAll("%T", Double.toString(auction.getCurrentTax()))

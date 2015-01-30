@@ -42,7 +42,6 @@ public class Auction {
      */
     private ItemStack item;          // The item being auctioned
     private boolean taxable = false; // Whether or not taxes should be applied on this auction
-    private double autoWin;          // The auto-win amount (if set)
     private int bidIncrement;        // The bid increment
     private int numItems;            // Amount in the ItemStack
     private int auctionTimer;        // The auction timer task id
@@ -56,13 +55,12 @@ public class Auction {
      * @param player The player who begun the auction
      * @param numItems The number of items being auctioned
      * @param startingAmount The starting amount specified by the player
-     * @param autoWin The amount that will automatically end the auction
      *
      * @throws Exception If the player auctioned nothing, 
      *                   If the player auctioned a banned item,
      *                   If the player does not have enough items to auction
      */
-    public Auction(AuctionPlugin plugin, Player player, int numItems, double startingAmount, int bidIncrement, double autoWin) throws Exception {
+    public Auction(AuctionPlugin plugin, Player player, ItemStack item, int numItems, double startingAmount, int bidIncrement) throws Exception {
         this.plugin         = plugin;
         this.ownerName      = player.getName();
         this.owner          = player.getUniqueId();
@@ -70,12 +68,8 @@ public class Auction {
         this.topBid         = startingAmount;
         this.timeLeft       = plugin.getConfig().getInt("default-auction-start-time", 30);
         this.bidIncrement   = bidIncrement;
-        this.autoWin        = autoWin;
-        this.item           = player.getItemInHand().clone();
+        this.item           = item.clone();
         this.item.setAmount(numItems);
-        if (autoWin < topBid + plugin.getConfig().getDouble("default-bid-increment", 10D) && autoWin != -1) {
-            this.autoWin = topBid + plugin.getConfig().getDouble("default-bid-increment", 10D);
-        }
 
         validateAuction(player);
     }
@@ -168,10 +162,6 @@ public class Auction {
         TextUtil.sendMessage(TextUtil.replace(this, TextUtil.getConfigMessage("auction-start")), false, Bukkit.getOnlinePlayers().toArray(new Player[0]));
         TextUtil.sendMessage(TextUtil.replace(this, TextUtil.getConfigMessage("auction-start-price")), false, Bukkit.getOnlinePlayers().toArray(new Player[0]));
         TextUtil.sendMessage(TextUtil.replace(this, TextUtil.getConfigMessage("auction-start-increment")), false, Bukkit.getOnlinePlayers().toArray(new Player[0]));
-
-        if (autoWin != -1) {
-            TextUtil.sendMessage(TextUtil.replace(this, TextUtil.getConfigMessage("auction-start-autowin")), false, Bukkit.getOnlinePlayers().toArray(new Player[0]));
-        }
     }
 
     /**
@@ -338,13 +328,6 @@ public class Auction {
         if (item.getType().getMaxDurability() > 0 && item.getDurability() > 0 && !plugin.getConfig().getBoolean("allow-damaged-items", true)) {
             throw new Exception("fail-start-damaged-item");
         }
-
-        // Check if they have enough of the item
-        if (AuctionUtil.searchInventory(player.getInventory(), item, numItems)) {
-            player.getInventory().removeItem(item);
-        } else {
-            throw new Exception("fail-start-not-enough-items");
-        }
     }
 
 
@@ -410,15 +393,6 @@ public class Auction {
      */
     public int getNumItems() {
         return numItems;
-    }
-
-    /**
-     * Gets the auto win amount
-     *
-     * @return The auto win amount
-     */
-    public double getAutoWin() {
-        return autoWin;
     }
 
     /**
