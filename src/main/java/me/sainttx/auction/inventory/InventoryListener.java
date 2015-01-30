@@ -11,8 +11,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.player.PlayerKickEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.metadata.FixedMetadataValue;
 
 /**
  * Created by Matthew on 29/01/2015.
@@ -63,13 +66,13 @@ public class InventoryListener implements Listener {
 
             Player player = Bukkit.getPlayer(inv.getPlayerId());
             if (player == null) {
-                // TODO: Handle this
+                // It won't be
                 return;
             }
 
             boolean dropped = false;
-            if (diff) {
-                TextUtil.sendMessage(TextUtil.getConfigMessage("different-item"), true, player);
+            if (diff || player.hasMetadata("leaving")) {
+                TextUtil.sendMessage(!diff ? "" : TextUtil.getConfigMessage("different-item"), true, player);
                 for (ItemStack itm : contents) {
                     if (itm != null) {
                         if (AuctionUtil.hasSpace(player.getInventory(), itm)) {
@@ -95,6 +98,24 @@ public class InventoryListener implements Listener {
                     TextUtil.sendMessage(TextUtil.getConfigMessage("auction-queued"), true, player);
                 }
             }
+        }
+    }
+
+    @EventHandler
+    public void onPlayerQuit(PlayerQuitEvent event) {
+        if (event.getPlayer().getOpenInventory() != null
+                && event.getPlayer().getOpenInventory().getTopInventory().getHolder() instanceof AuctionInventory) {
+            event.getPlayer().setMetadata("leaving", new FixedMetadataValue(plugin, true));
+            event.getPlayer().closeInventory();
+        }
+    }
+
+    @EventHandler
+    public void onPlayerKick(PlayerKickEvent event) {
+        if (event.getPlayer().getOpenInventory() != null
+                && event.getPlayer().getOpenInventory().getTopInventory().getHolder() instanceof AuctionInventory) {
+            event.getPlayer().setMetadata("leaving", new FixedMetadataValue(plugin, true));
+            event.getPlayer().closeInventory();
         }
     }
 }
