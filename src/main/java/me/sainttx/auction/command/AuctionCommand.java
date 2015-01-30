@@ -1,9 +1,9 @@
 package me.sainttx.auction.command;
 
+import me.sainttx.auction.Auction;
 import me.sainttx.auction.AuctionManager;
 import me.sainttx.auction.AuctionPlugin;
 import me.sainttx.auction.util.TextUtil;
-
 import org.bukkit.GameMode;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -79,10 +79,11 @@ public class AuctionCommand implements CommandExecutor {
                         }
                         break;
                     case BID:
-                        if (args.length == 2) {
-                            manager.prepareBid(player, args[1]);
+                        Auction auction = manager.getCurrentAuction();
+                        if (auction != null) {
+                            manager.prepareBid(player, (int) (auction.getTopBid() + auction.getBidIncrement()));
                         } else {
-                            TextUtil.sendMessage(TextUtil.getConfigMessage("fail-bid-syntax"), true, player);
+                            TextUtil.sendMessage(TextUtil.getConfigMessage("fail-bid-no-auction"), true, player);
                         }
                         break;
                     case INFO:
