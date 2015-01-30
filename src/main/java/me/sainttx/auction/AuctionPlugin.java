@@ -51,8 +51,6 @@ public class AuctionPlugin extends JavaPlugin implements Listener {
         return plugin;
     }
 
-    // Testing branches with IntelliJ IDEA
-
     @Override
     public void onEnable() {
         plugin = this;

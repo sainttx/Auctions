@@ -27,7 +27,11 @@ public class AuctionCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (args.length == 0) {
-            TextUtil.sendMenu(sender);
+            if (sender instanceof Player) {
+                AuctionManager.getAuctionManager().sendAuctionInfo((Player) sender);
+            } else {
+                sender.sendMessage("Only players can view Auction information");
+            }
         } else {
             AuctionManager manager = AuctionManager.getAuctionManager();
             SubCommand subCommand = SubCommand.getSubCommand(args[0]);
@@ -88,11 +92,7 @@ public class AuctionCommand implements CommandExecutor {
                         manager.end(player);
                         break;
                     case HELP:
-                        if (plugin.getConfig().getBoolean("allow-auction-help-command", false)) {
-                            TextUtil.sendHelp(sender);
-                        } else {
-                            TextUtil.sendMenu(sender);
-                        }
+                        TextUtil.sendMenu(sender);
                         break;
                     case CANCEL:
                         manager.cancelCurrentAuction(player);
