@@ -3,11 +3,9 @@
 # General Auction information
 auction-start-fee: 0
 auction-tax-percentage: 0
-default-auction-start-time: 30
+auction-time: 30
+auction-bid-increment: 100
 delay-between-auctions-seconds: 5
-default-bid-increment: 50
-minimum-bid-increment: 10
-maximum-bid-increment: 100
 minimum-auction-start-price: 10
 maximum-auction-start-price: 30000
 
