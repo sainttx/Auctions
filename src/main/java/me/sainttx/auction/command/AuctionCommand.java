@@ -1,6 +1,5 @@
 package me.sainttx.auction.command;
 
-import me.sainttx.auction.Auction;
 import me.sainttx.auction.AuctionManager;
 import me.sainttx.auction.AuctionPlugin;
 import me.sainttx.auction.util.TextUtil;
@@ -79,11 +78,10 @@ public class AuctionCommand implements CommandExecutor {
                         }
                         break;
                     case BID:
-                        Auction auction = manager.getCurrentAuction();
-                        if (auction != null) {
-                            manager.prepareBid(player, (int) (auction.getTopBid() + auction.getBidIncrement()));
+                        if (args.length == 2) {
+                            manager.prepareBid(player, args[1]);
                         } else {
-                            TextUtil.sendMessage(TextUtil.getConfigMessage("fail-bid-no-auction"), true, player);
+                            TextUtil.sendMessage(TextUtil.getConfigMessage("fail-bid-syntax"), true, player);
                         }
                         break;
                     case INFO:
