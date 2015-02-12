@@ -18,17 +18,16 @@ permissions:
     description: Gives access to all Auction commands
     children:
       auction.bid: true
+      auction.bypass.startdelay: true
       auction.start: true
       auction.end: true
       auction.end.bypass: true
       auction.info: true
       auction.ignore: true
       auction.tax.exempt: true
-      auction.disable.bypass: true
-      auction.disable: true
       auction.enable: true
       auction.reload: true
-      auction.bypass.startdelay: true
+      auction.toggle: true
   auction.bid:
     description: Allows you to bid on auctions
     default: true
@@ -67,4 +66,7 @@ permissions:
     default: op
   auction.reload:
     description: Allows you to reload the auction configuration
+    default: op
+  auction.toggle:
+    description: Allows you to toggle auction enabled/disabled status
     default: op
