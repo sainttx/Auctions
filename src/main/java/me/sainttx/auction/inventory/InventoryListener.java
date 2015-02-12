@@ -55,7 +55,7 @@ public class InventoryListener implements Listener {
                         diff = true;
                         break;
                     } else {
-                        totalAmount += compare.getAmount();
+                        totalAmount += i.getAmount();
                     }
                 }
             }
