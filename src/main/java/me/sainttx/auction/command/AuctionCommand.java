@@ -3,7 +3,6 @@ package me.sainttx.auction.command;
 import me.sainttx.auction.AuctionManager;
 import me.sainttx.auction.AuctionPlugin;
 import me.sainttx.auction.util.TextUtil;
-
 import org.bukkit.GameMode;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -43,6 +42,12 @@ public class AuctionCommand implements CommandExecutor {
 
                 try {
                     player = (Player) sender; // Attempt to cast
+
+                    if (plugin.getConfig().isList("disabled-worlds")
+                            && plugin.getConfig().getStringList("disabled-worlds").contains(player.getWorld().getName())) {
+                        TextUtil.sendMessage(TextUtil.getConfigMessage("fail-start-world-disabled"), true, player);
+                        return true;
+                    }
                 } catch (ClassCastException ignored) { /* Do nothing */ }
 
                 switch (subCommand) {
@@ -165,7 +170,6 @@ public class AuctionCommand implements CommandExecutor {
          * Gets a SubCommand from a players entry
          *
          * @param entry The command a player typed
-         *
          * @return The corresponding SubCommand
          */
         public static SubCommand getSubCommand(String entry) {

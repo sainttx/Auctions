@@ -147,7 +147,7 @@ public class AuctionManager {
      * @param player The player who started the auction
      * @param args   Arguments relative to the auction provided by the player
      */
-    public void prepareAuction(Player player, String[] args) {
+        public void prepareAuction(Player player, String[] args) {
         double minStartingPrice = plugin.getConfig().getDouble("minimum-auction-start-price", 0);
         double maxStartingPrice = plugin.getConfig().getDouble("maximum-auction-start-price", Integer.MAX_VALUE);
 
@@ -160,9 +160,6 @@ public class AuctionManager {
         } else if (TextUtil.isIgnoring(player.getUniqueId())) {
             // The player is ignoring auctions
             TextUtil.sendMessage(TextUtil.getConfigMessage("fail-start-ignoring"), true, player);
-        } else if (plugin.getConfig().isList("disabled-worlds")
-                && plugin.getConfig().getStringList("disabled-worlds").contains(player.getWorld().getName())) {
-            TextUtil.sendMessage(TextUtil.getConfigMessage("fail-start-world-disabled"), true, player);
         } else {
             int numItems;
             double startingPrice;
