@@ -60,7 +60,7 @@ anti-snipe-add-seconds: 5
 banned-items:
 - BEDROCK
 
-# If a String of lore contains any of the texts here, the item
+# If an items lore contains any of the texts here, the item
 # won't be allowed to be put into an auction
 banned-lore:
 - 'A string of lore'

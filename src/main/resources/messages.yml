@@ -107,3 +107,4 @@ command-blocked-auction-queued: "&cYou can't use this command while having an au
 
 # v1.0.0
 fail-start-named-item: "&cYou can''t auction off items that have a name"
+fail-start-banned-lore: "&cYou can''t auction off this item as it contains banned lore"

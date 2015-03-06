@@ -52,26 +52,25 @@ public class Auction {
     /**
      * Instantiate an Auction
      *
-     * @param plugin The AuctionPlugin auction
-     * @param player The player who begun the auction
-     * @param numItems The number of items being auctioned
+     * @param plugin         The AuctionPlugin auction
+     * @param player         The player who begun the auction
+     * @param numItems       The number of items being auctioned
      * @param startingAmount The starting amount specified by the player
-     * @param autoWin The amount that will automatically end the auction
-     *
-     * @throws Exception If the player auctioned nothing, 
+     * @param autoWin        The amount that will automatically end the auction
+     * @throws Exception If the player auctioned nothing,
      *                   If the player auctioned a banned item,
      *                   If the player does not have enough items to auction
      */
     public Auction(AuctionPlugin plugin, Player player, int numItems, double startingAmount, int bidIncrement, double autoWin) throws Exception {
-        this.plugin         = plugin;
-        this.ownerName      = player.getName();
-        this.owner          = player.getUniqueId();
-        this.numItems       = numItems;
-        this.topBid         = startingAmount;
-        this.timeLeft       = plugin.getConfig().getInt("default-auction-start-time", 30);
-        this.bidIncrement   = bidIncrement;
-        this.autoWin        = autoWin;
-        this.item           = player.getItemInHand().clone();
+        this.plugin = plugin;
+        this.ownerName = player.getName();
+        this.owner = player.getUniqueId();
+        this.numItems = numItems;
+        this.topBid = startingAmount;
+        this.timeLeft = plugin.getConfig().getInt("default-auction-start-time", 30);
+        this.bidIncrement = bidIncrement;
+        this.autoWin = autoWin;
+        this.item = player.getItemInHand().clone();
         this.item.setAmount(numItems);
         if (autoWin < topBid + plugin.getConfig().getDouble("default-bid-increment", 10D) && autoWin != -1) {
             this.autoWin = topBid + plugin.getConfig().getDouble("default-bid-increment", 10D);
@@ -337,10 +336,37 @@ public class Auction {
             // They don't have enough of that item in their inventory
             throw new Exception("fail-start-not-enough-items");
         } else if (!plugin.getConfig().getBoolean("allow-auctioning-named-items", true) && item.getItemMeta().hasDisplayName()) {
+            // The player can't auction named items
             throw new Exception("fail-start-named-item");
+        } else if (hasBannedLore()) {
+            // The players item contains a piece of denied lore
+            throw new Exception("fail-start-banned-lore");
         } else {
             player.getInventory().removeItem(item);
         }
+    }
+
+    /*
+     * Check if an item has a denied String of lore
+     */
+    private boolean hasBannedLore() {
+        List<String> bannedLore = plugin.getConfig().getStringList("banned-lore");
+
+        if (bannedLore != null && !bannedLore.isEmpty()) {
+            if (item.getItemMeta().hasLore()) {
+                List<String> lore = item.getItemMeta().getLore();
+
+                for (String loreItem : lore) {
+                    for (String banned : bannedLore) {
+                        if (loreItem.contains(banned)) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+
+        return false;
     }
 
 
