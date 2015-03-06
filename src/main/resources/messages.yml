@@ -106,6 +106,6 @@ command-blocked-auctioning: "&cYou can't use this command while auctioning an it
 command-blocked-auction-queued: "&cYou can't use this command while having an auction queued"
 
 # v1.0.0
-fail-start-named-item: "&cYou can''t auction off items that have a name"
-fail-start-banned-lore: "&cYou can''t auction off this item as it contains banned lore"
+fail-start-named-item: "&cYou can't auction off items that have a name"
+fail-start-banned-lore: "&cYou can't auction off this item as it contains banned lore"
 fail-start-world-disabled: "&cAuctioning in your world is disabled"
