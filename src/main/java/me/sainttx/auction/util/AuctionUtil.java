@@ -1,5 +1,6 @@
 package me.sainttx.auction.util;
 
+import me.sainttx.auction.AuctionPlugin;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -115,6 +116,7 @@ public class AuctionUtil {
      * @return String the time left
      */
     public static String getFormattedTime(int timeLeft) {
-        return TimeUtil.formatDateDiff(System.currentTimeMillis() + (timeLeft * 1000L));
+        return TimeUtil.formatDateDiff(System.currentTimeMillis() + (timeLeft * 1000L),
+                AuctionPlugin.getPlugin().getConfig().getBoolean("settings.use-shortened-times", false));
     }
 }
