@@ -104,3 +104,6 @@ fail-start-damaged-item: "&cYou can't auction damaged items!"
 fail-start-bid-increment: "&cYour bid increment was either too high or too low"
 command-blocked-auctioning: "&cYou can't use this command while auctioning an item"
 command-blocked-auction-queued: "&cYou can't use this command while having an auction queued"
+
+# v1.0.0
+fail-start-named-item: "&cYou can''t auction off items that have a name"
