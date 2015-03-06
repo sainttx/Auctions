@@ -1,7 +1,6 @@
 # Auction plugin by SainttX
 
 settings:
-  log-auctions: true
   use-shortened-times: false
 
 # General Auction information
@@ -32,7 +31,6 @@ blocked-commands:
 - "/test"
 
 # Per world Auctioning
-enable-per-world-auctions: false
 disabled-worlds:
 - 'testworld'
 

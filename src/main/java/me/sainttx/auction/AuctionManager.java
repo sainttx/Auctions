@@ -160,6 +160,9 @@ public class AuctionManager {
         } else if (TextUtil.isIgnoring(player.getUniqueId())) {
             // The player is ignoring auctions
             TextUtil.sendMessage(TextUtil.getConfigMessage("fail-start-ignoring"), true, player);
+        } else if (plugin.getConfig().isList("disabled-worlds")
+                && plugin.getConfig().getStringList("disabled-worlds").contains(player.getWorld().getName())) {
+            TextUtil.sendMessage(TextUtil.getConfigMessage("fail-start-world-disabled"), true, player);
         } else {
             int numItems;
             double startingPrice;
