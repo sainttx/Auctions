@@ -36,8 +36,8 @@ public class AuctionManager {
     /*
      * Information on whether an auction can be started
      */
-    private boolean disabled    = false;
-    private boolean canAuction  = true;
+    private boolean disabled = false;
+    private boolean canAuction = true;
 
     /**
      * Creates the Auction Manager
@@ -81,7 +81,6 @@ public class AuctionManager {
      * Returns the position a player is in the queue
      *
      * @param player The player to check
-     *
      * @return The position in the queue that the player is in, -1 if not in the queue
      */
     public int getQueuePosition(Player player) {
@@ -101,7 +100,6 @@ public class AuctionManager {
      * Returns whether or not a player has an auction queued
      *
      * @param player A player who may have an auction queued
-     *
      * @return True if the player has an auction queued, false otherwise
      */
     public static boolean hasAuctionQueued(Player player) {
@@ -118,7 +116,6 @@ public class AuctionManager {
      * Returns whether or not a player is hosting an active auction
      *
      * @param player A player who may be participating in an auction
-     *
      * @return True if the player is the owner of the current auction
      */
     public static boolean isAuctioningItem(Player player) {
@@ -229,11 +226,13 @@ public class AuctionManager {
                 } else {
                     Auction auction = createAuction(plugin, player, numItems, startingPrice, bidIncrement, autoWin);
 
-                    if (currentAuction == null && this.canAuction) {
-                        startAuction(auction);
-                    } else {
-                        auctionQueue.add(auction);
-                        TextUtil.sendMessage(TextUtil.getConfigMessage("auction-queued"), true, player);
+                    if (auction != null) {
+                        if (currentAuction == null && this.canAuction) {
+                            startAuction(auction);
+                        } else {
+                            auctionQueue.add(auction);
+                            TextUtil.sendMessage(TextUtil.getConfigMessage("auction-queued"), true, player);
+                        }
                     }
                 }
             }
@@ -296,7 +295,6 @@ public class AuctionManager {
      * @param numItems      The number of items the player is auctioning
      * @param startingPrice The starting price of the auction
      * @param autoWin       The amount required to bid to automatically win
-     *
      * @return The auction result, null if something went wrong
      */
     public Auction createAuction(AuctionPlugin plugin, Player player, int numItems, double startingPrice, int bidIncrement, double autoWin) {
