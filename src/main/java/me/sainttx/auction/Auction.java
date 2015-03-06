@@ -324,26 +324,20 @@ public class Auction {
      * Verifies that this auction has valid settings
      */
     private void validateAuction(Player player) throws Exception {
-        // Check if they actually auctioned an item
-        if (item.getType() == Material.AIR) {
+        if (item == null || item.getType() == Material.AIR) {
+            // They auctioned off nothing
             throw new Exception("fail-start-hand-empty");
-        }
-
-        // Check if the item is allowed
-        if (item.getType() == Material.FIREWORK || item.getType() == Material.FIREWORK_CHARGE || AuctionManager.getBannedMaterials().contains(item.getType())) {
+        } else if (item.getType() == Material.FIREWORK || item.getType() == Material.FIREWORK_CHARGE || AuctionManager.getBannedMaterials().contains(item.getType())) {
+            // The item isn't allowed
             throw new Exception("unsupported-item");
-        }
-
-        // Check if the item is damaged and users can auction damaged items
-        if (item.getType().getMaxDurability() > 0 && item.getDurability() > 0 && !plugin.getConfig().getBoolean("allow-damaged-items", true)) {
+        } else if (item.getType().getMaxDurability() > 0 && item.getDurability() > 0 && !plugin.getConfig().getBoolean("allow-damaged-items", true)) {
+            // Users can't auction damaged items
             throw new Exception("fail-start-damaged-item");
-        }
-
-        // Check if they have enough of the item
-        if (AuctionUtil.searchInventory(player.getInventory(), item, numItems)) {
-            player.getInventory().removeItem(item);
-        } else {
+        } else if (!AuctionUtil.searchInventory(player.getInventory(), item, numItems)) {
+            // They don't have enough of that item in their inventory
             throw new Exception("fail-start-not-enough-items");
+        } else {
+            player.getInventory().removeItem(item);
         }
     }
 
