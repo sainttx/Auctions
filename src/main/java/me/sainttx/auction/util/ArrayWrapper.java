@@ -25,17 +25,17 @@ public final class ArrayWrapper<E> {
 	public ArrayWrapper(E... elements){
 		setArray(elements);
 	}
-	
+
 	private E[] _array;
-	
+
 	/**
 	 * Retrieves a reference to the wrapped array instance.
 	 * @return The array wrapped by this instance.
 	 */
 	public E[] getArray(){
-		return _array;	
+		return _array;
 	}
-	
+
 	/**
 	 * Set this wrapper to wrap a new array instance.
 	 * @param array The new wrapped array.
@@ -44,7 +44,7 @@ public final class ArrayWrapper<E> {
 		Validate.notNull(array, "The array must not be null.");
 		_array = array;
 	}
-	
+
 	/**
 	 * Determines if this object has a value equivalent to another object.
 	 * @see Arrays#equals(Object[], Object[])
@@ -70,7 +70,7 @@ public final class ArrayWrapper<E> {
     {
         return Arrays.hashCode(_array);
     }
-    
+
     /**
      * Converts an iterable element collection to an array of elements.
      * The iteration order of the specified object will be used as the array element order.
@@ -86,8 +86,8 @@ public final class ArrayWrapper<E> {
 			Collection coll = (Collection)list;
         	size = coll.size();
         }
-        
-        
+
+
         if(size < 0){
         	size = 0;
         	// Ugly hack: Count it ourselves
@@ -95,7 +95,7 @@ public final class ArrayWrapper<E> {
         		size++;
         	}
         }
-    	
+
         T[] result = (T[]) Array.newInstance(c, size);
         int i = 0;
         for(T element : list){ // Assumes iteration order is consistent

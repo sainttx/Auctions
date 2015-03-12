@@ -1,24 +1,20 @@
 package me.sainttx.auction.fanciful;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import com.google.gson.stream.JsonWriter;
-import me.sainttx.auction.util.ArrayWrapper;
 import me.sainttx.auction.util.ReflectionUtil;
-import org.bukkit.*;
-import org.bukkit.Statistic.Type;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.io.IOException;
 import java.io.StringWriter;
-import java.lang.reflect.*;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.*;
 import java.util.logging.Level;
 
@@ -83,13 +79,6 @@ public class FancyMessage implements JsonRepresentedObject, Cloneable, Iterable<
                 Bukkit.getLogger().log(Level.WARNING, "Could not access constructor.", e);
             }
         }
-    }
-
-    /**
-     * Creates a JSON message without text.
-     */
-    public FancyMessage() {
-        this((TextualComponent) null);
     }
 
     /**
@@ -175,31 +164,6 @@ public class FancyMessage implements JsonRepresentedObject, Cloneable, Iterable<
     }
 
     /**
-     * Set the behavior of the current editing component to instruct the client to replace the chat input box content with the specified string when the currently edited part of the {@code FancyMessage} is clicked.
-     * The client will not immediately send the command to the server to be executed unless the client player submits the command/chat message, usually with the enter key.
-     *
-     * @param command The text to display in the chat bar of the client.
-     * @return This builder instance.
-     */
-    public FancyMessage suggest(final String command) {
-        onClick("suggest_command", command);
-        return this;
-    }
-
-    /**
-     * Set the behavior of the current editing component to instruct the client to append the chat input box content with the specified string when the currently edited part of the {@code FancyMessage} is SHIFT-CLICKED.
-     * The client will not immediately send the command to the server to be executed unless the client player submits the command/chat message, usually with the enter key.
-     *
-     * @param command The text to append to the chat bar of the client.
-     * @return This builder instance.
-     */
-    public FancyMessage insert(final String command) {
-        latest().insertionData = command;
-        dirty = true;
-        return this;
-    }
-
-    /**
      * Set the behavior of the current editing component to instruct the client to send the specified string to the server as a chat message when the currently edited part of the {@code FancyMessage} is clicked.
      * The client <b>will</b> immediately send the command to the server to be executed when the editing component is clicked.
      *
@@ -209,133 +173,6 @@ public class FancyMessage implements JsonRepresentedObject, Cloneable, Iterable<
     public FancyMessage command(final String command) {
         onClick("run_command", command);
         return this;
-    }
-
-    /**
-     * Set the behavior of the current editing component to display information about an achievement when the client hovers over the text.
-     * <p>Tooltips do not inherit display characteristics, such as color and styles, from the message component on which they are applied.</p>
-     *
-     * @param name The name of the achievement to display, excluding the "achievement." prefix.
-     * @return This builder instance.
-     */
-    public FancyMessage achievementTooltip(final String name) {
-        onHover("show_achievement", new JsonString("achievement." + name));
-        return this;
-    }
-
-    /**
-     * Set the behavior of the current editing component to display information about an achievement when the client hovers over the text.
-     * <p>Tooltips do not inherit display characteristics, such as color and styles, from the message component on which they are applied.</p>
-     *
-     * @param which The achievement to display.
-     * @return This builder instance.
-     */
-    public FancyMessage achievementTooltip(final Achievement which) {
-        try {
-            Object achievement = ReflectionUtil.getMethod(ReflectionUtil.getOBCClass("CraftStatistic"), "getNMSAchievement", Achievement.class).invoke(null, which);
-            return achievementTooltip((String) ReflectionUtil.getField(ReflectionUtil.getNMSClass("Achievement"), "name").get(achievement));
-        } catch (IllegalAccessException e) {
-            Bukkit.getLogger().log(Level.WARNING, "Could not access method.", e);
-            return this;
-        } catch (IllegalArgumentException e) {
-            Bukkit.getLogger().log(Level.WARNING, "Argument could not be passed.", e);
-            return this;
-        } catch (InvocationTargetException e) {
-            Bukkit.getLogger().log(Level.WARNING, "A error has occured durring invoking of method.", e);
-            return this;
-        }
-    }
-
-    /**
-     * Set the behavior of the current editing component to display information about a parameterless statistic when the client hovers over the text.
-     * <p>Tooltips do not inherit display characteristics, such as color and styles, from the message component on which they are applied.</p>
-     *
-     * @param which The statistic to display.
-     * @return This builder instance.
-     * @throws IllegalArgumentException If the statistic requires a parameter which was not supplied.
-     */
-    public FancyMessage statisticTooltip(final Statistic which) {
-        Type type = which.getType();
-        if (type != Type.UNTYPED) {
-            throw new IllegalArgumentException("That statistic requires an additional " + type + " parameter!");
-        }
-        try {
-            Object statistic = ReflectionUtil.getMethod(ReflectionUtil.getOBCClass("CraftStatistic"), "getNMSStatistic", Statistic.class).invoke(null, which);
-            return achievementTooltip((String) ReflectionUtil.getField(ReflectionUtil.getNMSClass("Statistic"), "name").get(statistic));
-        } catch (IllegalAccessException e) {
-            Bukkit.getLogger().log(Level.WARNING, "Could not access method.", e);
-            return this;
-        } catch (IllegalArgumentException e) {
-            Bukkit.getLogger().log(Level.WARNING, "Argument could not be passed.", e);
-            return this;
-        } catch (InvocationTargetException e) {
-            Bukkit.getLogger().log(Level.WARNING, "A error has occured durring invoking of method.", e);
-            return this;
-        }
-    }
-
-    /**
-     * Set the behavior of the current editing component to display information about a statistic parameter with a material when the client hovers over the text.
-     * <p>Tooltips do not inherit display characteristics, such as color and styles, from the message component on which they are applied.</p>
-     *
-     * @param which The statistic to display.
-     * @param item  The sole material parameter to the statistic.
-     * @return This builder instance.
-     * @throws IllegalArgumentException If the statistic requires a parameter which was not supplied, or was supplied a parameter that was not required.
-     */
-    public FancyMessage statisticTooltip(final Statistic which, Material item) {
-        Type type = which.getType();
-        if (type == Type.UNTYPED) {
-            throw new IllegalArgumentException("That statistic needs no additional parameter!");
-        }
-        if ((type == Type.BLOCK && item.isBlock()) || type == Type.ENTITY) {
-            throw new IllegalArgumentException("Wrong parameter type for that statistic - needs " + type + "!");
-        }
-        try {
-            Object statistic = ReflectionUtil.getMethod(ReflectionUtil.getOBCClass("CraftStatistic"), "getMaterialStatistic", Statistic.class, Material.class).invoke(null, which, item);
-            return achievementTooltip((String) ReflectionUtil.getField(ReflectionUtil.getNMSClass("Statistic"), "name").get(statistic));
-        } catch (IllegalAccessException e) {
-            Bukkit.getLogger().log(Level.WARNING, "Could not access method.", e);
-            return this;
-        } catch (IllegalArgumentException e) {
-            Bukkit.getLogger().log(Level.WARNING, "Argument could not be passed.", e);
-            return this;
-        } catch (InvocationTargetException e) {
-            Bukkit.getLogger().log(Level.WARNING, "A error has occured durring invoking of method.", e);
-            return this;
-        }
-    }
-
-    /**
-     * Set the behavior of the current editing component to display information about a statistic parameter with an entity type when the client hovers over the text.
-     * <p>Tooltips do not inherit display characteristics, such as color and styles, from the message component on which they are applied.</p>
-     *
-     * @param which  The statistic to display.
-     * @param entity The sole entity type parameter to the statistic.
-     * @return This builder instance.
-     * @throws IllegalArgumentException If the statistic requires a parameter which was not supplied, or was supplied a parameter that was not required.
-     */
-    public FancyMessage statisticTooltip(final Statistic which, EntityType entity) {
-        Type type = which.getType();
-        if (type == Type.UNTYPED) {
-            throw new IllegalArgumentException("That statistic needs no additional parameter!");
-        }
-        if (type != Type.ENTITY) {
-            throw new IllegalArgumentException("Wrong parameter type for that statistic - needs " + type + "!");
-        }
-        try {
-            Object statistic = ReflectionUtil.getMethod(ReflectionUtil.getOBCClass("CraftStatistic"), "getEntityStatistic", Statistic.class, EntityType.class).invoke(null, which, entity);
-            return achievementTooltip((String) ReflectionUtil.getField(ReflectionUtil.getNMSClass("Statistic"), "name").get(statistic));
-        } catch (IllegalAccessException e) {
-            Bukkit.getLogger().log(Level.WARNING, "Could not access method.", e);
-            return this;
-        } catch (IllegalArgumentException e) {
-            Bukkit.getLogger().log(Level.WARNING, "Argument could not be passed.", e);
-            return this;
-        } catch (InvocationTargetException e) {
-            Bukkit.getLogger().log(Level.WARNING, "A error has occured durring invoking of method.", e);
-            return this;
-        }
     }
 
     /**
@@ -365,176 +202,6 @@ public class FancyMessage implements JsonRepresentedObject, Cloneable, Iterable<
             e.printStackTrace();
             return this;
         }
-    }
-
-
-    /**
-     * Set the behavior of the current editing component to display raw text when the client hovers over the text.
-     * <p>Tooltips do not inherit display characteristics, such as color and styles, from the message component on which they are applied.</p>
-     *
-     * @param text The text, which supports newlines, which will be displayed to the client upon hovering.
-     * @return This builder instance.
-     */
-    public FancyMessage tooltip(final String text) {
-        onHover("show_text", new JsonString(text));
-        return this;
-    }
-
-    /**
-     * Set the behavior of the current editing component to display raw text when the client hovers over the text.
-     * <p>Tooltips do not inherit display characteristics, such as color and styles, from the message component on which they are applied.</p>
-     *
-     * @param lines The lines of text which will be displayed to the client upon hovering. The iteration order of this object will be the order in which the lines of the tooltip are created.
-     * @return This builder instance.
-     */
-    public FancyMessage tooltip(final Iterable<String> lines) {
-        tooltip(ArrayWrapper.toArray(lines, String.class));
-        return this;
-    }
-
-    /**
-     * Set the behavior of the current editing component to display raw text when the client hovers over the text.
-     * <p>Tooltips do not inherit display characteristics, such as color and styles, from the message component on which they are applied.</p>
-     *
-     * @param lines The lines of text which will be displayed to the client upon hovering.
-     * @return This builder instance.
-     */
-    public FancyMessage tooltip(final String... lines) {
-        StringBuilder builder = new StringBuilder();
-        for (int i = 0 ; i < lines.length ; i++) {
-            builder.append(lines[i]);
-            if (i != lines.length - 1) {
-                builder.append('\n');
-            }
-        }
-        tooltip(builder.toString());
-        return this;
-    }
-
-    /**
-     * Set the behavior of the current editing component to display formatted text when the client hovers over the text.
-     * <p>Tooltips do not inherit display characteristics, such as color and styles, from the message component on which they are applied.</p>
-     *
-     * @param text The formatted text which will be displayed to the client upon hovering.
-     * @return This builder instance.
-     */
-    public FancyMessage formattedTooltip(FancyMessage text) {
-        for (MessagePart component : text.messageParts) {
-            if (component.clickActionData != null && component.clickActionName != null) {
-                throw new IllegalArgumentException("The tooltip text cannot have click data.");
-            } else if (component.hoverActionData != null && component.hoverActionName != null) {
-                throw new IllegalArgumentException("The tooltip text cannot have a tooltip.");
-            }
-        }
-        onHover("show_text", text);
-        return this;
-    }
-
-    /**
-     * Set the behavior of the current editing component to display the specified lines of formatted text when the client hovers over the text.
-     * <p>Tooltips do not inherit display characteristics, such as color and styles, from the message component on which they are applied.</p>
-     *
-     * @param lines The lines of formatted text which will be displayed to the client upon hovering.
-     * @return This builder instance.
-     */
-    public FancyMessage formattedTooltip(FancyMessage... lines) {
-        if (lines.length < 1) {
-            onHover(null, null); // Clear tooltip
-            return this;
-        }
-
-        FancyMessage result = new FancyMessage();
-        result.messageParts.clear(); // Remove the one existing text component that exists by default, which destabilizes the object
-
-        for (int i = 0 ; i < lines.length ; i++) {
-            try {
-                for (MessagePart component : lines[i]) {
-                    if (component.clickActionData != null && component.clickActionName != null) {
-                        throw new IllegalArgumentException("The tooltip text cannot have click data.");
-                    } else if (component.hoverActionData != null && component.hoverActionName != null) {
-                        throw new IllegalArgumentException("The tooltip text cannot have a tooltip.");
-                    }
-                    if (component.hasText()) {
-                        result.messageParts.add(component.clone());
-                    }
-                }
-                if (i != lines.length - 1) {
-                    result.messageParts.add(new MessagePart(rawText("\n")));
-                }
-            } catch (CloneNotSupportedException e) {
-                Bukkit.getLogger().log(Level.WARNING, "Failed to clone object", e);
-                return this;
-            }
-        }
-        return formattedTooltip(result.messageParts.isEmpty() ? null : result); // Throws NPE if size is 0, intended
-    }
-
-    /**
-     * Set the behavior of the current editing component to display the specified lines of formatted text when the client hovers over the text.
-     * <p>Tooltips do not inherit display characteristics, such as color and styles, from the message component on which they are applied.</p>
-     *
-     * @param lines The lines of text which will be displayed to the client upon hovering. The iteration order of this object will be the order in which the lines of the tooltip are created.
-     * @return This builder instance.
-     */
-    public FancyMessage formattedTooltip(final Iterable<FancyMessage> lines) {
-        return formattedTooltip(ArrayWrapper.toArray(lines, FancyMessage.class));
-    }
-
-    /**
-     * If the text is a translatable key, and it has replaceable values, this function can be used to set the replacements that will be used in the message.
-     *
-     * @param replacements The replacements, in order, that will be used in the language-specific message.
-     * @return This builder instance.
-     */
-    public FancyMessage translationReplacements(final String... replacements) {
-        for (String str : replacements) {
-            latest().translationReplacements.add(new JsonString(str));
-        }
-        dirty = true;
-
-        return this;
-    }
-    /*
-	
-	/**
-	 * If the text is a translatable key, and it has replaceable values, this function can be used to set the replacements that will be used in the message.
-	 * @param replacements The replacements, in order, that will be used in the language-specific message.
-	 * @return This builder instance.
-	 */   /* ------------
-	public FancyMessage translationReplacements(final Iterable<? extends CharSequence> replacements){
-		for(CharSequence str : replacements){
-			latest().translationReplacements.add(new JsonString(str));
-		}
-		
-		return this;
-	}
-	
-	*/
-
-    /**
-     * If the text is a translatable key, and it has replaceable values, this function can be used to set the replacements that will be used in the message.
-     *
-     * @param replacements The replacements, in order, that will be used in the language-specific message.
-     * @return This builder instance.
-     */
-    public FancyMessage translationReplacements(final FancyMessage... replacements) {
-        for (FancyMessage str : replacements) {
-            latest().translationReplacements.add(str);
-        }
-
-        dirty = true;
-
-        return this;
-    }
-
-    /**
-     * If the text is a translatable key, and it has replaceable values, this function can be used to set the replacements that will be used in the message.
-     *
-     * @param replacements The replacements, in order, that will be used in the language-specific message.
-     * @return This builder instance.
-     */
-    public FancyMessage translationReplacements(final Iterable<FancyMessage> replacements) {
-        return translationReplacements(ArrayWrapper.toArray(replacements, FancyMessage.class));
     }
 
     /**
@@ -754,99 +421,9 @@ public class FancyMessage implements JsonRepresentedObject, Cloneable, Iterable<
     }
 
     /**
-     * Deserializes a JSON-represented message from a mapping of key-value pairs.
-     * This is called by the Bukkit serialization API.
-     * It is not intended for direct public API consumption.
-     *
-     * @param serialized The key-value mapping which represents a fancy message.
-     */
-    @SuppressWarnings("unchecked")
-    public static FancyMessage deserialize(Map<String, Object> serialized) {
-        FancyMessage msg = new FancyMessage();
-        msg.messageParts = (List<MessagePart>) serialized.get("messageParts");
-        msg.jsonString = serialized.containsKey("JSON") ? serialized.get("JSON").toString() : null;
-        msg.dirty = !serialized.containsKey("JSON");
-        return msg;
-    }
-
-    /**
      * <b>Internally called method. Not for API consumption.</b>
      */
     public Iterator<MessagePart> iterator() {
         return messageParts.iterator();
-    }
-
-    private static JsonParser _stringParser = new JsonParser();
-
-    /**
-     * Deserializes a fancy message from its JSON representation. This JSON representation is of the format of
-     * that returned by {@link #toJSONString()}, and is compatible with vanilla inputs.
-     *
-     * @param json The JSON string which represents a fancy message.
-     * @return A {@code FancyMessage} representing the parameterized JSON message.
-     */
-    public static FancyMessage deserialize(String json) {
-        JsonObject serialized = _stringParser.parse(json).getAsJsonObject();
-        JsonArray extra = serialized.getAsJsonArray("extra"); // Get the extra component
-        FancyMessage returnVal = new FancyMessage();
-        returnVal.messageParts.clear();
-        for (JsonElement mPrt : extra) {
-            MessagePart component = new MessagePart();
-            JsonObject messagePart = mPrt.getAsJsonObject();
-            for (Map.Entry<String, JsonElement> entry : messagePart.entrySet()) {
-                // Deserialize text
-                if (TextualComponent.isTextKey(entry.getKey())) {
-                    // The map mimics the YAML serialization, which has a "key" field and one or more "value" fields
-                    Map<String, Object> serializedMapForm = new HashMap<String, Object>(); // Must be object due to Bukkit serializer API compliance
-                    serializedMapForm.put("key", entry.getKey());
-                    if (entry.getValue().isJsonPrimitive()) {
-                        // Assume string
-                        serializedMapForm.put("value", entry.getValue().getAsString());
-                    } else {
-                        // Composite object, but we assume each element is a string
-                        for (Map.Entry<String, JsonElement> compositeNestedElement : entry.getValue().getAsJsonObject().entrySet()) {
-                            serializedMapForm.put("value." + compositeNestedElement.getKey(), compositeNestedElement.getValue().getAsString());
-                        }
-                    }
-                    component.text = TextualComponent.deserialize(serializedMapForm);
-                } else if (MessagePart.stylesToNames.inverse().containsKey(entry.getKey())) {
-                    if (entry.getValue().getAsBoolean()) {
-                        component.styles.add(MessagePart.stylesToNames.inverse().get(entry.getKey()));
-                    }
-                } else if (entry.getKey().equals("color")) {
-                    component.color = ChatColor.valueOf(entry.getValue().getAsString().toUpperCase());
-                } else if (entry.getKey().equals("clickEvent")) {
-                    JsonObject object = entry.getValue().getAsJsonObject();
-                    component.clickActionName = object.get("action").getAsString();
-                    component.clickActionData = object.get("value").getAsString();
-                } else if (entry.getKey().equals("hoverEvent")) {
-                    JsonObject object = entry.getValue().getAsJsonObject();
-                    component.hoverActionName = object.get("action").getAsString();
-                    if (object.get("value").isJsonPrimitive()) {
-                        // Assume string
-                        component.hoverActionData = new JsonString(object.get("value").getAsString());
-                    } else {
-                        // Assume composite type
-                        // The only composite type we currently store is another FancyMessage
-                        // Therefore, recursion time!
-                        component.hoverActionData = deserialize(object.get("value").toString() /* This should properly serialize the JSON object as a JSON string */);
-                    }
-                } else if (entry.getKey().equals("insertion")) {
-                    component.insertionData = entry.getValue().getAsString();
-                } else if (entry.getKey().equals("with")) {
-                    for (JsonElement object : entry.getValue().getAsJsonArray()) {
-                        if (object.isJsonPrimitive()) {
-                            component.translationReplacements.add(new JsonString(object.getAsString()));
-                        } else {
-                            // Only composite type stored in this array is - again - FancyMessages
-                            // Recurse within this function to parse this as a translation replacement
-                            component.translationReplacements.add(deserialize(object.toString()));
-                        }
-                    }
-                }
-            }
-            returnVal.messageParts.add(component);
-        }
-        return returnVal;
     }
 }
