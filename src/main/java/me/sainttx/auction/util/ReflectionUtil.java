@@ -2,6 +2,7 @@ package me.sainttx.auction.util;
 
 import org.bukkit.Bukkit;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -94,6 +95,21 @@ public final class ReflectionUtil {
 		_loadedOBCClasses.put(className, clazz);
 		return clazz;
 	}
+
+    /**
+     * Get a classes constructor
+     *
+     * @param clazz  The constructor class
+     * @param params The parameters in the constructor
+     * @return The constructor object
+     */
+    public static Constructor<?> getConstructor(Class<?> clazz, Class<?>... params) {
+        try {
+            return clazz.getConstructor(params);
+        } catch (NoSuchMethodException e) {
+            return null;
+        }
+    }
 
 	/**
 	 * Attempts to get the NMS handle of a CraftBukkit object.

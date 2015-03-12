@@ -647,29 +647,30 @@ public class FancyMessage implements JsonRepresentedObject, Cloneable, Iterable<
         }
     }
 
-    // The ChatSerializer's instance of Gson
-    private static Object nmsChatSerializerGsonInstance;
-    private static Method fromJsonMethod;
+    private static Object chatSerializerInstance = null;
+    private static Class<?> chatSerializerClazz = null;
 
     private Object createChatPacket(String json) throws IllegalArgumentException, IllegalAccessException, InstantiationException, InvocationTargetException, NoSuchMethodException {
-        if (nmsChatSerializerGsonInstance == null) {
-            // Find the field and its value, completely bypassing obfuscation
-            for (Field declaredField : ReflectionUtil.getNMSClass("ChatSerializer").getDeclaredFields()) {
-                if (Modifier.isFinal(declaredField.getModifiers()) && Modifier.isStatic(declaredField.getModifiers()) && declaredField.getType().getName().endsWith("Gson")) {
-                    // We've found our field
-                    declaredField.setAccessible(true);
-                    nmsChatSerializerGsonInstance = declaredField.get(null);
-                    fromJsonMethod = nmsChatSerializerGsonInstance.getClass().getMethod("fromJson", String.class, Class.class);
-                    break;
+        if (chatSerializerInstance == null || chatSerializerClazz == null) {
+            Class<?> chatComponentClazz = ReflectionUtil.getNMSClass("IChatBaseComponent");
+
+            for (Class<?> clazz : chatComponentClazz.getDeclaredClasses()) {
+                if (clazz.getSimpleName().equals("ChatSerializer")) {
+                    chatSerializerClazz = clazz;
+                    chatSerializerInstance = clazz.newInstance();
                 }
             }
         }
 
-        // Since the method is so simple, and all the obfuscated methods have the same name, it's easier to reimplement 'IChatBaseComponent a(String)' than to reflectively call it
-        // Of course, the implementation may change, but fuzzy matches might break with signature changes
-        Object serializedChatComponent = fromJsonMethod.invoke(nmsChatSerializerGsonInstance, json, ReflectionUtil.getNMSClass("IChatBaseComponent"));
+        Method titleFormatMethod = ReflectionUtil.getMethod(chatSerializerClazz, "a", String.class);
+        Object formatted = titleFormatMethod.invoke(chatSerializerInstance, json);
+        Class<?> chatBaseComponent = ReflectionUtil.getNMSClass("IChatBaseComponent");
 
-        return nmsPacketPlayOutChatConstructor.newInstance(serializedChatComponent);
+        // Construct the packet
+        Class<?> packetPlayOutChatClazz = ReflectionUtil.getNMSClass("PacketPlayOutChat");
+        Constructor<?> chatPacketConstructor = ReflectionUtil.getConstructor(packetPlayOutChatClazz, chatBaseComponent);
+
+        return chatPacketConstructor.newInstance(formatted);
     }
 
     /**
