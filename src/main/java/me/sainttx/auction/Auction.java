@@ -51,24 +51,24 @@ public class Auction {
     /**
      * Instantiate an Auction
      *
-     * @param plugin The AuctionPlugin auction
-     * @param player The player who begun the auction
-     * @param numItems The number of items being auctioned
+     * @param plugin         The AuctionPlugin auction
+     * @param player         The player who begun the auction
+     * @param item           The item being auctioned
+     * @param numItems       The number of items being auctioned
      * @param startingAmount The starting amount specified by the player
-     *
-     * @throws Exception If the player auctioned nothing, 
+     * @throws Exception If the player auctioned nothing,
      *                   If the player auctioned a banned item,
      *                   If the player does not have enough items to auction
      */
     public Auction(AuctionPlugin plugin, Player player, ItemStack item, int numItems, double startingAmount, int bidIncrement) throws Exception {
-        this.plugin         = plugin;
-        this.ownerName      = player.getName();
-        this.owner          = player.getUniqueId();
-        this.numItems       = numItems;
-        this.topBid         = startingAmount;
-        this.timeLeft       = plugin.getConfig().getInt("auction-time", 30);
-        this.bidIncrement   = bidIncrement;
-        this.item           = item.clone();
+        this.plugin = plugin;
+        this.ownerName = player.getName();
+        this.owner = player.getUniqueId();
+        this.numItems = numItems;
+        this.topBid = startingAmount;
+        this.timeLeft = plugin.getConfig().getInt("auction-time", 30);
+        this.bidIncrement = bidIncrement;
+        this.item = item.clone();
         this.item.setAmount(numItems);
 
         validateAuction(player);
@@ -314,20 +314,48 @@ public class Auction {
      * Verifies that this auction has valid settings
      */
     private void validateAuction(Player player) throws Exception {
-        // Check if they actually auctioned an item
-        if (item.getType() == Material.AIR) {
+        if (item == null || item.getType() == Material.AIR) {
+            // They auctioned off nothing
             throw new Exception("fail-start-hand-empty");
-        }
-
-        // Check if the item is allowed
-        if (item.getType() == Material.FIREWORK || item.getType() == Material.FIREWORK_CHARGE || AuctionManager.getBannedMaterials().contains(item.getType())) {
+        } else if (item.getType() == Material.FIREWORK || item.getType() == Material.FIREWORK_CHARGE || AuctionManager.getBannedMaterials().contains(item.getType())) {
+            // The item isn't allowed
             throw new Exception("unsupported-item");
+        } else if (item.getType().getMaxDurability() > 0 && item.getDurability() > 0 && !plugin.getConfig().getBoolean("allow-damaged-items", true)) {
+            // Users can't auction damaged items
+            throw new Exception("fail-start-damaged-item");
+        } else if (!AuctionUtil.searchInventory(player.getInventory(), item, numItems)) {
+            // They don't have enough of that item in their inventory
+            throw new Exception("fail-start-not-enough-items");
+        } else if (!plugin.getConfig().getBoolean("allow-auctioning-named-items", true) && item.getItemMeta().hasDisplayName()) {
+            // The player can't auction named items
+            throw new Exception("fail-start-named-item");
+        } else if (hasBannedLore()) {
+            // The players item contains a piece of denied lore
+            throw new Exception("fail-start-banned-lore");
+        }
+    }
+
+    /*
+     * Check if an item has a denied String of lore
+     */
+    private boolean hasBannedLore() {
+        List<String> bannedLore = plugin.getConfig().getStringList("banned-lore");
+
+        if (bannedLore != null && !bannedLore.isEmpty()) {
+            if (item.getItemMeta().hasLore()) {
+                List<String> lore = item.getItemMeta().getLore();
+
+                for (String loreItem : lore) {
+                    for (String banned : bannedLore) {
+                        if (loreItem.contains(banned)) {
+                            return true;
+                        }
+                    }
+                }
+            }
         }
 
-        // Check if the item is damaged and users can auction damaged items
-        if (item.getType().getMaxDurability() > 0 && item.getDurability() > 0 && !plugin.getConfig().getBoolean("allow-damaged-items", true)) {
-            throw new Exception("fail-start-damaged-item");
-        }
+        return false;
     }
 
 

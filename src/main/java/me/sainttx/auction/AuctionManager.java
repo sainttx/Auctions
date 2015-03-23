@@ -39,8 +39,8 @@ public class AuctionManager {
     /*
      * Information on whether an auction can be started
      */
-    private boolean disabled    = false;
-    private boolean canAuction  = true;
+    private boolean disabled = false;
+    private boolean canAuction = true;
 
     /**
      * Creates the Auction Manager
@@ -84,7 +84,6 @@ public class AuctionManager {
      * Returns the position a player is in the queue
      *
      * @param player The player to check
-     *
      * @return The position in the queue that the player is in, -1 if not in the queue
      */
     public int getQueuePosition(Player player) {
@@ -104,7 +103,6 @@ public class AuctionManager {
      * Returns whether or not a player has an auction queued
      *
      * @param player A player who may have an auction queued
-     *
      * @return True if the player has an auction queued, false otherwise
      */
     public static boolean hasAuctionQueued(Player player) {
@@ -130,7 +128,6 @@ public class AuctionManager {
      * Returns whether or not a player is hosting an active auction
      *
      * @param player A player who may be participating in an auction
-     *
      * @return True if the player is the owner of the current auction
      */
     public static boolean isAuctioningItem(Player player) {
@@ -162,7 +159,7 @@ public class AuctionManager {
      * @param player The player who started the auction
      * @param args   Arguments relative to the auction provided by the player
      */
-    public void prepareAuction(Player player, String[] args) {
+        public void prepareAuction(Player player, String[] args) {
         double minStartingPrice = plugin.getConfig().getDouble("minimum-auction-start-price", 0);
         double maxStartingPrice = plugin.getConfig().getDouble("maximum-auction-start-price", Integer.MAX_VALUE);
 
@@ -262,11 +259,9 @@ public class AuctionManager {
     /**
      * Creates an auction and verifies it was properly specified
      *
-     * @param plugin        The Auction plugin
      * @param player        The player starting the auction
      * @param numItems      The number of items the player is auctioning
      * @param startingPrice The starting price of the auction
-     *
      * @return The auction result, null if something went wrong
      */
     public Auction createAuction(Player player, ItemStack item, int numItems, double startingPrice, int bidIncrement) {

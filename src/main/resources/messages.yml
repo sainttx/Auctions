@@ -61,6 +61,7 @@ fail-start-creative: "&cYou cannot start an auction in GameMode CREATIVE"
 fail-start-unknown: "&cCould not start the auction"
 fail-number-format: "&cYou provided an invalid number"
 fail-console: "&cConsole can't use this command"
+fail-start-no-autowin: "&cAuction autowins have been disabled"
 items-no-space: "&6Not enough space, items have been dropped at your feet"
 saved-item-return: "&6Your items were saved and have been returned"
 winner-item: "&6You won the auction and have received your items"
@@ -103,3 +104,8 @@ command-blocked-auction-queued: "&cYou can't use this command while having an au
 # disc - custom
 different-item: "&cYour items must all be the same!"
 inventory-title: "Add your items"
+
+# v1.0.0
+fail-start-named-item: "&cYou can't auction off items that have a name"
+fail-start-banned-lore: "&cYou can't auction off this item as it contains banned lore"
+fail-start-world-disabled: "&cThe auction plugin is disabled in this world"

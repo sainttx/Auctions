@@ -1,5 +1,8 @@
 # Auction plugin by SainttX
 
+settings:
+  use-shortened-times: false
+
 # General Auction information
 auction-start-fee: 0
 auction-tax-percentage: 0
@@ -10,6 +13,8 @@ minimum-auction-start-price: 10
 maximum-auction-start-price: 30000
 
 # Enabling and disabling certain features
+allow-auctioning-named-items: true
+allow-auction-auto-winning: true
 allow-creative-auctioning: false
 allow-auction-end-command: false
 allow-auction-cancel-command: true
@@ -21,6 +26,10 @@ block-commands-when-auctioning: false
 block-commands-if-auction-queued: false
 blocked-commands:
 - "/test"
+
+# Per world Auctioning
+disabled-worlds:
+- 'testworld'
 
 # Broadcast times
 broadcast-times:
@@ -45,3 +54,8 @@ anti-snipe-add-seconds: 5
 # Use http://jd.bukkit.org/rb/apidocs/org/bukkit/Material.html
 banned-items:
 - BEDROCK
+
+# If an items lore contains any of the texts here, the item
+# won't be allowed to be put into an auction
+banned-lore:
+- 'A string of lore'
