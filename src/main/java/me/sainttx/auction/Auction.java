@@ -323,9 +323,6 @@ public class Auction {
         } else if (item.getType().getMaxDurability() > 0 && item.getDurability() > 0 && !plugin.getConfig().getBoolean("allow-damaged-items", true)) {
             // Users can't auction damaged items
             throw new Exception("fail-start-damaged-item");
-        } else if (!AuctionUtil.searchInventory(player.getInventory(), item, numItems)) {
-            // They don't have enough of that item in their inventory
-            throw new Exception("fail-start-not-enough-items");
         } else if (!plugin.getConfig().getBoolean("allow-auctioning-named-items", true) && item.getItemMeta().hasDisplayName()) {
             // The player can't auction named items
             throw new Exception("fail-start-named-item");
