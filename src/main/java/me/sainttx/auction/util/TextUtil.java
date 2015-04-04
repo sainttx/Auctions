@@ -3,7 +3,7 @@ package me.sainttx.auction.util;
 import me.sainttx.auction.Auction;
 import me.sainttx.auction.AuctionManager;
 import me.sainttx.auction.AuctionPlugin;
-import me.sainttx.auction.fanciful.FancyMessage;
+import mkremins.fanciful.FancyMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;

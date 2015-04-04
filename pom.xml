@@ -26,6 +26,34 @@
                 </includes>
             </resource>
         </resources>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>2.2</version>
+                <configuration>
+                    <artifactSet>
+                        <includes>
+                            <include>mkremins:fanciful</include>
+                        </includes>
+                    </artifactSet>
+                    <relocations>
+                        <relocation>
+                            <pattern>mkremins.fanciful</pattern>
+                            <shadedPattern>me.sainttx.auction.libs.mkremins.fanciful</shadedPattern>
+                        </relocation>
+                    </relocations>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
     </build>
 
     <repositories>
@@ -37,6 +65,10 @@
             <id>vault-repo</id>
             <url>http://nexus.theyeticave.net/content/repositories/pub_releases</url>
         </repository>
+        <repository>
+            <id>fanciful-mvn-repo</id>
+            <url>http://repo.franga2000.com/artifactory/public</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -45,6 +77,11 @@
             <artifactId>VaultAPI</artifactId>
             <version>1.5</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>mkremins</groupId>
+            <artifactId>fanciful</artifactId>
+            <version>0.3.3-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.spigotmc</groupId>
