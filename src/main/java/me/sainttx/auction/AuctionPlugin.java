@@ -57,7 +57,6 @@ public class AuctionPlugin extends JavaPlugin implements Listener {
 
         // Set the economy in the next tick so that all plugins are loaded
         Bukkit.getScheduler().runTask(this, new Runnable() {
-            @Override
             public void run() {
                 economy = getServer().getServicesManager().getRegistration(Economy.class).getProvider();
             }
