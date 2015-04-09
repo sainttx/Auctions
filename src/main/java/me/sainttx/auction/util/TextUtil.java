@@ -73,7 +73,6 @@ public class TextUtil {
      * Returns if a player is ignoring auctions
      *
      * @param uuid The ID of the player ignoring
-     *
      * @return True if the player is ignoring auctions, false otherwise
      */
     public static boolean isIgnoring(UUID uuid) {
@@ -81,7 +80,7 @@ public class TextUtil {
     }
 
     /**
-     * Adds a player to the ignoring list 
+     * Adds a player to the ignoring list
      *
      * @param uuid The ID of the player thats now ignoring
      */
@@ -102,7 +101,7 @@ public class TextUtil {
      * Sends a FancyMessage to a player
      *
      * @param message The message to send
-     * @param force Whether or not to bypass a users ignored status
+     * @param force   Whether or not to bypass a users ignored status
      * @param players The players who will receive the message
      */
     public static void sendMessage(String message, boolean force, Player... players) {
@@ -121,9 +120,8 @@ public class TextUtil {
             current = ChatColor.getByChar(currentColor.isEmpty() ? current.getChar() : currentColor.charAt(1));
 
             if (str.toLowerCase().contains("%i")) {
-                ChatColor color = ChatColor.getByChar(messageFile.getString("itemColor.color"));
-                ChatColor style = messageFile.getString("itemColor.style").equalsIgnoreCase("none") ? null
-                        : ChatColor.getByChar(messageFile.getString("itemColor.style"));
+                ChatColor color = getConfigMessage("itemColor.color").isEmpty() ? ChatColor.WHITE : ChatColor.getByChar(getConfigMessage("itemColor.color"));
+                ChatColor style = getConfigMessage("itemColor.style").isEmpty() ? null : ChatColor.getByChar(getConfigMessage("itemColor.style"));
 
                 Auction auction = AuctionManager.getAuctionManager().getCurrentAuction();
                 if (auction != null) {
@@ -157,7 +155,6 @@ public class TextUtil {
      * Returns a string with it's colors formatted
      *
      * @param string The string to format
-     *
      * @return The formatted string
      */
     public static String color(String string) {
