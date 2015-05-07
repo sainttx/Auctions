@@ -2,6 +2,8 @@
 
 settings:
   use-shortened-times: false
+  integrate-herochat: false
+  herochat-channel: auction
 
 # General Auction information
 auction-start-fee: 0

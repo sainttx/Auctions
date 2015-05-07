@@ -84,7 +84,7 @@ public class AuctionManager {
      * @return The position in the queue that the player is in, -1 if not in the queue
      */
     public int getQueuePosition(Player player) {
-        Auction[] queueArray = auctionQueue.toArray(new Auction[0]);
+        Auction[] queueArray = auctionQueue.toArray(new Auction[auctionQueue.size()]);
 
         for (int i = 0 ; i < queueArray.length ; i++) {
             Auction auc = queueArray[i];
@@ -129,15 +129,16 @@ public class AuctionManager {
      */
     public void sendAuctionInfo(Player player) {
         if (currentAuction != null) {
-            TextUtil.sendMessage(TextUtil.replace(currentAuction, TextUtil.getConfigMessage("auction-info-message")), true, player);
-            TextUtil.sendMessage(TextUtil.replace(currentAuction, TextUtil.getConfigMessage("auction-start-increment")), true, player);
+            plugin.getMessageHandler().sendMessage(currentAuction, "auction-info-message", player);
+            plugin.getMessageHandler().sendMessage(currentAuction, "auction-start-increment", player);
 
             int queuePosition = getQueuePosition(player);
             if (queuePosition > 0) {
-                TextUtil.sendMessage(TextUtil.replace(currentAuction, TextUtil.getConfigMessage("auction-queue-position").replaceAll("%q", Integer.toString(queuePosition))), true, player);
+                TextUtil.sendMessage(TextUtil.replace(currentAuction, TextUtil.getConfigMessage("auction-queue-position")
+                        .replaceAll("%q", Integer.toString(queuePosition))), true, player);
             }
         } else {
-            TextUtil.sendMessage(TextUtil.getConfigMessage("fail-info-no-auction"), true, player);
+            plugin.getMessageHandler().sendMessage("fail-info-no-auction", player);
         }
     }
 
@@ -147,19 +148,19 @@ public class AuctionManager {
      * @param player The player who started the auction
      * @param args   Arguments relative to the auction provided by the player
      */
-        public void prepareAuction(Player player, String[] args) {
+    public void prepareAuction(Player player, String[] args) {
         double minStartingPrice = plugin.getConfig().getDouble("minimum-auction-start-price", 0);
         double maxStartingPrice = plugin.getConfig().getDouble("maximum-auction-start-price", Integer.MAX_VALUE);
 
         if (disabled && !player.hasPermission("auction.bypass.disable")) {
             // Auctioning is disabled at the moment
-            TextUtil.sendMessage(TextUtil.getConfigMessage("fail-start-auction-disabled"), true, player);
+            plugin.getMessageHandler().sendMessage("fail-start-auction-disabled", player);
         } else if (args.length < 3) {
             // Arguments don't match the required length
-            TextUtil.sendMessage(TextUtil.getConfigMessage("fail-start-syntax"), true, player);
+            plugin.getMessageHandler().sendMessage("fail-start-syntax", player);
         } else if (TextUtil.isIgnoring(player.getUniqueId())) {
             // The player is ignoring auctions
-            TextUtil.sendMessage(TextUtil.getConfigMessage("fail-start-ignoring"), true, player);
+            plugin.getMessageHandler().sendMessage("fail-start-ignoring", player);
         } else {
             int numItems;
             double startingPrice;
@@ -171,35 +172,35 @@ public class AuctionManager {
                 numItems = Integer.parseInt(args[1]);
                 startingPrice = Double.parseDouble(args[2]);
             } catch (NumberFormatException ex) {
-                TextUtil.sendMessage(TextUtil.getConfigMessage("fail-number-format"), true, player);
+                plugin.getMessageHandler().sendMessage("fail-number-format", player);
                 return;
             }
 
             if (numItems < 0) {
                 // Item amount provided was negative
-                TextUtil.sendMessage(TextUtil.getConfigMessage("fail-start-negative-number"), true, player);
+                plugin.getMessageHandler().sendMessage("fail-start-negative-number", player);
             } else if (startingPrice < minStartingPrice) {
                 // Invalid price (under the minimum)
-                TextUtil.sendMessage(TextUtil.getConfigMessage("fail-start-min"), true, player);
+                plugin.getMessageHandler().sendMessage("fail-start-min", player);
             } else if (startingPrice > maxStartingPrice) {
                 // Invalid price (over the maximum)
-                TextUtil.sendMessage(TextUtil.getConfigMessage("fail-start-max"), true, player);
+                plugin.getMessageHandler().sendMessage("fail-start-max", player);
             } else if (fee > AuctionPlugin.getEconomy().getBalance(player)) {
                 // Player doesn't have enough money
-                TextUtil.sendMessage(TextUtil.getConfigMessage("fail-start-no-funds"), true, player);
+                plugin.getMessageHandler().sendMessage("fail-start-no-funds", player);
             } else if (auctionQueue.size() > plugin.getConfig().getInt("queue-limit", 3)) {
                 // The Auction queue is full
-                TextUtil.sendMessage(TextUtil.getConfigMessage("fail-start-queue-full"), true, player);
+                plugin.getMessageHandler().sendMessage("fail-start-queue-full", player);
             } else {
                 try {
                     if (args.length >= 4) {
                         bidIncrement = Integer.parseInt(args[3]);
 
                         if (plugin.getConfig().getInt("minimum-bid-increment") > bidIncrement) {
-                            TextUtil.sendMessage(TextUtil.getConfigMessage("fail-start-bid-increment"), true, player);
+                            plugin.getMessageHandler().sendMessage("fail-start-bid-increment", player);
                             return;
                         } else if (plugin.getConfig().getInt("maximum-bid-increment") < bidIncrement) {
-                            TextUtil.sendMessage(TextUtil.getConfigMessage("fail-start-bid-increment"), true, player);
+                            plugin.getMessageHandler().sendMessage("fail-start-bid-increment", player);
                             return;
                         }
                     }
@@ -209,20 +210,20 @@ public class AuctionManager {
 
                         // Check if the player is allowed to specify an autowin
                         if (!plugin.getConfig().getBoolean("allow-auction-auto-winning", false)) {
-                            TextUtil.sendMessage(TextUtil.getConfigMessage("fail-start-no-autowin"), true, player);
+                            plugin.getMessageHandler().sendMessage("fail-start-no-autowin", player);
                             return;
                         }
                     }
                 } catch (NumberFormatException exception) {
-                    TextUtil.sendMessage(TextUtil.getConfigMessage("fail-number-format"), true, player);
+                    plugin.getMessageHandler().sendMessage("fail-number-format", player);
                     return;
                 }
 
                 // Decide whether to immediately start the auction or place it in the queue
                 if (currentAuction != null && currentAuction.getOwner().equals(player.getUniqueId())) {
-                    TextUtil.sendMessage(TextUtil.getConfigMessage("fail-start-already-auctioning"), true, player);
+                    plugin.getMessageHandler().sendMessage("fail-start-already-auctioning", player);
                 } else if (hasAuctionQueued(player)) { // The player already has an auction queued
-                    TextUtil.sendMessage(TextUtil.getConfigMessage("fail-start-already-queued"), true, player);
+                    plugin.getMessageHandler().sendMessage("fail-start-already-queued", player);
                 } else {
                     Auction auction = createAuction(plugin, player, numItems, startingPrice, bidIncrement, autoWin);
 
@@ -231,7 +232,7 @@ public class AuctionManager {
                             startAuction(auction);
                         } else {
                             auctionQueue.add(auction);
-                            TextUtil.sendMessage(TextUtil.getConfigMessage("auction-queued"), true, player);
+                            plugin.getMessageHandler().sendMessage("auction-queued", player);
                         }
                     }
                 }
@@ -269,19 +270,19 @@ public class AuctionManager {
     public void cancelCurrentAuction(Player player) {
         if (currentAuction == null) {
             // No auction
-            TextUtil.sendMessage(TextUtil.getConfigMessage("fail-cancel-no-auction"), true, player);
+            plugin.getMessageHandler().sendMessage("fail-cancel-no-auction", player);
         } else if (TextUtil.isIgnoring(player.getUniqueId())) {
             // Ignoring
-            TextUtil.sendMessage(TextUtil.getConfigMessage("fail-start-ignoring"), true, player);
+            plugin.getMessageHandler().sendMessage("fail-start-ignoring", player);
         } else if (!plugin.getConfig().getBoolean("allow-auction-cancel-command", true) && !player.hasPermission("auction.cancel.bypass")) {
             // Can't cancel
-            TextUtil.sendMessage(TextUtil.getConfigMessage("fail-cancel-disabled"), true, player);
+            plugin.getMessageHandler().sendMessage("fail-cancel-disabled", player);
         } else if (currentAuction.getTimeLeft() < plugin.getConfig().getInt("must-cancel-auction-before", 15) && !player.hasPermission("auction.cancel.bypass")) {
             // Can't cancel
-            TextUtil.sendMessage(TextUtil.getConfigMessage("fail-cancel-time"), true, player);
+            plugin.getMessageHandler().sendMessage("fail-cancel-time", player);
         } else if (!currentAuction.getOwner().equals(player.getUniqueId()) && !player.hasPermission("auction.cancel.bypass")) {
             // Can't cancel other peoples auction
-            TextUtil.sendMessage(TextUtil.getConfigMessage("fail-cancel-not-yours"), true, player);
+            plugin.getMessageHandler().sendMessage("fail-cancel-not-yours", player);
         } else {
             currentAuction.cancel();
         }
@@ -302,9 +303,9 @@ public class AuctionManager {
         try {
             auction = new Auction(AuctionPlugin.getPlugin(), player, numItems, startingPrice, bidIncrement, autoWin);
         } catch (NumberFormatException ex1) {
-            TextUtil.sendMessage(TextUtil.getConfigMessage("fail-number-format"), true, player);
+            plugin.getMessageHandler().sendMessage("fail-number-format", player);
         } catch (Exception ex2) {
-            TextUtil.sendMessage(TextUtil.getConfigMessage(ex2.getMessage()), true, player);
+            plugin.getMessageHandler().sendMessage(ex2.getMessage(), player);
         }
 
         if (auction != null && !player.hasPermission("auction.tax.exempt")) {
@@ -326,11 +327,10 @@ public class AuctionManager {
             double bid = Double.parseDouble(amount);
             prepareBid(player, bid);
         } catch (NumberFormatException ex) {
-            TextUtil.sendMessage(TextUtil.getConfigMessage("fail-bid-number"), true, player);
+            plugin.getMessageHandler().sendMessage("fail-bid-number", player);
         }
     }
 
-    @SuppressWarnings("static-access")
     /**
      * Prepares a bid by a player and verifies they have met requirements before
      * bidding
@@ -341,22 +341,22 @@ public class AuctionManager {
     public void prepareBid(Player player, double amount) {
         if (currentAuction == null) {
             // There is no auction to bid on
-            TextUtil.sendMessage(TextUtil.getConfigMessage("fail-bid-no-auction"), true, player);
+            plugin.getMessageHandler().sendMessage("fail-bid-no-auction", player);
         } else if (TextUtil.isIgnoring(player.getUniqueId())) {
             // Player is ignoring Auctions
-            TextUtil.sendMessage(TextUtil.getConfigMessage("fail-start-ignoring"), true, player);
+            plugin.getMessageHandler().sendMessage("fail-start-ignoring", player);
         } else if (currentAuction.getOwner().equals(player.getUniqueId())) {
             // Players aren't allowed to bid on their own auction
-            TextUtil.sendMessage(TextUtil.getConfigMessage("fail-bid-your-auction"), true, player);
+            plugin.getMessageHandler().sendMessage("fail-bid-your-auction", player);
         } else if (amount < currentAuction.getTopBid() + currentAuction.getBidIncrement()) {
             // The player didn't bid enough
-            TextUtil.sendMessage(TextUtil.getConfigMessage("fail-bid-too-low"), true, player);
+            plugin.getMessageHandler().sendMessage("fail-bid-too-low", player);
         } else if (AuctionPlugin.getEconomy().getBalance(player) < amount) {
             // The bid exceeds their balance
-            TextUtil.sendMessage(TextUtil.getConfigMessage("fail-bid-insufficient-balance"), true, player);
+            plugin.getMessageHandler().sendMessage("fail-bid-insufficient-balance", player);
         } else if (currentAuction.getWinning() != null && currentAuction.getWinning().equals(player.getUniqueId())) {
             // The player already holds the highest bid
-            TextUtil.sendMessage(TextUtil.getConfigMessage("fail-bid-top-bidder"), true, player);
+            plugin.getMessageHandler().sendMessage("fail-bid-top-bidder", player);
         } else {
             if (currentAuction.getWinning() != null) {
                 Player oldWinner = Bukkit.getPlayer(currentAuction.getWinning());
@@ -386,15 +386,16 @@ public class AuctionManager {
 
         // Check if the auction isn't won due to autowin
         if (amount >= currentAuction.getAutoWin() && currentAuction.getAutoWin() != -1) {
-            TextUtil.sendMessage(TextUtil.replace(currentAuction, TextUtil.getConfigMessage("auction-ended-autowin")), false, Bukkit.getOnlinePlayers().toArray(new Player[0]));
+            plugin.getMessageHandler().sendMessage(currentAuction, "auction-ended-autowin", false);
             currentAuction.end(true);
         } else {
-            TextUtil.sendMessage(TextUtil.replace(currentAuction, TextUtil.getConfigMessage("bid-broadcast")), false, Bukkit.getOnlinePlayers().toArray(new Player[0]));
+            plugin.getMessageHandler().sendMessage(currentAuction, "bid-broadcast", false);
 
             if (currentAuction.getTimeLeft() <= 3 && plugin.getConfig().getBoolean("enable-anti-snipe", true) && currentAuction.getAntiSniped() + 1 <= plugin.getConfig().getInt("anti-snipe-max-per-auction")) {
                 int time = plugin.getConfig().getInt("anti-snipe-add-seconds", 5);
                 if (time > 0) {
-                    TextUtil.sendMessage(TextUtil.replace(currentAuction, TextUtil.getConfigMessage("anti-snipe-add").replace("%t", Integer.toString(time))), false, Bukkit.getOnlinePlayers().toArray(new Player[0]));
+                    //plugin.getMessageHandler().sendMessage(currentAuction, "anti-snipe-add", false);
+                    TextUtil.sendMessage(TextUtil.replace(currentAuction, TextUtil.getConfigMessage("anti-snipe-add").replace("%t", Integer.toString(time))), false, Bukkit.getOnlinePlayers());
                     currentAuction.addSeconds(time);
                     currentAuction.incrementAntiSniped();
                 }
@@ -409,11 +410,11 @@ public class AuctionManager {
      */
     public void end(Player player) {
         if (currentAuction == null) {
-            TextUtil.sendMessage(TextUtil.getConfigMessage("fail-end-no-auction"), true, player);
+            plugin.getMessageHandler().sendMessage("fail-end-no-auction", player);
         } else if (!plugin.getConfig().getBoolean("allow-auction-end-command", false) && !player.hasPermission("auction.end.bypass")) {
-            TextUtil.sendMessage(TextUtil.getConfigMessage("fail-end-disallowed"), true, player);
+            plugin.getMessageHandler().sendMessage("fail-end-disallowed", player);
         } else if (!currentAuction.getOwner().equals(player.getUniqueId()) && !player.hasPermission("auction.end.bypass")) {
-            TextUtil.sendMessage(TextUtil.getConfigMessage("fail-end-not-your-auction"), true, player);
+            plugin.getMessageHandler().sendMessage("fail-end-not-your-auction", player);
         } else {
             currentAuction.end(true);
             killAuction();

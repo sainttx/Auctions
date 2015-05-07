@@ -45,7 +45,7 @@ public class AuctionCommand implements CommandExecutor {
 
                     if (plugin.getConfig().isList("disabled-worlds")
                             && plugin.getConfig().getStringList("disabled-worlds").contains(player.getWorld().getName())) {
-                        TextUtil.sendMessage(TextUtil.getConfigMessage("fail-start-world-disabled"), true, player);
+                        plugin.getMessageHandler().sendMessage("fail-start-world-disabled", player);
                         return true;
                     }
                 } catch (ClassCastException ignored) { /* Do nothing */ }
@@ -66,15 +66,15 @@ public class AuctionCommand implements CommandExecutor {
                     case IGNORE:
                         if (!TextUtil.isIgnoring(player.getUniqueId())) {
                             TextUtil.addIgnoring(player.getUniqueId());
-                            TextUtil.sendMessage(TextUtil.getConfigMessage("ignoring-on"), true, player);
+                            plugin.getMessageHandler().sendMessage("ignoring-on", player);
                         } else {
                             TextUtil.removeIgnoring(player.getUniqueId());
-                            TextUtil.sendMessage(TextUtil.getConfigMessage("ignoring-off"), true, player);
+                            plugin.getMessageHandler().sendMessage("ignoring-off", player);
                         }
                         break;
                     case START:
                         if (player.getGameMode() == GameMode.CREATIVE && !plugin.getConfig().getBoolean("allow-creative-auctioning", false) && !player.hasPermission("auction.creative")) {
-                            TextUtil.sendMessage(TextUtil.getConfigMessage("fail-start-creative"), true, player);
+                            plugin.getMessageHandler().sendMessage("fail-start-creative", player);
                         } else {
                             manager.prepareAuction(player, args);
                         }
@@ -83,7 +83,7 @@ public class AuctionCommand implements CommandExecutor {
                         if (args.length == 2) {
                             manager.prepareBid(player, args[1]);
                         } else {
-                            TextUtil.sendMessage(TextUtil.getConfigMessage("fail-bid-syntax"), true, player);
+                            plugin.getMessageHandler().sendMessage("fail-bid-syntax", player);
                         }
                         break;
                     case INFO:

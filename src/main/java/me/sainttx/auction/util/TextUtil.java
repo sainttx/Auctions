@@ -16,10 +16,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.io.File;
 import java.io.IOException;
 import java.text.NumberFormat;
-import java.util.HashSet;
-import java.util.Locale;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 public class TextUtil {
 
@@ -98,13 +95,28 @@ public class TextUtil {
     }
 
     /**
-     * Sends a FancyMessage to a player
+     * Sends a fancy message to a player
+     *
+     * @param message the message to send
+     * @param force   whether or not to force the message
+     * @param player  the player
+     * @deprecated messages should now be sent through the {@link AuctionPlugin#getMessageHandler()}
+     */
+    @Deprecated
+    public static void sendMessage(String message, boolean force, Player player) {
+        sendMessage(message, force, Arrays.asList(player));
+    }
+
+    /**
+     * Sends a FancyMessage to a group of players
      *
      * @param message The message to send
      * @param force   Whether or not to bypass a users ignored status
      * @param players The players who will receive the message
+     * @deprecated messages should now be sent through the {@link AuctionPlugin#getMessageHandler()}
      */
-    public static void sendMessage(String message, boolean force, Player... players) {
+    @Deprecated
+    public static void sendMessage(String message, boolean force, Iterable<? extends Player> players) {
         // Ignore disabled config lines
         if (message == null || message.isEmpty()) {
             return;
@@ -149,6 +161,53 @@ public class TextUtil {
                 fancy.send(player);
             }
         }
+    }
+
+    /**
+     * Creates a fancy message ready to be sent
+     *
+     * @param auction           the current auction
+     * @param configurationPath the path to the message inside messages.yml
+     * @return a message ready to be sent to a player
+     */
+    public static FancyMessage createMessage(Auction auction, String configurationPath) {
+        FancyMessage fancy = new FancyMessage(ChatColor.WHITE.toString());
+        String message = replace(auction, getConfigMessage(configurationPath));
+
+        if (!message.isEmpty()) {
+            String[] split = message.split(" ");
+            ChatColor current = ChatColor.WHITE;
+
+            for (String str : split) {
+                str = color(str); // Color the word
+                String currentColor = ChatColor.getLastColors(str);
+                current = ChatColor.getByChar(currentColor.isEmpty() ? current.getChar() : currentColor.charAt(1));
+
+                if (str.toLowerCase().contains("%i")) {
+                    ChatColor color = getConfigMessage("itemColor.color").isEmpty() ? ChatColor.WHITE : ChatColor.getByChar(getConfigMessage("itemColor.color"));
+                    ChatColor style = getConfigMessage("itemColor.style").isEmpty() ? null : ChatColor.getByChar(getConfigMessage("itemColor.style"));
+
+                    if (auction != null) {
+                        fancy.then(getItemName(auction.getItem())).color(color != null ? current = color : current).itemTooltip(auction.getItem());
+                        if (style != null && style.isFormat()) {
+                            fancy.style(style);
+                        }
+                    }
+                } else {
+                    fancy.then(str);
+
+                    if (current.isColor()) {
+                        fancy.color(current);
+                    } else {
+                        fancy.style(current);
+                    }
+                }
+
+                fancy.then(" "); // Add a space after every word
+            }
+        }
+
+        return fancy;
     }
 
     /**
@@ -209,12 +268,14 @@ public class TextUtil {
     public static String replace(Auction auction, String message) {
         String ret = message;
         if (auction != null) {
+            int time = AuctionPlugin.getPlugin().getConfig().getInt("anti-snipe-add-seconds", 5);
             ret = ret.replaceAll("%t", auction.getTime())
                     .replaceAll("%b", NumberFormat.getInstance(Locale.ENGLISH).format(auction.getTopBid()))
                     .replaceAll("%p", auction.getOwnerName())
                     .replaceAll("%a", Integer.toString(auction.getNumItems()))
                     .replaceAll("%A", NumberFormat.getInstance(Locale.ENGLISH).format(auction.getAutoWin()))
-                    .replaceAll("%B", Integer.toString((int) auction.getBidIncrement()));
+                    .replaceAll("%B", Integer.toString((int) auction.getBidIncrement()))
+                    .replaceAll("%s", Integer.toString(time));
             if (auction.hasBids()) {
                 ret = ret.replaceAll("%T", Double.toString(auction.getCurrentTax()))
                         .replaceAll("%w", auction.getWinningName());

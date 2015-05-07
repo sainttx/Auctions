@@ -2,6 +2,9 @@ package me.sainttx.auction;
 
 import me.sainttx.auction.command.AuctionCommand;
 import me.sainttx.auction.command.BidCommand;
+import me.sainttx.auction.struct.MessageHandler;
+import me.sainttx.auction.struct.messages.GlobalChatHandler;
+import me.sainttx.auction.struct.messages.HerochatHandler;
 import me.sainttx.auction.util.AuctionUtil;
 import me.sainttx.auction.util.TextUtil;
 import net.milkbowl.vault.economy.Economy;
@@ -29,6 +32,7 @@ public class AuctionPlugin extends JavaPlugin implements Listener {
      */
     private static AuctionPlugin plugin;
     private static Economy economy;
+    private MessageHandler messageHandler;
 
     /*
      * Offline item saving
@@ -66,6 +70,18 @@ public class AuctionPlugin extends JavaPlugin implements Listener {
         getServer().getPluginManager().registerEvents(this, this);
         loadConfig();
         TextUtil.load(this);
+
+        // message handling
+        // message handling
+        if ((!getServer().getPluginManager().isPluginEnabled("Herochat")
+                && getConfig().getBoolean("settings.integrate-herochat", false))
+                || !getConfig().getBoolean("settings.integrate-herochat", false)) {
+            messageHandler = new GlobalChatHandler(this);
+            getLogger().info("Using global chat handler. If you specific Herochat message handling, the Herochat plugin was not found.");
+        } else {
+            messageHandler = new HerochatHandler(this);
+            getLogger().info("Using Herochat message handler");
+        }
 
         // Load offline player items
         for (String string : offlineConfiguration.getKeys(false)) {
@@ -122,11 +138,20 @@ public class AuctionPlugin extends JavaPlugin implements Listener {
     }
 
     /**
+     * Returns the message handler
+     *
+     * @return the message handler
+     */
+    public MessageHandler getMessageHandler() {
+        return messageHandler;
+    }
+
+    /**
      * Saves a players auctioned item to file if the plugin was unable
      * to return it
      *
-     * @param uuid  The ID of a player
-     * @param is    The item that the player auctioned
+     * @param uuid The ID of a player
+     * @param is   The item that the player auctioned
      */
     public void saveOfflinePlayer(UUID uuid, ItemStack is) {
         offlineConfiguration.set(uuid.toString(), is);
@@ -157,6 +182,15 @@ public class AuctionPlugin extends JavaPlugin implements Listener {
             } catch (NumberFormatException ex) {
                 getLogger().info("String \"" + broadcastTime + "\" is an invalid Integer, skipping");
             }
+        }
+
+        // Update the message handler
+        if (getConfig().getBoolean("settings.integrate-herochat", false)) {
+            messageHandler = new HerochatHandler(this);
+            getLogger().info("Switched to Herochat message handling");
+        } else if (!getConfig().getBoolean("settings.integrate-herochat", false)) {
+            messageHandler = new GlobalChatHandler(this);
+            getLogger().info("Switched to Global message handling");
         }
 
         // Save items file name
@@ -200,15 +234,16 @@ public class AuctionPlugin extends JavaPlugin implements Listener {
      * Cancels a players command if they're auctioning
      */
     public void onCommand(PlayerCommandPreprocessEvent event) {
-        if (getConfig().getBoolean("block-commands-when-auctioning", false) && getConfig().getStringList("blocked-commands").contains(event.getMessage().split(" ")[0].toLowerCase())) {
+        if (getConfig().getBoolean("block-commands-when-auctioning", false)
+                && getConfig().getStringList("blocked-commands").contains(event.getMessage().split(" ")[0].toLowerCase())) {
             Player player = event.getPlayer();
 
             if (AuctionManager.isAuctioningItem(player)) {
                 event.setCancelled(true);
-                TextUtil.sendMessage(TextUtil.getConfigMessage("command-blocked-auctioning"), true, player);
+                plugin.getMessageHandler().sendMessage("command-blocked-auctioning", player);
             } else if (getConfig().getBoolean("block-commands-if-auction-queued", false) && AuctionManager.hasAuctionQueued(player)) {
                 event.setCancelled(true);
-                TextUtil.sendMessage(TextUtil.getConfigMessage("command-blocked-auction-queued"), true, player);
+                plugin.getMessageHandler().sendMessage("command-blocked-auction-queued", player);
             }
         }
     }
