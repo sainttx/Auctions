@@ -111,4 +111,4 @@ fail-start-banned-lore: "&cYou can't auction off this item as it contains banned
 fail-start-world-disabled: "&cThe auction plugin is disabled in this world"
 
 # v1.4.0
-fail-teleport-world-disabled: "&cYou can't teleport into disabled auction worlds while auctioning an item"
+fail-teleport-world-disabled: "&cYou can't teleport into disabled auction worlds while auctioning or participating in an auction"
