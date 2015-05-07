@@ -19,7 +19,11 @@ permissions:
     description: Gives access to all Auction commands
     children:
       auction.bid: true
+      auction.cancel: true
+      auction.cancel.bypass: true
+      auction.creative: true
       auction.bypass.startdelay: true
+      auction.bypass.disable: true
       auction.start: true
       auction.end: true
       auction.end.bypass: true
@@ -32,6 +36,12 @@ permissions:
   auction.bid:
     description: Allows you to bid on auctions
     default: true
+  auction.cancel:
+    description: Allows users to cancel their auctions
+    default: op
+  auction.cancel.bypass:
+    description: Allows users to bypass various config options that restrict cancellation
+    default: op
   auction.start:
     description: Allows you to start auctions
     default: true
