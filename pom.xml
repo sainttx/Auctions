@@ -103,7 +103,7 @@
             <version>5.6.7-SNAPSHOT</version>
             <!-- <version>1.0</version> -->
             <scope>system</scope>
-            <systemPath>${project.basedir}/src/main/libraries/HeroChat.jar</systemPath>
+            <systemPath>${project.basedir}/libraries/HeroChat.jar</systemPath>
         </dependency>
     </dependencies>
 </project>
