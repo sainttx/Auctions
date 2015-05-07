@@ -239,6 +239,7 @@ public class AuctionPlugin extends JavaPlugin implements Listener {
         if (getConfig().getBoolean("block-commands-when-auctioning", false)
                 && getConfig().getStringList("blocked-commands").contains(event.getMessage().split(" ")[0].toLowerCase())) {
             Player player = event.getPlayer();
+            Auction auction = AuctionManager.getCurrentAuction();
 
             if (AuctionManager.isAuctioningItem(player)) {
                 event.setCancelled(true);
@@ -246,6 +247,10 @@ public class AuctionPlugin extends JavaPlugin implements Listener {
             } else if (getConfig().getBoolean("block-commands-if-auction-queued", false) && AuctionManager.hasAuctionQueued(player)) {
                 event.setCancelled(true);
                 plugin.getMessageHandler().sendMessage("command-blocked-auction-queued", player);
+            } else if (getConfig().getBoolean("block-commands-if-top-bidder", false)
+                    && auction != null && auction.hasBids() && auction.getWinning().equals(player.getUniqueId())) {
+                event.setCancelled(true);
+                plugin.getMessageHandler().sendMessage("command-blocked-top-bidder", player);
             }
         }
     }

@@ -29,6 +29,7 @@ allow-damaged-items: true
 # Blocking commands
 block-commands-when-auctioning: false
 block-commands-if-auction-queued: false
+block-commands-if-top-bidder: false
 blocked-commands:
 - "/test"
 
