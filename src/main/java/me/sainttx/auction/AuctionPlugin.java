@@ -262,10 +262,13 @@ public class AuctionPlugin extends JavaPlugin implements Listener {
                     || AuctionManager.getAuctionManager().hasAuctionQueued(player)) {
                 event.setCancelled(true);
                 plugin.getMessageHandler().sendMessage("fail-teleport-world-disabled", player);
-            } else if (AuctionManager.getCurrentAuction() != null
-                    && AuctionManager.getCurrentAuction().getWinning().equals(player.getUniqueId())) {
-                event.setCancelled(true);
-                plugin.getMessageHandler().sendMessage("fail-teleport-world-disabled", player);
+            } else {
+                Auction auction = AuctionManager.getCurrentAuction();
+
+                if (auction != null && auction.hasBids() && auction.getWinning().equals(player.getUniqueId())) {
+                    event.setCancelled(true);
+                    plugin.getMessageHandler().sendMessage("fail-teleport-world-disabled", player);
+                }
             }
         }
     }
