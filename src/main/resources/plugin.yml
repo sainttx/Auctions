@@ -19,55 +19,38 @@ permissions:
     description: Gives access to all Auction commands
     children:
       auction.bid: true
-      auction.cancel: true
-      auction.cancel.bypass: true
-      auction.creative: true
-      auction.bypass.startdelay: true
       auction.bypass.disable: true
-      auction.start: true
-      auction.end: true
-      auction.end.bypass: true
-      auction.info: true
-      auction.ignore: true
-      auction.tax.exempt: true
+      auction.bypass.startdelay: true
+      auction.cancel.bypass: true
+      auction.cancel: true
+      auction.creative: true
+      auction.disable: true
       auction.enable: true
+      auction.end.bypass: true
+      auction.end: true
+      auction.ignore: true
+      auction.info: true
       auction.reload: true
+      auction.start: true
+      auction.tax.exempt: true
       auction.toggle: true
   auction.bid:
     description: Allows you to bid on auctions
     default: true
-  auction.cancel:
-    description: Allows users to cancel their auctions
-    default: op
-  auction.cancel.bypass:
-    description: Allows users to bypass various config options that restrict cancellation
-    default: op
-  auction.start:
-    description: Allows you to start auctions
-    default: true
-  auction.creative:
-    description: Allows you to start auctions in CREATIVE mode
-    default: op
-  auction.end:
-    description: Allows you to end auctions
-    default: op
-  auction.end.bypass:
-    description: Allows you to end auctions when ending is disallowed
-    default: op
-  auction.info:
-    description: Allows you to view auction information
-    default: true
-  auction.ignore:
-    description: Allows you to ignore auction messages
-    default: true
-  auction.tax.exempt:
-    description: Enables you to avoid auction taxes
-    default: op
   auction.bypass.disable:
     description: Enables you to start auctions in disabled mode
     default: op
   auction.bypass.startdelay:
     description: Allows you to bypass the delay between auctions
+    default: op
+  auction.cancel.bypass:
+    description: Allows users to bypass various config options that restrict cancellation
+    default: op
+  auction.cancel:
+    description: Allows users to cancel their auctions
+    default: op
+  auction.creative:
+    description: Allows you to start auctions in CREATIVE mode
     default: op
   auction.disable:
     description: Allows you to put Auctions in permission-only mode
@@ -75,8 +58,26 @@ permissions:
   auction.enable:
     description: Allows you to enable auctioning
     default: op
+  auction.end.bypass:
+    description: Allows you to end auctions when ending is disallowed
+    default: op
+  auction.end:
+    description: Allows you to end auctions
+    default: op
+  auction.ignore:
+    description: Allows you to ignore auction messages
+    default: true
+  auction.info:
+    description: Allows you to view auction information
+    default: true
   auction.reload:
     description: Allows you to reload the auction configuration
+    default: op
+  auction.start:
+    description: Allows you to start auctions
+    default: true
+  auction.tax.exempt:
+    description: Enables you to avoid auction taxes
     default: op
   auction.toggle:
     description: Allows you to toggle auction enabled/disabled status
