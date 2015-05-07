@@ -109,3 +109,6 @@ command-blocked-auction-queued: "&cYou can't use this command while having an au
 fail-start-named-item: "&cYou can't auction off items that have a name"
 fail-start-banned-lore: "&cYou can't auction off this item as it contains banned lore"
 fail-start-world-disabled: "&cThe auction plugin is disabled in this world"
+
+# v1.4.0
+fail-teleport-world-disabled: "&cYou can't teleport into disabled auction worlds while auctioning an item"

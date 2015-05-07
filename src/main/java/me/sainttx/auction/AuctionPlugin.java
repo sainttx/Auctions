@@ -9,6 +9,7 @@ import me.sainttx.auction.util.AuctionUtil;
 import me.sainttx.auction.util.TextUtil;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -16,6 +17,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -248,4 +250,18 @@ public class AuctionPlugin extends JavaPlugin implements Listener {
         }
     }
 
+    @EventHandler(ignoreCancelled = true)
+    public void onPlayerTeleport(PlayerTeleportEvent event) {
+        Player player = event.getPlayer();
+        World target = event.getTo().getWorld();
+
+        if (event.getCause() != PlayerTeleportEvent.TeleportCause.ENDER_PEARL
+                && plugin.getConfig().isList("disabled-worlds")
+                && plugin.getConfig().getStringList("disabled-worlds").contains(target.getName())
+                && (AuctionManager.getAuctionManager().isAuctioningItem(player)
+                || AuctionManager.getAuctionManager().hasAuctionQueued(player))) {
+            event.setCancelled(true);
+            plugin.getMessageHandler().sendMessage("fail-teleport-world-disabled", player);
+        }
+    }
 }
