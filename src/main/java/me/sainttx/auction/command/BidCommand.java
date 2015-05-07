@@ -37,6 +37,9 @@ public class BidCommand implements CommandExecutor {
             plugin.getMessageHandler().sendMessage("insufficient-permissions", player);
         } else if (TextUtil.isIgnoring(player.getUniqueId())) {
             plugin.getMessageHandler().sendMessage("fail-start-ignoring", player);
+        } else if (plugin.getConfig().isList("disabled-worlds")
+                && plugin.getConfig().getStringList("disabled-worlds").contains(player.getWorld().getName())) {
+            plugin.getMessageHandler().sendMessage("fail-start-world-disabled", player);
         } else if (args.length == 0 && plugin.getConfig().getBoolean("allow-using-bid-auto-command", true)) {
             Auction auction = AuctionManager.getCurrentAuction();
 
