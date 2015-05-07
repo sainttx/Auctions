@@ -21,10 +21,6 @@ public class TimeUtil {
         return diff;
     }
 
-    public static String formatDateDiff(long date) {
-        return formatDateDiff(date, false);
-    }
-
     public static String formatDateDiff(long date, boolean shortened) {
         Calendar c = new GregorianCalendar();
         c.setTimeInMillis(date);
