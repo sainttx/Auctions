@@ -1,9 +1,23 @@
 # Auction plugin by SainttX
 
+# Configuration options for various plugin integration
+# settings can be defined in this section. Each integration
+# option has an enable option that tells the plugin whether
+# or not the option should be used. Please note that some
+# options conflict and may be ignored in certain instances.
+integration:
+  # Herochat plugin integration options
+  # Find the plugin here: http://dev.bukkit.org/bukkit-plugins/herochat/
+  herochat:
+    enable: true
+    # Defines your Herochat chat channel that players must be joined
+    # to receive messages from the auction plugin. Messages that
+    # are only sent to a single player ignore this and will send no
+    # matter what.
+    channel: "auction"
+
 settings:
   use-shortened-times: false
-  integrate-herochat: false
-  herochat-channel: auction
 
 # General Auction information
 auction-start-fee: 0

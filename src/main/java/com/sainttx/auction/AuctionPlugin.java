@@ -72,18 +72,7 @@ public class AuctionPlugin extends JavaPlugin implements Listener {
         getServer().getPluginManager().registerEvents(this, this);
         loadConfig();
         TextUtil.load(this);
-
-        // message handling
-        // message handling
-        if ((!getServer().getPluginManager().isPluginEnabled("Herochat")
-                && getConfig().getBoolean("settings.integrate-herochat", false))
-                || !getConfig().getBoolean("settings.integrate-herochat", false)) {
-            messageHandler = new GlobalChatHandler(this);
-            getLogger().info("Using global chat handler. If you specific Herochat message handling, the Herochat plugin was not found.");
-        } else {
-            messageHandler = new HerochatHandler(this);
-            getLogger().info("Using Herochat message handler");
-        }
+        initializeChatHandler();
 
         // Load offline player items
         for (String string : offlineConfiguration.getKeys(false)) {
@@ -166,12 +155,27 @@ public class AuctionPlugin extends JavaPlugin implements Listener {
         }
     }
 
+    /*
+     * A helper method that initializes the chat handler
+     */
+    private void initializeChatHandler() {
+        if (getServer().getPluginManager().isPluginEnabled("Herochat")
+                && getConfig().getBoolean("integration.herochat.enable", false)) {
+            this.messageHandler = new HerochatHandler(this);
+            getLogger().info("Herochat was chosen as the chat channel");
+        } else {
+            this.messageHandler = new GlobalChatHandler(this);
+            getLogger().info("GlobalChatHandler was chosen as the chat channel");
+        }
+    }
+
     /**
      * Loads the configuration
      */
     public void loadConfig() {
         saveDefaultConfig();
         config = super.getConfig();
+        initializeChatHandler();
         getConfig().options().copyDefaults(true);
         File names = new File(getDataFolder(), "items.yml");
 
@@ -184,15 +188,6 @@ public class AuctionPlugin extends JavaPlugin implements Listener {
             } catch (NumberFormatException ex) {
                 getLogger().info("String \"" + broadcastTime + "\" is an invalid Integer, skipping");
             }
-        }
-
-        // Update the message handler
-        if (getConfig().getBoolean("settings.integrate-herochat", false)) {
-            messageHandler = new HerochatHandler(this);
-            getLogger().info("Switched to Herochat message handling");
-        } else if (!getConfig().getBoolean("settings.integrate-herochat", false)) {
-            messageHandler = new GlobalChatHandler(this);
-            getLogger().info("Switched to Global message handling");
         }
 
         // Save items file name

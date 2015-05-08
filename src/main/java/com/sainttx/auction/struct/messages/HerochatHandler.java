@@ -25,7 +25,7 @@ public class HerochatHandler extends MessageHandler {
     @Override
     public Iterable<? extends Player> getRecipients() {
         return !isHerochatEnabled() ? new HashSet<Player>()
-                : getChannelPlayers(plugin.getConfig().getString("settings.herochat-channel"));
+                : getChannelPlayers(plugin.getConfig().getString("integration.herochat.channel"));
     }
 
     /**
