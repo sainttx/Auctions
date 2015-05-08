@@ -103,7 +103,7 @@ public class AuctionManager {
      * @return True if the player has an auction queued, false otherwise
      */
     public static boolean hasAuctionQueued(Player player) {
-        for (Auction queued : manager.auctionQueue) {
+        for (Auction queued : getAuctionManager().auctionQueue) {
             if (queued.getOwner().equals(player.getUniqueId())) {
                 return true;
             }
