@@ -3,7 +3,7 @@ version: 1.4.0
 description: An auctioning plugin
 author: SainttX
 
-main: me.sainttx.auction.AuctionPlugin
+main: com.sainttx.auction.AuctionPlugin
 softdepend: [Herochat]
 depend: [Vault]
 
