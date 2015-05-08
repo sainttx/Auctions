@@ -100,13 +100,13 @@ public class AuctionPlugin extends JavaPlugin implements Listener {
     public void onDisable() {
         TextUtil.save();
         if (AuctionManager.getCurrentAuction() != null) {
-            AuctionManager.getCurrentAuction().end(true);
+            AuctionManager.getCurrentAuction().cancel();
         }
 
         // End all auctions that are queued
         for (Iterator<Auction> auctionIterator = AuctionManager.getAuctionManager().getAuctionQueue().iterator() ; auctionIterator.hasNext() ; ) {
             Auction auction = auctionIterator.next();
-            auction.end(false);
+            auction.cancel();
             auctionIterator.remove();
         }
 
