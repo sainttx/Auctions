@@ -166,13 +166,12 @@ public class TextUtil {
     /**
      * Creates a fancy message ready to be sent
      *
-     * @param auction           the current auction
-     * @param configurationPath the path to the message inside messages.yml
+     * @param auction the current auction
+     * @param message the message to send
      * @return a message ready to be sent to a player
      */
-    public static FancyMessage createMessage(Auction auction, String configurationPath) {
+    public static FancyMessage createMessage(Auction auction, String message) {
         FancyMessage fancy = new FancyMessage(ChatColor.WHITE.toString());
-        String message = replace(auction, getConfigMessage(configurationPath));
 
         if (!message.isEmpty()) {
             String[] split = message.split(" ");

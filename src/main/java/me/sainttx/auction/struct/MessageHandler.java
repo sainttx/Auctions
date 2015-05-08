@@ -28,11 +28,16 @@ public abstract class MessageHandler {
      * @param force             bypass auction ignore status
      */
     public void sendMessage(Auction auction, String configurationPath, boolean force) {
-        FancyMessage message = TextUtil.createMessage(auction, configurationPath);
+        String message = TextUtil.replace(auction, TextUtil.getConfigMessage(configurationPath));
+        String[] messages = message.split("\n+");
 
-        for (Player player : getRecipients()) {
-            if (force || !TextUtil.isIgnoring(player.getUniqueId())) {
-                message.send(player);
+        for (String msg : messages) {
+            FancyMessage fancy = TextUtil.createMessage(auction, msg);
+
+            for (Player player : getRecipients()) {
+                if (force || !TextUtil.isIgnoring(player.getUniqueId())) {
+                    fancy.send(player);
+                }
             }
         }
     }
@@ -55,8 +60,13 @@ public abstract class MessageHandler {
      * @param player            the receiver of the message
      */
     public void sendMessage(Auction auction, String configurationPath, Player player) {
-        FancyMessage message = TextUtil.createMessage(auction, configurationPath);
-        message.send(player);
+        String message = TextUtil.replace(auction, TextUtil.getConfigMessage(configurationPath));
+        String[] messages = message.split("\n+");
+
+        for (String msg : messages) {
+            FancyMessage fancy = TextUtil.createMessage(auction, msg);
+            fancy.send(player);
+        }
     }
 
     /**
