@@ -1,7 +1,7 @@
-package me.sainttx.auction.struct.messages;
+package com.sainttx.auction.struct.messages;
 
-import me.sainttx.auction.AuctionPlugin;
-import me.sainttx.auction.struct.MessageHandler;
+import com.sainttx.auction.AuctionPlugin;
+import com.sainttx.auction.struct.MessageHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 

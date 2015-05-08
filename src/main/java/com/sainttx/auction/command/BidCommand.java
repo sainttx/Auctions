@@ -1,9 +1,9 @@
-package me.sainttx.auction.command;
+package com.sainttx.auction.command;
 
-import me.sainttx.auction.Auction;
-import me.sainttx.auction.AuctionManager;
-import me.sainttx.auction.AuctionPlugin;
-import me.sainttx.auction.util.TextUtil;
+import com.sainttx.auction.AuctionManager;
+import com.sainttx.auction.Auction;
+import com.sainttx.auction.AuctionPlugin;
+import com.sainttx.auction.util.TextUtil;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;

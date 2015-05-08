@@ -1,12 +1,12 @@
-package me.sainttx.auction;
+package com.sainttx.auction;
 
-import me.sainttx.auction.command.AuctionCommand;
-import me.sainttx.auction.command.BidCommand;
-import me.sainttx.auction.struct.MessageHandler;
-import me.sainttx.auction.struct.messages.GlobalChatHandler;
-import me.sainttx.auction.struct.messages.HerochatHandler;
-import me.sainttx.auction.util.AuctionUtil;
-import me.sainttx.auction.util.TextUtil;
+import com.sainttx.auction.command.AuctionCommand;
+import com.sainttx.auction.command.BidCommand;
+import com.sainttx.auction.struct.messages.GlobalChatHandler;
+import com.sainttx.auction.util.TextUtil;
+import com.sainttx.auction.struct.MessageHandler;
+import com.sainttx.auction.struct.messages.HerochatHandler;
+import com.sainttx.auction.util.AuctionUtil;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.World;

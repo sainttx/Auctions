@@ -1,7 +1,7 @@
-package me.sainttx.auction.struct;
+package com.sainttx.auction.struct;
 
-import me.sainttx.auction.Auction;
-import me.sainttx.auction.util.TextUtil;
+import com.sainttx.auction.Auction;
+import com.sainttx.auction.util.TextUtil;
 import mkremins.fanciful.FancyMessage;
 import org.bukkit.entity.Player;
 

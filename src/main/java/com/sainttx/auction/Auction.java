@@ -1,6 +1,6 @@
-package me.sainttx.auction;
+package com.sainttx.auction;
 
-import me.sainttx.auction.util.AuctionUtil;
+import com.sainttx.auction.util.AuctionUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;

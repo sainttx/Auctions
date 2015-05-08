@@ -1,10 +1,10 @@
-package me.sainttx.auction.struct.messages;
+package com.sainttx.auction.struct.messages;
 
 import com.dthielke.herochat.Channel;
 import com.dthielke.herochat.Chatter;
 import com.dthielke.herochat.Herochat;
-import me.sainttx.auction.AuctionPlugin;
-import me.sainttx.auction.struct.MessageHandler;
+import com.sainttx.auction.AuctionPlugin;
+import com.sainttx.auction.struct.MessageHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 

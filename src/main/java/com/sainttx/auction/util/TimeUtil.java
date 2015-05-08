@@ -1,4 +1,4 @@
-package me.sainttx.auction.util;
+package com.sainttx.auction.util;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;

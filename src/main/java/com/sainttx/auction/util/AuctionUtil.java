@@ -1,6 +1,6 @@
-package me.sainttx.auction.util;
+package com.sainttx.auction.util;
 
-import me.sainttx.auction.AuctionPlugin;
+import com.sainttx.auction.AuctionPlugin;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;

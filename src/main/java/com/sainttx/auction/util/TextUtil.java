@@ -1,8 +1,8 @@
-package me.sainttx.auction.util;
+package com.sainttx.auction.util;
 
-import me.sainttx.auction.Auction;
-import me.sainttx.auction.AuctionManager;
-import me.sainttx.auction.AuctionPlugin;
+import com.sainttx.auction.AuctionManager;
+import com.sainttx.auction.Auction;
+import com.sainttx.auction.AuctionPlugin;
 import mkremins.fanciful.FancyMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
