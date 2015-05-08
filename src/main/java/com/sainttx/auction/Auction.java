@@ -66,13 +66,13 @@ public class Auction {
         this.owner = player.getUniqueId();
         this.numItems = numItems;
         this.topBid = startingAmount;
-        this.timeLeft = plugin.getConfig().getInt("default-auction-start-time", 30);
+        this.timeLeft = plugin.getConfig().getInt("auctionSettings.startTime", 30);
         this.bidIncrement = bidIncrement;
         this.autoWin = autoWin;
         this.item = player.getItemInHand().clone();
         this.item.setAmount(numItems);
-        if (autoWin < topBid + plugin.getConfig().getDouble("default-bid-increment", 10D) && autoWin != -1) {
-            this.autoWin = topBid + plugin.getConfig().getDouble("default-bid-increment", 10D);
+        if (autoWin < topBid + plugin.getConfig().getInt("auctionSettings.defaultBidIncrement", 50) && autoWin != -1) {
+            this.autoWin = topBid + plugin.getConfig().getInt("auctionSettings.defaultBidIncrement", 50);
         }
 
         validateAuction(player);
@@ -93,7 +93,7 @@ public class Auction {
      * @return Double the tax on the auction
      */
     public double getCurrentTax() {
-        int tax = plugin.getConfig().getInt("auction-tax-percentage", 0);
+        int tax = plugin.getConfig().getInt("auctionSettings.taxPercent", 0);
         return (topBid * tax) / 100;
     }
 
@@ -281,7 +281,7 @@ public class Auction {
                         AuctionManager.getAuctionManager().startNextAuction();
                     }
                 }
-            }, plugin.getConfig().getLong("delay-between-auctions-seconds", 5L) * 20L);
+            }, plugin.getConfig().getLong("auctionSettings.delayBetween", 5L) * 20L);
         }
     }
 
@@ -327,13 +327,14 @@ public class Auction {
         } else if (item.getType() == Material.FIREWORK || item.getType() == Material.FIREWORK_CHARGE || AuctionManager.getBannedMaterials().contains(item.getType())) {
             // The item isn't allowed
             throw new Exception("unsupported-item");
-        } else if (item.getType().getMaxDurability() > 0 && item.getDurability() > 0 && !plugin.getConfig().getBoolean("allow-damaged-items", true)) {
+        } else if (item.getType().getMaxDurability() > 0 && item.getDurability() > 0
+                && !plugin.getConfig().getBoolean("auctionSettings.canAuctionDamagedItems", true)) {
             // Users can't auction damaged items
             throw new Exception("fail-start-damaged-item");
         } else if (!AuctionUtil.searchInventory(player.getInventory(), item, numItems)) {
             // They don't have enough of that item in their inventory
             throw new Exception("fail-start-not-enough-items");
-        } else if (!plugin.getConfig().getBoolean("allow-auctioning-named-items", true) && item.getItemMeta().hasDisplayName()) {
+        } else if (!plugin.getConfig().getBoolean("auctionSettings.canAuctionNamedItems", true) && item.getItemMeta().hasDisplayName()) {
             // The player can't auction named items
             throw new Exception("fail-start-named-item");
         } else if (hasBannedLore()) {
@@ -348,7 +349,7 @@ public class Auction {
      * Check if an item has a denied String of lore
      */
     private boolean hasBannedLore() {
-        List<String> bannedLore = plugin.getConfig().getStringList("banned-lore");
+        List<String> bannedLore = plugin.getConfig().getStringList("general.blockedLore");
 
         if (bannedLore != null && !bannedLore.isEmpty()) {
             if (item.getItemMeta().hasLore()) {

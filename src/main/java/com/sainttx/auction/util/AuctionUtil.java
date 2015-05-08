@@ -114,6 +114,6 @@ public class AuctionUtil {
      */
     public static String getFormattedTime(int timeLeft) {
         return TimeUtil.formatDateDiff(System.currentTimeMillis() + (timeLeft * 1000L),
-                AuctionPlugin.getPlugin().getConfig().getBoolean("settings.use-shortened-times", false));
+                AuctionPlugin.getPlugin().getConfig().getBoolean("general.shortenedTimeFormat", false));
     }
 }

@@ -181,7 +181,7 @@ public class AuctionPlugin extends JavaPlugin implements Listener {
 
         // Clear & set up auction broadcast times
         Auction.broadcastTimes.clear();
-        for (String broadcastTime : getConfig().getStringList("broadcast-times")) {
+        for (String broadcastTime : getConfig().getStringList("general.broadcastTimes")) {
             try {
                 Integer time = Integer.parseInt(broadcastTime);
                 Auction.broadcastTimes.add(time);
@@ -231,18 +231,20 @@ public class AuctionPlugin extends JavaPlugin implements Listener {
      * Cancels a players command if they're auctioning
      */
     public void onCommand(PlayerCommandPreprocessEvent event) {
-        if (getConfig().getBoolean("block-commands-when-auctioning", false)
-                && getConfig().getStringList("blocked-commands").contains(event.getMessage().split(" ")[0].toLowerCase())) {
+        String command = event.getMessage().split(" ")[0];
+        if (getConfig().getBoolean("general.blockCommands.ifAuctioning", false)
+                && getConfig().isList("general.blockedCommands")
+                && getConfig().getStringList("general.blockedCommands").contains(command.toLowerCase())) {
             Player player = event.getPlayer();
             Auction auction = AuctionManager.getCurrentAuction();
 
             if (AuctionManager.isAuctioningItem(player)) {
                 event.setCancelled(true);
                 plugin.getMessageHandler().sendMessage("command-blocked-auctioning", player);
-            } else if (getConfig().getBoolean("block-commands-if-auction-queued", false) && AuctionManager.hasAuctionQueued(player)) {
+            } else if (getConfig().getBoolean("general.blockedCommands.ifQueued", false) && AuctionManager.hasAuctionQueued(player)) {
                 event.setCancelled(true);
                 plugin.getMessageHandler().sendMessage("command-blocked-auction-queued", player);
-            } else if (getConfig().getBoolean("block-commands-if-top-bidder", false)
+            } else if (getConfig().getBoolean("general.blockCommands.ifTopBidder", false)
                     && auction != null && auction.hasBids() && auction.getWinning().equals(player.getUniqueId())) {
                 event.setCancelled(true);
                 plugin.getMessageHandler().sendMessage("command-blocked-top-bidder", player);
@@ -256,8 +258,8 @@ public class AuctionPlugin extends JavaPlugin implements Listener {
         World target = event.getTo().getWorld();
 
         if (event.getCause() != PlayerTeleportEvent.TeleportCause.ENDER_PEARL
-                && plugin.getConfig().isList("disabled-worlds")
-                && plugin.getConfig().getStringList("disabled-worlds").contains(target.getName())) {
+                && plugin.getConfig().isList("general.disabledWorlds")
+                && plugin.getConfig().getStringList("general.disabledWorlds").contains(target.getName())) {
             if (AuctionManager.getAuctionManager().isAuctioningItem(player)
                     || AuctionManager.getAuctionManager().hasAuctionQueued(player)) {
                 event.setCancelled(true);

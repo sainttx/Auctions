@@ -42,9 +42,10 @@ public class AuctionCommand implements CommandExecutor {
 
                 try {
                     player = (Player) sender; // Attempt to cast
+                    String world = player.getWorld().getName();
 
-                    if (plugin.getConfig().isList("disabled-worlds")
-                            && plugin.getConfig().getStringList("disabled-worlds").contains(player.getWorld().getName())) {
+                    if (plugin.getConfig().isList("general.disabledWorlds")
+                            && plugin.getConfig().getStringList("general.disabledWorlds").contains(world)) {
                         plugin.getMessageHandler().sendMessage("fail-start-world-disabled", player);
                         return true;
                     }
@@ -73,7 +74,9 @@ public class AuctionCommand implements CommandExecutor {
                         }
                         break;
                     case START:
-                        if (player.getGameMode() == GameMode.CREATIVE && !plugin.getConfig().getBoolean("allow-creative-auctioning", false) && !player.hasPermission("auction.creative")) {
+                        if (player.getGameMode() == GameMode.CREATIVE
+                                && !plugin.getConfig().getBoolean("auctionSettings.canAuctionInCreative", false)
+                                && !player.hasPermission("auction.creative")) {
                             plugin.getMessageHandler().sendMessage("fail-start-creative", player);
                         } else {
                             manager.prepareAuction(player, args);

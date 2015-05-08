@@ -267,7 +267,7 @@ public class TextUtil {
     public static String replace(Auction auction, String message) {
         String ret = message;
         if (auction != null) {
-            int time = AuctionPlugin.getPlugin().getConfig().getInt("anti-snipe-add-seconds", 5);
+            int time = AuctionPlugin.getPlugin().getConfig().getInt("auctionSettings.antiSnipe.addSeconds", 5);
             ret = ret.replaceAll("%t", auction.getTime())
                     .replaceAll("%b", NumberFormat.getInstance(Locale.ENGLISH).format(auction.getTopBid()))
                     .replaceAll("%p", auction.getOwnerName())
