@@ -1,6 +1,7 @@
 package me.sainttx.auction;
 
 import me.sainttx.auction.util.TextUtil;
+import mkremins.fanciful.FancyMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
@@ -394,10 +395,25 @@ public class AuctionManager {
             if (currentAuction.getTimeLeft() <= 3 && plugin.getConfig().getBoolean("enable-anti-snipe", true) && currentAuction.getAntiSniped() + 1 <= plugin.getConfig().getInt("anti-snipe-max-per-auction")) {
                 int time = plugin.getConfig().getInt("anti-snipe-add-seconds", 5);
                 if (time > 0) {
-                    //plugin.getMessageHandler().sendMessage(currentAuction, "anti-snipe-add", false);
-                    TextUtil.sendMessage(TextUtil.replace(currentAuction, TextUtil.getConfigMessage("anti-snipe-add").replace("%t", Integer.toString(time))), false, Bukkit.getOnlinePlayers());
+                    String message = TextUtil.replace(currentAuction, TextUtil.getConfigMessage("anti-snipe-add"))
+                            .replace("%t", Integer.toString(time));
+                    sendMessage(message, false);
                     currentAuction.addSeconds(time);
                     currentAuction.incrementAntiSniped();
+                }
+            }
+        }
+    }
+
+    private void sendMessage(String message, boolean force) {
+        String[] messages = message.split("\n+");
+
+        for (String msg : messages) {
+            FancyMessage fancy = TextUtil.createMessage(currentAuction, msg);
+
+            for (Player player : plugin.getMessageHandler().getRecipients()) {
+                if (force || !TextUtil.isIgnoring(player.getUniqueId())) {
+                    fancy.send(player);
                 }
             }
         }
