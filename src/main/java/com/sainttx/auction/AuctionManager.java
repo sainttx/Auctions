@@ -54,7 +54,12 @@ public class AuctionManager {
      * @return AuctionManager The AuctionManager instance
      */
     public static AuctionManager getAuctionManager() {
-        return manager == null ? manager = new AuctionManager() : manager;
+        if (manager == null) {
+            manager = new AuctionManager();
+            Bukkit.getLogger().info("Created a new auction manager instance.");
+        }
+
+        return manager;
     }
 
 
