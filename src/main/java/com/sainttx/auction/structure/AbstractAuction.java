@@ -22,7 +22,7 @@ public abstract class AbstractAuction implements Auction {
     // Instance
     protected AuctionPlugin plugin;
     protected AuctionType type;
-    protected Collection<AuctionModule> modules;
+    protected Collection<AuctionModule> modules = new HashSet<AuctionModule>();
 
     // Auction owner information
     protected UUID ownerUUID;
