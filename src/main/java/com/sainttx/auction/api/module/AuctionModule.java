@@ -1,4 +1,6 @@
-package com.sainttx.auction.api;
+package com.sainttx.auction.api.module;
+
+import com.sainttx.auction.api.Auction;
 
 /**
  * Represents a module that can be added onto an {@link Auction}.
