@@ -3,7 +3,6 @@ package com.sainttx.auction;
 import com.sainttx.auction.api.AuctionsAPI;
 import com.sainttx.auction.api.reward.Reward;
 import com.sainttx.auction.command.AuctionCommandHandler;
-import com.sainttx.auction.command.BidCommand;
 import com.sainttx.auction.listener.PlayerListener;
 import com.sainttx.auction.structure.messages.GlobalChatHandler;
 import com.sainttx.auction.util.TextUtil;
@@ -63,8 +62,9 @@ public class AuctionPlugin extends JavaPlugin {
         TextUtil.load(this);
 
         // Commands
-        getCommand("auction").setExecutor(new AuctionCommandHandler());
-        getCommand("bid").setExecutor(new BidCommand(this));
+        AuctionCommandHandler handler = new AuctionCommandHandler();
+        getCommand("auction").setExecutor(handler);
+        getCommand("bid").setExecutor(handler);
     }
 
     @Override

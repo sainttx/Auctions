@@ -26,7 +26,7 @@ public class BidCommand extends AuctionSubCommand {
 
         if (!(sender instanceof Player)) {
             sender.sendMessage("Only players can place bids on auctions");
-        } else if (args.length < 2) {
+        } else if (args.length < 2 && !plugin.getConfig().getBoolean("auctionSettings.canBidAutomatically", true)) {
             manager.getMessageHandler().sendMessage("fail-bid-syntax", sender);
         } else if (auction == null) {
             manager.getMessageHandler().sendMessage("fail-bid-no-auction", sender);
@@ -36,13 +36,18 @@ public class BidCommand extends AuctionSubCommand {
             double bid;
 
             try {
-                bid = Double.parseDouble(args[1]);
+                bid = args.length < 2
+                        ? auction.getTopBid() + auction.getBidIncrement()
+                        : Double.parseDouble(args[1]);
             } catch (NumberFormatException ex) {
                 manager.getMessageHandler().sendMessage("fail-bid-number", sender);
                 return true;
             }
 
-            if (manager.getMessageHandler().isIgnoring(player.getUniqueId())) {
+            if (plugin.getConfig().isList("general.disabledWorlds")
+                    && plugin.getConfig().getStringList("general.disabledWorlds").contains(player.getWorld().getName())) {
+                manager.getMessageHandler().sendMessage("fail-start-world-disabled", player);
+            } else if (manager.getMessageHandler().isIgnoring(player.getUniqueId())) {
                 manager.getMessageHandler().sendMessage("fail-start-ignoring", player); // player is ignoring
             } else if (auction.getOwner().equals(player.getUniqueId())) {
                 manager.getMessageHandler().sendMessage("fail-bid-your-auction", player); // cant bid on own auction

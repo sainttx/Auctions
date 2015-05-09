@@ -27,11 +27,13 @@ public class AuctionCommandHandler implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (args.length == 0) {
+        if (args.length == 0 && !command.getName().equalsIgnoreCase("bid")) {
             TextUtil.sendMenu(sender);
         } else {
+            String sub = command.getName().equalsIgnoreCase("bid") ? "bid" : args[0];
+
             for (AuctionSubCommand cmd : commands) {
-                if (cmd.canTrigger(args[0])) {
+                if (cmd.canTrigger(sub)) {
                     if (!sender.hasPermission(cmd.getPermission())) {
                         sender.sendMessage(TextUtil.getConfigMessage("insufficient-permissions")); // TODO: Change
                     } else {
