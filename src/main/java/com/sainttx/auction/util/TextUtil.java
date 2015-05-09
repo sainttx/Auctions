@@ -1,6 +1,5 @@
 package com.sainttx.auction.util;
 
-import com.sainttx.auction.AuctionManagerImpl;
 import com.sainttx.auction.AuctionPlugin;
 import com.sainttx.auction.api.Auction;
 import mkremins.fanciful.FancyMessage;
@@ -9,14 +8,13 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.IOException;
 import java.text.NumberFormat;
-import java.util.*;
+import java.util.Locale;
 
 public class TextUtil {
 
@@ -29,11 +27,6 @@ public class TextUtil {
      * The file containing item names
      */
     private static YamlConfiguration itemsFile;
-
-    /*
-     * A set containing the users that are ignoring this plugin
-     */
-    private static Set<UUID> ignoredUsers = new HashSet<UUID>();
 
     /**
      * Loads the messages file and names file from a plugin
@@ -63,103 +56,6 @@ public class TextUtil {
             messageFile.save(messagesFile);
         } catch (IOException ex) {
             ex.printStackTrace();
-        }
-    }
-
-    /**
-     * Returns if a player is ignoring auctions
-     *
-     * @param uuid The ID of the player ignoring
-     * @return True if the player is ignoring auctions, false otherwise
-     */
-    public static boolean isIgnoring(UUID uuid) {
-        return ignoredUsers.contains(uuid);
-    }
-
-    /**
-     * Adds a player to the ignoring list
-     *
-     * @param uuid The ID of the player thats now ignoring
-     */
-    public static void addIgnoring(UUID uuid) {
-        ignoredUsers.add(uuid);
-    }
-
-    /**
-     * Removes a name from the ignoring list
-     *
-     * @param uuid The uuid of the player not ignoring
-     */
-    public static void removeIgnoring(UUID uuid) {
-        ignoredUsers.remove(uuid);
-    }
-
-    /**
-     * Sends a fancy message to a player
-     *
-     * @param message the message to send
-     * @param force   whether or not to force the message
-     * @param player  the player
-     * @deprecated messages should now be sent through the {@link com.sainttx.auction.api.AuctionManager#getMessageHandler()}
-     */
-    @Deprecated
-    public static void sendMessage(String message, boolean force, Player player) {
-        sendMessage(message, force, Arrays.asList(player));
-    }
-
-    /**
-     * Sends a FancyMessage to a group of players
-     *
-     * @param message The message to send
-     * @param force   Whether or not to bypass a users ignored status
-     * @param players The players who will receive the message
-     * @deprecated messages should now be sent through the {@link com.sainttx.auction.api.AuctionManager#getMessageHandler()}
-     */
-    @Deprecated
-    public static void sendMessage(String message, boolean force, Iterable<? extends Player> players) {
-        // Ignore disabled config lines
-        if (message == null || message.isEmpty()) {
-            return;
-        }
-
-        FancyMessage fancy = new FancyMessage(ChatColor.WHITE.toString());
-        String[] split = message.split(" ");
-        ChatColor current = ChatColor.WHITE;
-
-        for (String str : split) {
-            str = color(str); // Color the word
-            String currentColor = ChatColor.getLastColors(str);
-            current = ChatColor.getByChar(currentColor.isEmpty() ? current.getChar() : currentColor.charAt(1));
-
-            if (str.toLowerCase().contains("%i")) {
-                ChatColor color = getConfigMessage("itemColor.color").isEmpty() ? ChatColor.WHITE : ChatColor.getByChar(getConfigMessage("itemColor.color"));
-                ChatColor style = getConfigMessage("itemColor.style").isEmpty() ? null : ChatColor.getByChar(getConfigMessage("itemColor.style"));
-
-                Auction auction = AuctionManagerImpl.getAuctionManager().getCurrentAuction();
-                if (auction != null) {
-                    fancy.then(getItemName(auction.getItem())).color(color != null ? current = color : current).itemTooltip(auction.getItem());
-                    if (style != null && style.isFormat()) {
-                        fancy.style(style);
-                    }
-                }
-            } else {
-                fancy.then(str);
-
-                if (current.isColor()) {
-                    fancy.color(current);
-                } else {
-                    fancy.style(current);
-                }
-            }
-
-            fancy.then(" "); // Add a space after every word
-        }
-
-        // Send the message to the players
-        for (Player player : players) {
-            if (force || !ignoredUsers.contains(player.getUniqueId())) {
-                fancy.send(player);
-            }
         }
     }
 
@@ -291,17 +187,6 @@ public class TextUtil {
      */
     public static void sendMenu(CommandSender sender) {
         for (String message : messageFile.getStringList("auction-menu")) {
-            sender.sendMessage(color(message));
-        }
-    }
-
-    /**
-     * Sends the auction help text to a sender
-     *
-     * @param sender The sender to send the menu too
-     */
-    public static void sendHelp(CommandSender sender) {
-        for (String message : messageFile.getStringList("auction-help")) {
             sender.sendMessage(color(message));
         }
     }
