@@ -170,6 +170,9 @@ public abstract class AbstractAuction implements Auction {
             AuctionPlugin.getEconomy().depositPlayer(topBidder, getTopBid());
         }
 
+        // Broadcast
+        AuctionsAPI.getAuctionManager().getMessageHandler().sendMessage(this, "auction-cancelled", false);
+
         // Set current auction to null
         AuctionsAPI.getAuctionManager().setCurrentAuction(null);
     }
