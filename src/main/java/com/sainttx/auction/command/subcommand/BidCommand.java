@@ -61,7 +61,7 @@ public class BidCommand extends AuctionSubCommand {
                 // place the bid
                 auction.placeBid(player, bid);
                 plugin.getEconomy().withdrawPlayer(player, bid);
-                manager.getMessageHandler().sendMessage(auction, "bid-broadcast", false);
+                manager.getMessageHandler().broadcast(auction, "bid-sendMessage", false);
             }
         }
 

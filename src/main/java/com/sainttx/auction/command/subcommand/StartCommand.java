@@ -121,7 +121,7 @@ public class StartCommand extends AuctionSubCommand {
                         // check if we can add an autowin module
                         if (autowin != -1) {
                             created.addModule(new AutoWinModule(created, autowin));
-                            manager.getMessageHandler().sendMessage(created, "auction-start-autowin", false);
+                            manager.getMessageHandler().broadcast(created, "auction-start-autowin", false);
                         }
                         // check if we can add an anti snipe module
                         if (plugin.getConfig().getBoolean("auctionSettings.antiSnipe.enabled", true)) {

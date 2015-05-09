@@ -140,9 +140,9 @@ public abstract class AbstractAuction implements Auction {
      */
     protected void startMessages() {
         AuctionManager manager = AuctionsAPI.getAuctionManager();
-        manager.getMessageHandler().sendMessage(this, "auction-start", false);
-        manager.getMessageHandler().sendMessage(this, "auction-start-price", false);
-        manager.getMessageHandler().sendMessage(this, "auction-start-increment", false);
+        manager.getMessageHandler().broadcast(this, "auction-start", false);
+        manager.getMessageHandler().broadcast(this, "auction-start-price", false);
+        manager.getMessageHandler().broadcast(this, "auction-start-increment", false);
     }
 
     @Override
@@ -171,7 +171,7 @@ public abstract class AbstractAuction implements Auction {
         }
 
         // Broadcast
-        AuctionsAPI.getAuctionManager().getMessageHandler().sendMessage(this, "auction-cancelled", false);
+        AuctionsAPI.getAuctionManager().getMessageHandler().broadcast(this, "auction-cancelled", false);
 
         // Set current auction to null
         AuctionsAPI.getAuctionManager().setCurrentAuction(null);
@@ -202,7 +202,7 @@ public abstract class AbstractAuction implements Auction {
             }
 
             if (broadcast) {
-                manager.getMessageHandler().sendMessage(this, "auction-end-broadcast", false);
+                manager.getMessageHandler().broadcast(this, "auction-end-sendMessage", false);
             }
         } else {
             if (owner != null) {
@@ -213,7 +213,7 @@ public abstract class AbstractAuction implements Auction {
             }
 
             if (broadcast) {
-                manager.getMessageHandler().sendMessage(this, "auction-end-no-bidders", false);
+                manager.getMessageHandler().broadcast(this, "auction-end-no-bidders", false);
             }
         }
 
@@ -286,7 +286,7 @@ public abstract class AbstractAuction implements Auction {
 
             if (timeLeft <= 0) {
                 end(true);
-            } // TODO: Check if the timer should broadcast
+            } // TODO: Check if the timer should sendMessage
         }
     }
 

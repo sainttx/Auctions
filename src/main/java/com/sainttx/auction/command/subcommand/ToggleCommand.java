@@ -21,7 +21,7 @@ public class ToggleCommand extends AuctionSubCommand {
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         AuctionManager manager = AuctionsAPI.getAuctionManager();
         manager.setAuctioningDisabled(!manager.isAuctioningDisabled());
-        String message = manager.isAuctioningDisabled() ? "broadcast-disable" : "broadcast-enable";
+        String message = manager.isAuctioningDisabled() ? "sendMessage-disable" : "sendMessage-enable";
         Bukkit.broadcastMessage(TextUtil.getConfigMessage(message));
         return false;
     }

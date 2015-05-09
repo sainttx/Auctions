@@ -28,7 +28,7 @@ public class AutoWinModule implements AuctionModule {
 
     @Override
     public void trigger() {
-        AuctionsAPI.getAuctionManager().getMessageHandler().sendMessage(auction, "auction-ended-autowin", false);
+        AuctionsAPI.getAuctionManager().getMessageHandler().broadcast(auction, "auction-ended-autowin", false);
         auction.end(true);
     }
 }

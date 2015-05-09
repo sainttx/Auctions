@@ -25,12 +25,12 @@ public abstract class AbstractMessageHandler implements MessageHandler {
     }
 
     @Override
-    public void sendMessage(String configurationPath, boolean force) {
-        sendMessage(null, configurationPath, force);
+    public void broadcast(String configurationPath, boolean force) {
+        broadcast(null, configurationPath, force);
     }
 
     @Override
-    public void sendMessage(Auction auction, String configurationPath, boolean force) {
+    public void broadcast(Auction auction, String configurationPath, boolean force) {
         String message = TextUtil.replace(auction, TextUtil.getConfigMessage(configurationPath));
         String[] messages = message.split("\n+");
 
@@ -73,7 +73,7 @@ public abstract class AbstractMessageHandler implements MessageHandler {
             int queuePosition = AuctionsAPI.getAuctionManager().getQueuePosition(player);
             if (queuePosition > 0) {
                 AuctionsAPI.getAuctionManager().getMessageHandler().sendMessage(TextUtil.replace(auction,
-                        TextUtil.getConfigMessage("auction-queue-position").replaceAll("%q", Integer.toString(queuePosition))),
+                                TextUtil.getConfigMessage("auction-queue-position").replaceAll("%q", Integer.toString(queuePosition))),
                         player);
             }
         }

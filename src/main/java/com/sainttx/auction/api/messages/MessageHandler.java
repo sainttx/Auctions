@@ -11,24 +11,24 @@ import java.util.UUID;
 public interface MessageHandler {
 
     /**
-     * Broadcasts a message to all recipients in the channel
+     * Broadcasts a message to all recipients in {@link #getRecipients()}
      *
      * @param configurationPath the path to the message in messages.yml
      * @param force             bypass auction ignore status
      */
-    void sendMessage(String configurationPath, boolean force);
+    void broadcast(String configurationPath, boolean force);
 
     /**
-     * Broadcasts a message to all recipients in the channel
+     * Broadcasts a message to all recipients in {@link #getRecipients()}
      *
      * @param auction           the auction to format the message with
      * @param configurationPath the path to the message in messages.yml
      * @param force             bypass auction ignore status
      */
-    void sendMessage(Auction auction, String configurationPath, boolean force);
+    void broadcast(Auction auction, String configurationPath, boolean force);
 
     /**
-     * Broadcasts a message to a recipient
+     * Sends a message to a recipient
      *
      * @param configurationPath the path to the message in messages.yml
      * @param recipient         the receiver of the message
@@ -36,7 +36,7 @@ public interface MessageHandler {
     void sendMessage(String configurationPath, CommandSender recipient);
 
     /**
-     * Broadcasts a message to a recipient
+     * Sends a message to a recipient
      *
      * @param auction           the auction to format the message with
      * @param configurationPath the path to the message in messages.yml
