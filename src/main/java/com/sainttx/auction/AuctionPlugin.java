@@ -1,13 +1,11 @@
 package com.sainttx.auction;
 
 import com.sainttx.auction.api.AuctionsAPI;
-import com.sainttx.auction.api.messages.MessageHandler;
 import com.sainttx.auction.api.reward.Reward;
 import com.sainttx.auction.command.AuctionCommandHandler;
 import com.sainttx.auction.command.BidCommand;
 import com.sainttx.auction.listener.PlayerListener;
 import com.sainttx.auction.structure.messages.GlobalChatHandler;
-import com.sainttx.auction.structure.messages.HerochatHandler;
 import com.sainttx.auction.util.TextUtil;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
@@ -27,7 +25,6 @@ public class AuctionPlugin extends JavaPlugin {
      */
     private static AuctionPlugin plugin;
     private static Economy economy;
-    private MessageHandler messageHandler;
 
     /*
      * Offline item saving
@@ -142,26 +139,11 @@ public class AuctionPlugin extends JavaPlugin {
         }
     }
 
-    /*
-     * A helper method that initializes the chat handler
-     */
-    private void initializeChatHandler() {
-        if (getServer().getPluginManager().isPluginEnabled("Herochat")
-                && getConfig().getBoolean("integration.herochat.enable", false)) {
-            this.messageHandler = new HerochatHandler(this);
-            getLogger().info("Herochat was chosen as the chat channel");
-        } else {
-            this.messageHandler = new GlobalChatHandler();
-            getLogger().info("GlobalChatHandler was chosen as the chat channel");
-        }
-    }
-
     /**
      * Loads the configuration
      */
     public void loadConfig() {
         saveDefaultConfig();
-        initializeChatHandler();
         File names = new File(getDataFolder(), "items.yml");
 
         // Clear & set up auction broadcast times
