@@ -1,8 +1,8 @@
 package com.sainttx.auction.util;
 
 import com.sainttx.auction.AuctionManagerImpl;
-import com.sainttx.auction.AuctionBlah;
 import com.sainttx.auction.AuctionPlugin;
+import com.sainttx.auction.api.Auction;
 import mkremins.fanciful.FancyMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -100,7 +100,7 @@ public class TextUtil {
      * @param message the message to send
      * @param force   whether or not to force the message
      * @param player  the player
-     * @deprecated messages should now be sent through the {@link AuctionPlugin#getMessageHandler()}
+     * @deprecated messages should now be sent through the {@link com.sainttx.auction.api.AuctionManager#getMessageHandler()}
      */
     @Deprecated
     public static void sendMessage(String message, boolean force, Player player) {
@@ -113,7 +113,7 @@ public class TextUtil {
      * @param message The message to send
      * @param force   Whether or not to bypass a users ignored status
      * @param players The players who will receive the message
-     * @deprecated messages should now be sent through the {@link AuctionPlugin#getMessageHandler()}
+     * @deprecated messages should now be sent through the {@link com.sainttx.auction.api.AuctionManager#getMessageHandler()}
      */
     @Deprecated
     public static void sendMessage(String message, boolean force, Iterable<? extends Player> players) {
@@ -135,7 +135,7 @@ public class TextUtil {
                 ChatColor color = getConfigMessage("itemColor.color").isEmpty() ? ChatColor.WHITE : ChatColor.getByChar(getConfigMessage("itemColor.color"));
                 ChatColor style = getConfigMessage("itemColor.style").isEmpty() ? null : ChatColor.getByChar(getConfigMessage("itemColor.style"));
 
-                AuctionBlah auction = AuctionManagerImpl.getAuctionManager().getCurrentAuction();
+                Auction auction = AuctionManagerImpl.getAuctionManager().getCurrentAuction();
                 if (auction != null) {
                     fancy.then(getItemName(auction.getItem())).color(color != null ? current = color : current).itemTooltip(auction.getItem());
                     if (style != null && style.isFormat()) {
@@ -170,7 +170,7 @@ public class TextUtil {
      * @param message the message to send
      * @return a message ready to be sent to a player
      */
-    public static FancyMessage createMessage(AuctionBlah auction, String message) {
+    public static FancyMessage createMessage(Auction auction, String message) {
         FancyMessage fancy = new FancyMessage(ChatColor.WHITE.toString());
 
         if (!message.isEmpty()) {
@@ -264,20 +264,20 @@ public class TextUtil {
     /*
      * Replaces a String with Auction information
      */
-    public static String replace(AuctionBlah auction, String message) {
+    public static String replace(Auction auction, String message) {
         String ret = message;
         if (auction != null) {
             int time = AuctionPlugin.getPlugin().getConfig().getInt("auctionSettings.antiSnipe.addSeconds", 5);
-            ret = ret.replaceAll("%t", auction.getTime())
+            ret = ret.replaceAll("%t", AuctionUtil.getFormattedTime(auction.getTimeLeft()))
                     .replaceAll("%b", NumberFormat.getInstance(Locale.ENGLISH).format(auction.getTopBid()))
                     .replaceAll("%p", auction.getOwnerName())
-                    .replaceAll("%a", Integer.toString(auction.getNumItems()))
-                    .replaceAll("%A", NumberFormat.getInstance(Locale.ENGLISH).format(auction.getAutoWin()))
+                    .replaceAll("%a", Integer.toString(auction.getItem().getAmount()))
+                    // .replaceAll("%A", NumberFormat.getInstance(Locale.ENGLISH).format(auction.getAutoWin())) TODO
                     .replaceAll("%B", Integer.toString((int) auction.getBidIncrement()))
                     .replaceAll("%s", Integer.toString(time));
-            if (auction.hasBids()) {
-                ret = ret.replaceAll("%T", Double.toString(auction.getCurrentTax()))
-                        .replaceAll("%w", auction.getWinningName());
+            if (auction.getTopBidder() != null) {
+                ret = ret.replaceAll("%T", Double.toString(auction.getTax()))
+                        .replaceAll("%w", auction.getTopBidderName());
             }
         }
 

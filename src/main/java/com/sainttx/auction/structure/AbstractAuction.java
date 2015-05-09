@@ -2,7 +2,9 @@ package com.sainttx.auction.structure;
 
 import com.sainttx.auction.AuctionPlugin;
 import com.sainttx.auction.api.Auction;
+import com.sainttx.auction.api.AuctionManager;
 import com.sainttx.auction.api.AuctionType;
+import com.sainttx.auction.api.AuctionsAPI;
 import com.sainttx.auction.api.module.AuctionModule;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -13,7 +15,7 @@ import java.util.HashSet;
 import java.util.UUID;
 
 /**
- * An auction implementation 
+ * An auction implementation
  */
 public abstract class AbstractAuction implements Auction {
 
@@ -92,6 +94,14 @@ public abstract class AbstractAuction implements Auction {
 
     @Override
     public void placeBid(Player player, double bid) {
+        if (player == null) {
+            throw new IllegalArgumentException("player cannot be null");
+        }
+
+        this.winningBid = bid;
+        this.topBidderName = player.getName();
+        this.topBidderUUID = player.getUniqueId();
+
         // Trigger our modules
         for (AuctionModule module : modules) {
             if (module.canTrigger()) {
@@ -113,31 +123,17 @@ public abstract class AbstractAuction implements Auction {
     @Override
     public void start() {
         this.timerTask = plugin.getServer().getScheduler().runTaskTimer(plugin, new AuctionTimer(), 20L, 20L);
-        initializeBaseModules();
         startMessages();
-        /* auctionTimer = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, new AuctionTimer(this), 0L, 20L);
-        plugin.getMessageHandler().sendMessage(this, "auction-start", false);
-        plugin.getMessageHandler().sendMessage(this, "auction-start-price", false);
-        plugin.getMessageHandler().sendMessage(this, "auction-start-increment", false);
-
-        if (autoWin != -1) {
-            plugin.getMessageHandler().sendMessage(this, "auction-start-autowin", false);
-        } */
-    }
-
-    /**
-     * Initializes any base modules (ie: anti snipe, auto win)
-     * that should be added to the auction
-     */
-    protected void initializeBaseModules() {
-
     }
 
     /**
      * Dispatches messages for the start of the auction
      */
     protected void startMessages() {
-
+        AuctionManager manager = AuctionsAPI.getAuctionManager();
+        manager.getMessageHandler().sendMessage(this, "auction-start", false);
+        manager.getMessageHandler().sendMessage(this, "auction-start-price", false);
+        manager.getMessageHandler().sendMessage(this, "auction-start-increment", false);
     }
 
     @Override

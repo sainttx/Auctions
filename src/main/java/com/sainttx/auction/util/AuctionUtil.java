@@ -1,6 +1,7 @@
 package com.sainttx.auction.util;
 
 import com.sainttx.auction.AuctionPlugin;
+import com.sainttx.auction.api.AuctionsAPI;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -53,10 +54,10 @@ public class AuctionUtil {
             }
         }
         if (messages.length == 1) {
-            AuctionPlugin.getPlugin().getMessageHandler().sendMessage(messages[0], player);
+            AuctionsAPI.getAuctionManager().getMessageHandler().sendMessage(messages[0], player);
         }
         if (dropped) {
-            AuctionPlugin.getPlugin().getMessageHandler().sendMessage("items-no-space", player);
+            AuctionsAPI.getAuctionManager().getMessageHandler().sendMessage("items-no-space", player);
         }
     }
 

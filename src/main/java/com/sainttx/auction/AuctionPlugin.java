@@ -3,7 +3,7 @@ package com.sainttx.auction;
 import com.sainttx.auction.api.Auction;
 import com.sainttx.auction.api.AuctionsAPI;
 import com.sainttx.auction.api.messages.MessageHandler;
-import com.sainttx.auction.command.AuctionCommand;
+import com.sainttx.auction.command.AuctionCommandHandler;
 import com.sainttx.auction.command.BidCommand;
 import com.sainttx.auction.structure.messages.GlobalChatHandler;
 import com.sainttx.auction.structure.messages.HerochatHandler;
@@ -75,7 +75,7 @@ public class AuctionPlugin extends JavaPlugin implements Listener {
         }
 
         // Commands
-        getCommand("auction").setExecutor(new AuctionCommand(this));
+        getCommand("auction").setExecutor(new AuctionCommandHandler());
         getCommand("bid").setExecutor(new BidCommand(this));
     }
 
@@ -142,7 +142,6 @@ public class AuctionPlugin extends JavaPlugin implements Listener {
     public void loadConfig() {
         saveDefaultConfig();
         initializeChatHandler();
-        getConfig().options().copyDefaults(true);
         File names = new File(getDataFolder(), "items.yml");
 
         // Clear & set up auction broadcast times

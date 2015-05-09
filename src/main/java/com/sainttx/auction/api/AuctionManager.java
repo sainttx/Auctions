@@ -1,6 +1,7 @@
 package com.sainttx.auction.api;
 
 import com.sainttx.auction.api.messages.MessageHandler;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
 import java.util.Queue;
@@ -16,6 +17,27 @@ public interface AuctionManager {
      * @return the current auction
      */
     Auction getCurrentAuction();
+
+    /**
+     * Sets the current active auction
+     *
+     * @param auction the new auction
+     */
+    void setCurrentAuction(Auction auction);
+
+    /**
+     * Gets whether players can currently add a new auction
+     *
+     * @return true if new auctions can be instantly started
+     */
+    boolean canStartNewAuction();
+
+    /**
+     * Sets the start new auction value
+     *
+     * @param start the new value
+     */
+    void setCanStartNewAuction(boolean start);
 
     /**
      * Gets the auction queue
@@ -89,4 +111,12 @@ public interface AuctionManager {
      * Starts the next auction in the queue
      */
     void startNextAuction();
+
+    /**
+     * Gets whether or not a {@link Material} is disallowed
+     *
+     * @param material the material
+     * @return true if the material is not allowed
+     */
+    boolean isBannedMaterial(Material material);
 }

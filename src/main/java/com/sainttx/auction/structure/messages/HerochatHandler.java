@@ -6,6 +6,7 @@ import com.dthielke.herochat.Herochat;
 import com.sainttx.auction.AuctionPlugin;
 import com.sainttx.auction.api.messages.AbstractMessageHandler;
 import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.HashSet;
@@ -23,7 +24,7 @@ public class HerochatHandler extends AbstractMessageHandler {
     }
 
     @Override
-    public Iterable<? extends Player> getRecipients() {
+    public Iterable<? extends CommandSender> getRecipients() {
         return !isHerochatEnabled() ? new HashSet<Player>()
                 : getChannelPlayers(plugin.getConfig().getString("integration.herochat.channel"));
     }

@@ -2,6 +2,7 @@ package com.sainttx.auction.structure.messages;
 
 import com.sainttx.auction.api.messages.AbstractMessageHandler;
 import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 /**
@@ -10,7 +11,7 @@ import org.bukkit.entity.Player;
 public class GlobalChatHandler extends AbstractMessageHandler {
 
     @Override
-    public Iterable<? extends Player> getRecipients() {
+    public Iterable<? extends CommandSender> getRecipients() {
         return Bukkit.getOnlinePlayers();
     }
 }

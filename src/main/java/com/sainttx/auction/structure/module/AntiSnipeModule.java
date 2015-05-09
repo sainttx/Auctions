@@ -2,6 +2,8 @@ package com.sainttx.auction.structure.module;
 
 import com.sainttx.auction.AuctionPlugin;
 import com.sainttx.auction.api.Auction;
+import com.sainttx.auction.api.AuctionManager;
+import com.sainttx.auction.api.AuctionsAPI;
 import com.sainttx.auction.api.module.AuctionModule;
 
 /**
@@ -31,10 +33,11 @@ public class AntiSnipeModule implements AuctionModule {
 
     @Override
     public void trigger() {
+        AuctionManager manager = AuctionsAPI.getAuctionManager();
         snipeCount++;
         int secondsToAdd = plugin.getConfig().getInt("auctionSettings.antiSnipe.addSeconds", 5);
 
         auction.setTimeLeft(auction.getTimeLeft() + secondsToAdd);
-        // TODO: send message
+        manager.getMessageHandler().sendMessage(auction, "anti-snipe-add", false); // TODO: This might be wrong
     }
 }

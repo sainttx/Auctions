@@ -1,10 +1,6 @@
 package com.sainttx.auction.command;
 
-import com.sainttx.auction.AuctionManagerImpl;
-import com.sainttx.auction.AuctionBlah;
 import com.sainttx.auction.AuctionPlugin;
-import com.sainttx.auction.util.TextUtil;
-
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -33,7 +29,7 @@ public class BidCommand implements CommandExecutor {
 
         Player player = (Player) sender;
 
-        if (!sender.hasPermission("auction.bid")) {
+        /* if (!sender.hasPermission("auction.bid")) {
             plugin.getMessageHandler().sendMessage("insufficient-permissions", player);
         } else if (TextUtil.isIgnoring(player.getUniqueId())) {
             plugin.getMessageHandler().sendMessage("fail-start-ignoring", player);
@@ -52,7 +48,7 @@ public class BidCommand implements CommandExecutor {
             AuctionManagerImpl.getAuctionManager().prepareBid(player, args[0]);
         } else {
             plugin.getMessageHandler().sendMessage("fail-bid-syntax", player);
-        }
+        } */
 
         return false;
     }
