@@ -2,6 +2,7 @@ package com.sainttx.auction.util;
 
 import com.sainttx.auction.AuctionPlugin;
 import com.sainttx.auction.api.Auction;
+import com.sainttx.auction.api.reward.ItemReward;
 import mkremins.fanciful.FancyMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -83,7 +84,9 @@ public class TextUtil {
                     ChatColor style = getConfigMessage("itemColor.style").isEmpty() ? null : ChatColor.getByChar(getConfigMessage("itemColor.style"));
 
                     if (auction != null) {
-                        fancy.then(getItemName(auction.getItem())).color(color != null ? current = color : current).itemTooltip(auction.getItem());
+                        fancy.then(auction.getReward().getName())
+                                .color(color != null ? current = color : current)
+                                .itemTooltip(((ItemReward) auction.getReward()).getItem());
                         if (style != null && style.isFormat()) {
                             fancy.style(style);
                         }
@@ -135,7 +138,7 @@ public class TextUtil {
     /*
      * Gets an items name
      */
-    private static String getItemName(ItemStack item) {
+    public static String getItemName(ItemStack item) {
         short durability = item.getType().getMaxDurability() > 0 ? 0 : item.getDurability();
         String search = item.getType().toString() + "." + durability;
         String ret = itemsFile.getString(search);
@@ -164,10 +167,11 @@ public class TextUtil {
         String ret = message;
         if (auction != null) {
             int time = AuctionPlugin.getPlugin().getConfig().getInt("auctionSettings.antiSnipe.addSeconds", 5);
+            int amount = ((ItemReward) auction.getReward()).getItem().getAmount();
             ret = ret.replaceAll("%t", AuctionUtil.getFormattedTime(auction.getTimeLeft()))
                     .replaceAll("%b", NumberFormat.getInstance(Locale.ENGLISH).format(auction.getTopBid()))
                     .replaceAll("%p", auction.getOwnerName())
-                    .replaceAll("%a", Integer.toString(auction.getItem().getAmount()))
+                    .replaceAll("%a", Integer.toString(amount))
                     .replaceAll("%A", NumberFormat.getInstance(Locale.ENGLISH).format(auction.getAutowin()))
                     .replaceAll("%B", Integer.toString((int) auction.getBidIncrement()))
                     .replaceAll("%s", Integer.toString(time));

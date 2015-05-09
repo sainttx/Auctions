@@ -3,7 +3,7 @@ package com.sainttx.auction.structure;
 import com.sainttx.auction.AuctionPlugin;
 import com.sainttx.auction.api.Auction;
 import com.sainttx.auction.api.AuctionType;
-import org.bukkit.inventory.ItemStack;
+import com.sainttx.auction.api.reward.Reward;
 
 import java.util.UUID;
 
@@ -18,12 +18,12 @@ public class StandardAuction extends AbstractAuction {
      * @param plugin the auction plugin instance
      */
     private StandardAuction(AuctionPlugin plugin, UUID ownerUUID, String ownerName,
-                            double topBid, ItemStack item, double autowin, double bidIncrement, int timeLeft) {
+                            double topBid, Reward reward, double autowin, double bidIncrement, int timeLeft) {
         super(plugin, AuctionType.STANDARD);
         this.ownerUUID = ownerUUID;
         this.ownerName = ownerName;
         this.winningBid = topBid;
-        this.auctionedItem = item;
+        this.reward = reward;
         this.autowin = autowin;
         this.bidIncrement = bidIncrement;
         this.timeLeft = timeLeft;
@@ -42,7 +42,7 @@ public class StandardAuction extends AbstractAuction {
         public Auction build() {
             super.defaults();
             return new StandardAuction(this.plugin, this.ownerId, this.ownerName,
-                    this.bid, this.item, this.autowin, this.increment, this.time);
+                    this.bid, this.reward, this.autowin, this.increment, this.time);
         }
     }
 }

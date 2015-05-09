@@ -4,6 +4,8 @@ import com.sainttx.auction.api.Auction;
 import com.sainttx.auction.api.AuctionManager;
 import com.sainttx.auction.api.AuctionType;
 import com.sainttx.auction.api.AuctionsAPI;
+import com.sainttx.auction.api.reward.ItemReward;
+import com.sainttx.auction.api.reward.Reward;
 import com.sainttx.auction.command.AuctionSubCommand;
 import com.sainttx.auction.structure.module.AntiSnipeModule;
 import com.sainttx.auction.structure.module.AutoWinModule;
@@ -115,7 +117,8 @@ public class StartCommand extends AuctionSubCommand {
                         // The players item contains a piece of denied lore
                         manager.getMessageHandler().sendMessage("fail-start-banned-lore", player);
                     } else {
-                        builder.bidIncrement(increment).item(item).owner(player).topBid(price).autowin(autowin);
+                        Reward reward = new ItemReward(item);
+                        builder.bidIncrement(increment).reward(reward).owner(player).topBid(price).autowin(autowin);
                         Auction created = builder.build();
 
                         // check if we can add an autowin module

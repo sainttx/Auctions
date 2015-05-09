@@ -3,11 +3,11 @@ package com.sainttx.auction;
 import com.sainttx.auction.api.Auction;
 import com.sainttx.auction.api.AuctionsAPI;
 import com.sainttx.auction.api.messages.MessageHandler;
+import com.sainttx.auction.api.reward.Reward;
 import com.sainttx.auction.command.AuctionCommandHandler;
 import com.sainttx.auction.command.BidCommand;
 import com.sainttx.auction.structure.messages.GlobalChatHandler;
 import com.sainttx.auction.structure.messages.HerochatHandler;
-import com.sainttx.auction.util.AuctionUtil;
 import com.sainttx.auction.util.TextUtil;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
@@ -19,7 +19,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -41,7 +40,7 @@ public class AuctionPlugin extends JavaPlugin implements Listener {
      */
     private final File offlineFile = new File(getDataFolder(), "offline.yml");
     private YamlConfiguration offlineConfiguration;
-    private static HashMap<String, ItemStack> offlinePlayers = new HashMap<String, ItemStack>();
+    private HashMap<String, Reward> offlinePlayers = new HashMap<String, Reward>();
 
     /**
      * Returns the Auction Plugin instance
@@ -71,8 +70,8 @@ public class AuctionPlugin extends JavaPlugin implements Listener {
 
         // Load offline player items
         for (String string : offlineConfiguration.getKeys(false)) {
-            ItemStack is = offlineConfiguration.getItemStack(string);
-            offlinePlayers.put(string, is);
+            Reward reward = (Reward) offlineConfiguration.get(string);
+            offlinePlayers.put(string, reward);
         }
 
         // Commands
@@ -106,15 +105,15 @@ public class AuctionPlugin extends JavaPlugin implements Listener {
     }
 
     /**
-     * Saves a players auctioned item to file if the plugin was unable
+     * Saves a players auctioned reward to file if the plugin was unable
      * to return it
      *
-     * @param uuid The ID of a player
-     * @param is   The item that the player auctioned
+     * @param uuid   The ID of a player
+     * @param reward The reward that was auctioned
      */
-    public void saveOfflinePlayer(UUID uuid, ItemStack is) {
-        offlineConfiguration.set(uuid.toString(), is);
-        offlinePlayers.put(uuid.toString(), is);
+    public void saveOfflinePlayer(UUID uuid, Reward reward) {
+        offlineConfiguration.set(uuid.toString(), reward);
+        offlinePlayers.put(uuid.toString(), reward);
 
         try {
             offlineConfiguration.save(offlineFile);
@@ -178,9 +177,10 @@ public class AuctionPlugin extends JavaPlugin implements Listener {
      */
     public void onJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
-        ItemStack saved = offlinePlayers.get(player.getUniqueId().toString());
-        if (saved != null) {
-            AuctionUtil.giveItem(player, saved, "saved-item-return");
+        Reward reward = offlinePlayers.get(player.getUniqueId().toString());
+        if (reward != null) {
+            reward.giveItem(player);
+            AuctionsAPI.getAuctionManager().getMessageHandler().sendMessage("saved-item-return", player);
             offlinePlayers.remove(player.getUniqueId().toString());
             offlineConfiguration.set(player.getUniqueId().toString(), null);
 

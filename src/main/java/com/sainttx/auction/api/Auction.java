@@ -1,8 +1,8 @@
 package com.sainttx.auction.api;
 
 import com.sainttx.auction.api.module.AuctionModule;
+import com.sainttx.auction.api.reward.Reward;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 
 import java.util.Collection;
 import java.util.UUID;
@@ -41,11 +41,11 @@ public interface Auction {
     String getTopBidderName();
 
     /**
-     * Gets the item that is being auctioned
+     * Gets the reward that is being auctioned
      *
-     * @return the auctioned item
+     * @return this auctions reward
      */
-    ItemStack getItem();
+    Reward getReward();
 
     /**
      * Returns what type of auction this is
@@ -194,12 +194,12 @@ public interface Auction {
         Builder time(int time);
 
         /**
-         * Sets the auctioned item of the auction that will be created
+         * Sets the reward of the auction that will be created
          *
-         * @param item the new auctioned item
+         * @param reward the new auctioned reward
          * @return this builder instance
          */
-        Builder item(ItemStack item);
+        Builder reward(Reward reward);
 
         /**
          * Sets the starting top bid of the auction that will be created

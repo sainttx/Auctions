@@ -6,11 +6,10 @@ import com.sainttx.auction.api.AuctionManager;
 import com.sainttx.auction.api.AuctionType;
 import com.sainttx.auction.api.AuctionsAPI;
 import com.sainttx.auction.api.module.AuctionModule;
-import com.sainttx.auction.util.AuctionUtil;
+import com.sainttx.auction.api.reward.Reward;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.util.Collection;
@@ -37,7 +36,7 @@ public abstract class AbstractAuction implements Auction {
     protected double winningBid;
 
     // Auction information
-    protected ItemStack auctionedItem;
+    protected Reward reward;
     protected double bidIncrement;
     protected double autowin = -1;
     protected int timeLeft;
@@ -82,8 +81,8 @@ public abstract class AbstractAuction implements Auction {
     }
 
     @Override
-    public ItemStack getItem() {
-        return auctionedItem;
+    public Reward getReward() {
+        return reward;
     }
 
     @Override
@@ -159,9 +158,9 @@ public abstract class AbstractAuction implements Auction {
         // Return the item to the owner
         if (getOwner() == null) {
             plugin.getLogger().info("[Auction] Saving items of offline player " + getOwnerName() + " (uuid: " + getOwner() + ")");
-            plugin.saveOfflinePlayer(getOwner(), getItem());
+            plugin.saveOfflinePlayer(getOwner(), getReward());
         } else {
-            AuctionUtil.giveItem(owner, getItem()); // TODO: Something that indicates if items were dropped
+            getReward().giveItem(owner);
         }
 
         // Return the top bidders money
@@ -195,9 +194,9 @@ public abstract class AbstractAuction implements Auction {
             // Give the winner their items
             if (winner == null) {
                 plugin.getLogger().info("[Auction] Saving items of offline player " + getTopBidderName() + " (uuid: " + getTopBidder() + ")");
-                plugin.saveOfflinePlayer(getTopBidder(), getItem());
+                plugin.saveOfflinePlayer(getTopBidder(), getReward());
             } else {
-                AuctionUtil.giveItem(winner, getItem());
+                getReward().giveItem(winner);
                 manager.getMessageHandler().sendMessage(this, "auction-winner", winner);
             }
 
@@ -206,10 +205,11 @@ public abstract class AbstractAuction implements Auction {
             }
         } else {
             if (owner != null) {
-                AuctionUtil.giveItem(owner, getItem(), "no-bidder-return");
+                getReward().giveItem(owner);
+                manager.getMessageHandler().sendMessage("no-bidder-return", owner);
             } else {
                 plugin.getLogger().info("[Auction] Saving items of offline player " + getOwnerName() + " (uuid: " + getOwner() + ")");
-                plugin.saveOfflinePlayer(getOwner(), getItem());
+                plugin.saveOfflinePlayer(getOwner(), getReward());
             }
 
             if (broadcast) {
@@ -298,7 +298,7 @@ public abstract class AbstractAuction implements Auction {
         protected AuctionPlugin plugin;
         protected double increment = -1;
         protected int time = -1;
-        protected ItemStack item;
+        protected Reward reward;
         protected double bid = -1;
         protected double autowin = -1;
         protected UUID ownerId;
@@ -328,8 +328,8 @@ public abstract class AbstractAuction implements Auction {
         }
 
         @Override
-        public Builder item(ItemStack item) {
-            this.item = item;
+        public Builder reward(Reward reward) {
+            this.reward = reward;
             return this;
         }
 
@@ -349,8 +349,8 @@ public abstract class AbstractAuction implements Auction {
          * Initializes any default values that haven't been set
          */
         protected void defaults() {
-            if (item == null) {
-                throw new IllegalStateException("item cannot be null");
+            if (reward == null) {
+                throw new IllegalStateException("reward cannot be null");
             } else if (bid == -1) {
                 throw new IllegalStateException("bid hasn't been set");
             } else if (increment == -1) {
