@@ -124,7 +124,7 @@ public class AuctionManagerImpl implements AuctionManager {
 
     @Override
     public boolean canStartNewAuction() {
-        return canAuction;
+        return currentAuction != null && canAuction;
     }
 
     @Override
