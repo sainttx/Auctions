@@ -15,6 +15,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.List;
+
 /**
  * Created by Matthew on 09/05/2015.
  */
@@ -109,12 +111,10 @@ public class StartCommand extends AuctionSubCommand {
                     } else if (!plugin.getConfig().getBoolean("auctionSettings.canAuctionNamedItems", true)
                             && item.getItemMeta().hasDisplayName()) {
                         manager.getMessageHandler().sendMessage("fail-start-named-item", player); // cant auction named
-                    }
-                    /* else if (hasBannedLore()) { TODO
+                    }  else if (hasBannedLore(item)) {
                         // The players item contains a piece of denied lore
                         manager.getMessageHandler().sendMessage("fail-start-banned-lore", player);
-                    }*/
-                    else {
+                    } else {
                         builder.bidIncrement(increment).item(item).owner(player).topBid(price).autowin(autowin);
                         Auction created = builder.build();
 
@@ -138,6 +138,32 @@ public class StartCommand extends AuctionSubCommand {
                         } else {
                             manager.addAuctionToQueue(created);
                             manager.getMessageHandler().sendMessage("auction-queued", player);
+                        }
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Checks if an item has a banned piece of lore
+     *
+     * @param item the item
+     * @return true if the item has a banned piece of lore
+     */
+    public boolean hasBannedLore(ItemStack item) {
+        List<String> bannedLore = plugin.getConfig().getStringList("general.blockedLore");
+
+        if (bannedLore != null && !bannedLore.isEmpty()) {
+            if (item.getItemMeta().hasLore()) {
+                List<String> lore = item.getItemMeta().getLore();
+
+                for (String loreItem : lore) {
+                    for (String banned : bannedLore) {
+                        if (loreItem.contains(banned)) {
+                            return true;
                         }
                     }
                 }
