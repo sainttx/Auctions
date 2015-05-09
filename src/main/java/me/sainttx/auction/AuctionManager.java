@@ -395,8 +395,8 @@ public class AuctionManager {
             if (currentAuction.getTimeLeft() <= 3 && plugin.getConfig().getBoolean("enable-anti-snipe", true) && currentAuction.getAntiSniped() + 1 <= plugin.getConfig().getInt("anti-snipe-max-per-auction")) {
                 int time = plugin.getConfig().getInt("anti-snipe-add-seconds", 5);
                 if (time > 0) {
-                    String message = TextUtil.replace(currentAuction, TextUtil.getConfigMessage("anti-snipe-add"))
-                            .replace("%t", Integer.toString(time));
+                    String message = TextUtil.replace(currentAuction, TextUtil.getConfigMessage("anti-snipe-add")
+                            .replace("%t", Integer.toString(time)));
                     sendMessage(message, false);
                     currentAuction.addSeconds(time);
                     currentAuction.incrementAntiSniped();
