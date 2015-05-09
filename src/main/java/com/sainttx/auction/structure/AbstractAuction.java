@@ -111,6 +111,36 @@ public abstract class AbstractAuction implements Auction {
     }
 
     @Override
+    public void start() {
+        this.timerTask = plugin.getServer().getScheduler().runTaskTimer(plugin, new AuctionTimer(), 20L, 20L);
+        initializeBaseModules();
+        startMessages();
+        /* auctionTimer = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, new AuctionTimer(this), 0L, 20L);
+        plugin.getMessageHandler().sendMessage(this, "auction-start", false);
+        plugin.getMessageHandler().sendMessage(this, "auction-start-price", false);
+        plugin.getMessageHandler().sendMessage(this, "auction-start-increment", false);
+
+        if (autoWin != -1) {
+            plugin.getMessageHandler().sendMessage(this, "auction-start-autowin", false);
+        } */
+    }
+
+    /**
+     * Initializes any base modules (ie: anti snipe, auto win)
+     * that should be added to the auction
+     */
+    protected void initializeBaseModules() {
+
+    }
+
+    /**
+     * Dispatches messages for the start of the auction
+     */
+    protected void startMessages() {
+
+    }
+
+    @Override
     public void cancel() {
 
     }
@@ -147,6 +177,21 @@ public abstract class AbstractAuction implements Auction {
     @Override
     public boolean removeModule(AuctionModule module) {
         return this.modules.remove(module);
+    }
+
+    /**
+     * An implementation of an auction timer
+     */
+    public class AuctionTimer implements Auction.Timer {
+
+        @Override
+        public void run() {
+            timeLeft--;
+
+            if (timeLeft <= 0) {
+                end(true);
+            } // TODO: Check if the timer should broadcast
+        }
     }
 
     /**

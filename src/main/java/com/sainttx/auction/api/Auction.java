@@ -69,6 +69,11 @@ public interface Auction {
     void setTimeLeft(int time);
 
     /**
+     * Starts the auction
+     */
+    void start();
+
+    /**
      * Cancels this auction and returns the items to the owner
      */
     void cancel();
