@@ -1,5 +1,7 @@
 package com.sainttx.auction.command;
 
+import com.sainttx.auction.AuctionPlugin;
+import com.sainttx.auction.api.AuctionsAPI;
 import com.sainttx.auction.command.subcommand.BidCommand;
 import com.sainttx.auction.command.subcommand.*;
 import com.sainttx.auction.util.TextUtil;
@@ -30,12 +32,14 @@ public class AuctionCommandHandler implements CommandExecutor {
         if (args.length == 0 && !command.getName().equalsIgnoreCase("bid")) {
             TextUtil.sendMenu(sender);
         } else {
+            AuctionPlugin plugin = AuctionPlugin.getPlugin();
             String sub = command.getName().equalsIgnoreCase("bid") ? "bid" : args[0];
 
             for (AuctionSubCommand cmd : commands) {
                 if (cmd.canTrigger(sub)) {
                     if (!sender.hasPermission(cmd.getPermission())) {
-                        sender.sendMessage(TextUtil.getConfigMessage("insufficient-permissions")); // TODO: Change
+                        AuctionsAPI.getMessageHandler().sendMessage(
+                                plugin.getMessage("messages.error.insufficientPermissions"), sender);
                     } else {
                         cmd.onCommand(sender, command, label, args);
                     }

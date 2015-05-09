@@ -20,7 +20,7 @@ public class InfoCommand extends AuctionSubCommand {
         AuctionManager manager = AuctionsAPI.getAuctionManager();
 
         if (manager.getCurrentAuction() == null) {
-            manager.getMessageHandler().sendMessage("fail-info-no-auction", sender);
+            manager.getMessageHandler().sendMessage(plugin.getMessage("messages.error.noCurrentAuction"), sender);
         } else {
             manager.getMessageHandler().sendAuctionInformation(sender, manager.getCurrentAuction());
         }

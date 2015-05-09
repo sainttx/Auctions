@@ -47,6 +47,11 @@ public class ItemReward implements Reward {
     }
 
     @Override
+    public int getAmount() {
+        return item.getAmount();
+    }
+
+    @Override
     public Map<String, Object> serialize() {
         return item.serialize();
     }

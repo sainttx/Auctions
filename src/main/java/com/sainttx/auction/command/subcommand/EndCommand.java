@@ -21,11 +21,11 @@ public class EndCommand extends AuctionSubCommand {
         AuctionManager manager = AuctionsAPI.getAuctionManager();
 
         if (manager.getCurrentAuction() == null) {
-            manager.getMessageHandler().sendMessage("fail-end-no-auction", sender);
+            manager.getMessageHandler().sendMessage(plugin.getMessage("messages.error.noCurrentAuction"), sender);
         } else if (!sender.hasPermission("auction.end.bypass")
                 && sender instanceof Player
                 && !manager.getCurrentAuction().getOwner().equals(((Player) sender).getUniqueId())) {
-            manager.getMessageHandler().sendMessage("fail-end-not-your-auction", sender);
+            manager.getMessageHandler().sendMessage(plugin.getMessage("messages.error.notYourAuction"), sender);
         } else {
             manager.getCurrentAuction().end(true);
             manager.setCurrentAuction(null);

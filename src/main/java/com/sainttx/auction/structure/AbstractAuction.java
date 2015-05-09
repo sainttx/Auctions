@@ -5,6 +5,7 @@ import com.sainttx.auction.api.Auction;
 import com.sainttx.auction.api.AuctionManager;
 import com.sainttx.auction.api.AuctionType;
 import com.sainttx.auction.api.AuctionsAPI;
+import com.sainttx.auction.api.messages.MessageHandler;
 import com.sainttx.auction.api.module.AuctionModule;
 import com.sainttx.auction.api.reward.Reward;
 import org.bukkit.Bukkit;
@@ -139,9 +140,11 @@ public abstract class AbstractAuction implements Auction {
      */
     protected void startMessages() {
         AuctionManager manager = AuctionsAPI.getAuctionManager();
-        manager.getMessageHandler().broadcast(this, "auction-start", false);
-        manager.getMessageHandler().broadcast(this, "auction-start-price", false);
-        manager.getMessageHandler().broadcast(this, "auction-start-increment", false);
+        MessageHandler handler = manager.getMessageHandler();
+
+        handler.broadcast(this, plugin.getMessage("messages.auctionFormattable.start"), false);
+        handler.broadcast(this, plugin.getMessage("messages.auctionFormattable.price"), false);
+        handler.broadcast(this, plugin.getMessage("messages.auctionFormattable.increment"), false);
     }
 
     @Override
@@ -170,7 +173,8 @@ public abstract class AbstractAuction implements Auction {
         }
 
         // Broadcast
-        AuctionsAPI.getAuctionManager().getMessageHandler().broadcast(this, "auction-cancelled", false);
+        MessageHandler handler = AuctionsAPI.getAuctionManager().getMessageHandler();
+        handler.broadcast(this, plugin.getMessage("messages.auctionFormattable.cancelled"), false);
 
         // Set current auction to null
         AuctionsAPI.getAuctionManager().setCurrentAuction(null);
@@ -179,6 +183,7 @@ public abstract class AbstractAuction implements Auction {
     @Override
     public void end(boolean broadcast) {
         AuctionManager manager = AuctionsAPI.getAuctionManager();
+        MessageHandler handler = manager.getMessageHandler();
         Player owner = Bukkit.getPlayer(getOwner());
         timerTask.cancel();
         timerTask = null;
@@ -197,29 +202,36 @@ public abstract class AbstractAuction implements Auction {
                 plugin.saveOfflinePlayer(getTopBidder(), getReward());
             } else {
                 getReward().giveItem(winner);
-                manager.getMessageHandler().sendMessage(this, "auction-winner", winner);
+                handler.sendMessage(this, plugin.getMessage("messages.auctionFormattable.winner"), winner);
+            }
+
+            if (getTopBid() > 0) {
+                double winnings = getTopBid() - getTaxAmount();
+                plugin.getEconomy().depositPlayer(Bukkit.getOfflinePlayer(getOwner()), winnings);
+
+                if (owner != null) {
+                    if (getTax() > 0) {
+                        handler.sendMessage(this, plugin.getMessage("messages.auctionFormattable.endTax"), owner);
+                    }
+                    handler.sendMessage(this, plugin.getMessage("messages.auctionFormattable.endNotifyOwner"), owner);
+                }
             }
 
             if (broadcast) {
-                manager.getMessageHandler().broadcast(this, "auction-end-broadcast", false);
+                handler.broadcast(this, plugin.getMessage("messages.auctionFormattable.end"), false);
             }
         } else {
             if (owner != null) {
                 getReward().giveItem(owner);
-                manager.getMessageHandler().sendMessage("no-bidder-return", owner);
+                handler.sendMessage(plugin.getMessage("messages.ownerItemReturn"), owner);
             } else {
                 plugin.getLogger().info("[Auction] Saving items of offline player " + getOwnerName() + " (uuid: " + getOwner() + ")");
                 plugin.saveOfflinePlayer(getOwner(), getReward());
             }
 
             if (broadcast) {
-                manager.getMessageHandler().broadcast(this, "auction-end-no-bidders", false);
+                handler.broadcast(this, plugin.getMessage("messages.auctionFormattable.endNoBid"), false);
             }
-        }
-
-        // Give the owner their earnings TODO: Tax
-        if (getTopBid() > 0) {
-            plugin.getEconomy().depositPlayer(Bukkit.getOfflinePlayer(getOwner()), getTopBid());
         }
 
         // Set current auction to null
@@ -257,6 +269,11 @@ public abstract class AbstractAuction implements Auction {
     }
 
     @Override
+    public double getTaxAmount() {
+        return (getTopBid() * getTax()) / 100;
+    }
+
+    @Override
     public Collection<AuctionModule> getModules() {
         return new HashSet<AuctionModule>(modules);
     }
@@ -287,8 +304,9 @@ public abstract class AbstractAuction implements Auction {
             if (timeLeft <= 0) {
                 end(true);
             } else if (plugin.isBroadcastTime(timeLeft)) {
-                AuctionsAPI.getAuctionManager().getMessageHandler()
-                        .broadcast(AbstractAuction.this, "auction-timer", false);
+                MessageHandler handler = AuctionsAPI.getAuctionManager().getMessageHandler();
+                handler.broadcast(AbstractAuction.this,
+                        plugin.getMessage("messages.auctionFormattable.timer"), false);
             }
         }
     }

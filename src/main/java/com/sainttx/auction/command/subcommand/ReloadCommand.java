@@ -1,5 +1,6 @@
 package com.sainttx.auction.command.subcommand;
 
+import com.sainttx.auction.api.AuctionsAPI;
 import com.sainttx.auction.command.AuctionSubCommand;
 import com.sainttx.auction.util.TextUtil;
 import org.bukkit.command.Command;
@@ -16,7 +17,7 @@ public class ReloadCommand extends AuctionSubCommand {
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        sender.sendMessage(TextUtil.getConfigMessage("reload"));
+        AuctionsAPI.getMessageHandler().sendMessage(plugin.getMessage("messages.pluginReloaded"), sender);
         plugin.reloadConfig();
         plugin.loadConfig();
         TextUtil.load(plugin);

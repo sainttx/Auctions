@@ -13,36 +13,36 @@ public interface MessageHandler {
     /**
      * Broadcasts a message to all recipients in {@link #getRecipients()}
      *
-     * @param configurationPath the path to the message in messages.yml
-     * @param force             bypass auction ignore status
+     * @param message the message to send
+     * @param force   bypass auction ignore status
      */
-    void broadcast(String configurationPath, boolean force);
+    void broadcast(String message, boolean force);
 
     /**
      * Broadcasts a message to all recipients in {@link #getRecipients()}
      *
-     * @param auction           the auction to format the message with
-     * @param configurationPath the path to the message in messages.yml
-     * @param force             bypass auction ignore status
+     * @param auction the auction to format the message with
+     * @param message the message to send
+     * @param force   bypass auction ignore status
      */
-    void broadcast(Auction auction, String configurationPath, boolean force);
+    void broadcast(Auction auction, String message, boolean force);
 
     /**
      * Sends a message to a recipient
      *
-     * @param configurationPath the path to the message in messages.yml
-     * @param recipient         the receiver of the message
+     * @param message   the message to send
+     * @param recipient the receiver of the message
      */
-    void sendMessage(String configurationPath, CommandSender recipient);
+    void sendMessage(String message, CommandSender recipient);
 
     /**
      * Sends a message to a recipient
      *
-     * @param auction           the auction to format the message with
-     * @param configurationPath the path to the message in messages.yml
-     * @param recipient         the receiver of the message
+     * @param auction   the auction to format the message with
+     * @param message   the message to send
+     * @param recipient the receiver of the message
      */
-    void sendMessage(Auction auction, String configurationPath, CommandSender recipient);
+    void sendMessage(Auction auction, String message, CommandSender recipient);
 
     /**
      * Sends an auctions information to a recipient
@@ -76,6 +76,13 @@ public interface MessageHandler {
      * @return true if a player was actually removed
      */
     boolean removeIgnoring(UUID playerId);
+
+    /**
+     * Gets the message formatter
+     *
+     * @return the message formatter
+     */
+    MessageFormatter getFormatter();
 
     /**
      * Returns all recipients inside the channel

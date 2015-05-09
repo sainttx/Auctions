@@ -1,14 +1,18 @@
 package com.sainttx.auction.api.messages;
 
+import com.sainttx.auction.AuctionPlugin;
 import com.sainttx.auction.api.Auction;
 import com.sainttx.auction.api.AuctionsAPI;
 import com.sainttx.auction.util.TextUtil;
+import com.sainttx.auction.util.TimeUtil;
 import mkremins.fanciful.FancyMessage;
-import net.md_5.bungee.api.ChatColor;
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.text.NumberFormat;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Set;
 import java.util.UUID;
 
@@ -25,13 +29,13 @@ public abstract class AbstractMessageHandler implements MessageHandler {
     }
 
     @Override
-    public void broadcast(String configurationPath, boolean force) {
-        broadcast(null, configurationPath, force);
+    public void broadcast(String message, boolean force) {
+        broadcast(null, message, force);
     }
 
     @Override
-    public void broadcast(Auction auction, String configurationPath, boolean force) {
-        String message = TextUtil.replace(auction, TextUtil.getConfigMessage(configurationPath));
+    public void broadcast(Auction auction, String message, boolean force) {
+        message = formatter.format(message, auction);
         String[] messages = message.split("\n+");
 
         for (String msg : messages) {
@@ -48,13 +52,13 @@ public abstract class AbstractMessageHandler implements MessageHandler {
     }
 
     @Override
-    public void sendMessage(String configurationPath, CommandSender recipient) {
-        sendMessage(null, configurationPath, recipient);
+    public void sendMessage(String message, CommandSender recipient) {
+        sendMessage(null, message, recipient);
     }
 
     @Override
-    public void sendMessage(Auction auction, String configurationPath, CommandSender recipient) {
-        String message = TextUtil.replace(auction, TextUtil.getConfigMessage(configurationPath));
+    public void sendMessage(Auction auction, String message, CommandSender recipient) {
+        message = formatter.format(message, auction);
         String[] messages = message.split("\n+");
 
         for (String msg : messages) {
@@ -65,16 +69,18 @@ public abstract class AbstractMessageHandler implements MessageHandler {
 
     @Override
     public void sendAuctionInformation(CommandSender recipient, Auction auction) {
-        sendMessage(auction, "auction-info-message", recipient);
-        sendMessage(auction, "auction-start-increment", recipient);
+        AuctionPlugin plugin = AuctionPlugin.getPlugin();
+        MessageHandler handler = AuctionsAPI.getMessageHandler();
+        sendMessage(auction, plugin.getMessage("messages.auctionFormattable.info"), recipient);
+        sendMessage(auction, plugin.getMessage("messages.auctionFormattable.increment"), recipient);
 
         if (recipient instanceof Player) {
             Player player = (Player) recipient;
             int queuePosition = AuctionsAPI.getAuctionManager().getQueuePosition(player);
             if (queuePosition > 0) {
-                AuctionsAPI.getAuctionManager().getMessageHandler().sendMessage(TextUtil.replace(auction,
-                                TextUtil.getConfigMessage("auction-queue-position").replaceAll("%q", Integer.toString(queuePosition))),
-                        player);
+                String message = plugin.getMessage("messages.auctionFormattable.queuePosition")
+                        .replace("[queuepos]", Integer.toString(queuePosition));
+                handler.sendMessage(auction, message, player);
             }
         }
     }
@@ -95,6 +101,11 @@ public abstract class AbstractMessageHandler implements MessageHandler {
     }
 
     @Override
+    public MessageFormatter getFormatter() {
+        return formatter;
+    }
+
+    @Override
     public abstract Iterable<? extends CommandSender> getRecipients();
 
     /**
@@ -109,7 +120,32 @@ public abstract class AbstractMessageHandler implements MessageHandler {
 
         @Override
         public String format(String message, Auction auction) {
+            if (message == null) {
+                throw new IllegalArgumentException("message cannot be null");
+            }
+            if (auction != null) {
+                message = message.replace("[itemamount]", Integer.toString(auction.getReward().getAmount()));
+                message = message.replace("[time]", TimeUtil.getFormattedTime(auction.getTimeLeft()));
+                message = message.replace("[autowin]", formatDouble(auction.getAutowin()));
+                message = message.replace("[ownername]", auction.getOwnerName() == null ? "Console" : auction.getOwnerName());
+                message = message.replace("[topbiddername]", auction.getTopBidderName() == null ? "Console" : auction.getTopBidderName());
+                message = message.replace("[increment]", formatDouble(auction.getBidIncrement()));
+                message = message.replace("[topbid]", formatDouble(auction.getTopBid()));
+                message = message.replace("[taxpercent]", formatDouble(auction.getTax()));
+                message = message.replace("[taxamount]", formatDouble(auction.getTaxAmount()));
+                message = message.replace("[winnings]", formatDouble(auction.getTopBid() - auction.getTaxAmount()));
+            }
             return ChatColor.translateAlternateColorCodes('&', message);
+        }
+
+        /*
+         * A helper method that formats numbers
+         */
+        private String formatDouble(double d) {
+            NumberFormat format = NumberFormat.getInstance(Locale.ENGLISH);
+            format.setMaximumFractionDigits(2);
+            format.setMinimumFractionDigits(2);
+            return format.format(d);
         }
     }
 }

@@ -104,6 +104,16 @@ public class AuctionPlugin extends JavaPlugin {
     }
 
     /**
+     * Gets a message from configuration
+     *
+     * @param path the path to the message
+     * @return the message at the path
+     */
+    public String getMessage(String path) {
+        return getConfig().getString(path);
+    }
+
+    /**
      * Saves a players auctioned reward to file if the plugin was unable
      * to return it
      *

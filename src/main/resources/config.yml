@@ -154,3 +154,94 @@ general:
   # of time left in the auction. The format of this list can
   # be specified as it currently is ("["#", "#"]") or as above.
   broadcastTimes: ["60", "30", "10", "3", "2", "1"]
+
+# Every message that is sent from the plugin is found in this section.
+# The message keys are made to be as intuitive as possible so that
+# you don't have much difficulty with figuring out what each message does.
+# All messages are formatted for chat colors regardless if there are
+# placeholder present or not.
+#
+# Note: There are currently some exceptions to the 'messages.auctionFormattable'
+#       section, these are as follows:
+# -
+messages:
+  # All messages under 'auctionFormattable' mean that messages sent
+  # that are from here are first parsed with the current active auction.
+  # There are various placeholders that you can insert into these messages
+  # that will be formatted will information from the current auctions
+  # information. These placeholders are as follows:
+  #
+  # [snipetime] only works with antiSnipeAdd
+  # [queuepos] only works with queuePosition
+  auctionFormattable:
+    itemFormat: "&c[itemName]"
+    timer: "&6The auction for &c[itemamount]x [item] &6has &c[time] &6remaining"
+    increment: "&6The &cbidding increment &6has been set to &c$[increment]"
+    info: "&c[ownername] &6is auctioning &c[itemamount] [item] &6for &c$[topbid]"
+    autowin:  "&6The host has set the autowin amount to &c$[autowin]"
+    start: "&c[ownername] &6started an auction for &c[itemamount] [item]"
+    price: "&6The &cauction &6begins at &c$[topbid] &6and will last for &c[time]"
+    cancelled: "&6The auction for [item] &6was &ccancelled"
+    endByAutowin: "&6The auction for [item] ended with &c[topbiddername] &6bidding &c$[topbid] &c&n(autowin)"
+    endNoBid: "&6The auction for &c[itemamount] [item] &6ended with no bids"
+    end: "&c[topbiddername] &6won &c[itemamount] [item] &6with a bid of &c$[topbid]"
+    endNotifyOwner: "&6Your auction has ended. Received &c$[winnings]"
+    endTax: "&6A tax of &c[taxpercent]% ($[taxamount]) &6was charged"
+    winner: "&6You won &c[itemamount] [item] &6with a bid of &c$[topbid]"
+    bid: "&c[topbidder] &6has bid &c$[topbid] &6on &c[itemamount] [item]"
+    antiSnipeAdd: "&6ANTI-SNIPE &e- &c[snipetime] &6seconds have been added to the auction!"
+    queuePosition: "&6Your auction is &c#[queuepos] &6in the auction queue"
+  # Error messages are messages sent to players whenever they have failed
+  # to define something correctly in their commands, or in other instances
+  # like if they are lacking permissions to a command, etc.
+  error:
+    insufficientPermissions: "&cYou don't have enough permissions to use this command"
+    invalidItemType: "&cYou are not allowed to auction this item"
+    insufficientBalance: "&cYou don't have enough money to do that"
+    noCurrentAuction: "&cThere is no active auction at this time"
+    bidOnOwnAuction: "&cYou cannot bid on your own auction"
+    alreadyTopBidder: "&cYou are already the top bidder"
+    bidTooLow: "&cYour bid was too low"
+    bidSyntax: "&cUsage: /auction bid <amount>"
+    invalidNumberEntered: "&cPlease enter a valid number"
+    notYourAuction: "&cYou aren't able to modify other players auctions"
+    currentlyIgnoring: "&cYou can't do that while ignoring auctions"
+    notEnoughOfItem: "&cYou don't have enough of that item"
+    startSyntax: "&cUsage: /auction start <amount> <price> [increment] [autowin]"
+    creativeNotAllowed: "&cYou cannot start auctions while in creative"
+    autowinDisabled: "&cPlacing autowin amounts on auctions has been disabled"
+    auctionsDisabled: "&cAuctions are currently disabled"
+    startPriceTooHigh: "&cYour starting price is too high"
+    startPriceTooLow: "&cYour starting price is too low"
+    alreadyHaveAuction: "&cYou already have an ongoing auction"
+    alreadyInAuctionQueue: "&cYou already have an auction placed in the queue"
+    auctionQueueFull: "&cThe auction queue is currently full"
+    cantCancelNow: "&cYou can't cancel the auction at this point"
+    cantAuctionDamagedItems: "&cYou can't auction damaged items!"
+    invalidBidIncrement: "&cYour bid increment was either too high or too low"
+    cantUseCommandWhileAuctioning: "&cYou can't use this command while auctioning an item"
+    cantUseCommandWhileQueued: "&cYou can't use this command while having an auction queued"
+    cantUseCommandWhileTopBidder: "&cYou can't use this command while being the top bidder on an auction"
+    cantAuctionNamedItems: "&cYou can't auction off items that have a name"
+    cantAuctionBannedLore: "&cYou can't auction off this item as it contains banned lore"
+    cantUsePluginInWorld: "&cYou can't use the auctions plugin in this world"
+    cantTeleportToDisabledWorld: "&cYou can't teleport into disabled auction worlds while auctioning or participating in an auction"
+  # All other messages are just standard messages that are sent to
+  # players. These messages have no placeholders available.
+  pluginReloaded: "&aThe auctions plugin has been reloaded"
+  nowIgnoring: "&6You are now &cignoring &6auction messages"
+  noLongerIgnoring: "&6You are no longer ignoring auction messages"
+  notEnoughRoom: "&6You didn't have enough room in your inventory so some of your winnings were dropped"
+  savedItemReturn: "&6Your auction winnings were saved and have been returned"
+  ownerItemReturn: "&6Your items were refunded as nobody bid on your auction"
+  auctionsDisabled: "&cAuctions are now disabled, only those with permission can start auctions"
+  auctionsEnabled: "&6Auctions have been re-enabled"
+  auctionPlacedInQueue: "&6Your auction has been queued"
+  helpMenu:
+  - "&6&m----&6[ &eAuction Help Menu &6]&m-----"
+  - "&e/auction info &7- &fDisplays current auction information"
+  - "&e/auction bid &7<amount> &e- &fBid on an auction"
+  - "&e/auction start &7<amount> <price> [increment] [autowin] &7- &fStart an auction"
+  - "&e/auction end &7- &fEnd your current auction"
+  - "&e/auction ignore &7- &fIgnore plugin messages"
+  - "&e/auction reload &7- &fReload auction configuration"

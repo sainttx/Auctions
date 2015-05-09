@@ -5,6 +5,7 @@ import com.sainttx.auction.api.Auction;
 import com.sainttx.auction.api.AuctionManager;
 import com.sainttx.auction.api.AuctionsAPI;
 import com.sainttx.auction.api.module.AuctionModule;
+import com.sainttx.auction.util.TimeUtil;
 
 /**
  * A module that ends adds time to an auction iff the auction
@@ -38,6 +39,8 @@ public class AntiSnipeModule implements AuctionModule {
         int secondsToAdd = plugin.getConfig().getInt("auctionSettings.antiSnipe.addSeconds", 5);
 
         auction.setTimeLeft(auction.getTimeLeft() + secondsToAdd);
-        manager.getMessageHandler().broadcast(auction, "anti-snipe-add", false); // TODO: The time will be wrong until we introduce valid placeholders
+        String message = plugin.getMessage("messages.auctionFormattable.antiSnipeAdd")
+                .replace("[snipetime]", TimeUtil.getFormattedTime(secondsToAdd));
+        manager.getMessageHandler().broadcast(auction, message, false); // TODO: The time will be wrong until we introduce valid placeholders
     }
 }

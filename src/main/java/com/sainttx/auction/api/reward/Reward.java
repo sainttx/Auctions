@@ -19,4 +19,11 @@ public interface Reward extends ConfigurationSerializable {
      * Returns the name or description of this reward for auction message formatting
      */
     String getName();
+
+    /**
+     * Returns the amount or multiplier of the reward
+     *
+     * @return the 'amount' present in the reward
+     */
+    int getAmount();
 }

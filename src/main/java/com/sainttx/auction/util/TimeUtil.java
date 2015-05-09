@@ -1,5 +1,7 @@
 package com.sainttx.auction.util;
 
+import com.sainttx.auction.AuctionPlugin;
+
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
@@ -70,5 +72,16 @@ public class TimeUtil {
             sb.setLength(sb.length() - 2);
         }
         return sb.toString().trim();
+    }
+
+    /**
+     * Return a String representation of time left
+     *
+     * @param timeLeft Time left in seconds
+     * @return String the time left
+     */
+    public static String getFormattedTime(int timeLeft) {
+        return formatDateDiff(System.currentTimeMillis() + (timeLeft * 1000L),
+                AuctionPlugin.getPlugin().getConfig().getBoolean("general.shortenedTimeFormat", false));
     }
 }

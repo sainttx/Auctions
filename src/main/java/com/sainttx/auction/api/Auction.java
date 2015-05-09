@@ -109,6 +109,14 @@ public interface Auction {
     double getTax();
 
     /**
+     * Gets the current tax impact on the top bid
+     *
+     * @return the current dollar amount that will be removed
+     * from the winnings as a result of tax
+     */
+    double getTaxAmount();
+
+    /**
      * Gets the current top bid in this auction
      *
      * @return the top bid

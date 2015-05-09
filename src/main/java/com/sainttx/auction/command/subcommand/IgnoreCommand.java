@@ -2,6 +2,7 @@ package com.sainttx.auction.command.subcommand;
 
 import com.sainttx.auction.api.AuctionManager;
 import com.sainttx.auction.api.AuctionsAPI;
+import com.sainttx.auction.api.messages.MessageHandler;
 import com.sainttx.auction.command.AuctionSubCommand;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -22,14 +23,15 @@ public class IgnoreCommand extends AuctionSubCommand {
             sender.sendMessage("Only players can use this sub command");
         } else {
             AuctionManager manager = AuctionsAPI.getAuctionManager();
+            MessageHandler handler = manager.getMessageHandler();
             Player player = (Player) sender;
 
             if (manager.getMessageHandler().isIgnoring(player.getUniqueId())) {
-                manager.getMessageHandler().removeIgnoring(player.getUniqueId());
-                manager.getMessageHandler().sendMessage("ignoring-off", player);
+                handler.removeIgnoring(player.getUniqueId());
+                handler.sendMessage(plugin.getMessage("messages.noLongerIgnoring"), player);
             } else {
-                manager.getMessageHandler().addIgnoring(player.getUniqueId());
-                manager.getMessageHandler().sendMessage("ignoring-on", player);
+                handler.addIgnoring(player.getUniqueId());
+                handler.sendMessage(plugin.getMessage("messages.nowIgnoring"), player);
             }
         }
         return false;

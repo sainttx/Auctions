@@ -4,6 +4,7 @@ import com.sainttx.auction.api.Auction;
 import com.sainttx.auction.api.AuctionManager;
 import com.sainttx.auction.api.AuctionType;
 import com.sainttx.auction.api.AuctionsAPI;
+import com.sainttx.auction.api.messages.MessageHandler;
 import com.sainttx.auction.api.reward.ItemReward;
 import com.sainttx.auction.api.reward.Reward;
 import com.sainttx.auction.command.AuctionSubCommand;
@@ -31,23 +32,24 @@ public class StartCommand extends AuctionSubCommand {
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         AuctionManager manager = AuctionsAPI.getAuctionManager();
+        MessageHandler handler = manager.getMessageHandler();
 
         if (!(sender instanceof Player)) {
             sender.sendMessage("Only players can start auctions");
         } else if (args.length < 3) {
-            manager.getMessageHandler().sendMessage("fail-start-syntax", sender);
+            handler.sendMessage(plugin.getMessage("messages.error.startSyntax"), sender);
         } else if (manager.isAuctioningDisabled() && !sender.hasPermission("auction.bypass.disable")) {
-            manager.getMessageHandler().sendMessage("fail-start-auction-disabled", sender);
+            handler.sendMessage(plugin.getMessage("messages.error.auctionsDisabled"), sender);
         } else {
             Player player = (Player) sender;
             double fee = plugin.getConfig().getDouble("auctionSettings.startFee", 0);
 
             if (fee > plugin.getEconomy().getBalance(player)) {
-                manager.getMessageHandler().sendMessage("fail-start-no-funds", player); // not enough funds
+                handler.sendMessage(plugin.getMessage("messages.error.insufficientBalance"), player); // not enough funds
             } else if (player.getGameMode() == GameMode.CREATIVE
                     && !plugin.getConfig().getBoolean("auctionSettings.canAuctionInCreative", false)
                     && !player.hasPermission("auction.creative")) {
-                manager.getMessageHandler().sendMessage("fail-start-creative", player);
+                handler.sendMessage(plugin.getMessage("messages.error.creativeNotAllowed"), player);
             } else {
                 Auction.Builder builder;
 
@@ -73,49 +75,49 @@ public class StartCommand extends AuctionSubCommand {
                         autowin = Double.parseDouble(args[4]);
                     }
                 } catch (NumberFormatException ex) {
-                    manager.getMessageHandler().sendMessage("fail-number-format", sender);
+                    handler.sendMessage(plugin.getMessage("messages.error.invalidNumberEntered"), sender);
                     return true;
                 }
 
                 if (amount < 0) {
-                    manager.getMessageHandler().sendMessage("fail-start-negative-number", player); // negative amount
+                    handler.sendMessage(plugin.getMessage("messages.error.invalidNumberEntered"), player); // negative amount
                 } else if (amount > 2304) {
-                    manager.getMessageHandler().sendMessage("fail-start-not-enough-items", player); // not enough
+                    handler.sendMessage(plugin.getMessage("messages.error.notEnoughOfItem"), player); // not enough
                 } else if (Double.isInfinite(price) || Double.isNaN(price) || Double.isInfinite(autowin) || Double.isNaN(autowin)) {
-                    manager.getMessageHandler().sendMessage("fail-number-format", sender); // invalid number
+                    handler.sendMessage(plugin.getMessage("messages.error.invalidNumberEntered"), sender); // invalid number
                 } else if (price < plugin.getConfig().getDouble("auctionSettings.minimumStartPrice", 0)) {
-                    manager.getMessageHandler().sendMessage("fail-start-min", player); // starting price too low
+                    handler.sendMessage(plugin.getMessage("messages.error.startPriceTooLow"), player); // starting price too low
                 } else if (price > plugin.getConfig().getDouble("auctionSettings.maximumStartPrice", 99999)) {
-                    manager.getMessageHandler().sendMessage("fail-start-max", player); // starting price too high
+                    handler.sendMessage(plugin.getMessage("messages.error.startPriceTooHigh"), player); // starting price too high
                 } else if (manager.getQueue().size() >= plugin.getConfig().getInt("auctionSettings.auctionQueueLimit", 3)) {
-                    manager.getMessageHandler().sendMessage("fail-start-queue-full", player); // queue full
+                    handler.sendMessage(plugin.getMessage("messages.error.auctionQueueFull"), player); // queue full
                 } else if (increment != -1 && (increment < plugin.getConfig().getInt("auctionSettings.minimumBidIncrement", 10)
                         || increment > plugin.getConfig().getInt("auctionSettings.maximumBidIncrement", 9999))) {
-                    manager.getMessageHandler().sendMessage("fail-start-bid-increment", player);
+                    handler.sendMessage(plugin.getMessage("messages.error.invalidBidIncrement"), player);
                 } else if (autowin != -1 && !plugin.getConfig().getBoolean("auctionSettings.canSpecifyAutowin", true)) {
-                    manager.getMessageHandler().sendMessage("fail-start-no-autowin", player);
+                    handler.sendMessage(plugin.getMessage("messages.error.autowinDisabled"), player);
                 } else if (manager.hasActiveAuction(player)) {
-                    manager.getMessageHandler().sendMessage("fail-start-already-auctioning", player);
+                    handler.sendMessage(plugin.getMessage("messages.error.alreadyHaveAuction"), player);
                 } else if (manager.hasAuctionInQueue(player)) {
-                    manager.getMessageHandler().sendMessage("fail-start-already-queued", player);
+                    handler.sendMessage(plugin.getMessage("messages.error.alreadyInAuctionQueue"), player);
                 } else {
                     ItemStack item = player.getItemInHand().clone();
 
                     if (item == null || item.getType() == Material.AIR) {
-                        manager.getMessageHandler().sendMessage("fail-start-hand-empty", player); // auctioned nothing
+                        handler.sendMessage(plugin.getMessage("messages.error.invalidItemType"), player); // auctioned nothing
                     } else if (manager.isBannedMaterial(item.getType())) {
-                        manager.getMessageHandler().sendMessage("unsupported-item", player); // item type not allowed
+                        handler.sendMessage(plugin.getMessage("messages.error.invalidItemType"), player); // item type not allowed
                     } else if (item.getType().getMaxDurability() > 0 && item.getDurability() > 0
                             && !plugin.getConfig().getBoolean("auctionSettings.canAuctionDamagedItems", true)) {
-                        manager.getMessageHandler().sendMessage("fail-start-damaged-item", player); // can't auction damaged
+                        handler.sendMessage(plugin.getMessage("messages.error.cantAuctionDamagedItems"), player); // can't auction damaged
                     } else if (!AuctionUtil.searchInventory(player.getInventory(), item, amount)) {
-                        manager.getMessageHandler().sendMessage("fail-start-not-enough-items", player);
+                        handler.sendMessage(plugin.getMessage("messages.error.notEnoughOfItem"), player);
                     } else if (!plugin.getConfig().getBoolean("auctionSettings.canAuctionNamedItems", true)
                             && item.getItemMeta().hasDisplayName()) {
-                        manager.getMessageHandler().sendMessage("fail-start-named-item", player); // cant auction named
+                        handler.sendMessage(plugin.getMessage("messages.error.cantAuctionNamedItems"), player); // cant auction named
                     }  else if (hasBannedLore(item)) {
                         // The players item contains a piece of denied lore
-                        manager.getMessageHandler().sendMessage("fail-start-banned-lore", player);
+                        handler.sendMessage(plugin.getMessage("messages.error.cantAuctionBannedLore"), player);
                     } else {
                         item.setAmount(amount);
                         Reward reward = new ItemReward(item);
@@ -125,7 +127,8 @@ public class StartCommand extends AuctionSubCommand {
                         // check if we can add an autowin module
                         if (autowin != -1) {
                             created.addModule(new AutoWinModule(created, autowin));
-                            manager.getMessageHandler().broadcast(created, "auction-start-autowin", false);
+                            handler.broadcast(created,
+                                    plugin.getMessage("messages.auctionFormattable.autowin"), false);
                         }
                         // check if we can add an anti snipe module
                         if (plugin.getConfig().getBoolean("auctionSettings.antiSnipe.enabled", true)) {
@@ -141,7 +144,7 @@ public class StartCommand extends AuctionSubCommand {
                             manager.setCanStartNewAuction(false);
                         } else {
                             manager.addAuctionToQueue(created);
-                            manager.getMessageHandler().sendMessage("auction-queued", player);
+                            handler.sendMessage(plugin.getMessage("message.auctionPlacedInQueue"), player);
                         }
                     }
                 }

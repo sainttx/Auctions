@@ -2,6 +2,7 @@ package com.sainttx.auction.api;
 
 import com.sainttx.auction.AuctionManagerImpl;
 import com.sainttx.auction.AuctionPlugin;
+import com.sainttx.auction.api.messages.MessageHandler;
 import com.sainttx.auction.structure.SilentAuction;
 import com.sainttx.auction.structure.StandardAuction;
 
@@ -17,6 +18,15 @@ public class AuctionsAPI {
      */
     public static AuctionManager getAuctionManager() {
         return AuctionManagerImpl.getAuctionManager();
+    }
+
+    /**
+     * Gets the MessageHandler of {@link #getAuctionManager()}
+     *
+     * @return the message handler
+     */
+    public static MessageHandler getMessageHandler() {
+        return getAuctionManager().getMessageHandler();
     }
 
     /**

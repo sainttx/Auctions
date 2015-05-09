@@ -2,6 +2,7 @@ package com.sainttx.auction.command.subcommand;
 
 import com.sainttx.auction.api.AuctionManager;
 import com.sainttx.auction.api.AuctionsAPI;
+import com.sainttx.auction.api.messages.MessageHandler;
 import com.sainttx.auction.command.AuctionSubCommand;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -19,22 +20,23 @@ public class CancelCommand extends AuctionSubCommand {
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         AuctionManager manager = AuctionsAPI.getAuctionManager();
+        MessageHandler handler = manager.getMessageHandler();
 
         if (manager.getCurrentAuction() == null) {
             // No auction
-            manager.getMessageHandler().sendMessage("fail-cancel-no-auction", sender);
+            handler.sendMessage(plugin.getMessage("messages.error.noCurrentAuction"), sender);
         } else if (sender instanceof Player && manager.getMessageHandler().isIgnoring(((Player) sender).getUniqueId())) {
             // Ignoring
-            manager.getMessageHandler().sendMessage("fail-start-ignoring", sender);
+            handler.sendMessage(plugin.getMessage("messages.error.currentlyIgnoring"), sender);
         } else if (manager.getCurrentAuction().getTimeLeft() < plugin.getConfig().getInt("auctionSettings.mustCancelBefore", 15)
                 && !sender.hasPermission("auction.cancel.bypass")) {
             // Can't cancel
-            manager.getMessageHandler().sendMessage("fail-cancel-time", sender);
+            handler.sendMessage(plugin.getMessage("messages.error.cantCancelNow"), sender);
         } else if (sender instanceof Player
                 && !manager.getCurrentAuction().getOwner().equals(((Player) sender).getUniqueId())
                 && !sender.hasPermission("auction.cancel.bypass")) {
             // Can't cancel other peoples auction
-            manager.getMessageHandler().sendMessage("fail-cancel-not-yours", sender);
+            handler.sendMessage(plugin.getMessage("messages.error.notYourAuction"), sender);
         } else {
             manager.getCurrentAuction().cancel();
         }

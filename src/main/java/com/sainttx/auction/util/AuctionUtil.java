@@ -1,6 +1,5 @@
 package com.sainttx.auction.util;
 
-import com.sainttx.auction.AuctionPlugin;
 import com.sainttx.auction.api.AuctionsAPI;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -57,7 +56,7 @@ public class AuctionUtil {
             AuctionsAPI.getAuctionManager().getMessageHandler().sendMessage(messages[0], player);
         }
         if (dropped) {
-            AuctionsAPI.getAuctionManager().getMessageHandler().sendMessage("items-no-space", player);
+            AuctionsAPI.getAuctionManager().getMessageHandler().sendMessage("messages.notEnoughRoom", player);
         }
     }
 
@@ -105,16 +104,5 @@ public class AuctionUtil {
             return true;
         }
         return false;
-    }
-
-    /**
-     * Return a String representation of time left
-     *
-     * @param timeLeft Time left in seconds
-     * @return String the time left
-     */
-    public static String getFormattedTime(int timeLeft) {
-        return TimeUtil.formatDateDiff(System.currentTimeMillis() + (timeLeft * 1000L),
-                AuctionPlugin.getPlugin().getConfig().getBoolean("general.shortenedTimeFormat", false));
     }
 }
