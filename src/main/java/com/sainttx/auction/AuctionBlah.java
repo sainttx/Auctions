@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class Auction {
+public class AuctionBlah {
 
     /*
      * The auction plugin
@@ -60,7 +60,7 @@ public class Auction {
      *                   If the player auctioned a banned item,
      *                   If the player does not have enough items to auction
      */
-    public Auction(AuctionPlugin plugin, Player player, int numItems, double startingAmount, int bidIncrement, double autoWin) throws Exception {
+    public AuctionBlah(AuctionPlugin plugin, Player player, int numItems, double startingAmount, int bidIncrement, double autoWin) throws Exception {
         this.plugin = plugin;
         this.ownerName = player.getName();
         this.owner = player.getUniqueId();
@@ -202,7 +202,7 @@ public class Auction {
         plugin.getMessageHandler().sendMessage(this, "auction-cancelled", false);
 
         // Set the current auction to null
-        AuctionManager.getAuctionManager().killAuction();
+        AuctionManagerImpl.getAuctionManager().killAuction();
     }
 
     /**
@@ -262,7 +262,7 @@ public class Auction {
         }
 
         // Set the current auction to null
-        AuctionManager.getAuctionManager().killAuction();
+        AuctionManagerImpl.getAuctionManager().killAuction();
     }
 
     /*
@@ -274,11 +274,11 @@ public class Auction {
             Bukkit.getScheduler().scheduleSyncDelayedTask(AuctionPlugin.getPlugin(), new Runnable() {
                 @Override
                 public void run() {
-                    AuctionManager.getAuctionManager().setCanAuction(true);
+                    AuctionManagerImpl.getAuctionManager().setCanAuction(true);
 
                     // Start the next auction in the queue
-                    if (AuctionManager.getCurrentAuction() == null) {
-                        AuctionManager.getAuctionManager().startNextAuction();
+                    if (AuctionManagerImpl.getCurrentAuction() == null) {
+                        AuctionManagerImpl.getAuctionManager().startNextAuction();
                     }
                 }
             }, plugin.getConfig().getLong("auctionSettings.delayBetween", 5L) * 20L);
@@ -293,12 +293,12 @@ public class Auction {
         /*
          * The Auction to count down
          */
-        private Auction auction;
+        private AuctionBlah auction;
 
         /**
          * Create an Auction timer
          */
-        public AuctionTimer(Auction auction) {
+        public AuctionTimer(AuctionBlah auction) {
             this.auction = auction;
         }
 
@@ -324,7 +324,7 @@ public class Auction {
         if (item == null || item.getType() == Material.AIR) {
             // They auctioned off nothing
             throw new Exception("fail-start-hand-empty");
-        } else if (AuctionManager.getBannedMaterials().contains(item.getType())) {
+        } else if (AuctionManagerImpl.getBannedMaterials().contains(item.getType())) {
             // The item isn't allowed
             throw new Exception("unsupported-item");
         } else if (item.getType().getMaxDurability() > 0 && item.getDurability() > 0

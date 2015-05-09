@@ -33,8 +33,10 @@ public interface AuctionManager {
 
     /**
      * Adds an auction to the queue
+     *
+     * @param auction the auction to add
      */
-    void addAuctionToQueue();
+    void addAuctionToQueue(Auction auction);
 
     /**
      * Gets the auction queue position of a player. Returns -1 if
@@ -67,14 +69,14 @@ public interface AuctionManager {
      *
      * @return the disabled status of the plugin
      */
-    boolean isPluginDisabled();
+    boolean isAuctioningDisabled();
 
     /**
      * Sets the disabled status of the plugin
      *
      * @param disabled the new disabled status
      */
-    void setPluginDisabled(boolean disabled);
+    void setAuctioningDisabled(boolean disabled);
 
     /**
      * Starts the next auction in the queue

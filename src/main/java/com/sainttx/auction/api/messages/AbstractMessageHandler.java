@@ -1,5 +1,6 @@
 package com.sainttx.auction.api.messages;
 
+import com.sainttx.auction.AuctionBlah;
 import com.sainttx.auction.util.TextUtil;
 import mkremins.fanciful.FancyMessage;
 import org.bukkit.entity.Player;
@@ -26,7 +27,7 @@ public abstract class AbstractMessageHandler implements MessageHandler {
      * @param configurationPath the path to the message in messages.yml
      * @param force             bypass auction ignore status
      */
-    public void sendMessage(com.sainttx.auction.Auction auction, String configurationPath, boolean force) {
+    public void sendMessage(AuctionBlah auction, String configurationPath, boolean force) {
         String message = TextUtil.replace(auction, TextUtil.getConfigMessage(configurationPath));
         String[] messages = message.split("\n+");
 
@@ -58,7 +59,7 @@ public abstract class AbstractMessageHandler implements MessageHandler {
      * @param configurationPath the path to the message in messages.yml
      * @param player            the receiver of the message
      */
-    public void sendMessage(com.sainttx.auction.Auction auction, String configurationPath, Player player) {
+    public void sendMessage(AuctionBlah auction, String configurationPath, Player player) {
         String message = TextUtil.replace(auction, TextUtil.getConfigMessage(configurationPath));
         String[] messages = message.split("\n+");
 

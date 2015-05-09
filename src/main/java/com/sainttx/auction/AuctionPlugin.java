@@ -87,13 +87,13 @@ public class AuctionPlugin extends JavaPlugin implements Listener {
     @Override
     public void onDisable() {
         TextUtil.save();
-        if (AuctionManager.getCurrentAuction() != null) {
-            AuctionManager.getCurrentAuction().cancel();
+        if (AuctionManagerImpl.getCurrentAuction() != null) {
+            AuctionManagerImpl.getCurrentAuction().cancel();
         }
 
         // End all auctions that are queued
-        for (Iterator<Auction> auctionIterator = AuctionManager.getAuctionManager().getAuctionQueue().iterator() ; auctionIterator.hasNext() ; ) {
-            Auction auction = auctionIterator.next();
+        for (Iterator<AuctionBlah> auctionIterator = AuctionManagerImpl.getAuctionManager().getAuctionQueue().iterator() ; auctionIterator.hasNext() ; ) {
+            AuctionBlah auction = auctionIterator.next();
             auction.cancel();
             auctionIterator.remove();
         }
@@ -179,11 +179,11 @@ public class AuctionPlugin extends JavaPlugin implements Listener {
         File names = new File(getDataFolder(), "items.yml");
 
         // Clear & set up auction broadcast times
-        Auction.broadcastTimes.clear();
+        AuctionBlah.broadcastTimes.clear();
         for (String broadcastTime : getConfig().getStringList("general.broadcastTimes")) {
             try {
                 Integer time = Integer.parseInt(broadcastTime);
-                Auction.broadcastTimes.add(time);
+                AuctionBlah.broadcastTimes.add(time);
             } catch (NumberFormatException ex) {
                 getLogger().info("String \"" + broadcastTime + "\" is an invalid Integer, skipping");
             }
@@ -235,12 +235,12 @@ public class AuctionPlugin extends JavaPlugin implements Listener {
                 && getConfig().isList("general.blockedCommands")
                 && getConfig().getStringList("general.blockedCommands").contains(command.toLowerCase())) {
             Player player = event.getPlayer();
-            Auction auction = AuctionManager.getCurrentAuction();
+            AuctionBlah auction = AuctionManagerImpl.getCurrentAuction();
 
-            if (AuctionManager.isAuctioningItem(player)) {
+            if (AuctionManagerImpl.isAuctioningItem(player)) {
                 event.setCancelled(true);
                 plugin.getMessageHandler().sendMessage("command-blocked-auctioning", player);
-            } else if (getConfig().getBoolean("general.blockedCommands.ifQueued", false) && AuctionManager.hasAuctionQueued(player)) {
+            } else if (getConfig().getBoolean("general.blockedCommands.ifQueued", false) && AuctionManagerImpl.hasAuctionQueued(player)) {
                 event.setCancelled(true);
                 plugin.getMessageHandler().sendMessage("command-blocked-auction-queued", player);
             } else if (getConfig().getBoolean("general.blockCommands.ifTopBidder", false)
@@ -259,12 +259,12 @@ public class AuctionPlugin extends JavaPlugin implements Listener {
         if (event.getCause() != PlayerTeleportEvent.TeleportCause.ENDER_PEARL
                 && plugin.getConfig().isList("general.disabledWorlds")
                 && plugin.getConfig().getStringList("general.disabledWorlds").contains(target.getName())) {
-            if (AuctionManager.getAuctionManager().isAuctioningItem(player)
-                    || AuctionManager.getAuctionManager().hasAuctionQueued(player)) {
+            if (AuctionManagerImpl.getAuctionManager().isAuctioningItem(player)
+                    || AuctionManagerImpl.getAuctionManager().hasAuctionQueued(player)) {
                 event.setCancelled(true);
                 plugin.getMessageHandler().sendMessage("fail-teleport-world-disabled", player);
             } else {
-                Auction auction = AuctionManager.getCurrentAuction();
+                AuctionBlah auction = AuctionManagerImpl.getCurrentAuction();
 
                 if (auction != null && auction.hasBids() && auction.getWinning().equals(player.getUniqueId())) {
                     event.setCancelled(true);

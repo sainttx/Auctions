@@ -1,61 +1,44 @@
 package com.sainttx.auction;
 
-import com.sainttx.auction.util.TextUtil;
+import com.sainttx.auction.api.Auction;
+import com.sainttx.auction.api.AuctionManager;
+import com.sainttx.auction.api.messages.MessageHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-public class AuctionManager {
+public class AuctionManagerImpl implements AuctionManager {
 
-    /*
-     * Auction plugin and manager instances
-     */
-    private static AuctionPlugin plugin;
-    private static AuctionManager manager;
+    // Instance
+    private static AuctionManagerImpl manager = new AuctionManagerImpl();
 
-    /*
-     * The current ongoing auction
-     */
-    private static Auction currentAuction;
-
-    /*
-     * The auction queue
-     */
+    // Auctions information
+    private Auction currentAuction;
     private Queue<Auction> auctionQueue = new ConcurrentLinkedQueue<Auction>();
-
-    /*
-     * Banned materials in an auction
-     */
     private static ArrayList<Material> banned = new ArrayList<Material>();
-
-    /*
-     * Information on whether an auction can be started
-     */
-    private boolean disabled = false;
+    private boolean disabled;
     private boolean canAuction = true;
 
-    /**
-     * Creates the Auction Manager
-     */
-    private AuctionManager() {
-        plugin = AuctionPlugin.getPlugin();
+    private AuctionManagerImpl() {
+        if (manager != null) {
+            throw new IllegalStateException("cannot create new instances of the manager");
+        }
+
         loadBannedMaterials();
     }
 
     /**
-     * Returns the AuctionManager instance, creates a new manager if it has
-     * never been instantiated
+     * Singleton. Returns the auction manager instance.
      *
-     * @return AuctionManager The AuctionManager instance
+     * @return the only auction manager instance
      */
-    public static AuctionManager getAuctionManager() {
-        if (manager == null) {
-            manager = new AuctionManager();
+    public static AuctionManagerImpl getAuctionManager() {
+        if (manager == null) { // Should never happen
+            manager = new AuctionManagerImpl();
             Bukkit.getLogger().info("Created a new auction manager instance.");
         }
 
@@ -73,58 +56,73 @@ public class AuctionManager {
         return (ArrayList<Material>) banned.clone();
     }
 
-    /**
-     * Returns the Auction queue
-     *
-     * @return All of the auctions that are currently queued
-     */
-    public Queue<Auction> getAuctionQueue() {
-        return this.auctionQueue;
-    }
-
-    /**
-     * Returns the position a player is in the queue
-     *
-     * @param player The player to check
-     * @return The position in the queue that the player is in, -1 if not in the queue
-     */
+    @Override
     public int getQueuePosition(Player player) {
-        Auction[] queueArray = auctionQueue.toArray(new Auction[auctionQueue.size()]);
+        int position = 0;
 
-        for (int i = 0 ; i < queueArray.length ; i++) {
-            Auction auc = queueArray[i];
-            if (auc != null && auc.getOwner().equals(player.getUniqueId())) {
-                return i + 1;
+        for (Auction auction : getQueue()) {
+            if (player.getUniqueId().equals(auction.getOwner())) {
+                return position + 1;
             }
+
+            position++;
         }
 
         return -1;
     }
 
-    /**
-     * Returns whether or not a player has an auction queued
-     *
-     * @param player A player who may have an auction queued
-     * @return True if the player has an auction queued, false otherwise
-     */
-    public static boolean hasAuctionQueued(Player player) {
-        for (Auction queued : getAuctionManager().auctionQueue) {
-            if (queued.getOwner().equals(player.getUniqueId())) {
+    @Override
+    public boolean hasAuctionInQueue(Player player) {
+        for (Auction auction : getQueue()) {
+            if (player.getUniqueId().equals(auction.getOwner())) {
                 return true;
             }
         }
-
         return false;
     }
 
-    /**
-     * Returns whether or not a player is hosting an active auction
-     *
-     * @param player A player who may be participating in an auction
-     * @return True if the player is the owner of the current auction
-     */
-    public static boolean isAuctioningItem(Player player) {
-        return currentAuction != null && currentAuction.getOwner().equals(player.getUniqueId());
+    @Override
+    public boolean hasActiveAuction(Player player) {
+        return getCurrentAuction() != null && player.getUniqueId().equals(getCurrentAuction().getOwner());
+    }
+
+    @Override
+    public boolean isAuctioningDisabled() {
+        return disabled;
+    }
+
+    @Override
+    public void setAuctioningDisabled(boolean disabled) {
+        this.disabled = disabled;
+    }
+
+    @Override
+    public Auction getCurrentAuction() {
+        return currentAuction;
+    }
+
+    @Override
+    public Queue<Auction> getQueue() {
+        return auctionQueue;
+    }
+
+    @Override
+    public void addAuctionToQueue(Auction auction) {
+        getQueue().add(auction);
+    }
+
+    @Override
+    public void setMessageHandler(MessageHandler handler) {
+        // TODO: Complete implementation
+    }
+
+    @Override
+    public void startNextAuction() {
+        Auction next = getQueue().poll();
+
+        if (next != null) {
+            next.start();
+        }
     }
 
     /**
@@ -132,7 +130,7 @@ public class AuctionManager {
      *
      * @param player The player to receive auction information
      */
-    public void sendAuctionInfo(Player player) {
+    /* public void sendAuctionInfo(Player player) {
         if (currentAuction != null) {
             plugin.getMessageHandler().sendMessage(currentAuction, "auction-info-message", player);
             plugin.getMessageHandler().sendMessage(currentAuction, "auction-start-increment", player);
@@ -145,7 +143,7 @@ public class AuctionManager {
         } else {
             plugin.getMessageHandler().sendMessage("fail-info-no-auction", player);
         }
-    }
+    } */
 
     /**
      * Performs pre-checks for creating an auction started by a player
@@ -153,7 +151,7 @@ public class AuctionManager {
      * @param player The player who started the auction
      * @param args   Arguments relative to the auction provided by the player
      */
-    public void prepareAuction(Player player, String[] args) {
+    /* public void prepareAuction(Player player, String[] args) {
         double minStartingPrice = plugin.getConfig().getDouble("auctionSettings.minimumStartPrice", 0);
         double maxStartingPrice = plugin.getConfig().getDouble("auctionSettings.maximumStartPrice", 99999);
 
@@ -227,7 +225,7 @@ public class AuctionManager {
                 // Decide whether to immediately start the auction or place it in the queue
                 if (currentAuction != null && currentAuction.getOwner().equals(player.getUniqueId())) {
                     plugin.getMessageHandler().sendMessage("fail-start-already-auctioning", player);
-                } else if (hasAuctionQueued(player)) { // The player already has an auction queued
+                } else if (hasAuctionInQueue(player)) { // The player already has an auction queued
                     plugin.getMessageHandler().sendMessage("fail-start-already-queued", player);
                 } else {
                     Auction auction = createAuction(plugin, player, numItems, startingPrice, bidIncrement, autoWin);
@@ -243,14 +241,14 @@ public class AuctionManager {
                 }
             }
         }
-    }
+    } */
 
     /**
      * Starts an auction and withdraws the starting fee
      *
      * @param auction The auction to begin
      */
-    public void startAuction(Auction auction) {
+    /* public void startAuction(Auction auction) {
         if (auction == null) {
             return;
         }
@@ -259,20 +257,9 @@ public class AuctionManager {
         currentAuction = auction;
         auction.start();
         setCanAuction(false);
-    }
+    } */
 
-    /**
-     * Starts the next auction in the queue
-     */
-    public void startNextAuction() {
-        Auction next = auctionQueue.poll();
-
-        if (next != null) {
-            startAuction(next);
-        }
-    }
-
-    public void cancelCurrentAuction(Player player) {
+    /* public void cancelCurrentAuction(Player player) {
         if (currentAuction == null) {
             // No auction
             plugin.getMessageHandler().sendMessage("fail-cancel-no-auction", player);
@@ -292,7 +279,7 @@ public class AuctionManager {
         } else {
             currentAuction.cancel();
         }
-    }
+    } */
 
     /**
      * Creates an auction and verifies it was properly specified
@@ -304,7 +291,7 @@ public class AuctionManager {
      * @param autoWin       The amount required to bid to automatically win
      * @return The auction result, null if something went wrong
      */
-    public Auction createAuction(AuctionPlugin plugin, Player player, int numItems, double startingPrice, int bidIncrement, double autoWin) {
+    /* public Auction createAuction(AuctionPlugin plugin, Player player, int numItems, double startingPrice, int bidIncrement, double autoWin) {
         Auction auction = null;
         try {
             auction = new Auction(AuctionPlugin.getPlugin(), player, numItems, startingPrice, bidIncrement, autoWin);
@@ -319,7 +306,7 @@ public class AuctionManager {
         }
 
         return auction;
-    }
+    } */
 
     /**
      * Formats String input provided by a player before proceeding to pre-bid
@@ -328,14 +315,14 @@ public class AuctionManager {
      * @param player The player bidding
      * @param amount The amount bid by the player
      */
-    public void prepareBid(Player player, String amount) {
+    /* public void prepareBid(Player player, String amount) {
         try {
             double bid = Double.parseDouble(amount);
             prepareBid(player, bid);
         } catch (NumberFormatException ex) {
             plugin.getMessageHandler().sendMessage("fail-bid-number", player);
         }
-    }
+    } */
 
     /**
      * Prepares a bid by a player and verifies they have met requirements before
@@ -344,7 +331,7 @@ public class AuctionManager {
      * @param player The player bidding
      * @param amount The amount bid by the player
      */
-    public void prepareBid(Player player, double amount) {
+    /* public void prepareBid(Player player, double amount) {
         if (currentAuction == null) {
             // There is no auction to bid on
             plugin.getMessageHandler().sendMessage("fail-bid-no-auction", player);
@@ -377,7 +364,7 @@ public class AuctionManager {
             // Place the bid
             placeBid(player, amount);
         }
-    }
+    } */
 
     /**
      * Places a bid on the current auction by the player
@@ -385,7 +372,7 @@ public class AuctionManager {
      * @param player The player placing the bid
      * @param amount The amount bid by the player
      */
-    public void placeBid(Player player, double amount) {
+    /* public void placeBid(Player player, double amount) {
         currentAuction.setTopBid(amount);
         currentAuction.setWinning(player);
         AuctionPlugin.getEconomy().withdrawPlayer(player, amount);
@@ -409,14 +396,14 @@ public class AuctionManager {
                 }
             }
         }
-    }
+    } */
 
     /**
      * Called when a player ends an auction
      *
      * @param player The player who ended the auction
      */
-    public void end(Player player) {
+    /* public void end(Player player) {
         if (currentAuction == null) {
             plugin.getMessageHandler().sendMessage("fail-end-no-auction", player);
         } else if (!plugin.getConfig().getBoolean("allow-auction-end-command", false) && !player.hasPermission("auction.end.bypass")) {
@@ -427,19 +414,20 @@ public class AuctionManager {
             currentAuction.end(true);
             killAuction();
         }
-    }
+    } */
 
     /**
      * Nulls the auction
      */
-    public void killAuction() {
+    /* public void killAuction() {
         currentAuction = null;
-    }
+    } */
 
     /* 
      * Loads all banned items into memory 
      */
     private void loadBannedMaterials() {
+        AuctionPlugin plugin = AuctionPlugin.getPlugin();
         if (!plugin.getConfig().isList("general.blockedMaterials")) {
             return;
         }
@@ -456,32 +444,6 @@ public class AuctionManager {
         }
     }
 
-    /**
-     * Returns the current ongoing Auction
-     *
-     * @return The current Auction
-     */
-    public static Auction getCurrentAuction() {
-        return currentAuction;
-    }
-
-    /**
-     * Returns whether or not auctioning is disabled
-     *
-     * @return True if auctioning is disabled, false otherwise
-     */
-    public boolean isDisabled() {
-        return disabled;
-    }
-
-    /**
-     * Sets the disabled status of the Auction plugin
-     *
-     * @param disabled The new Auction plugin status
-     */
-    public void setDisabled(boolean disabled) {
-        this.disabled = disabled;
-    }
 
     /**
      * Sets whether players can auction or not

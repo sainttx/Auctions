@@ -1,6 +1,6 @@
 package com.sainttx.auction.command;
 
-import com.sainttx.auction.AuctionManager;
+import com.sainttx.auction.AuctionManagerImpl;
 import com.sainttx.auction.AuctionPlugin;
 import com.sainttx.auction.util.TextUtil;
 import org.bukkit.GameMode;
@@ -28,7 +28,7 @@ public class AuctionCommand implements CommandExecutor {
         if (args.length == 0) {
             TextUtil.sendMenu(sender);
         } else {
-            AuctionManager manager = AuctionManager.getAuctionManager();
+            AuctionManagerImpl manager = AuctionManagerImpl.getAuctionManager();
             SubCommand subCommand = SubCommand.getSubCommand(args[0]);
 
             if (subCommand == null) {

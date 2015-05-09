@@ -1,5 +1,6 @@
 package com.sainttx.auction.api;
 
+import com.sainttx.auction.AuctionManagerImpl;
 import com.sainttx.auction.AuctionPlugin;
 import com.sainttx.auction.structure.SilentAuction;
 import com.sainttx.auction.structure.StandardAuction;
@@ -15,7 +16,7 @@ public class AuctionsAPI {
      * @return the auction manager
      */
     public static AuctionManager getAuctionManager() {
-        return null;
+        return AuctionManagerImpl.getAuctionManager();
     }
 
     /**

@@ -1,5 +1,6 @@
 package com.sainttx.auction.api.messages;
 
+import com.sainttx.auction.AuctionBlah;
 import org.bukkit.entity.Player;
 
 /**
@@ -22,7 +23,7 @@ public interface MessageHandler {
      * @param configurationPath the path to the message in messages.yml
      * @param force             bypass auction ignore status
      */
-    void sendMessage(com.sainttx.auction.Auction auction, String configurationPath, boolean force);
+    void sendMessage(AuctionBlah auction, String configurationPath, boolean force);
 
     /**
      * Broadcasts a message to a recipient
@@ -39,7 +40,7 @@ public interface MessageHandler {
      * @param configurationPath the path to the message in messages.yml
      * @param player            the receiver of the message
      */
-    void sendMessage(com.sainttx.auction.Auction auction, String configurationPath, Player player);
+    void sendMessage(AuctionBlah auction, String configurationPath, Player player);
 
     /**
      * Returns all recipients inside the channel

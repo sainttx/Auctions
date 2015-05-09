@@ -1,7 +1,7 @@
 package com.sainttx.auction.command;
 
-import com.sainttx.auction.AuctionManager;
-import com.sainttx.auction.Auction;
+import com.sainttx.auction.AuctionManagerImpl;
+import com.sainttx.auction.AuctionBlah;
 import com.sainttx.auction.AuctionPlugin;
 import com.sainttx.auction.util.TextUtil;
 
@@ -41,15 +41,15 @@ public class BidCommand implements CommandExecutor {
                 && plugin.getConfig().getStringList("general.disabledWorlds").contains(player.getWorld().getName())) {
             plugin.getMessageHandler().sendMessage("fail-start-world-disabled", player);
         } else if (args.length == 0 && plugin.getConfig().getBoolean("auctionSettings.canBidAutomatically", true)) {
-            Auction auction = AuctionManager.getCurrentAuction();
+            AuctionBlah auction = AuctionManagerImpl.getCurrentAuction();
 
             if (auction != null) {
-                AuctionManager.getAuctionManager().prepareBid(player, auction.getTopBid() + auction.getBidIncrement());
+                AuctionManagerImpl.getAuctionManager().prepareBid(player, auction.getTopBid() + auction.getBidIncrement());
             } else {
                 plugin.getMessageHandler().sendMessage("fail-bid-no-auction", player);
             }
         } else if (args.length == 1) {
-            AuctionManager.getAuctionManager().prepareBid(player, args[0]);
+            AuctionManagerImpl.getAuctionManager().prepareBid(player, args[0]);
         } else {
             plugin.getMessageHandler().sendMessage("fail-bid-syntax", player);
         }
