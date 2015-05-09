@@ -19,7 +19,7 @@ public class AuctionManagerImpl implements AuctionManager {
     // Auctions information
     private Auction currentAuction;
     private Queue<Auction> auctionQueue = new ConcurrentLinkedQueue<Auction>();
-    private static ArrayList<Material> banned = new ArrayList<Material>();
+    private ArrayList<Material> banned = new ArrayList<Material>();
     private boolean disabled;
     private boolean canAuction = true;
 
@@ -59,17 +59,6 @@ public class AuctionManagerImpl implements AuctionManager {
         getAuctionManager().getQueue().clear();
 
         manager = null;
-    }
-
-
-    @SuppressWarnings("unchecked")
-    /**
-     * Returns a deep copy of banned materials
-     *
-     * @return ArrayList<Material> Materials not allowed in auctions
-     */
-    public static ArrayList<Material> getBannedMaterials() {
-        return (ArrayList<Material>) banned.clone();
     }
 
     @Override
@@ -164,93 +153,8 @@ public class AuctionManagerImpl implements AuctionManager {
 
     @Override
     public boolean isBannedMaterial(Material material) {
-        return false;
+        return banned.contains(material);
     }
-
-    /**
-     * Performs pre-checks for creating an auction started by a player
-     *
-     * @param player The player who started the auction
-     * @param args   Arguments relative to the auction provided by the player
-     */
-    /* public void prepareAuction(Player player, String[] args) {
-        double minStartingPrice = plugin.getConfig().getDouble("auctionSettings.minimumStartPrice", 0);
-        double maxStartingPrice = plugin.getConfig().getDouble("auctionSettings.maximumStartPrice", 99999);
-
-        else {
-            int numItems;
-            double startingPrice;
-            int bidIncrement = plugin.getConfig().getInt("auctionSettings.defaultBidIncrement", 50);
-            double autoWin = -1;
-            double fee =
-
-
-
-                 else {
-                    Auction auction = createAuction(plugin, player, numItems, startingPrice, bidIncrement, autoWin);
-
-                    if (auction != null) {
-                        if (currentAuction == null && this.canAuction) {
-                            startAuction(auction);
-                        } else {
-                            auctionQueue.add(auction);
-                            plugin.getMessageHandler().sendMessage("auction-queued", player);
-                        }
-                    }
-                }
-            }
-        }
-    } */
-
-    /**
-     * Starts an auction and withdraws the starting fee
-     *
-     * @param auction The auction to begin
-     */
-    /* public void startAuction(Auction auction) {
-        if (auction == null) {
-            return;
-        }
-
-        AuctionPlugin.getEconomy().withdrawPlayer(Bukkit.getOfflinePlayer(auction.getOwner()), plugin.getConfig().getDouble("auctionSettings.startFee", 0));
-        currentAuction = auction;
-        auction.start();
-        setCanAuction(false);
-    } */
-
-    /**
-     * Creates an auction and verifies it was properly specified
-     *
-     * @param plugin        The Auction plugin
-     * @param player        The player starting the auction
-     * @param numItems      The number of items the player is auctioning
-     * @param startingPrice The starting price of the auction
-     * @param autoWin       The amount required to bid to automatically win
-     * @return The auction result, null if something went wrong
-     */
-    /* public Auction createAuction(AuctionPlugin plugin, Player player, int numItems, double startingPrice, int bidIncrement, double autoWin) {
-        Auction auction = null;
-        try {
-            auction = new Auction(AuctionPlugin.getPlugin(), player, numItems, startingPrice, bidIncrement, autoWin);
-        } catch (NumberFormatException ex1) {
-            plugin.getMessageHandler().sendMessage("fail-number-format", player);
-        } catch (Exception ex2) {
-            plugin.getMessageHandler().sendMessage(ex2.getMessage(), player);
-        }
-
-        if (auction != null && !player.hasPermission("auction.tax.exempt")) {
-            auction.setTaxable(true);
-        }
-
-        return auction;
-    } */
-
-    /**
-     * Nulls the auction
-     */
-    /* public void killAuction() {
-        currentAuction = null;
-    } */
 
     /* 
      * Loads all banned items into memory 
@@ -271,15 +175,5 @@ public class AuctionManagerImpl implements AuctionManager {
                 plugin.getLogger().info("Material \"" + material.toString() + "\" added as a blocked material.");
             }
         }
-    }
-
-
-    /**
-     * Sets whether players can auction or not
-     *
-     * @param canAuction The new value of auctioning availability
-     */
-    public void setCanAuction(boolean canAuction) {
-        this.canAuction = canAuction;
     }
 }
