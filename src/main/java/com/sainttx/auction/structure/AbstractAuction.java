@@ -2,17 +2,40 @@ package com.sainttx.auction.structure;
 
 import com.sainttx.auction.AuctionPlugin;
 import com.sainttx.auction.api.Auction;
+import com.sainttx.auction.api.AuctionType;
 import com.sainttx.auction.api.module.AuctionModule;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitTask;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.UUID;
 
 /**
  * Created by Matthew on 08/05/2015.
  */
 public abstract class AbstractAuction implements Auction {
+
+    // Instance
+    protected AuctionPlugin plugin;
+    protected AuctionType type;
+    protected Collection<AuctionModule> modules;
+
+    // Auction owner information
+    protected UUID ownerUUID;
+    protected String ownerName;
+
+    // Top bidder information
+    protected UUID topBidderUUID;
+    protected String topBidderName;
+    protected double winningBid;
+
+    // Auction information
+    protected ItemStack auctionedItem;
+    protected double bidIncrement;
+    protected int timeLeft;
+    protected BukkitTask timerTask;
 
     /*
      * Protect from reflective instantiation
@@ -21,38 +44,65 @@ public abstract class AbstractAuction implements Auction {
         throw new IllegalAccessError("cannot create empty auction instances");
     }
 
-    public AbstractAuction(AuctionPlugin plugin) {
-
+    /**
+     * Creates an Auction
+     *
+     * @param plugin the auction plugin instance
+     * @param type   the specified auction type
+     */
+    AbstractAuction(AuctionPlugin plugin, AuctionType type) {
+        this.plugin = plugin;
+        this.type = type;
     }
 
     @Override
     public UUID getOwner() {
-        return null;
+        return ownerUUID;
+    }
+
+    @Override
+    public String getOwnerName() {
+        return ownerName;
     }
 
     @Override
     public UUID getTopBidder() {
-        return null;
+        return topBidderUUID;
     }
 
     @Override
     public String getTopBidderName() {
-        return null;
+        return topBidderName;
     }
 
     @Override
     public ItemStack getItem() {
-        return null;
+        return auctionedItem;
+    }
+
+    @Override
+    public AuctionType getType() {
+        return type;
+    }
+
+    @Override
+    public double getTopBid() {
+        return winningBid;
+    }
+
+    @Override
+    public void placeBid(Player player, double bid) {
+
     }
 
     @Override
     public int getTimeLeft() {
-        return 0;
+        return timeLeft;
     }
 
     @Override
     public void setTimeLeft(int time) {
-
+        this.timeLeft = time;
     }
 
     @Override
@@ -66,42 +116,95 @@ public abstract class AbstractAuction implements Auction {
     }
 
     @Override
-    public double getAutowin() {
-        return 0;
-    }
-
-    @Override
     public double getBidIncrement() {
-        return 0;
+        return bidIncrement;
     }
 
     @Override
     public double getTax() {
-        return 0;
-    }
-
-    @Override
-    public double getTopBid() {
-        return 0;
-    }
-
-    @Override
-    public void placeBid(Player player, double bid) {
-
+        return plugin.getConfig().getInt("auctionSettings.taxPercent", 0);
     }
 
     @Override
     public Collection<AuctionModule> getModules() {
-        return null;
+        return new HashSet<AuctionModule>(modules);
     }
 
     @Override
     public void addModule(AuctionModule module) {
+        if (module == null) {
+            throw new IllegalArgumentException("module cannot be null");
+        }
 
+        this.modules.add(module);
     }
 
     @Override
     public boolean removeModule(AuctionModule module) {
-        return false;
+        return this.modules.remove(module);
+    }
+
+    /**
+     * An implementation of an Auction builder for auctions
+     */
+    public static abstract class AbstractAuctionBuilder implements Builder {
+
+        protected AuctionPlugin plugin;
+        protected double increment = -1;
+        protected int time = -1;
+        protected ItemStack item;
+        protected double bid = -1;
+        protected UUID ownerId;
+        protected String ownerName;
+
+        public AbstractAuctionBuilder(AuctionPlugin plugin) {
+            this.plugin = plugin;
+        }
+
+        @Override
+        public Builder bidIncrement(double increment) {
+            this.increment = increment;
+            return this;
+        }
+
+        @Override
+        public Builder owner(Player owner) {
+            this.ownerId = owner.getUniqueId();
+            this.ownerName = owner.getName();
+            return this;
+        }
+
+        @Override
+        public Builder time(int time) {
+            this.time = time;
+            return this;
+        }
+
+        @Override
+        public Builder item(ItemStack item) {
+            this.item = item;
+            return this;
+        }
+
+        @Override
+        public Builder topBid(double bid) {
+            this.bid = bid;
+            return this;
+        }
+
+        /**
+         * Initializes any default values that haven't been set
+         */
+        protected void defaults() {
+            if (item == null) {
+                throw new IllegalStateException("item cannot be null");
+            } else if (bid == -1) {
+                throw new IllegalStateException("bid hasn't been set");
+            } else if (increment == -1) {
+                increment = plugin.getConfig().getInt("auctionSettings.defaultBidIncrement", 50);
+            } else if (time == -1) {
+                time = plugin.getConfig().getInt("auctionSettings.startTime", 30);
+            }
+        }
     }
 }

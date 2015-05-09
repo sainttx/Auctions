@@ -20,6 +20,13 @@ public interface Auction {
     UUID getOwner();
 
     /**
+     * Gets the name of the owner of this auction
+     *
+     * @return the auction creators name
+     */
+    String getOwnerName();
+
+    /**
      * Gets the {@link UUID} of the current top bidder for this auction
      *
      * @return the current {@link UUID} of the winner
@@ -39,6 +46,13 @@ public interface Auction {
      * @return the auctioned item
      */
     ItemStack getItem();
+
+    /**
+     * Returns what type of auction this is
+     *
+     * @return the auction type of this auction
+     */
+    AuctionType getType();
 
     /**
      * Gets the amount of time left in this auction
@@ -66,13 +80,6 @@ public interface Auction {
      *                  information about this auction ending
      */
     void end(boolean broadcast);
-
-    /**
-     * Gets the amount required to automatically win this auction
-     *
-     * @return the auto win amount
-     */
-    double getAutowin();
 
     /**
      * Gets the lowest amount that can be bid on this auction
@@ -147,5 +154,47 @@ public interface Auction {
          * @return the auction created by the builder
          */
         Auction build();
+
+        /**
+         * Sets the initial owner of the auction. If this is
+         * set to null the plugin will think that the auction is
+         * being created by the console/server.
+         *
+         * @param owner the player auctioning the item
+         * @return this builder instance
+         */
+        Builder owner(Player owner);
+
+        /**
+         * Sets the bid increment of the auction that will be created
+         *
+         * @param increment the new bid increment
+         * @return this builder instance
+         */
+        Builder bidIncrement(double increment);
+
+        /**
+         * Sets the auction start time of the auction that will be created
+         *
+         * @param time the new auction start time
+         * @return this builder instance
+         */
+        Builder time(int time);
+
+        /**
+         * Sets the auctioned item of the auction that will be created
+         *
+         * @param item the new auctioned item
+         * @return this builder instance
+         */
+        Builder item(ItemStack item);
+
+        /**
+         * Sets the starting top bid of the auction that will be created
+         *
+         * @param bid the new top bid
+         * @return this builder instance
+         */
+        Builder topBid(double bid);
     }
 }

@@ -5,5 +5,5 @@ package com.sainttx.auction.api;
  */
 public enum AuctionType {
     STANDARD,
-    SILENT;
+    SILENT
 }
