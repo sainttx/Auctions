@@ -168,7 +168,6 @@ public class TextUtil {
         if (auction != null) {
             int time = AuctionPlugin.getPlugin().getConfig().getInt("auctionSettings.antiSnipe.addSeconds", 5);
             int amount = ((ItemReward) auction.getReward()).getItem().getAmount();
-            System.out.print("timeleft = " + auction.getTimeLeft());
             ret = ret.replaceAll("%t", AuctionUtil.getFormattedTime(auction.getTimeLeft()))
                     .replaceAll("%b", NumberFormat.getInstance(Locale.ENGLISH).format(auction.getTopBid()))
                     .replaceAll("%p", auction.getOwnerName())

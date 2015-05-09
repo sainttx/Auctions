@@ -117,6 +117,7 @@ public class StartCommand extends AuctionSubCommand {
                         // The players item contains a piece of denied lore
                         manager.getMessageHandler().sendMessage("fail-start-banned-lore", player);
                     } else {
+                        item.setAmount(amount);
                         Reward reward = new ItemReward(item);
                         builder.bidIncrement(increment).reward(reward).owner(player).topBid(price).autowin(autowin);
                         Auction created = builder.build();
