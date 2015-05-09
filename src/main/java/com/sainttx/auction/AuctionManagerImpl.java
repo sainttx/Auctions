@@ -7,8 +7,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.Queue;
+import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class AuctionManagerImpl implements AuctionManager {
@@ -19,7 +20,7 @@ public class AuctionManagerImpl implements AuctionManager {
     // Auctions information
     private Auction currentAuction;
     private Queue<Auction> auctionQueue = new ConcurrentLinkedQueue<Auction>();
-    private ArrayList<Material> banned = new ArrayList<Material>();
+    private Set<Material> banned = EnumSet.noneOf(Material.class);
     private boolean disabled;
     private boolean canAuction = true;
 
