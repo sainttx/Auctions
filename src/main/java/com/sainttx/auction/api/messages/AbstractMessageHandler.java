@@ -72,9 +72,9 @@ public abstract class AbstractMessageHandler implements MessageHandler {
             Player player = (Player) recipient;
             int queuePosition = AuctionsAPI.getAuctionManager().getQueuePosition(player);
             if (queuePosition > 0) {
-                // TODO: Deprecated
-                TextUtil.sendMessage(TextUtil.replace(auction, TextUtil.getConfigMessage("auction-queue-position")
-                        .replaceAll("%q", Integer.toString(queuePosition))), true, player);
+                AuctionsAPI.getAuctionManager().getMessageHandler().sendMessage(TextUtil.replace(auction,
+                        TextUtil.getConfigMessage("auction-queue-position").replaceAll("%q", Integer.toString(queuePosition))),
+                        player);
             }
         }
     }
