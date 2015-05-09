@@ -22,9 +22,6 @@ public class EndCommand extends AuctionSubCommand {
 
         if (manager.getCurrentAuction() == null) {
             manager.getMessageHandler().sendMessage("fail-end-no-auction", sender);
-        } else if (!plugin.getConfig().getBoolean("allow-auction-end-command", false)
-                && !sender.hasPermission("auction.end.bypass")) {
-            manager.getMessageHandler().sendMessage("fail-end-disallowed", sender);
         } else if (!sender.hasPermission("auction.end.bypass")
                 && sender instanceof Player
                 && !manager.getCurrentAuction().getOwner().equals(((Player) sender).getUniqueId())) {

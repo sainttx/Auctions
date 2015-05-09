@@ -26,10 +26,6 @@ public class CancelCommand extends AuctionSubCommand {
         } else if (sender instanceof Player && manager.getMessageHandler().isIgnoring(((Player) sender).getUniqueId())) {
             // Ignoring
             manager.getMessageHandler().sendMessage("fail-start-ignoring", sender);
-        } else if (!sender.hasPermission("auction.cancel.bypass")
-                && !plugin.getConfig().getBoolean("allow-auction-cancel-command", true)) {
-            // Can't cancel
-            manager.getMessageHandler().sendMessage("fail-cancel-disabled", sender);
         } else if (manager.getCurrentAuction().getTimeLeft() < plugin.getConfig().getInt("auctionSettings.mustCancelBefore", 15)
                 && !sender.hasPermission("auction.cancel.bypass")) {
             // Can't cancel

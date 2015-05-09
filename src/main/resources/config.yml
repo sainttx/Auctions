@@ -12,7 +12,7 @@ integration:
   # Herochat plugin integration options
   # Find the plugin here: http://dev.bukkit.org/bukkit-plugins/herochat/
   herochat:
-    enable: true
+    enable: false
     # Defines your Herochat chat channel that players must be joined
     # to receive messages from the auction plugin. Messages that
     # are only sent to a single player ignore this and will send no
@@ -154,8 +154,3 @@ general:
   # of time left in the auction. The format of this list can
   # be specified as it currently is ("["#", "#"]") or as above.
   broadcastTimes: ["60", "30", "10", "3", "2", "1"]
-
-# Enabling and disabling certain features
-allow-auction-help-command: true
-allow-auction-end-command: false
-allow-auction-cancel-command: true
