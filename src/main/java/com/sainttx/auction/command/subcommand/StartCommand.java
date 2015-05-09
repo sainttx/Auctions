@@ -69,7 +69,7 @@ public class StartCommand extends AuctionSubCommand {
                         autowin = Double.parseDouble(args[4]);
                     }
                 } catch (NumberFormatException ex) {
-                    manager.getMessageHandler().sendMessage("fail-number-number", sender);
+                    manager.getMessageHandler().sendMessage("fail-number-format", sender);
                     return true;
                 }
 
@@ -78,7 +78,7 @@ public class StartCommand extends AuctionSubCommand {
                 } else if (amount > 2304) {
                     manager.getMessageHandler().sendMessage("fail-start-not-enough-items", player); // not enough
                 } else if (Double.isInfinite(price) || Double.isNaN(price) || Double.isInfinite(autowin) || Double.isNaN(autowin)) {
-                    manager.getMessageHandler().sendMessage("fail-number-number", sender); // invalid number
+                    manager.getMessageHandler().sendMessage("fail-number-format", sender); // invalid number
                 } else if (price < plugin.getConfig().getDouble("auctionSettings.minimumStartPrice", 0)) {
                     manager.getMessageHandler().sendMessage("fail-start-min", player); // starting price too low
                 } else if (price > plugin.getConfig().getDouble("auctionSettings.maximumStartPrice", 99999)) {
