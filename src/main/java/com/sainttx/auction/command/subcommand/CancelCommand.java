@@ -40,6 +40,7 @@ public class CancelCommand extends AuctionSubCommand {
             // Can't cancel other peoples auction
             manager.getMessageHandler().sendMessage("fail-cancel-not-yours", sender);
         } else {
+            manager.getMessageHandler().sendMessage(manager.getCurrentAuction(), "auction-cancelled", false);
             manager.getCurrentAuction().cancel();
         }
         return false;

@@ -52,6 +52,8 @@ public class AuctionManagerImpl implements AuctionManager {
      */
     protected static void disable() {
         if (getAuctionManager().getCurrentAuction() != null) {
+            getAuctionManager().getMessageHandler().sendMessage(
+                    getAuctionManager().getCurrentAuction(), "auction-cancelled", false);
             getAuctionManager().getCurrentAuction().cancel();
         }
 

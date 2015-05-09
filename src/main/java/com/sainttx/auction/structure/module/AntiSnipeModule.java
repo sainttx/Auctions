@@ -38,6 +38,6 @@ public class AntiSnipeModule implements AuctionModule {
         int secondsToAdd = plugin.getConfig().getInt("auctionSettings.antiSnipe.addSeconds", 5);
 
         auction.setTimeLeft(auction.getTimeLeft() + secondsToAdd);
-        manager.getMessageHandler().sendMessage(auction, "anti-snipe-add", false); // TODO: This might be wrong
+        manager.getMessageHandler().sendMessage(auction, "anti-snipe-add", false); // TODO: The time will be wrong until we introduce valid placeholders
     }
 }

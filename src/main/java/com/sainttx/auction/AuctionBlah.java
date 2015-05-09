@@ -194,7 +194,7 @@
 //
 //        // Give back the top bidders money
 //        if (winning != null) {
-//            OfflinePlayer topBidder = Bukkit.getPlayer(winning);
+//            OfflinePlayer topBidder = Bukkit.getOfflinePlayer(winning);
 //            AuctionPlugin.getEconomy().depositPlayer(topBidder, topBid);
 //        }
 //
@@ -263,87 +263,7 @@
 //
 //        // Set the current auction to null
 //        AuctionManagerImpl.getAuctionManager().killAuction();
-//    }
-//
-//    /*
-//     * Runs the timer that schedules a new auction after an auction is ended
-//     */
-//    private void runNextAuctionTimer() {
-//        // Delay before a new auction can be made... Prevents auction scamming
-//        if (plugin.isEnabled()) {
-//            Bukkit.getScheduler().scheduleSyncDelayedTask(AuctionPlugin.getPlugin(), new Runnable() {
-//                @Override
-//                public void run() {
-//                    AuctionManagerImpl.getAuctionManager().setCanAuction(true);
-//
-//                    // Start the next auction in the queue
-//                    if (AuctionManagerImpl.getCurrentAuction() == null) {
-//                        AuctionManagerImpl.getAuctionManager().startNextAuction();
-//                    }
-//                }
-//            }, plugin.getConfig().getLong("auctionSettings.delayBetween", 5L) * 20L);
-//        }
-//    }
-//
-//    /**
-//     * An Auction timer that counts down an Auction until it's over
-//     */
-//    protected class AuctionTimer implements Runnable {
-//
-//        /*
-//         * The Auction to count down
-//         */
-//        private AuctionBlah auction;
-//
-//        /**
-//         * Create an Auction timer
-//         */
-//        public AuctionTimer(AuctionBlah auction) {
-//            this.auction = auction;
-//        }
-//
-//        @Override
-//        /*
-//         * Decrement the current time left until the auction ends
-//         */
-//        public void run() {
-//            if (timeLeft <= 0) {
-//                end(true);
-//            } else {
-//                if (broadcastTimes.contains(--timeLeft)) {
-//                    plugin.getMessageHandler().sendMessage(auction, "auction-timer", false);
-//                }
-//            }
-//        }
-//    }
-//
-//    /*
-//     * Verifies that this auction has valid settings
-//     */
-//    private void validateAuction(Player player) throws Exception {
-//        if (item == null || item.getType() == Material.AIR) {
-//            // They auctioned off nothing
-//            throw new Exception("fail-start-hand-empty");
-//        } else if (AuctionManagerImpl.getBannedMaterials().contains(item.getType())) {
-//            // The item isn't allowed
-//            throw new Exception("unsupported-item");
-//        } else if (item.getType().getMaxDurability() > 0 && item.getDurability() > 0
-//                && !plugin.getConfig().getBoolean("auctionSettings.canAuctionDamagedItems", true)) {
-//            // Users can't auction damaged items
-//            throw new Exception("fail-start-damaged-item");
-//        } else if (!AuctionUtil.searchInventory(player.getInventory(), item, numItems)) {
-//            // They don't have enough of that item in their inventory
-//            throw new Exception("fail-start-not-enough-items");
-//        } else if (!plugin.getConfig().getBoolean("auctionSettings.canAuctionNamedItems", true) && item.getItemMeta().hasDisplayName()) {
-//            // The player can't auction named items
-//            throw new Exception("fail-start-named-item");
-//        } else if (hasBannedLore()) {
-//            // The players item contains a piece of denied lore
-//            throw new Exception("fail-start-banned-lore");
-//        } else {
-//            player.getInventory().removeItem(item);
-//        }
-//    }
+//   }
 //
 //    /*
 //     * Check if an item has a denied String of lore

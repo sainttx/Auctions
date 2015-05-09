@@ -6,6 +6,9 @@ import com.sainttx.auction.api.AuctionManager;
 import com.sainttx.auction.api.AuctionType;
 import com.sainttx.auction.api.AuctionsAPI;
 import com.sainttx.auction.api.module.AuctionModule;
+import com.sainttx.auction.util.AuctionUtil;
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitTask;
@@ -144,12 +147,56 @@ public abstract class AbstractAuction implements Auction {
 
     @Override
     public void cancel() {
+        Player owner = Bukkit.getPlayer(ownerUUID);
+        timerTask.cancel();
+        timerTask = null;
 
+        // Run the next auction timer
+        if (plugin.isEnabled()) {
+            runNextAuctionTimer(); // This handles setting the canStartNewAuction status
+        }
+
+        // Return the item to the owner
+        if (getOwner() == null) {
+            Bukkit.getLogger().info("[Auction] Saving items of offline player " + getOwnerName() + " (uuid: " + getOwner() + ")");
+            plugin.saveOfflinePlayer(getOwner(), getItem());
+        } else {
+            AuctionUtil.giveItem(owner, getItem()); // TODO: Something that indicates if items were dropped
+        }
+
+        // Return the top bidders money
+        if (getTopBidder() != null) {
+            OfflinePlayer topBidder = Bukkit.getOfflinePlayer(getTopBidder());
+            AuctionPlugin.getEconomy().depositPlayer(topBidder, getTopBid());
+        }
+
+        // Set current auction to null
+        AuctionsAPI.getAuctionManager().setCurrentAuction(null);
     }
 
     @Override
     public void end(boolean broadcast) {
 
+    }
+
+    /*
+     * Schedules a new auction after a 'auctionSettings.delayBetween' second delay
+     */
+    private void runNextAuctionTimer() {
+        // Delay before a new auction can be made... Prevents auction scamming
+        if (plugin.isEnabled()) {
+            plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+                @Override
+                public void run() {
+                    AuctionsAPI.getAuctionManager().setCanStartNewAuction(true);
+
+                    // Start the next auction in the queue
+                    if (AuctionsAPI.getAuctionManager().getCurrentAuction() == null) {
+                        AuctionsAPI.getAuctionManager().startNextAuction();
+                    }
+                }
+            }, plugin.getConfig().getLong("auctionSettings.delayBetween", 5L) * 20L);
+        }
     }
 
     @Override
