@@ -202,7 +202,7 @@ public abstract class AbstractAuction implements Auction {
             }
 
             if (broadcast) {
-                manager.getMessageHandler().broadcast(this, "auction-end-sendMessage", false);
+                manager.getMessageHandler().broadcast(this, "auction-end-broadcast", false);
             }
         } else {
             if (owner != null) {
@@ -286,7 +286,7 @@ public abstract class AbstractAuction implements Auction {
 
             if (timeLeft <= 0) {
                 end(true);
-            } // TODO: Check if the timer should sendMessage
+            } // TODO: Check if the timer should broadcast
         }
     }
 

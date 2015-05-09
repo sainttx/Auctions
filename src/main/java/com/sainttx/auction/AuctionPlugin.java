@@ -145,7 +145,7 @@ public class AuctionPlugin extends JavaPlugin implements Listener {
         initializeChatHandler();
         File names = new File(getDataFolder(), "items.yml");
 
-        // Clear & set up auction sendMessage times
+        // Clear & set up auction broadcast times
         /* AuctionBlah.broadcastTimes.clear();
         for (String broadcastTime : getConfig().getStringList("general.broadcastTimes")) {
             try {

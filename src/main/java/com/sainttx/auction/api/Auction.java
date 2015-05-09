@@ -81,7 +81,7 @@ public interface Auction {
     /**
      * Ends the auction as if the timer ran out
      *
-     * @param broadcast whether or not to sendMessage any
+     * @param broadcast whether or not to broadcast any
      *                  information about this auction ending
      */
     void end(boolean broadcast);
