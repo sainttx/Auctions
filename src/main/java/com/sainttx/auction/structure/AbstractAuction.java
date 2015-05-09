@@ -356,9 +356,11 @@ public abstract class AbstractAuction implements Auction {
                 throw new IllegalStateException("reward cannot be null");
             } else if (bid == -1) {
                 throw new IllegalStateException("bid hasn't been set");
-            } else if (increment == -1) {
+            }
+            if (increment == -1) {
                 increment = plugin.getConfig().getInt("auctionSettings.defaultBidIncrement", 50);
-            } else if (time == -1) {
+            }
+            if (time == -1) {
                 time = plugin.getConfig().getInt("auctionSettings.startTime", 30);
             }
         }
