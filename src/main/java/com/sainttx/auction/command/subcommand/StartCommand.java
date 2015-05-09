@@ -38,7 +38,7 @@ public class StartCommand extends AuctionSubCommand {
             Player player = (Player) sender;
             double fee = plugin.getConfig().getDouble("auctionSettings.startFee", 0);
 
-            if (fee < plugin.getEconomy().getBalance(player)) {
+            if (fee > plugin.getEconomy().getBalance(player)) {
                 manager.getMessageHandler().sendMessage("fail-start-no-funds", player); // not enough funds
             } else if (player.getGameMode() == GameMode.CREATIVE
                     && !plugin.getConfig().getBoolean("auctionSettings.canAuctionInCreative", false)
