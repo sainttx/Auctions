@@ -158,7 +158,7 @@ public abstract class AbstractAuction implements Auction {
 
         // Return the item to the owner
         if (getOwner() == null) {
-            Bukkit.getLogger().info("[Auction] Saving items of offline player " + getOwnerName() + " (uuid: " + getOwner() + ")");
+            plugin.getLogger().info("[Auction] Saving items of offline player " + getOwnerName() + " (uuid: " + getOwner() + ")");
             plugin.saveOfflinePlayer(getOwner(), getItem());
         } else {
             AuctionUtil.giveItem(owner, getItem()); // TODO: Something that indicates if items were dropped
@@ -179,7 +179,51 @@ public abstract class AbstractAuction implements Auction {
 
     @Override
     public void end(boolean broadcast) {
+        AuctionManager manager = AuctionsAPI.getAuctionManager();
+        Player owner = Bukkit.getPlayer(getOwner());
+        timerTask.cancel();
+        timerTask = null;
 
+        // Run the next auction timer
+        if (plugin.isEnabled()) {
+            runNextAuctionTimer();
+        }
+
+        if (getTopBidder() != null) {
+            Player winner = Bukkit.getPlayer(getTopBidder());
+
+            // Give the winner their items
+            if (winner == null) {
+                plugin.getLogger().info("[Auction] Saving items of offline player " + getTopBidderName() + " (uuid: " + getTopBidder() + ")");
+                plugin.saveOfflinePlayer(getTopBidder(), getItem());
+            } else {
+                AuctionUtil.giveItem(winner, getItem());
+                manager.getMessageHandler().sendMessage(this, "auction-winner", winner);
+            }
+
+            if (broadcast) {
+                manager.getMessageHandler().sendMessage(this, "auction-end-broadcast", false);
+            }
+        } else {
+            if (owner != null) {
+                AuctionUtil.giveItem(owner, getItem(), "no-bidder-return");
+            } else {
+                plugin.getLogger().info("[Auction] Saving items of offline player " + getOwnerName() + " (uuid: " + getOwner() + ")");
+                plugin.saveOfflinePlayer(getOwner(), getItem());
+            }
+
+            if (broadcast) {
+                manager.getMessageHandler().sendMessage(this, "auction-end-no-bidders", false);
+            }
+        }
+
+        // Give the owner their earnings TODO: Tax
+        if (getTopBid() > 0) {
+            plugin.getEconomy().depositPlayer(Bukkit.getOfflinePlayer(getOwner()), getTopBid());
+        }
+
+        // Set current auction to null
+        AuctionsAPI.getAuctionManager().setCurrentAuction(null);
     }
 
     /*
