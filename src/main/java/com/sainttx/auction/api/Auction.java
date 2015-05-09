@@ -4,7 +4,6 @@ import com.sainttx.auction.api.module.AuctionModule;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.UUID;
 
@@ -105,7 +104,7 @@ public interface Auction {
      * @param player the player
      * @param bid    the amount bid by the player
      */
-    void placeBid(@Nullable Player player, double bid);
+    void placeBid(Player player, double bid);
 
     /**
      * Gets a deep copy of modules present in this auction

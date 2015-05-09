@@ -1,12 +1,12 @@
 package com.sainttx.auction;
 
+import com.sainttx.auction.api.messages.MessageHandler;
 import com.sainttx.auction.command.AuctionCommand;
 import com.sainttx.auction.command.BidCommand;
-import com.sainttx.auction.struct.messages.GlobalChatHandler;
-import com.sainttx.auction.util.TextUtil;
-import com.sainttx.auction.struct.MessageHandler;
-import com.sainttx.auction.struct.messages.HerochatHandler;
+import com.sainttx.auction.structure.messages.GlobalChatHandler;
+import com.sainttx.auction.structure.messages.HerochatHandler;
 import com.sainttx.auction.util.AuctionUtil;
+import com.sainttx.auction.util.TextUtil;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
@@ -163,7 +163,7 @@ public class AuctionPlugin extends JavaPlugin implements Listener {
             this.messageHandler = new HerochatHandler(this);
             getLogger().info("Herochat was chosen as the chat channel");
         } else {
-            this.messageHandler = new GlobalChatHandler(this);
+            this.messageHandler = new GlobalChatHandler();
             getLogger().info("GlobalChatHandler was chosen as the chat channel");
         }
     }

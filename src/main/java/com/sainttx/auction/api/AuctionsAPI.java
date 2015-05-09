@@ -1,7 +1,5 @@
 package com.sainttx.auction.api;
 
-import javax.annotation.Nonnull;
-
 /**
  * A central API to handle all external Auction plugin needs
  */
@@ -22,7 +20,7 @@ public class AuctionsAPI {
      * @param type the type of auction
      * @return an auction builder for the specific auction type
      */
-    public static Auction.Builder getAuctionBuilder(@Nonnull AuctionType type) {
+    public static Auction.Builder getAuctionBuilder(AuctionType type) {
         return null;
     }
 }

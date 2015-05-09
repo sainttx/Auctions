@@ -1,10 +1,10 @@
-package com.sainttx.auction.struct.messages;
+package com.sainttx.auction.structure.messages;
 
 import com.dthielke.herochat.Channel;
 import com.dthielke.herochat.Chatter;
 import com.dthielke.herochat.Herochat;
 import com.sainttx.auction.AuctionPlugin;
-import com.sainttx.auction.struct.MessageHandler;
+import com.sainttx.auction.api.messages.AbstractMessageHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -14,7 +14,7 @@ import java.util.Set;
 /**
  * Created by Matthew on 07/05/2015.
  */
-public class HerochatHandler extends MessageHandler {
+public class HerochatHandler extends AbstractMessageHandler {
 
     private AuctionPlugin plugin;
 
