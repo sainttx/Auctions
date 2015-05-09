@@ -21,6 +21,7 @@ public class AuctionManagerImpl implements AuctionManager {
     private Auction currentAuction;
     private Queue<Auction> auctionQueue = new ConcurrentLinkedQueue<Auction>();
     private Set<Material> banned = EnumSet.noneOf(Material.class);
+    private MessageHandler handler;
     private boolean disabled;
     private boolean canAuction = true;
 
@@ -134,12 +135,16 @@ public class AuctionManagerImpl implements AuctionManager {
 
     @Override
     public MessageHandler getMessageHandler() {
-        return null;
+        return handler;
     }
 
     @Override
     public void setMessageHandler(MessageHandler handler) {
-        // TODO: Complete implementation
+        if (handler == null) {
+            throw new IllegalArgumentException("new message handler cannot be null");
+        }
+
+        this.handler = handler;
     }
 
     @Override

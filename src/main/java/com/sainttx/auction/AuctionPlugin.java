@@ -67,6 +67,7 @@ public class AuctionPlugin extends JavaPlugin implements Listener {
         getServer().getPluginManager().registerEvents(this, this);
         loadConfig();
         TextUtil.load(this);
+        AuctionsAPI.getAuctionManager().setMessageHandler(new GlobalChatHandler());
 
         // Load offline player items
         for (String string : offlineConfiguration.getKeys(false)) {
