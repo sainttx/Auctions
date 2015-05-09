@@ -5,7 +5,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 /**
- * Created by Matthew on 07/05/2015.
+ * Sends messages to all players
  */
 public class GlobalChatHandler extends AbstractMessageHandler {
 

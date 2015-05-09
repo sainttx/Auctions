@@ -13,7 +13,7 @@ import java.util.HashSet;
 import java.util.UUID;
 
 /**
- * Created by Matthew on 08/05/2015.
+ * An auction implementation 
  */
 public abstract class AbstractAuction implements Auction {
 

@@ -12,7 +12,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Created by Matthew on 07/05/2015.
+ * Sends messages to all players inside a specific Herochat channel
  */
 public class HerochatHandler extends AbstractMessageHandler {
 

@@ -5,7 +5,8 @@ import com.sainttx.auction.api.Auction;
 import com.sainttx.auction.api.module.AuctionModule;
 
 /**
- * Created by Matthew on 08/05/2015.
+ * A module that ends an auction when a bid higher than
+ * the autowin amount is placed on an auction.
  */
 public class AutoWinModule implements AuctionModule {
 

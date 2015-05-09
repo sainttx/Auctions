@@ -1,7 +1,7 @@
 package com.sainttx.auction.api;
 
 /**
- * Created by Matthew on 08/05/2015.
+ * An enum of all available auction types provided by the Auction plugin
  */
 public enum AuctionType {
     STANDARD,

@@ -3,7 +3,7 @@ package com.sainttx.auction.api.messages;
 import org.bukkit.entity.Player;
 
 /**
- * Created by Matthew on 08/05/2015.
+ * Represents a message handler
  */
 public interface MessageHandler {
 

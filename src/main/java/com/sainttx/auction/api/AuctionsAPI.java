@@ -1,5 +1,9 @@
 package com.sainttx.auction.api;
 
+import com.sainttx.auction.AuctionPlugin;
+import com.sainttx.auction.structure.SilentAuction;
+import com.sainttx.auction.structure.StandardAuction;
+
 /**
  * A central API to handle all external Auction plugin needs
  */
@@ -21,6 +25,17 @@ public class AuctionsAPI {
      * @return an auction builder for the specific auction type
      */
     public static Auction.Builder getAuctionBuilder(AuctionType type) {
-        return null;
+        if (type == null) {
+            throw new IllegalArgumentException("type cannot be null");
+        }
+
+        switch (type) {
+            case STANDARD:
+                return new StandardAuction.StandardAuctionBuilder(AuctionPlugin.getPlugin());
+            case SILENT:
+                return new SilentAuction.SilentAuctionBuilder(AuctionPlugin.getPlugin());
+            default:
+                return null;
+        }
     }
 }

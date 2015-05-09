@@ -5,7 +5,10 @@ import com.sainttx.auction.api.Auction;
 import com.sainttx.auction.api.module.AuctionModule;
 
 /**
- * Created by Matthew on 08/05/2015.
+ * A module that ends adds time to an auction iff the auction
+ * is within the time threshold set in configuration, and the
+ * current anti snipe count is less than the maximum per
+ * auction set in configuration.
  */
 public class AntiSnipeModule implements AuctionModule {
 

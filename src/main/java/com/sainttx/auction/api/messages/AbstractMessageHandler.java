@@ -5,7 +5,7 @@ import mkremins.fanciful.FancyMessage;
 import org.bukkit.entity.Player;
 
 /**
- * Created by Matthew on 08/05/2015.
+ * A base message handler that handles message sending
  */
 public abstract class AbstractMessageHandler implements MessageHandler {
 
