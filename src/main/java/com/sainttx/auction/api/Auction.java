@@ -1,8 +1,11 @@
 package com.sainttx.auction.api;
 
+import com.sainttx.auction.api.module.AuctionModule;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import javax.annotation.Nullable;
+import java.util.Collection;
 import java.util.UUID;
 
 /**
@@ -88,13 +91,6 @@ public interface Auction {
     double getTax();
 
     /**
-     * Sets the top bidder of this auction
-     *
-     * @param bidder the new top bidder
-     */
-    void setTopBidder(UUID bidder);
-
-    /**
      * Gets the current top bid in this auction
      *
      * @return the top bid
@@ -102,20 +98,37 @@ public interface Auction {
     double getTopBid();
 
     /**
-     * Sets the top bid for this auction
-     *
-     * @param bid the new top bid
-     */
-    void setTopBid(double bid);
-
-    /**
      * Places a bid made by a player, does not handle
-     * any economy functions
+     * any economy functions. Specifying a null player will
+     * make the server think the console/server is bidding
      *
      * @param player the player
      * @param bid    the amount bid by the player
      */
-    void placeBid(Player player, double bid);
+    void placeBid(@Nullable Player player, double bid);
+
+    /**
+     * Gets a deep copy of modules present in this auction
+     *
+     * @return all modules tied to the auction
+     */
+    Collection<AuctionModule> getModules();
+
+    /**
+     * Adds a module to this auction
+     *
+     * @param module the module
+     */
+    void addModule(AuctionModule module);
+
+    /**
+     * Removes a module from this auction. Returns whether a
+     * module was actually removed or not.
+     *
+     * @param module the module
+     * @return if a module was actually removed
+     */
+    boolean removeModule(AuctionModule module);
 
     /**
      * Represents an auctions timer
