@@ -324,7 +324,7 @@ public class Auction {
         if (item == null || item.getType() == Material.AIR) {
             // They auctioned off nothing
             throw new Exception("fail-start-hand-empty");
-        } else if (item.getType() == Material.FIREWORK || item.getType() == Material.FIREWORK_CHARGE || AuctionManager.getBannedMaterials().contains(item.getType())) {
+        } else if (AuctionManager.getBannedMaterials().contains(item.getType())) {
             // The item isn't allowed
             throw new Exception("unsupported-item");
         } else if (item.getType().getMaxDurability() > 0 && item.getDurability() > 0
