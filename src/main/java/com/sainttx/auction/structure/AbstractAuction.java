@@ -92,7 +92,12 @@ public abstract class AbstractAuction implements Auction {
 
     @Override
     public void placeBid(Player player, double bid) {
-
+        // Trigger our modules
+        for (AuctionModule module : modules) {
+            if (module.canTrigger()) {
+                module.trigger();
+            }
+        }
     }
 
     @Override
