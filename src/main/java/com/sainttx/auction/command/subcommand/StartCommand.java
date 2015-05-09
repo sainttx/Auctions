@@ -85,8 +85,8 @@ public class StartCommand extends AuctionSubCommand {
                     manager.getMessageHandler().sendMessage("fail-start-max", player); // starting price too high
                 } else if (manager.getQueue().size() >= plugin.getConfig().getInt("auctionSettings.auctionQueueLimit", 3)) {
                     manager.getMessageHandler().sendMessage("fail-start-queue-full", player); // queue full
-                } else if (increment < plugin.getConfig().getInt("auctionSettings.minimumBidIncrement", 10)
-                        || increment > plugin.getConfig().getInt("auctionSettings.maximumBidIncrement", 9999)) {
+                } else if (increment != -1 && (increment < plugin.getConfig().getInt("auctionSettings.minimumBidIncrement", 10)
+                        || increment > plugin.getConfig().getInt("auctionSettings.maximumBidIncrement", 9999))) {
                     manager.getMessageHandler().sendMessage("fail-start-bid-increment", player);
                 } else if (autowin != -1 && !plugin.getConfig().getBoolean("auctionSettings.canSpecifyAutowin", true)) {
                     manager.getMessageHandler().sendMessage("fail-start-no-autowin", player);
