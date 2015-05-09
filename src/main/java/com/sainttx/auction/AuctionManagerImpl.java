@@ -45,6 +45,22 @@ public class AuctionManagerImpl implements AuctionManager {
         return manager;
     }
 
+    /**
+     * Called when the Auctions plugin disables
+     */
+    protected static void disable() {
+        if (getAuctionManager().getCurrentAuction() != null) {
+            getAuctionManager().getCurrentAuction().cancel();
+        }
+
+        for (Auction auction : getAuctionManager().getQueue()) {
+            auction.end(false);
+        }
+        getAuctionManager().getQueue().clear();
+
+        manager = null;
+    }
+
 
     @SuppressWarnings("unchecked")
     /**
@@ -109,6 +125,11 @@ public class AuctionManagerImpl implements AuctionManager {
     @Override
     public void addAuctionToQueue(Auction auction) {
         getQueue().add(auction);
+    }
+
+    @Override
+    public MessageHandler getMessageHandler() {
+        return null;
     }
 
     @Override

@@ -1,5 +1,7 @@
 package com.sainttx.auction;
 
+import com.sainttx.auction.api.Auction;
+import com.sainttx.auction.api.AuctionsAPI;
 import com.sainttx.auction.api.messages.MessageHandler;
 import com.sainttx.auction.command.AuctionCommand;
 import com.sainttx.auction.command.BidCommand;
@@ -10,7 +12,6 @@ import com.sainttx.auction.util.TextUtil;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -24,7 +25,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.UUID;
 
 public class AuctionPlugin extends JavaPlugin implements Listener {
@@ -42,11 +42,6 @@ public class AuctionPlugin extends JavaPlugin implements Listener {
     private final File offlineFile = new File(getDataFolder(), "offline.yml");
     private YamlConfiguration offlineConfiguration;
     private static HashMap<String, ItemStack> offlinePlayers = new HashMap<String, ItemStack>();
-
-    /*
-     * Configuration
-     */
-    private FileConfiguration config;
 
     /**
      * Returns the Auction Plugin instance
@@ -86,17 +81,8 @@ public class AuctionPlugin extends JavaPlugin implements Listener {
 
     @Override
     public void onDisable() {
+        AuctionManagerImpl.disable();
         TextUtil.save();
-        if (AuctionManagerImpl.getCurrentAuction() != null) {
-            AuctionManagerImpl.getCurrentAuction().cancel();
-        }
-
-        // End all auctions that are queued
-        for (Iterator<AuctionBlah> auctionIterator = AuctionManagerImpl.getAuctionManager().getAuctionQueue().iterator() ; auctionIterator.hasNext() ; ) {
-            AuctionBlah auction = auctionIterator.next();
-            auction.cancel();
-            auctionIterator.remove();
-        }
 
         // Logoff file
         try {
@@ -116,24 +102,6 @@ public class AuctionPlugin extends JavaPlugin implements Listener {
      */
     public static Economy getEconomy() {
         return economy;
-    }
-
-    /**
-     * Returns the plugins configuration file
-     *
-     * @return The plugins configuration file
-     */
-    public FileConfiguration getConfig() {
-        return config;
-    }
-
-    /**
-     * Returns the message handler
-     *
-     * @return the message handler
-     */
-    public MessageHandler getMessageHandler() {
-        return messageHandler;
     }
 
     /**
@@ -173,13 +141,12 @@ public class AuctionPlugin extends JavaPlugin implements Listener {
      */
     public void loadConfig() {
         saveDefaultConfig();
-        config = super.getConfig();
         initializeChatHandler();
         getConfig().options().copyDefaults(true);
         File names = new File(getDataFolder(), "items.yml");
 
         // Clear & set up auction broadcast times
-        AuctionBlah.broadcastTimes.clear();
+        /* AuctionBlah.broadcastTimes.clear();
         for (String broadcastTime : getConfig().getStringList("general.broadcastTimes")) {
             try {
                 Integer time = Integer.parseInt(broadcastTime);
@@ -187,7 +154,7 @@ public class AuctionPlugin extends JavaPlugin implements Listener {
             } catch (NumberFormatException ex) {
                 getLogger().info("String \"" + broadcastTime + "\" is an invalid Integer, skipping");
             }
-        }
+        } */
 
         // Save items file name
         if (!names.exists()) {
@@ -235,18 +202,19 @@ public class AuctionPlugin extends JavaPlugin implements Listener {
                 && getConfig().isList("general.blockedCommands")
                 && getConfig().getStringList("general.blockedCommands").contains(command.toLowerCase())) {
             Player player = event.getPlayer();
-            AuctionBlah auction = AuctionManagerImpl.getCurrentAuction();
+            Auction auction = AuctionsAPI.getAuctionManager().getCurrentAuction();
 
-            if (AuctionManagerImpl.isAuctioningItem(player)) {
+            if (AuctionsAPI.getAuctionManager().hasActiveAuction(player)) {
                 event.setCancelled(true);
-                plugin.getMessageHandler().sendMessage("command-blocked-auctioning", player);
-            } else if (getConfig().getBoolean("general.blockedCommands.ifQueued", false) && AuctionManagerImpl.hasAuctionQueued(player)) {
+                AuctionsAPI.getAuctionManager().getMessageHandler().sendMessage("command-blocked-auctioning", player);
+            } else if (getConfig().getBoolean("general.blockedCommands.ifQueued", false)
+                    && AuctionsAPI.getAuctionManager().hasAuctionInQueue(player)) {
                 event.setCancelled(true);
-                plugin.getMessageHandler().sendMessage("command-blocked-auction-queued", player);
+                AuctionsAPI.getAuctionManager().getMessageHandler().sendMessage("command-blocked-auction-queued", player);
             } else if (getConfig().getBoolean("general.blockCommands.ifTopBidder", false)
-                    && auction != null && auction.hasBids() && auction.getWinning().equals(player.getUniqueId())) {
+                    && auction != null && player.getUniqueId().equals(auction.getTopBidder())) {
                 event.setCancelled(true);
-                plugin.getMessageHandler().sendMessage("command-blocked-top-bidder", player);
+                AuctionsAPI.getAuctionManager().getMessageHandler().sendMessage("command-blocked-top-bidder", player);
             }
         }
     }
@@ -259,16 +227,16 @@ public class AuctionPlugin extends JavaPlugin implements Listener {
         if (event.getCause() != PlayerTeleportEvent.TeleportCause.ENDER_PEARL
                 && plugin.getConfig().isList("general.disabledWorlds")
                 && plugin.getConfig().getStringList("general.disabledWorlds").contains(target.getName())) {
-            if (AuctionManagerImpl.getAuctionManager().isAuctioningItem(player)
-                    || AuctionManagerImpl.getAuctionManager().hasAuctionQueued(player)) {
+            if (AuctionsAPI.getAuctionManager().hasActiveAuction(player)
+                    || AuctionsAPI.getAuctionManager().hasAuctionInQueue(player)) {
                 event.setCancelled(true);
-                plugin.getMessageHandler().sendMessage("fail-teleport-world-disabled", player);
+                AuctionsAPI.getAuctionManager().getMessageHandler().sendMessage("fail-teleport-world-disabled", player);
             } else {
-                AuctionBlah auction = AuctionManagerImpl.getCurrentAuction();
+                Auction auction = AuctionsAPI.getAuctionManager().getCurrentAuction();
 
-                if (auction != null && auction.hasBids() && auction.getWinning().equals(player.getUniqueId())) {
+                if (auction != null && player.getUniqueId().equals(auction.getTopBidder())) {
                     event.setCancelled(true);
-                    plugin.getMessageHandler().sendMessage("fail-teleport-world-disabled", player);
+                    AuctionsAPI.getAuctionManager().getMessageHandler().sendMessage("fail-teleport-world-disabled", player);
                 }
             }
         }

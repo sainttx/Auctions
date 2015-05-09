@@ -3,7 +3,6 @@ package com.sainttx.auction.command;
 import com.sainttx.auction.AuctionManagerImpl;
 import com.sainttx.auction.AuctionPlugin;
 import com.sainttx.auction.util.TextUtil;
-import org.bukkit.GameMode;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -40,7 +39,7 @@ public class AuctionCommand implements CommandExecutor {
             } else {
                 Player player = null;
 
-                try {
+                /* try {
                     player = (Player) sender; // Attempt to cast
                     String world = player.getWorld().getName();
 
@@ -49,8 +48,11 @@ public class AuctionCommand implements CommandExecutor {
                         plugin.getMessageHandler().sendMessage("fail-start-world-disabled", player);
                         return true;
                     }
-                } catch (ClassCastException ignored) { /* Do nothing */ }
+                } catch (ClassCastException ignored) {
+                    // Ignore
+                } */
 
+                /*
                 switch (subCommand) {
                     case RELOAD:
                         sender.sendMessage(TextUtil.getConfigMessage("reload"));
@@ -105,7 +107,8 @@ public class AuctionCommand implements CommandExecutor {
                     case CANCEL:
                         manager.cancelCurrentAuction(player);
                         break;
-                }
+
+            } */
             }
         }
 

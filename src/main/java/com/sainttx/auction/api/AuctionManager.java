@@ -25,6 +25,13 @@ public interface AuctionManager {
     Queue<Auction> getQueue();
 
     /**
+     * Returns the current message handler
+     *
+     * @return the message handler for auction messages
+     */
+    MessageHandler getMessageHandler();
+
+    /**
      * Sets the plugins message handler
      *
      * @param handler the new message handler
