@@ -15,23 +15,20 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Level;
 
 public class AuctionPlugin extends JavaPlugin {
 
-    /*
-     * General
-     */
+    // Instance
     private static AuctionPlugin plugin;
-    private static Economy economy;
+    private Economy economy;
 
-    /*
-     * Offline item saving
-     */
+    // Offline items
     private final File offlineFile = new File(getDataFolder(), "offline.yml");
     private YamlConfiguration offlineConfiguration;
-    private HashMap<String, Reward> offlinePlayers = new HashMap<String, Reward>();
+    private Map<UUID, Reward> offlineRewardCache = new HashMap<UUID, Reward>();
 
     /**
      * Returns the Auction Plugin instance
@@ -49,21 +46,21 @@ public class AuctionPlugin extends JavaPlugin {
         // Set the economy in the next tick so that all plugins are loaded
         Bukkit.getScheduler().runTask(this, new Runnable() {
             public void run() {
-                economy = getServer().getServicesManager().getRegistration(Economy.class).getProvider();
+                try {
+                    economy = getServer().getServicesManager().getRegistration(Economy.class).getProvider();
+                } catch (Throwable t) {
+                    getLogger().log(Level.SEVERE, "failed to find an economy provider, disabling...", t);
+                    getServer().getPluginManager().disablePlugin(AuctionPlugin.this);
+                }
             }
         });
 
         // Setup
         getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
-        loadConfig();
-        TextUtil.load(this);
         AuctionsAPI.getAuctionManager().setMessageHandler(new GlobalChatHandler());
-
-        // Load offline player items
-        for (String string : offlineConfiguration.getKeys(false)) {
-            Reward reward = (Reward) offlineConfiguration.get(string);
-            offlinePlayers.put(string, reward);
-        }
+        loadConfig();
+        loadOfflineRewards();
+        TextUtil.load(this);
 
         // Commands
         getCommand("auction").setExecutor(new AuctionCommandHandler());
@@ -91,7 +88,7 @@ public class AuctionPlugin extends JavaPlugin {
      *
      * @return Vault's economy hook
      */
-    public static Economy getEconomy() {
+    public Economy getEconomy() {
         return economy;
     }
 
@@ -104,7 +101,7 @@ public class AuctionPlugin extends JavaPlugin {
      */
     public void saveOfflinePlayer(UUID uuid, Reward reward) {
         offlineConfiguration.set(uuid.toString(), reward);
-        offlinePlayers.put(uuid.toString(), reward);
+        offlineRewardCache.put(uuid, reward);
 
         try {
             offlineConfiguration.save(offlineFile);
@@ -120,7 +117,7 @@ public class AuctionPlugin extends JavaPlugin {
      * @return the stored reward
      */
     public Reward getOfflineReward(UUID uuid) {
-        return offlinePlayers.get(uuid.toString());
+        return offlineRewardCache.get(uuid);
     }
 
     /**
@@ -129,7 +126,7 @@ public class AuctionPlugin extends JavaPlugin {
      * @param uuid the uuid
      */
     public void removeOfflineReward(UUID uuid) {
-        offlinePlayers.remove(uuid.toString());
+        offlineRewardCache.remove(uuid);
         offlineConfiguration.set(uuid.toString(), null);
 
         try {
@@ -170,5 +167,15 @@ public class AuctionPlugin extends JavaPlugin {
         }
 
         this.offlineConfiguration = YamlConfiguration.loadConfiguration(offlineFile);
+    }
+
+    /*
+     * A helper method that loads all offline rewards into memory
+     */
+    private void loadOfflineRewards() {
+        for (String string : offlineConfiguration.getKeys(false)) {
+            Reward reward = (Reward) offlineConfiguration.get(string);
+            offlineRewardCache.put(UUID.fromString(string), reward);
+        }
     }
 }

@@ -166,7 +166,7 @@ public abstract class AbstractAuction implements Auction {
         // Return the top bidders money
         if (getTopBidder() != null) {
             OfflinePlayer topBidder = Bukkit.getOfflinePlayer(getTopBidder());
-            AuctionPlugin.getEconomy().depositPlayer(topBidder, getTopBid());
+            plugin.getEconomy().depositPlayer(topBidder, getTopBid());
         }
 
         // Broadcast
