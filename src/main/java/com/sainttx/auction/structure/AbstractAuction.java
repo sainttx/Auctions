@@ -286,7 +286,10 @@ public abstract class AbstractAuction implements Auction {
 
             if (timeLeft <= 0) {
                 end(true);
-            } // TODO: Check if the timer should broadcast
+            } else if (plugin.isBroadcastTime(timeLeft)) {
+                AuctionsAPI.getAuctionManager().getMessageHandler()
+                        .broadcast(AbstractAuction.this, "auction-timer", false);
+            }
         }
     }
 

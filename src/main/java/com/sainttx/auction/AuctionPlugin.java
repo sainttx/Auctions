@@ -93,6 +93,17 @@ public class AuctionPlugin extends JavaPlugin {
     }
 
     /**
+     * Returns whether or not a time is an auction broadcast interval
+     *
+     * @param time the time in seconds left in an auction
+     * @return true if the time is a broadcast time
+     */
+    public boolean isBroadcastTime(int time) {
+        return getConfig().isList("general.broadcastTimes")
+                && getConfig().getStringList("general.broadcastTimes").contains(Integer.toString(time));
+    }
+
+    /**
      * Saves a players auctioned reward to file if the plugin was unable
      * to return it
      *
