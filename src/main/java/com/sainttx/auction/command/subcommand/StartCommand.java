@@ -27,7 +27,6 @@ public class StartCommand extends AuctionSubCommand {
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         AuctionManager manager = AuctionsAPI.getAuctionManager();
-        Auction current = manager.getCurrentAuction();
 
         if (!(sender instanceof Player)) {
             sender.sendMessage("Only players can start auctions");
@@ -116,7 +115,7 @@ public class StartCommand extends AuctionSubCommand {
                         manager.getMessageHandler().sendMessage("fail-start-banned-lore", player);
                     }*/
                     else {
-                        builder.bidIncrement(increment).item(item).owner(player).topBid(price);
+                        builder.bidIncrement(increment).item(item).owner(player).topBid(price).autowin(autowin);
                         Auction created = builder.build();
 
                         // check if we can add an autowin module

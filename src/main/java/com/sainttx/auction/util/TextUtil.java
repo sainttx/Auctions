@@ -272,7 +272,7 @@ public class TextUtil {
                     .replaceAll("%b", NumberFormat.getInstance(Locale.ENGLISH).format(auction.getTopBid()))
                     .replaceAll("%p", auction.getOwnerName())
                     .replaceAll("%a", Integer.toString(auction.getItem().getAmount()))
-                    // .replaceAll("%A", NumberFormat.getInstance(Locale.ENGLISH).format(auction.getAutoWin())) TODO
+                    .replaceAll("%A", NumberFormat.getInstance(Locale.ENGLISH).format(auction.getAutowin()))
                     .replaceAll("%B", Integer.toString((int) auction.getBidIncrement()))
                     .replaceAll("%s", Integer.toString(time));
             if (auction.getTopBidder() != null) {

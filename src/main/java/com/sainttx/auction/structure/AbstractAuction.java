@@ -36,6 +36,7 @@ public abstract class AbstractAuction implements Auction {
     // Auction information
     protected ItemStack auctionedItem;
     protected double bidIncrement;
+    protected double autowin = -1;
     protected int timeLeft;
     protected BukkitTask timerTask;
 
@@ -90,6 +91,11 @@ public abstract class AbstractAuction implements Auction {
     @Override
     public double getTopBid() {
         return winningBid;
+    }
+
+    @Override
+    public double getAutowin() {
+        return autowin;
     }
 
     @Override
@@ -200,6 +206,7 @@ public abstract class AbstractAuction implements Auction {
         protected int time = -1;
         protected ItemStack item;
         protected double bid = -1;
+        protected double autowin = -1;
         protected UUID ownerId;
         protected String ownerName;
 
@@ -235,6 +242,12 @@ public abstract class AbstractAuction implements Auction {
         @Override
         public Builder topBid(double bid) {
             this.bid = bid;
+            return this;
+        }
+
+        @Override
+        public Builder autowin(double autowin) {
+            this.autowin = autowin;
             return this;
         }
 

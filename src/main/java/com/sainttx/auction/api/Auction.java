@@ -94,6 +94,13 @@ public interface Auction {
     double getBidIncrement();
 
     /**
+     * Returns the auctions autowin. Returns -1 if autowin was not set.
+     *
+     * @return how much money is required to automatically win the auction
+     */
+    double getAutowin();
+
+    /**
      * Gets the percentage of money that will be removed from
      * the winning amount
      *
@@ -201,5 +208,13 @@ public interface Auction {
          * @return this builder instance
          */
         Builder topBid(double bid);
+
+        /**
+         * Sets the autowin amount of the auction that will be created
+         *
+         * @param autowin the new autowin amount
+         * @return this builder instance
+         */
+        Builder autowin(double autowin);
     }
 }

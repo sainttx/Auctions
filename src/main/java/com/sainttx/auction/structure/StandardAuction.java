@@ -18,12 +18,13 @@ public class StandardAuction extends AbstractAuction {
      * @param plugin the auction plugin instance
      */
     private StandardAuction(AuctionPlugin plugin, UUID ownerUUID, String ownerName,
-                            double topBid, ItemStack item, double bidIncrement, int timeLeft) {
+                            double topBid, ItemStack item, double autowin, double bidIncrement, int timeLeft) {
         super(plugin, AuctionType.STANDARD);
         this.ownerUUID = ownerUUID;
         this.ownerName = ownerName;
         this.winningBid = topBid;
         this.auctionedItem = item;
+        this.autowin = autowin;
         this.bidIncrement = bidIncrement;
         this.timeLeft = timeLeft;
     }
@@ -41,7 +42,7 @@ public class StandardAuction extends AbstractAuction {
         public Auction build() {
             super.defaults();
             return new StandardAuction(this.plugin, this.ownerId, this.ownerName,
-                    this.bid, this.item, this.increment, this.time);
+                    this.bid, this.item, this.autowin, this.increment, this.time);
         }
     }
 }

@@ -1,6 +1,5 @@
 package com.sainttx.auction.structure.module;
 
-import com.sainttx.auction.AuctionPlugin;
 import com.sainttx.auction.api.Auction;
 import com.sainttx.auction.api.AuctionsAPI;
 import com.sainttx.auction.api.module.AuctionModule;
@@ -11,7 +10,6 @@ import com.sainttx.auction.api.module.AuctionModule;
  */
 public class AutoWinModule implements AuctionModule {
 
-    private AuctionPlugin plugin = AuctionPlugin.getPlugin();
     private Auction auction;
     private double trigger;
 
