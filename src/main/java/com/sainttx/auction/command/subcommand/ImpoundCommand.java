@@ -28,7 +28,7 @@ public class ImpoundCommand extends AuctionSubCommand {
         if (!(sender instanceof Player)) {
             sender.sendMessage("Only players can impound auctions");
         } else if (auction == null) {
-            handler.sendMessage(plugin.getMessage("messages.error.noCurrentAuction"), sender);
+            handler.sendMessage(sender, plugin.getMessage("messages.error.noCurrentAuction"));
         } else {
             Player player = (Player) sender;
             Reward reward = auction.getReward();

@@ -21,29 +21,28 @@ public interface MessageHandler {
 
     /**
      * Broadcasts a message to all recipients in {@link #getRecipients()}
-     *
+     *  @param message the message to send
      * @param auction the auction to format the message with
-     * @param message the message to send
      * @param force   bypass auction ignore status
      */
-    void broadcast(Auction auction, String message, boolean force);
+    void broadcast(String message, Auction auction, boolean force);
 
     /**
      * Sends a message to a recipient
      *
-     * @param message   the message to send
      * @param recipient the receiver of the message
+     * @param message   the message to send
      */
-    void sendMessage(String message, CommandSender recipient);
+    void sendMessage(CommandSender recipient, String message);
 
     /**
      * Sends a message to a recipient
      *
+     * @param recipient the receiver of the message
+     * @param message   the message to send
      * @param auction   the auction to format the message with
-     * @param message   the message to send
-     * @param recipient the receiver of the message
      */
-    void sendMessage(Auction auction, String message, CommandSender recipient);
+    void sendMessage(CommandSender recipient, String message, Auction auction);
 
     /**
      * Sends an auctions information to a recipient

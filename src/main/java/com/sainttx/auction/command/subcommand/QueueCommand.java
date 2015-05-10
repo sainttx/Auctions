@@ -24,15 +24,15 @@ public class QueueCommand extends AuctionSubCommand {
         Queue<Auction> queue = manager.getQueue();
 
         if (queue.isEmpty()) {
-            manager.getMessageHandler().sendMessage(plugin.getMessage("messages.error.noAuctionsInQueue"), sender);
+            manager.getMessageHandler().sendMessage(sender, plugin.getMessage("messages.error.noAuctionsInQueue"));
         } else {
             int queuePosition = 1;
 
-            manager.getMessageHandler().sendMessage(plugin.getMessage("messages.queueInfoHeader"), sender);
+            manager.getMessageHandler().sendMessage(sender, plugin.getMessage("messages.queueInfoHeader"));
             for (Auction auction : queue) {
                 String message = plugin.getMessage("messages.auctionFormattable.queueInfoLine")
                         .replace("[queuepos]", Integer.toString(queuePosition));
-                manager.getMessageHandler().sendMessage(auction, message, sender);
+                manager.getMessageHandler().sendMessage(sender, message, auction);
                 queuePosition++;
             }
         }

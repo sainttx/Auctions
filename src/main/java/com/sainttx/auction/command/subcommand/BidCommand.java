@@ -29,9 +29,9 @@ public class BidCommand extends AuctionSubCommand {
         if (!(sender instanceof Player)) {
             sender.sendMessage("Only players can place bids on auctions");
         } else if (args.length < 2 && !plugin.getConfig().getBoolean("auctionSettings.canBidAutomatically", true)) {
-            handler.sendMessage(plugin.getMessage("messages.error.bidSyntax"), sender);
+            handler.sendMessage(sender, plugin.getMessage("messages.error.bidSyntax"));
         } else if (auction == null) {
-            handler.sendMessage(plugin.getMessage("messages.error.noCurrentAuction"), sender);
+            handler.sendMessage(sender, plugin.getMessage("messages.error.noCurrentAuction"));
         } else {
             Player player = (Player) sender;
 
@@ -42,23 +42,23 @@ public class BidCommand extends AuctionSubCommand {
                         ? auction.getTopBid() + auction.getBidIncrement()
                         : Double.parseDouble(args[1]);
             } catch (NumberFormatException ex) {
-                handler.sendMessage(plugin.getMessage("messages.error.invalidNumberEntered"), sender);
+                handler.sendMessage(sender, plugin.getMessage("messages.error.invalidNumberEntered"));
                 return true;
             }
 
             if (plugin.getConfig().isList("general.disabledWorlds")
                     && plugin.getConfig().getStringList("general.disabledWorlds").contains(player.getWorld().getName())) {
-                handler.sendMessage(plugin.getMessage("messages.error.cantUsePluginInWorld"), player);
+                handler.sendMessage(player, plugin.getMessage("messages.error.cantUsePluginInWorld"));
             } else if (handler.isIgnoring(player.getUniqueId())) {
-                handler.sendMessage(plugin.getMessage("messages.error.currentlyIgnoring"), player); // player is ignoring
+                handler.sendMessage(player, plugin.getMessage("messages.error.currentlyIgnoring")); // player is ignoring
             } else if (auction.getOwner().equals(player.getUniqueId())) {
-                handler.sendMessage(plugin.getMessage("messages.error.bidOnOwnAuction"), player); // cant bid on own auction
+                handler.sendMessage(player, plugin.getMessage("messages.error.bidOnOwnAuction")); // cant bid on own auction
             } else if (bid < auction.getTopBid() + auction.getBidIncrement()) {
-                handler.sendMessage(plugin.getMessage("messages.error.bidTooLow"), player); // the bid wasnt enough
+                handler.sendMessage(player, plugin.getMessage("messages.error.bidTooLow")); // the bid wasnt enough
             } else if (plugin.getEconomy().getBalance(player) < bid) {
-                handler.sendMessage(plugin.getMessage("messages.error.insufficientBalance"), player); // insufficient funds
+                handler.sendMessage(player, plugin.getMessage("messages.error.insufficientBalance")); // insufficient funds
             } else if (player.getUniqueId().equals(auction.getTopBidder())) {
-                handler.sendMessage(plugin.getMessage("messages.error.alreadyTopBidder"), player); // already top bidder
+                handler.sendMessage(player, plugin.getMessage("messages.error.alreadyTopBidder")); // already top bidder
             } else {
                 if (auction.getTopBidder() != null) { // give the old winner their money back
                     OfflinePlayer oldPlayer = Bukkit.getOfflinePlayer(auction.getTopBidder());
@@ -67,7 +67,7 @@ public class BidCommand extends AuctionSubCommand {
 
                 // place the bid
                 auction.placeBid(player, bid);
-                handler.broadcast(auction, plugin.getMessage("messages.auctionFormattable.bid"), false);
+                handler.broadcast(plugin.getMessage("messages.auctionFormattable.bid"), auction, false);
                 plugin.getEconomy().withdrawPlayer(player, bid);
             }
         }

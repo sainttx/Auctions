@@ -54,7 +54,7 @@ public class ItemReward implements Reward {
                 player.getInventory().addItem(reward);
             }
             player.getWorld().dropItem(player.getLocation(), drop);
-            AuctionsAPI.getMessageHandler().sendMessage(AuctionPlugin.getPlugin().getMessage("messages.notEnoughRoom"), player);
+            AuctionsAPI.getMessageHandler().sendMessage(player, AuctionPlugin.getPlugin().getMessage("messages.notEnoughRoom"));
         } else {
             inventory.addItem(reward);
         }

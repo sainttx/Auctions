@@ -33,11 +33,11 @@ public class TextualMessageHandler implements MessageHandler {
 
     @Override
     public void broadcast(String message, boolean force) {
-        broadcast(null, message, force);
+        broadcast(message, null, force);
     }
 
     @Override
-    public void broadcast(Auction auction, String message, boolean force) {
+    public void broadcast(String message, Auction auction, boolean force) {
         message = formatter.format(message, auction);
         String[] messages = message.split("\n+");
 
@@ -71,12 +71,12 @@ public class TextualMessageHandler implements MessageHandler {
     }
 
     @Override
-    public void sendMessage(String message, CommandSender recipient) {
-        sendMessage(null, message, recipient);
+    public void sendMessage(CommandSender recipient, String message) {
+        sendMessage(recipient, message, null);
     }
 
     @Override
-    public void sendMessage(Auction auction, String message, CommandSender recipient) {
+    public void sendMessage(CommandSender recipient, String message, Auction auction) {
         message = formatter.format(message, auction);
         String[] messages = message.split("\n+");
 
@@ -90,8 +90,8 @@ public class TextualMessageHandler implements MessageHandler {
     public void sendAuctionInformation(CommandSender recipient, Auction auction) {
         AuctionPlugin plugin = AuctionPlugin.getPlugin();
         MessageHandler handler = AuctionsAPI.getMessageHandler();
-        sendMessage(auction, plugin.getMessage("messages.auctionFormattable.info"), recipient);
-        sendMessage(auction, plugin.getMessage("messages.auctionFormattable.increment"), recipient);
+        sendMessage(recipient, plugin.getMessage("messages.auctionFormattable.info"), auction);
+        sendMessage(recipient, plugin.getMessage("messages.auctionFormattable.increment"), auction);
 
         if (recipient instanceof Player) {
             Player player = (Player) recipient;
@@ -99,7 +99,7 @@ public class TextualMessageHandler implements MessageHandler {
             if (queuePosition > 0) {
                 String message = plugin.getMessage("messages.auctionFormattable.queuePosition")
                         .replace("[queuepos]", Integer.toString(queuePosition));
-                handler.sendMessage(auction, message, player);
+                handler.sendMessage(player, message, auction);
             }
         }
     }

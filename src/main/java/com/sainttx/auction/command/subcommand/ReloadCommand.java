@@ -16,7 +16,7 @@ public class ReloadCommand extends AuctionSubCommand {
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        AuctionsAPI.getMessageHandler().sendMessage(plugin.getMessage("messages.pluginReloaded"), sender);
+        AuctionsAPI.getMessageHandler().sendMessage(sender, plugin.getMessage("messages.pluginReloaded"));
         plugin.reloadConfig();
         plugin.loadConfig();
         return false;

@@ -142,9 +142,9 @@ public abstract class AbstractAuction implements Auction {
         AuctionManager manager = AuctionsAPI.getAuctionManager();
         MessageHandler handler = manager.getMessageHandler();
 
-        handler.broadcast(this, plugin.getMessage("messages.auctionFormattable.start"), false);
-        handler.broadcast(this, plugin.getMessage("messages.auctionFormattable.price"), false);
-        handler.broadcast(this, plugin.getMessage("messages.auctionFormattable.increment"), false);
+        handler.broadcast(plugin.getMessage("messages.auctionFormattable.start"), this, false);
+        handler.broadcast(plugin.getMessage("messages.auctionFormattable.price"), this, false);
+        handler.broadcast(plugin.getMessage("messages.auctionFormattable.increment"), this, false);
     }
 
     @Override
@@ -190,7 +190,7 @@ public abstract class AbstractAuction implements Auction {
 
         // Broadcast
         MessageHandler handler = AuctionsAPI.getAuctionManager().getMessageHandler();
-        handler.broadcast(this, plugin.getMessage("messages.auctionFormattable.cancelled"), false);
+        handler.broadcast(plugin.getMessage("messages.auctionFormattable.cancelled"), this, false);
 
         // Set current auction to null
         AuctionsAPI.getAuctionManager().setCurrentAuction(null);
@@ -218,7 +218,7 @@ public abstract class AbstractAuction implements Auction {
                 plugin.saveOfflinePlayer(getTopBidder(), getReward());
             } else {
                 getReward().giveItem(winner);
-                handler.sendMessage(this, plugin.getMessage("messages.auctionFormattable.winner"), winner);
+                handler.sendMessage(winner, plugin.getMessage("messages.auctionFormattable.winner"), this);
             }
 
             if (getTopBid() > 0) {
@@ -227,26 +227,26 @@ public abstract class AbstractAuction implements Auction {
 
                 if (owner != null) {
                     if (getTax() > 0) {
-                        handler.sendMessage(this, plugin.getMessage("messages.auctionFormattable.endTax"), owner);
+                        handler.sendMessage(owner, plugin.getMessage("messages.auctionFormattable.endTax"), this);
                     }
-                    handler.sendMessage(this, plugin.getMessage("messages.auctionFormattable.endNotifyOwner"), owner);
+                    handler.sendMessage(owner, plugin.getMessage("messages.auctionFormattable.endNotifyOwner"), this);
                 }
             }
 
             if (broadcast) {
-                handler.broadcast(this, plugin.getMessage("messages.auctionFormattable.end"), false);
+                handler.broadcast(plugin.getMessage("messages.auctionFormattable.end"), this, false);
             }
         } else {
             if (owner != null) {
                 getReward().giveItem(owner);
-                handler.sendMessage(plugin.getMessage("messages.ownerItemReturn"), owner);
+                handler.sendMessage(owner, plugin.getMessage("messages.ownerItemReturn"));
             } else {
                 plugin.getLogger().info("Saving items of offline player " + getOwnerName() + " (uuid: " + getOwner() + ")");
                 plugin.saveOfflinePlayer(getOwner(), getReward());
             }
 
             if (broadcast) {
-                handler.broadcast(this, plugin.getMessage("messages.auctionFormattable.endNoBid"), false);
+                handler.broadcast(plugin.getMessage("messages.auctionFormattable.endNoBid"), this, false);
             }
         }
 
@@ -321,8 +321,8 @@ public abstract class AbstractAuction implements Auction {
                 end(true);
             } else if (plugin.isBroadcastTime(timeLeft)) {
                 MessageHandler handler = AuctionsAPI.getAuctionManager().getMessageHandler();
-                handler.broadcast(AbstractAuction.this,
-                        plugin.getMessage("messages.auctionFormattable.timer"), false);
+                handler.broadcast(plugin.getMessage("messages.auctionFormattable.timer"), AbstractAuction.this,
+                        false);
             }
         }
     }

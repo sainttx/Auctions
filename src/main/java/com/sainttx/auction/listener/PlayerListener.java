@@ -34,7 +34,7 @@ public class PlayerListener implements Listener {
 
         if (reward != null) {
             reward.giveItem(player);
-            AuctionsAPI.getMessageHandler().sendMessage(plugin.getMessage("messages.savedItemReturn"), player);
+            AuctionsAPI.getMessageHandler().sendMessage(player, plugin.getMessage("messages.savedItemReturn"));
             plugin.removeOfflineReward(player.getUniqueId());
         }
     }
@@ -53,15 +53,15 @@ public class PlayerListener implements Listener {
 
             if (AuctionsAPI.getAuctionManager().hasActiveAuction(player)) {
                 event.setCancelled(true);
-                AuctionsAPI.getMessageHandler().sendMessage(plugin.getMessage("messages.error.cantUseCommandWhileAuctioning"), player);
+                AuctionsAPI.getMessageHandler().sendMessage(player, plugin.getMessage("messages.error.cantUseCommandWhileAuctioning"));
             } else if (plugin.getConfig().getBoolean("general.blockedCommands.ifQueued", false)
                     && AuctionsAPI.getAuctionManager().hasAuctionInQueue(player)) {
                 event.setCancelled(true);
-                AuctionsAPI.getMessageHandler().sendMessage(plugin.getMessage("messages.error.cantUseCommandWhileQueued"), player);
+                AuctionsAPI.getMessageHandler().sendMessage(player, plugin.getMessage("messages.error.cantUseCommandWhileQueued"));
             } else if (plugin.getConfig().getBoolean("general.blockCommands.ifTopBidder", false)
                     && auction != null && player.getUniqueId().equals(auction.getTopBidder())) {
                 event.setCancelled(true);
-                AuctionsAPI.getMessageHandler().sendMessage(plugin.getMessage("messages.error.cantUseCommandWhileTopBidder"), player);
+                AuctionsAPI.getMessageHandler().sendMessage(player, plugin.getMessage("messages.error.cantUseCommandWhileTopBidder"));
             }
         }
     }
@@ -77,13 +77,13 @@ public class PlayerListener implements Listener {
             if (AuctionsAPI.getAuctionManager().hasActiveAuction(player)
                     || AuctionsAPI.getAuctionManager().hasAuctionInQueue(player)) {
                 event.setCancelled(true);
-                AuctionsAPI.getMessageHandler().sendMessage(plugin.getMessage("messages.error.cantTeleportToDisabledWorld"), player);
+                AuctionsAPI.getMessageHandler().sendMessage(player, plugin.getMessage("messages.error.cantTeleportToDisabledWorld"));
             } else {
                 Auction auction = AuctionsAPI.getAuctionManager().getCurrentAuction();
 
                 if (auction != null && player.getUniqueId().equals(auction.getTopBidder())) {
                     event.setCancelled(true);
-                    AuctionsAPI.getMessageHandler().sendMessage(plugin.getMessage("messages.error.cantTeleportToDisabledWorld"), player);
+                    AuctionsAPI.getMessageHandler().sendMessage(player, plugin.getMessage("messages.error.cantTeleportToDisabledWorld"));
                 }
             }
         }

@@ -30,7 +30,7 @@ public class AutoWinModule implements AuctionModule {
     @Override
     public void trigger() {
         AuctionPlugin plugin = AuctionPlugin.getPlugin();
-        AuctionsAPI.getMessageHandler().broadcast(auction, plugin.getMessage("messages.auctionFormattable.endByAutowin"), false);
+        AuctionsAPI.getMessageHandler().broadcast(plugin.getMessage("messages.auctionFormattable.endByAutowin"), auction, false);
         auction.end(true);
     }
 }
