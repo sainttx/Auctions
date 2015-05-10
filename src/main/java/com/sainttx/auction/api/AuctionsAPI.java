@@ -3,7 +3,7 @@ package com.sainttx.auction.api;
 import com.sainttx.auction.AuctionManagerImpl;
 import com.sainttx.auction.AuctionPlugin;
 import com.sainttx.auction.api.messages.MessageHandler;
-import com.sainttx.auction.structure.SilentAuction;
+import com.sainttx.auction.structure.SealedAuction;
 import com.sainttx.auction.structure.StandardAuction;
 
 /**
@@ -43,8 +43,8 @@ public class AuctionsAPI {
         switch (type) {
             case STANDARD:
                 return new StandardAuction.StandardAuctionBuilder(AuctionPlugin.getPlugin());
-            case SILENT:
-                return new SilentAuction.SilentAuctionBuilder(AuctionPlugin.getPlugin());
+            case SEALED:
+                return new SealedAuction.SealedAuctionBuilder(AuctionPlugin.getPlugin());
             default:
                 return null;
         }

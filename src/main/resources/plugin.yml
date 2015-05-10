@@ -11,6 +11,9 @@ commands:
   auction:
     description: All commands for Auction
     aliases: [auc]
+  sealedauction:
+    description: Command to start sealed auctions
+    aliases: [sauc]
   bid:
     description: Bid on an ongoing auction
     

@@ -18,7 +18,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.NumberFormat;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Level;
@@ -101,7 +103,7 @@ public class AuctionPlugin extends JavaPlugin {
         // Commands
         AuctionCommandHandler handler = new AuctionCommandHandler();
         getCommand("auction").setExecutor(handler);
-        getCommand("bid").setExecutor(handler);
+        getCommand("sealedauction").setExecutor(handler);
         getServer().getPluginManager().registerEvents(handler, this);
     }
 
@@ -225,6 +227,19 @@ public class AuctionPlugin extends JavaPlugin {
         } catch (IOException ex) {
             getLogger().log(Level.SEVERE, "failed to save offline configuration", ex);
         }
+    }
+
+    /**
+     * Formats a double to english
+     *
+     * @param d the double
+     * @return the english string representation
+     */
+    public String formatDouble(double d) {
+        NumberFormat format = NumberFormat.getInstance(Locale.ENGLISH);
+        format.setMaximumFractionDigits(2);
+        format.setMinimumFractionDigits(2);
+        return format.format(d);
     }
 
     /**

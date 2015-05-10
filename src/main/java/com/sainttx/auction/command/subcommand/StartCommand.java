@@ -40,6 +40,9 @@ public class StartCommand extends AuctionSubCommand {
             handler.sendMessage(sender, plugin.getMessage("messages.error.startSyntax"));
         } else if (manager.isAuctioningDisabled() && !sender.hasPermission("auction.bypass.disable")) {
             handler.sendMessage(sender, plugin.getMessage("messages.error.auctionsDisabled"));
+        } else if (!plugin.getConfig().getBoolean("auctionSettings.sealedAuctions.enabled")
+                && cmd.getName().equalsIgnoreCase("sealedauction")) {
+            handler.sendMessage(sender, plugin.getMessage("messages.error.sealedAuctionsDisabled"));
         } else {
             Player player = (Player) sender;
             double fee = plugin.getConfig().getDouble("auctionSettings.startFee", 0);
@@ -53,8 +56,8 @@ public class StartCommand extends AuctionSubCommand {
             } else {
                 Auction.Builder builder;
 
-                if (cmd.getName().equals("silentauction")) {
-                    builder = AuctionsAPI.getAuctionBuilder(AuctionType.SILENT);
+                if (cmd.getName().equals("sealedauction")) {
+                    builder = AuctionsAPI.getAuctionBuilder(AuctionType.SEALED);
                 } else {
                     builder = AuctionsAPI.getAuctionBuilder(AuctionType.STANDARD);
                 }

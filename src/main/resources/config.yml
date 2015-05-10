@@ -122,6 +122,24 @@ auctionSettings:
     # The amount of seconds to add whenever an auction is sniped.
     # Default: 5.
     addSeconds: 5
+  # Various settings regarding sealed auctions can be defined here
+  sealedAuctions:
+    # Whether or not sealed auctions are enabled. Default: true.
+    enabled: true
+    # Typically in sealed/blind auctions, bidders are only allowed to
+    # submit 1 bid and then they must wait until the auction to see
+    # who the winner is. This configuration option allows you to configure
+    # how many bids a player is allowed to place (or raise their previous)
+    # on the auction. Default: 1.
+    maxBidsPerPlayer: 1
+    # Vickrey auctions, or sealed-bid second-price auctions, are identical
+    # to sealed auctions, however rather then the highest bidder paying the
+    # price they've bid, they pay the second highest bid that was placed.
+    # In the event that there is no second highest bid, players will have to
+    # pay the highest bid. To learn more about Vickrey auctions, take a
+    # look here: http://en.wikipedia.org/wiki/Vickrey_auction. Default: false.
+    enableVickrey: false
+
 
 # Various settings unrelated to auction specific options are found in this
 # section.
@@ -222,6 +240,11 @@ messages:
     antiSnipeAdd: "&6ANTI-SNIPE &e- &c[snipetime] &6seconds have been added to the auction!"
     queuePosition: "&6Your auction is &c#[queuepos] &6in the auction queue"
     queueInfoLine: "&c#[queuepos]&6. &c[ownername] &6is preparing to auction &c[itemamount] [item]"
+
+    sealedAuction:
+      bid: "&cYou &6have placed a bid of &c$[bid]"
+      raise: "&cYou &6have raised your previous bid of &c$[previous] &6to &c$[bid]"
+
   # Error messages are messages sent to players whenever they have failed
   # to define something correctly in their commands, or in other instances
   # like if they are lacking permissions to a command, etc.
@@ -237,6 +260,9 @@ messages:
     invalidNumberEntered: "&cPlease enter a valid number"
     notYourAuction: "&cYou aren't able to modify other players auctions"
     currentlyIgnoring: "&cYou can't do that while ignoring auctions"
+    sealedAuctionsDisabled: "&cSealed auctions are currently disabled"
+    sealedAuctionsMaxBidsReached: "&cYou have reached the maximum number of bids allowed per player on this auction"
+    sealedAuctionHaveHigherBid: "&cYou have already placed a bid that exceeds this amount on the auction"
     notEnoughOfItem: "&cYou don't have enough of that item"
     startSyntax: "&cUsage: /auction start <amount> <price> [increment] [autowin]"
     creativeNotAllowed: "&cYou cannot start auctions while in creative"
@@ -271,6 +297,7 @@ messages:
   auctionImpounded: "&6The auction was impounded by [player]"
   auctionPlacedInQueue: "&6Your auction has been queued"
   queueInfoHeader: "&6Current auctions in the queue:"
+  notifySealedAuction: "&cThis is a sealed auction. All player bids are kept to themselves, the highest bidder wins"
   helpMenu:
   - "&6&m----&6[ &eAuction Help Menu &6]&m-----"
   - "&e/auction info &7- &fDisplays current auction information"

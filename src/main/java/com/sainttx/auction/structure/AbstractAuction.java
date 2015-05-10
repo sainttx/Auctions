@@ -43,13 +43,6 @@ public abstract class AbstractAuction implements Auction {
     protected int timeLeft;
     protected BukkitTask timerTask;
 
-    /*
-     * Protect from reflective instantiation
-     */
-    private AbstractAuction() {
-        throw new IllegalAccessError("cannot create empty auction instances");
-    }
-
     /**
      * Creates an Auction
      *
@@ -107,15 +100,31 @@ public abstract class AbstractAuction implements Auction {
             throw new IllegalArgumentException("player cannot be null");
         }
 
-        this.winningBid = bid;
-        this.topBidderName = player.getName();
-        this.topBidderUUID = player.getUniqueId();
-        broadcastBid();
+        MessageHandler handler = AuctionsAPI.getMessageHandler();
 
-        // Trigger our modules
-        for (AuctionModule module : modules) {
-            if (module.canTrigger()) {
-                module.trigger();
+        if (bid < getTopBid() + getBidIncrement()) {
+            handler.sendMessage(player, plugin.getMessage("messages.error.bidTooLow")); // the bid wasnt enough
+        } else if (plugin.getEconomy().getBalance(player) < bid) {
+            handler.sendMessage(player, plugin.getMessage("messages.error.insufficientBalance")); // insufficient funds
+        } else if (player.getUniqueId().equals(getTopBidder())) {
+            handler.sendMessage(player, plugin.getMessage("messages.error.alreadyTopBidder")); // already top bidder
+        } else {
+            if (getTopBidder() != null) { // give the old winner their money back
+                OfflinePlayer oldPlayer = Bukkit.getOfflinePlayer(getTopBidder());
+                plugin.getEconomy().depositPlayer(oldPlayer, getTopBid());
+            }
+
+            this.winningBid = bid;
+            this.topBidderName = player.getName();
+            this.topBidderUUID = player.getUniqueId();
+            plugin.getEconomy().withdrawPlayer(player, bid);
+            broadcastBid();
+
+            // Trigger our modules
+            for (AuctionModule module : modules) {
+                if (module.canTrigger()) {
+                    module.trigger();
+                }
             }
         }
     }
@@ -160,10 +169,7 @@ public abstract class AbstractAuction implements Auction {
         runNextAuctionTimer();
 
         // Return the top bidders money
-        if (getTopBidder() != null) {
-            OfflinePlayer topBidder = Bukkit.getOfflinePlayer(getTopBidder());
-            plugin.getEconomy().depositPlayer(topBidder, getTopBid());
-        }
+        returnMoneyToAll();
 
         // Set current auction to null
         AuctionsAPI.getAuctionManager().setCurrentAuction(null);
@@ -189,10 +195,7 @@ public abstract class AbstractAuction implements Auction {
         }
 
         // Return the top bidders money
-        if (getTopBidder() != null) {
-            OfflinePlayer topBidder = Bukkit.getOfflinePlayer(getTopBidder());
-            plugin.getEconomy().depositPlayer(topBidder, getTopBid());
-        }
+        returnMoneyToAll();
 
         // Broadcast
         MessageHandler handler = AuctionsAPI.getAuctionManager().getMessageHandler();
@@ -200,6 +203,16 @@ public abstract class AbstractAuction implements Auction {
 
         // Set current auction to null
         AuctionsAPI.getAuctionManager().setCurrentAuction(null);
+    }
+
+    /*
+     * Returns all bidders money
+     */
+    protected void returnMoneyToAll() {
+        if (getTopBidder() != null) {
+            OfflinePlayer topBidder = Bukkit.getOfflinePlayer(getTopBidder());
+            plugin.getEconomy().depositPlayer(topBidder, getTopBid());
+        }
     }
 
     @Override

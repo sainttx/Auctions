@@ -131,9 +131,7 @@ public interface Auction {
     double getTopBid();
 
     /**
-     * Places a bid made by a player, does not handle
-     * any economy functions. Specifying a null player will
-     * make the server think the console/server is bidding
+     * Handles the event that a player places a bid.
      *
      * @param player the player
      * @param bid    the amount bid by the player
