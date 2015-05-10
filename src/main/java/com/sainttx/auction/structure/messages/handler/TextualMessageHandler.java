@@ -190,6 +190,11 @@ public class TextualMessageHandler implements MessageHandler {
      */
     public static class MessageFormatterImpl implements MessageFormatter {
 
+        static final long THOUSAND = 1000L;
+        static final long MILLION = 1000000L;
+        static final long BILLION = 1000000000L;
+        static final long TRILLION = 1000000000000L;
+
         @Override
         public String format(String message) {
             return format(message, null);
@@ -200,18 +205,22 @@ public class TextualMessageHandler implements MessageHandler {
             if (message == null) {
                 throw new IllegalArgumentException("message cannot be null");
             }
+            AuctionPlugin plugin = AuctionPlugin.getPlugin();
+            boolean truncate = plugin.getConfig().getBoolean("general.truncatedNumberFormat", false);
+
             if (auction != null) {
                 message = message.replace("[itemName]", auction.getReward().getName());
                 message = message.replace("[itemamount]", Integer.toString(auction.getReward().getAmount()));
                 message = message.replace("[time]", TimeUtil.getFormattedTime(auction.getTimeLeft()));
-                message = message.replace("[autowin]", formatDouble(auction.getAutowin()));
+                message = message.replace("[autowin]", truncate ? truncateNumber(auction.getAutowin()) : formatDouble(auction.getAutowin()));
                 message = message.replace("[ownername]", auction.getOwnerName() == null ? "Console" : auction.getOwnerName());
                 message = message.replace("[topbiddername]", auction.getTopBidderName() == null ? "Console" : auction.getTopBidderName());
-                message = message.replace("[increment]", formatDouble(auction.getBidIncrement()));
-                message = message.replace("[topbid]", formatDouble(auction.getTopBid()));
+                message = message.replace("[increment]", truncate ? truncateNumber(auction.getBidIncrement()) : formatDouble(auction.getBidIncrement()));
+                message = message.replace("[topbid]", truncate ? truncateNumber(auction.getTopBid()) : formatDouble(auction.getTopBid()));
                 message = message.replace("[taxpercent]", formatDouble(auction.getTax()));
                 message = message.replace("[taxamount]", formatDouble(auction.getTaxAmount()));
-                message = message.replace("[winnings]", formatDouble(auction.getTopBid() - auction.getTaxAmount()));
+                double winnings = auction.getTopBid() - auction.getTaxAmount();
+                message = message.replace("[winnings]", truncate ? truncateNumber(winnings) : formatDouble(winnings));
             }
             return ChatColor.translateAlternateColorCodes('&', message);
         }
@@ -224,6 +233,15 @@ public class TextualMessageHandler implements MessageHandler {
             format.setMaximumFractionDigits(2);
             format.setMinimumFractionDigits(2);
             return format.format(d);
+        }
+
+        /*
+         * A helper method to truncate numbers to the nearest amount
+         */
+        private String truncateNumber(double x) {
+            return x < THOUSAND ? formatDouble(x) : x < MILLION ? formatDouble(x / THOUSAND) + "K" :
+                    x < BILLION ? formatDouble(x / MILLION) + "M" : x < TRILLION ? formatDouble(x / BILLION) + "B" :
+                            formatDouble(x / TRILLION) + "T";
         }
     }
 }

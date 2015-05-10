@@ -154,6 +154,11 @@ general:
   # class. For example, this is the difference between times being shown as
   # "5 minutes 5 seconds" vs. "5m, 5s". Default: false.
   shortenedTimeFormat: false
+  # Whether or not to truncate any numbers that are formated into messages.
+  # These numbers are monetary values (top bid amount, buyout, etc). Setting
+  # this to true will have applicable numbers truncated. For example, the
+  # number 1234 will be output as "1K", 99874 as "99K", etc. Default: false.
+  truncatedNumberFormat: false
   # A list of worlds that the auction plugin is disabled in. World names
   # are all case sensitive.
   disabledWorlds:
