@@ -5,5 +5,6 @@ package com.sainttx.auction.api;
  */
 public enum AuctionType {
     STANDARD,
-    SEALED
+    SEALED,
+    CUSTOM
 }

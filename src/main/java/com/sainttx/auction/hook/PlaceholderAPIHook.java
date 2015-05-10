@@ -43,7 +43,7 @@ public class PlaceholderAPIHook {
                     return plugin.formatDouble(current.getTaxAmount());
                 } else if (token.equalsIgnoreCase("winnings")) {
                     return plugin.formatDouble(current.getTopBid() - current.getTaxAmount());
-                } else if (token.equalsIgnoreCase("rewardname")) {
+                } else if (token.equalsIgnoreCase("itemname")) {
                     return current.getReward().getName();
                 } else {
                     return null;
