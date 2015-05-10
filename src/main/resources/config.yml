@@ -234,7 +234,10 @@ messages:
     # "Hello [item]!", the [item] placeholder will be replaced with the items
     # name formatted as seen in itemFormat.
     itemFormat: "&c[itemName]"
-    actionBarMessage: "&c[ownername] &6is auctioning &c[itemamount] [itemName] &6for &c[time]&6! Type &c/auction info &6for more information"
+    # The actionbar message is sent along ALL broadcasts made by the plugin. If
+    # you don't want duplicate messages being sent through chat, you'll have to
+    # disable the specific message by setting them to nothing (ie. "").
+    actionBarMessage: "&e&lAUCTION: &f[ownername] || [itemamount] [itemName] || [time] || [topbiddername] ($[topbid]) || &e/auction info"
     antiSnipeAdd: "&6ANTI-SNIPE &e- &c[snipetime] &6seconds have been added to the auction!"
     autowin:  "&6The host has set the autowin amount to &c$[autowin]"
     bid: "&c[topbiddername] &6has bid &c$[topbid] &6on &c[itemamount] [item]"
