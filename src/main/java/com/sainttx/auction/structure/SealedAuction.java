@@ -61,7 +61,7 @@ public class SealedAuction extends AbstractAuction {
                     ? currentBids.get(player.getUniqueId()) : 0;
 
             if (previousBid > 0) {
-                if (bid < previousBid) {
+                if (bid <= previousBid) {
                     handler.sendMessage(player, plugin.getMessage("messages.error.sealedAuctionHaveHigherBid"));
                     return;
                 } else {

@@ -266,7 +266,7 @@ messages:
     currentlyIgnoring: "&cYou can't do that while ignoring auctions"
     sealedAuctionsDisabled: "&cSealed auctions are currently disabled"
     sealedAuctionsMaxBidsReached: "&cYou have reached the maximum number of bids allowed per player on this auction"
-    sealedAuctionHaveHigherBid: "&cYou have already placed a bid that exceeds this amount on the auction"
+    sealedAuctionHaveHigherBid: "&cYou have already placed a bid that is equal or greater than that amount"
     notEnoughOfItem: "&cYou don't have enough of that item"
     startSyntax: "&cUsage: /auction start <amount> <price> [increment] [autowin]"
     creativeNotAllowed: "&cYou cannot start auctions while in creative"
