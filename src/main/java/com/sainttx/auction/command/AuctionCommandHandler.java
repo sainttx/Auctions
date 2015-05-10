@@ -2,9 +2,8 @@ package com.sainttx.auction.command;
 
 import com.sainttx.auction.AuctionPlugin;
 import com.sainttx.auction.api.AuctionsAPI;
-import com.sainttx.auction.command.subcommand.BidCommand;
 import com.sainttx.auction.command.subcommand.*;
-import com.sainttx.auction.util.TextUtil;
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -30,7 +29,7 @@ public class AuctionCommandHandler implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (args.length == 0 && !command.getName().equalsIgnoreCase("bid")) {
-            TextUtil.sendMenu(sender);
+            sendMenu(sender);
         } else {
             AuctionPlugin plugin = AuctionPlugin.getPlugin();
             String sub = command.getName().equalsIgnoreCase("bid") ? "bid" : args[0];
@@ -47,8 +46,21 @@ public class AuctionCommandHandler implements CommandExecutor {
                 }
             }
 
-            TextUtil.sendMenu(sender);
+            sendMenu(sender);
         }
         return true;
+    }
+
+    /**
+     * Sends the auction menu to a sender
+     *
+     * @param sender The sender to send the menu too
+     */
+    public void sendMenu(CommandSender sender) {
+        AuctionPlugin plugin = AuctionPlugin.getPlugin();
+
+        for (String message : plugin.getConfig().getStringList("messages.helpMenu")) {
+            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', message));
+        }
     }
 }

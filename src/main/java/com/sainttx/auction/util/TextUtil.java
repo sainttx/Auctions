@@ -5,7 +5,6 @@ import com.sainttx.auction.api.Auction;
 import com.sainttx.auction.api.reward.ItemReward;
 import mkremins.fanciful.FancyMessage;
 import org.bukkit.ChatColor;
-import org.bukkit.command.CommandSender;
 
 import java.util.EnumSet;
 import java.util.Set;
@@ -81,18 +80,5 @@ public class TextUtil {
         }
 
         return fancy;
-    }
-
-    /**
-     * Sends the auction menu to a sender
-     *
-     * @param sender The sender to send the menu too
-     */
-    public static void sendMenu(CommandSender sender) {
-        AuctionPlugin plugin = AuctionPlugin.getPlugin();
-
-        for (String message : plugin.getConfig().getStringList("messages.helpMenu")) {
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', message));
-        }
     }
 }
