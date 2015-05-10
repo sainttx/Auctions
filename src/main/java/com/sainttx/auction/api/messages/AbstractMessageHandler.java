@@ -3,7 +3,7 @@ package com.sainttx.auction.api.messages;
 import com.sainttx.auction.AuctionPlugin;
 import com.sainttx.auction.api.Auction;
 import com.sainttx.auction.api.AuctionsAPI;
-import com.sainttx.auction.util.TextUtil;
+import com.sainttx.auction.api.reward.ItemReward;
 import com.sainttx.auction.util.TimeUtil;
 import mkremins.fanciful.FancyMessage;
 import org.bukkit.ChatColor;
@@ -11,10 +11,9 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.text.NumberFormat;
-import java.util.HashSet;
-import java.util.Locale;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * A base message handler that handles message sending
@@ -23,6 +22,7 @@ public abstract class AbstractMessageHandler implements MessageHandler {
 
     protected MessageFormatter formatter;
     protected static Set<UUID> ignoring = new HashSet<UUID>();
+    public static final Pattern COLOR_FINDER_PATTERN = Pattern.compile(ChatColor.COLOR_CHAR + "([a-f0-9klmnor])");
 
     public AbstractMessageHandler() {
         this.formatter = new MessageFormatterImpl();
@@ -39,7 +39,7 @@ public abstract class AbstractMessageHandler implements MessageHandler {
         String[] messages = message.split("\n+");
 
         for (String msg : messages) {
-            FancyMessage fancy = TextUtil.createMessage(auction, msg);
+            FancyMessage fancy = createMessage(auction, msg);
 
             for (CommandSender recipient : getRecipients()) {
                 if (recipient instanceof Player && isIgnoring(((Player) recipient).getUniqueId())) {
@@ -62,7 +62,7 @@ public abstract class AbstractMessageHandler implements MessageHandler {
         String[] messages = message.split("\n+");
 
         for (String msg : messages) {
-            FancyMessage fancy = TextUtil.createMessage(auction, msg);
+            FancyMessage fancy = createMessage(auction, msg);
             fancy.send(recipient);
         }
     }
@@ -107,6 +107,66 @@ public abstract class AbstractMessageHandler implements MessageHandler {
 
     @Override
     public abstract Iterable<? extends CommandSender> getRecipients();
+
+    /*
+     * A helper method that creates a FancyMessage to send to players
+     */
+    private FancyMessage createMessage(Auction auction, String message) {
+        AuctionPlugin plugin = AuctionPlugin.getPlugin();
+        FancyMessage fancy = new FancyMessage(ChatColor.WHITE.toString());
+
+        if (!message.isEmpty()) {
+            String[] split = message.split(" ");
+            ChatColor current = ChatColor.WHITE;
+
+            for (String str : split) {
+                str = ChatColor.translateAlternateColorCodes('&', str); // Color the word
+                String currentColor = ChatColor.getLastColors(str);
+                current = ChatColor.getByChar(currentColor.isEmpty() ? current.getChar() : currentColor.charAt(1));
+
+                if (str.contains("[item]") && auction != null) {
+                    String rewardName = auction.getReward().getName();
+                    String display = plugin.getMessage("messages.auctionFormattable.itemFormat");
+                    display = ChatColor.translateAlternateColorCodes('&', display.replace("[itemName]", rewardName));
+
+                    Set<ChatColor> colors = EnumSet.noneOf(ChatColor.class);
+                    Matcher matcher = COLOR_FINDER_PATTERN.matcher(display);
+
+                    while (matcher.find()) {
+                        char cc = matcher.group(1).charAt(0);
+                        colors.add(ChatColor.getByChar(cc));
+                    }
+
+                    fancy.then(ChatColor.stripColor(display));
+
+                    if (auction.getReward() instanceof ItemReward) {
+                        ItemReward item = (ItemReward) auction.getReward();
+                        fancy.itemTooltip(item.getItem());
+                    }
+
+                    for (ChatColor color : colors) {
+                        if (color.isColor()) {
+                            fancy.color(color);
+                        } else {
+                            fancy.style(color);
+                        }
+                    }
+                } else {
+                    fancy.then(str);
+
+                    if (current.isColor()) {
+                        fancy.color(current);
+                    } else {
+                        fancy.style(current);
+                    }
+                }
+
+                fancy.then(" "); // Add a space after every word
+            }
+        }
+
+        return fancy;
+    }
 
     /**
      * A message formatter that handles basic formatting
