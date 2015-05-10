@@ -138,13 +138,6 @@ auctionSettings:
     # how many bids a player is allowed to place (or raise their previous)
     # on the auction. Default: 1.
     maxBidsPerPlayer: 1
-    # Vickrey auctions, or sealed-bid second-price auctions, are identical
-    # to sealed auctions, however rather then the highest bidder paying the
-    # price they've bid, they pay the second highest bid that was placed.
-    # In the event that there is no second highest bid, players will have to
-    # pay the highest bid. To learn more about Vickrey auctions, take a
-    # look here: http://en.wikipedia.org/wiki/Vickrey_auction. Default: false.
-    enableVickrey: false
 
 
 # Various settings unrelated to auction specific options are found in this
