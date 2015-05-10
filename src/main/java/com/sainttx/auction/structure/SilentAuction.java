@@ -8,7 +8,7 @@ import com.sainttx.auction.api.reward.Reward;
 import java.util.UUID;
 
 /**
- * Created by Matthew on 08/05/2015.
+ * An auction that will not broadcast any bids
  */
 public class SilentAuction extends AbstractAuction {
 

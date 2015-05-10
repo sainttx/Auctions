@@ -13,7 +13,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
 /**
- * Created by Matthew on 09/05/2015.
+ * Monitors specific events for the auction plugin
  */
 public class PlayerListener implements Listener {
 
@@ -28,7 +28,7 @@ public class PlayerListener implements Listener {
      * Responsible for giving the players back items that were unable to be
      * returned at a previous time
      */
-    public void onJoin(PlayerJoinEvent event) {
+    public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         Reward reward = plugin.getOfflineReward(player.getUniqueId());
 
@@ -43,7 +43,7 @@ public class PlayerListener implements Listener {
     /**
      * Cancels a players command if they're auctioning
      */
-    public void onCommand(PlayerCommandPreprocessEvent event) {
+    public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
         String command = event.getMessage().split(" ")[0];
         if (plugin.getConfig().getBoolean("general.blockCommands.ifAuctioning", false)
                 && plugin.getConfig().isList("general.blockedCommands")

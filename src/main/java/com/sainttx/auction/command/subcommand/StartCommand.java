@@ -21,7 +21,7 @@ import org.bukkit.inventory.ItemStack;
 import java.util.List;
 
 /**
- * Created by Matthew on 09/05/2015.
+ * Handles the /auction start command for the auction plugin
  */
 public class StartCommand extends AuctionSubCommand {
 

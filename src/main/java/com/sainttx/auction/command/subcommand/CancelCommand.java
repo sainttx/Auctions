@@ -9,7 +9,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 /**
- * Created by Matthew on 09/05/2015.
+ * Handles the /auction cancel command for the auction plugin
  */
 public class CancelCommand extends AuctionSubCommand {
 

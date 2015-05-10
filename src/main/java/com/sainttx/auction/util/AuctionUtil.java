@@ -4,6 +4,9 @@ import org.bukkit.Material;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+/**
+ * A utility class that handles various item and inventory functions
+ */
 public class AuctionUtil {
 
     /**

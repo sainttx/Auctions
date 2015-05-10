@@ -7,7 +7,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
 /**
- * Created by Matthew on 09/05/2015.
+ * Handles the /auction info command for the auction plugin
  */
 public class InfoCommand extends AuctionSubCommand {
 

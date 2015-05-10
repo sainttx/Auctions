@@ -6,7 +6,7 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 /**
- * Created by Matthew on 30/01/2015.
+ * A utility class that formats {@link Long} based time diffs into english
  */
 public class TimeUtil {
 

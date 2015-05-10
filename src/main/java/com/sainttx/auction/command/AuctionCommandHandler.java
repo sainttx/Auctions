@@ -11,10 +11,19 @@ import org.bukkit.command.CommandSender;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * Handles command distribution for the auction plugin
+ */
 public class AuctionCommandHandler implements CommandExecutor {
 
+    /*
+     * All commands for the plugin
+     */
     private Set<AuctionSubCommand> commands = new HashSet<AuctionSubCommand>();
 
+    /**
+     * Constructor. Initializes all subcommands.
+     */
     public AuctionCommandHandler() {
         commands.add(new BidCommand());
         commands.add(new CancelCommand());

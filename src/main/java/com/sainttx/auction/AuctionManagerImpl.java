@@ -12,6 +12,10 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+/**
+ * Manages all auction features. Only one manager instance
+ * is active at all times (ie. Singleton Design Pattern).
+ */
 public class AuctionManagerImpl implements AuctionManager {
 
     // Instance
