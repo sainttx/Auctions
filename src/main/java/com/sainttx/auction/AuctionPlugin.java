@@ -91,13 +91,14 @@ public class AuctionPlugin extends JavaPlugin {
             MessageHandlerType type = MessageHandlerType.valueOf(getMessage("chatSettings.handler"));
             switch (type) {
                 case ACTION_BAR:
-                    if (ReflectionUtil.getVersion().startsWith("v1_8")) {
+                    String version = ReflectionUtil.getVersion();
+                    if (version.startsWith("v1_8_R2") || version.startsWith("v1_8_R1")) {
                         AuctionsAPI.getAuctionManager().setMessageHandler(new ActionBarMessageHandler());
                         getLogger().info("Message handler has been set to ACTION_BAR");
                         break;
                     } else {
-                        getLogger().info("Message handler type ACTION_BAR is only available with minecraft versions " +
-                                "1.8 and higher. Defaulting to TEXT.");
+                        getLogger().info("Message handler type ACTION_BAR is unavailable for this minecraft version. " +
+                                "Defaulting to TEXT based message handling");
                     }
                 case TEXT:
                     AuctionsAPI.getAuctionManager().setMessageHandler(new TextualMessageHandler());

@@ -3,8 +3,8 @@ package com.sainttx.auction.structure.messages.handler;
 import com.sainttx.auction.AuctionPlugin;
 import com.sainttx.auction.api.Auction;
 import com.sainttx.auction.structure.messages.actionbar.ActionBarObject;
-import com.sainttx.auction.structure.messages.actionbar.ActionBarObjectv1_8;
-import com.sainttx.auction.structure.messages.actionbar.ActionBarObjectv1_8_3;
+import com.sainttx.auction.structure.messages.actionbar.ActionBarObjectv1_8_R1;
+import com.sainttx.auction.structure.messages.actionbar.ActionBarObjectv1_8_R3;
 import com.sainttx.auction.util.ReflectionUtil;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -14,6 +14,19 @@ import org.bukkit.entity.Player;
  */
 public class ActionBarMessageHandler extends TextualMessageHandler {
 
+    private ActionBarObject base;
+
+    public ActionBarMessageHandler() {
+        String version = ReflectionUtil.getVersion();
+        if (version.startsWith("v1_8_R1")) {
+            base = new ActionBarObjectv1_8_R1();
+        } else if (version.startsWith("v1_8_R2")) {
+            base = new ActionBarObjectv1_8_R3();
+        } else {
+            throw new IllegalStateException("this server version is unsupported");
+        }
+    }
+
     @Override
     public void broadcast(String message, Auction auction, boolean force) {
         super.broadcast(message, auction, force);
@@ -22,19 +35,11 @@ public class ActionBarMessageHandler extends TextualMessageHandler {
         message = formatter.format(plugin.getMessage("messages.auctionFormattable.actionBarMessage"), auction);
 
         if (!message.isEmpty()) {
-            ActionBarObject actionBar = null;
+            base.setTitle(message);
 
-            if (ReflectionUtil.getVersion().startsWith("v1_8_R2")) {
-                actionBar = new ActionBarObjectv1_8_3(message);
-            } else if (ReflectionUtil.getVersion().startsWith("v1_8_R1")) {
-                actionBar = new ActionBarObjectv1_8(message);
-            }
-
-            if (actionBar != null) {
-                for (CommandSender recipient : getAllRecipients()) {
-                    if (recipient instanceof Player && !isIgnoring(((Player) recipient).getUniqueId())) {
-                        actionBar.send((Player) recipient);
-                    }
+            for (CommandSender recipient : getAllRecipients()) {
+                if (recipient instanceof Player && !isIgnoring(((Player) recipient).getUniqueId())) {
+                    base.send((Player) recipient);
                 }
             }
         }
