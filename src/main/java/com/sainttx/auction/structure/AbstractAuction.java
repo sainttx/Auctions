@@ -110,6 +110,7 @@ public abstract class AbstractAuction implements Auction {
         this.winningBid = bid;
         this.topBidderName = player.getName();
         this.topBidderUUID = player.getUniqueId();
+        broadcastBid();
 
         // Trigger our modules
         for (AuctionModule module : modules) {
@@ -117,6 +118,13 @@ public abstract class AbstractAuction implements Auction {
                 module.trigger();
             }
         }
+    }
+
+    /*
+     * A helper method to broadcast a bid
+     */
+    protected void broadcastBid() {
+        AuctionsAPI.getMessageHandler().broadcast(plugin.getMessage("messages.auctionFormattable.bid"), this, false);
     }
 
     @Override
