@@ -20,7 +20,7 @@ public class IgnoreCommand extends AuctionSubCommand {
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage("Only players can use this sub command");
+            sender.sendMessage("Only players can ignore the plugin");
         } else {
             AuctionManager manager = AuctionsAPI.getAuctionManager();
             MessageHandler handler = manager.getMessageHandler();
