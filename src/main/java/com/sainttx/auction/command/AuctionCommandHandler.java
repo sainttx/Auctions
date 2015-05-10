@@ -11,6 +11,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.server.PluginDisableEvent;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -62,7 +63,14 @@ public class AuctionCommandHandler implements CommandExecutor, Listener {
             sendMenu(sender);
         } else {
             AuctionPlugin plugin = AuctionPlugin.getPlugin();
-            String sub = command.getName().equalsIgnoreCase("bid") ? "bid" : args[0];
+            String sub;
+
+            if (command.getName().equalsIgnoreCase("bid")) {
+                sub = "bid";
+                args = concat(new String[]{ "auction" }, args);
+            } else {
+                sub = args[0];
+            }
 
             for (AuctionSubCommand cmd : commands) {
                 if (cmd.canTrigger(sub)) {
@@ -79,6 +87,15 @@ public class AuctionCommandHandler implements CommandExecutor, Listener {
             sendMenu(sender);
         }
         return true;
+    }
+
+    /*
+     * A helper method to concatenate 2 arrays
+     */
+    private <T> T[] concat(T[] first, T[] second) {
+        T[] result = Arrays.copyOf(first, first.length + second.length);
+        System.arraycopy(second, 0, result, first.length, second.length);
+        return result;
     }
 
     /**
