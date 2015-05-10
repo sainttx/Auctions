@@ -6,8 +6,9 @@
 # Configuration options for various plugin integration
 # settings can be defined in this section. Each integration
 # option has an enable option that tells the plugin whether
-# or not the option should be used. Please note that some
-# options conflict and may be ignored in certain instances.
+# or not the option should be used. These integrated plugins
+# are essentially the same things as 'chatSettings.groups'
+# and stack with any defined chat setting groups.
 integration:
   # Herochat plugin integration options
   # Find the plugin here: http://dev.bukkit.org/bukkit-plugins/herochat/
@@ -18,6 +19,21 @@ integration:
     # are only sent to a single player ignore this and will send no
     # matter what.
     channel: "auction"
+
+# Configuration options for various chat group and handler features
+# are defined in this section. As the plugin expands, more options
+# will be added to this section.
+chatSettings:
+  # Configure which plugin groups view messages. All groups stack with
+  # each other so players from multiple groups can be defined to view
+  # messages
+  groups:
+    # 'global' is the standard broadcast group, this groups recipients
+    # is all players online.
+    global: true
+  # The handler is the delivery mechanism for which messages get
+  # delivered too. Current options are: TEXT, ACTION_BAR.
+  handler: TEXT
 
 # Configuration options for various settings specific to auctions
 # ie. times, bid increments, etc.

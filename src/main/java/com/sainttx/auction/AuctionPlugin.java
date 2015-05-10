@@ -1,10 +1,13 @@
 package com.sainttx.auction;
 
 import com.sainttx.auction.api.AuctionsAPI;
+import com.sainttx.auction.api.messages.MessageHandlerType;
 import com.sainttx.auction.api.reward.Reward;
 import com.sainttx.auction.command.AuctionCommandHandler;
 import com.sainttx.auction.listener.PlayerListener;
 import com.sainttx.auction.structure.messages.group.GlobalChatGroup;
+import com.sainttx.auction.structure.messages.group.HerochatGroup;
+import com.sainttx.auction.structure.messages.handler.ActionBarMessageHandler;
 import com.sainttx.auction.structure.messages.handler.TextualMessageHandler;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
@@ -49,6 +52,7 @@ public class AuctionPlugin extends JavaPlugin {
     @Override
     public void onEnable() {
         plugin = this;
+        saveDefaultConfig();
 
         // Set the economy in the next tick so that all plugins are loaded
         Bukkit.getScheduler().runTask(this, new Runnable() {
@@ -62,7 +66,34 @@ public class AuctionPlugin extends JavaPlugin {
             }
         });
 
-        // Setup
+        // Message groups
+        if (getConfig().getBoolean("integration.herochat.enable")) {
+            AuctionsAPI.getAuctionManager().addMessageGroup(new HerochatGroup(this));
+        }
+        if (getConfig().getBoolean("chatSettings.groups.global")) {
+            AuctionsAPI.getAuctionManager().addMessageGroup(new GlobalChatGroup());
+        }
+
+        // Message handler
+        try {
+            MessageHandlerType type = MessageHandlerType.valueOf(getMessage("chatSettings.handler"));
+            switch (type) {
+                case TEXT:
+                    AuctionsAPI.getAuctionManager().setMessageHandler(new TextualMessageHandler());
+                    getLogger().info("Message handler has been set to TEXT");
+                    break;
+                case ACTION_BAR:
+                    AuctionsAPI.getAuctionManager().setMessageHandler(new ActionBarMessageHandler());
+                    getLogger().info("Message handler has been set to ACTION_BAR");
+                    break;
+            }
+        } catch (Throwable throwable) {
+            getLogger().info("Failed to find a valid message handler, please make sure that your value" +
+                    "for 'chatSettings.handler' is a valid message handler type.");
+            getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
+
         getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
         AuctionsAPI.getAuctionManager().setMessageHandler(new TextualMessageHandler());
         AuctionsAPI.getAuctionManager().addMessageGroup(new GlobalChatGroup());
@@ -201,7 +232,6 @@ public class AuctionPlugin extends JavaPlugin {
      * Loads the configuration
      */
     public void loadConfig() {
-        saveDefaultConfig();
         File names = new File(getDataFolder(), "items.yml");
         File namesFile = new File(plugin.getDataFolder(), "items.yml");
 
