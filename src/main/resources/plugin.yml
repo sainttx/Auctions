@@ -4,7 +4,7 @@ description: An auctioning plugin
 author: SainttX
 
 main: com.sainttx.auction.AuctionPlugin
-softdepend: [Herochat]
+softdepend: [Herochat, PlaceholderAPI]
 depend: [Vault]
 
 commands:

@@ -33,7 +33,7 @@ public class TimeUtil {
     public static String formatDateDiff(Calendar fromDate, Calendar toDate, boolean shortened) {
         boolean future = false;
         if (toDate.equals(fromDate)) {
-            return "&6Now";
+            return "0 seconds";
         }
         if (toDate.after(fromDate)) {
             future = true;

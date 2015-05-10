@@ -4,11 +4,13 @@ import com.sainttx.auction.api.AuctionsAPI;
 import com.sainttx.auction.api.messages.MessageHandlerType;
 import com.sainttx.auction.api.reward.Reward;
 import com.sainttx.auction.command.AuctionCommandHandler;
+import com.sainttx.auction.hook.PlaceholderAPIHook;
 import com.sainttx.auction.listener.PlayerListener;
 import com.sainttx.auction.structure.messages.group.GlobalChatGroup;
 import com.sainttx.auction.structure.messages.group.HerochatGroup;
 import com.sainttx.auction.structure.messages.handler.ActionBarMessageHandler;
 import com.sainttx.auction.structure.messages.handler.TextualMessageHandler;
+import com.sainttx.auction.util.ReflectionUtil;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -76,17 +78,30 @@ public class AuctionPlugin extends JavaPlugin {
             AuctionsAPI.getAuctionManager().addMessageGroup(new GlobalChatGroup());
         }
 
+        // Register placeholders
+        if (canRegisterPlaceholders()) {
+            PlaceholderAPIHook.registerPlaceHolders(this);
+            getLogger().info("Successfully registered PlaceholderAPI placeholders.");
+        } else {
+            getLogger().info("PlaceholderAPI was not found, chat hooks haven't been registered.");
+        }
+
         // Message handler
         try {
             MessageHandlerType type = MessageHandlerType.valueOf(getMessage("chatSettings.handler"));
             switch (type) {
+                case ACTION_BAR:
+                    if (ReflectionUtil.getVersion().startsWith("v1_8")) {
+                        AuctionsAPI.getAuctionManager().setMessageHandler(new ActionBarMessageHandler());
+                        getLogger().info("Message handler has been set to ACTION_BAR");
+                        break;
+                    } else {
+                        getLogger().info("Message handler type ACTION_BAR is only available with minecraft versions " +
+                                "1.8 and higher. Defaulting to TEXT.");
+                    }
                 case TEXT:
                     AuctionsAPI.getAuctionManager().setMessageHandler(new TextualMessageHandler());
                     getLogger().info("Message handler has been set to TEXT");
-                    break;
-                case ACTION_BAR:
-                    AuctionsAPI.getAuctionManager().setMessageHandler(new ActionBarMessageHandler());
-                    getLogger().info("Message handler has been set to ACTION_BAR");
                     break;
             }
         } catch (Throwable throwable) {
@@ -106,6 +121,17 @@ public class AuctionPlugin extends JavaPlugin {
         getCommand("sealedauction").setExecutor(handler);
         getCommand("bid").setExecutor(handler);
         getServer().getPluginManager().registerEvents(handler, this);
+    }
+
+    /*
+     * A helper method that determines if placeholders can be registered
+     */
+    private boolean canRegisterPlaceholders() {
+        try {
+            return Class.forName("me.clip.placeholderapi.PlaceholderAPI") != null;
+        } catch (Throwable throwable) {
+            return false;
+        }
     }
 
     @Override

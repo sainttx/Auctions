@@ -31,9 +31,15 @@ chatSettings:
     # 'global' is the standard broadcast group, this groups recipients
     # is all players online.
     global: true
-  # The handler is the delivery mechanism for which messages get
-  # delivered too. Current options are: TEXT, ACTION_BAR.
+  # The handler is the mechanism for how messages get delivered.
+  # Current options are: TEXT, ACTION_BAR.
   handler: TEXT
+
+    # It is possible to use an action bar
+    # delivery system through the use of extended_clips ActionAnnouncer
+    # plugin (http://www.spigotmc.org/resources/actionannouncer.1320/)
+    # as this plugin supports various placeholders through his
+    # PlaceholderAPI.
 
 # Configuration options for various settings specific to auctions
 # ie. times, bid increments, etc.
@@ -223,6 +229,7 @@ messages:
     # "Hello [item]!", the [item] placeholder will be replaced with the items
     # name formatted as seen in itemFormat.
     itemFormat: "&c[itemName]"
+    actionBarMessage: "&c[ownername] &6is auctioning &c[itemamount] [item] &6for &c[time]&6! Type &c/auction info &6for more information"
     antiSnipeAdd: "&6ANTI-SNIPE &e- &c[snipetime] &6seconds have been added to the auction!"
     autowin:  "&6The host has set the autowin amount to &c$[autowin]"
     bid: "&c[topbiddername] &6has bid &c$[topbid] &6on &c[itemamount] [item]"

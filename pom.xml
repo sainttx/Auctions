@@ -105,5 +105,13 @@
             <scope>system</scope>
             <systemPath>${project.basedir}/libraries/HeroChat.jar</systemPath>
         </dependency>
+        <dependency>
+            <groupId>me.clip</groupId>
+            <artifactId>placeholderapi</artifactId>
+            <version>1.4</version>
+            <!-- <version>1.0</version> -->
+            <scope>system</scope>
+            <systemPath>${project.basedir}/libraries/PlaceholderAPI.jar</systemPath>
+        </dependency>
     </dependencies>
 </project>
