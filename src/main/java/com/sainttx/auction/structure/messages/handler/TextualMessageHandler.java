@@ -42,13 +42,15 @@ public class TextualMessageHandler implements MessageHandler {
         String[] messages = message.split("\n+");
 
         for (String msg : messages) {
-            FancyMessage fancy = createMessage(auction, msg);
+            if (!msg.isEmpty()) {
+                FancyMessage fancy = createMessage(auction, msg);
 
-            for (CommandSender recipient : getAllRecipients()) {
-                if (recipient instanceof Player && isIgnoring(((Player) recipient).getUniqueId())) {
-                    continue;
-                } else{
-                    fancy.send(recipient);
+                for (CommandSender recipient : getAllRecipients()) {
+                    if (recipient instanceof Player && isIgnoring(((Player) recipient).getUniqueId())) {
+                        continue;
+                    } else {
+                        fancy.send(recipient);
+                    }
                 }
             }
         }
@@ -81,15 +83,16 @@ public class TextualMessageHandler implements MessageHandler {
         String[] messages = message.split("\n+");
 
         for (String msg : messages) {
-            FancyMessage fancy = createMessage(auction, msg);
-            fancy.send(recipient);
+            if (!msg.isEmpty()) {
+                FancyMessage fancy = createMessage(auction, msg);
+                fancy.send(recipient);
+            }
         }
     }
 
     @Override
     public void sendAuctionInformation(CommandSender recipient, Auction auction) {
         AuctionPlugin plugin = AuctionPlugin.getPlugin();
-        MessageHandler handler = AuctionsAPI.getMessageHandler();
         sendMessage(recipient, plugin.getMessage("messages.auctionFormattable.info"), auction);
         sendMessage(recipient, plugin.getMessage("messages.auctionFormattable.increment"), auction);
 
@@ -99,7 +102,7 @@ public class TextualMessageHandler implements MessageHandler {
             if (queuePosition > 0) {
                 String message = plugin.getMessage("messages.auctionFormattable.queuePosition")
                         .replace("[queuepos]", Integer.toString(queuePosition));
-                handler.sendMessage(player, message, auction);
+                sendMessage(player, message, auction);
             }
         }
     }
