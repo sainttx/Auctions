@@ -240,7 +240,11 @@ messages:
     antiSnipeAdd: "&6ANTI-SNIPE &e- &c[snipetime] &6seconds have been added to the auction!"
     queuePosition: "&6Your auction is &c#[queuepos] &6in the auction queue"
     queueInfoLine: "&c#[queuepos]&6. &c[ownername] &6is preparing to auction &c[itemamount] [item]"
-
+    # These are messages specific to sealed auctions. All placeholders from above
+    # will work as intended, however you will have new options available. These
+    # are as follows:
+    # [bid]      - The current bid that a player just placed
+    # [previous] - The last valid bid that a player placed
     sealedAuction:
       bid: "&cYou &6have placed a bid of &c$[bid]"
       raise: "&cYou &6have raised your previous bid of &c$[previous] &6to &c$[bid]"
