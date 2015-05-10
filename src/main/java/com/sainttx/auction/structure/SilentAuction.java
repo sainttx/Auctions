@@ -29,6 +29,9 @@ public class SilentAuction extends AbstractAuction {
         this.timeLeft = timeLeft;
     }
 
+    @Override
+    public void broadcastBid() {}
+
     /**
      * An implementation of an Auction builder for silent auctions
      */

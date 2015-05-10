@@ -3,6 +3,7 @@ package com.sainttx.auction.structure;
 import com.sainttx.auction.AuctionPlugin;
 import com.sainttx.auction.api.Auction;
 import com.sainttx.auction.api.AuctionType;
+import com.sainttx.auction.api.AuctionsAPI;
 import com.sainttx.auction.api.reward.Reward;
 
 import java.util.UUID;
@@ -27,6 +28,11 @@ public class StandardAuction extends AbstractAuction {
         this.autowin = autowin;
         this.bidIncrement = bidIncrement;
         this.timeLeft = timeLeft;
+    }
+
+    @Override
+    public void broadcastBid() {
+        AuctionsAPI.getMessageHandler().broadcast(plugin.getMessage("messages.auctionFormattable.bid"), this, false);
     }
 
     /**

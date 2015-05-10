@@ -120,12 +120,10 @@ public abstract class AbstractAuction implements Auction {
         }
     }
 
-    /*
-     * A helper method to broadcast a bid
+    /**
+     * Broadcasts the most recent bid
      */
-    protected void broadcastBid() {
-        AuctionsAPI.getMessageHandler().broadcast(plugin.getMessage("messages.auctionFormattable.bid"), this, false);
-    }
+    public abstract void broadcastBid();
 
     @Override
     public int getTimeLeft() {
