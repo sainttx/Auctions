@@ -119,7 +119,7 @@ public class AuctionPlugin extends JavaPlugin {
         if (!getConfig().isString(path)) {
             return path;
         }
-        
+
         return getConfig().getString(path);
     }
 
@@ -207,6 +207,24 @@ public class AuctionPlugin extends JavaPlugin {
         if (!names.exists()) {
             saveResource("items.yml", false);
         }
+        if (!namesFile.exists()) {
+            plugin.saveResource("items.yml", false);
+        }
+
+        itemsFile = YamlConfiguration.loadConfiguration(namesFile);
+    }
+
+    /*
+     * A helper method that loads all offline rewards into memory
+     */
+    private void loadOfflineRewards() {
+        try {
+            Class.forName("com.sainttx.auction.api.reward.ItemReward");
+        } catch (Throwable t) {
+            getLogger().log(Level.SEVERE, "failed to load offline rewards", t);
+            return;
+        }
+
         if (!offlineFile.exists()) {
             try {
                 offlineFile.createNewFile();
@@ -214,19 +232,7 @@ public class AuctionPlugin extends JavaPlugin {
                 ex.printStackTrace();
             }
         }
-        if (!namesFile.exists()) {
-            plugin.saveResource("items.yml", false);
-        }
-
-        itemsFile = YamlConfiguration.loadConfiguration(namesFile);
-
         this.offlineConfiguration = YamlConfiguration.loadConfiguration(offlineFile);
-    }
-
-    /*
-     * A helper method that loads all offline rewards into memory
-     */
-    private void loadOfflineRewards() {
         for (String string : offlineConfiguration.getKeys(false)) {
             Reward reward = (Reward) offlineConfiguration.get(string);
             offlineRewardCache.put(UUID.fromString(string), reward);

@@ -202,7 +202,7 @@ messages:
     endNotifyOwner: "&6Your auction has ended. Received &c$[winnings]"
     endTax: "&6A tax of &c[taxpercent]% ($[taxamount]) &6was charged"
     winner: "&6You won &c[itemamount] [item] &6with a bid of &c$[topbid]"
-    bid: "&c[topbidder] &6has bid &c$[topbid] &6on &c[itemamount] [item]"
+    bid: "&c[topbiddername] &6has bid &c$[topbid] &6on &c[itemamount] [item]"
     antiSnipeAdd: "&6ANTI-SNIPE &e- &c[snipetime] &6seconds have been added to the auction!"
     queuePosition: "&6Your auction is &c#[queuepos] &6in the auction queue"
   # Error messages are messages sent to players whenever they have failed

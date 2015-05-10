@@ -176,7 +176,7 @@ public abstract class AbstractAuction implements Auction {
 
         // Return the item to the owner
         if (getOwner() == null) {
-            plugin.getLogger().info("[Auction] Saving items of offline player " + getOwnerName() + " (uuid: " + getOwner() + ")");
+            plugin.getLogger().info("Saving items of offline player " + getOwnerName() + " (uuid: " + getOwner() + ")");
             plugin.saveOfflinePlayer(getOwner(), getReward());
         } else {
             getReward().giveItem(owner);
@@ -214,7 +214,7 @@ public abstract class AbstractAuction implements Auction {
 
             // Give the winner their items
             if (winner == null) {
-                plugin.getLogger().info("[Auction] Saving items of offline player " + getTopBidderName() + " (uuid: " + getTopBidder() + ")");
+                plugin.getLogger().info("Saving items of offline player " + getTopBidderName() + " (uuid: " + getTopBidder() + ")");
                 plugin.saveOfflinePlayer(getTopBidder(), getReward());
             } else {
                 getReward().giveItem(winner);
@@ -241,7 +241,7 @@ public abstract class AbstractAuction implements Auction {
                 getReward().giveItem(owner);
                 handler.sendMessage(plugin.getMessage("messages.ownerItemReturn"), owner);
             } else {
-                plugin.getLogger().info("[Auction] Saving items of offline player " + getOwnerName() + " (uuid: " + getOwner() + ")");
+                plugin.getLogger().info("Saving items of offline player " + getOwnerName() + " (uuid: " + getOwner() + ")");
                 plugin.saveOfflinePlayer(getOwner(), getReward());
             }
 
