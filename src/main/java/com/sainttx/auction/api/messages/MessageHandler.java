@@ -1,6 +1,7 @@
 package com.sainttx.auction.api.messages;
 
 import com.sainttx.auction.api.Auction;
+import com.sainttx.auction.structure.messages.handler.TextualMessageHandler;
 import org.bukkit.command.CommandSender;
 
 import java.util.UUID;
@@ -61,9 +62,7 @@ public interface MessageHandler {
     boolean isIgnoring(UUID playerId);
 
     /**
-     * Sets a player to be ignoring all auction messages. All
-     * added ignores carry over through any MessageHandlers that
-     * extend the {@link AbstractMessageHandler} class
+     * Sets a player to be ignoring all non-forced auction messages.
      *
      * @param playerId the {@link UUID} of the player
      */
@@ -76,20 +75,6 @@ public interface MessageHandler {
      * @return true if a player was actually removed
      */
     boolean removeIgnoring(UUID playerId);
-
-    /**
-     * Gets the message formatter
-     *
-     * @return the message formatter
-     */
-    MessageFormatter getFormatter();
-
-    /**
-     * Returns all recipients inside the channel
-     *
-     * @return any players that are in the valid channel to receive the message
-     */
-    Iterable<? extends CommandSender> getRecipients();
 
     /**
      * Represents a message formatting class

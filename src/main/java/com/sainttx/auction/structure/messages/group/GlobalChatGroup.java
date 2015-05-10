@@ -1,14 +1,13 @@
-package com.sainttx.auction.structure.messages;
+package com.sainttx.auction.structure.messages.group;
 
-import com.sainttx.auction.api.messages.AbstractMessageHandler;
+import com.sainttx.auction.api.messages.MessageRecipientGroup;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 /**
  * Sends messages to all players
  */
-public class GlobalChatHandler extends AbstractMessageHandler {
+public class GlobalChatGroup implements MessageRecipientGroup {
 
     @Override
     public Iterable<? extends CommandSender> getRecipients() {

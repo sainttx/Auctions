@@ -1,8 +1,10 @@
-package com.sainttx.auction.api.messages;
+package com.sainttx.auction.structure.messages.handler;
 
 import com.sainttx.auction.AuctionPlugin;
 import com.sainttx.auction.api.Auction;
 import com.sainttx.auction.api.AuctionsAPI;
+import com.sainttx.auction.api.messages.MessageHandler;
+import com.sainttx.auction.api.messages.MessageRecipientGroup;
 import com.sainttx.auction.api.reward.ItemReward;
 import com.sainttx.auction.util.TimeUtil;
 import mkremins.fanciful.FancyMessage;
@@ -18,13 +20,13 @@ import java.util.regex.Pattern;
 /**
  * A base message handler that handles message sending
  */
-public abstract class AbstractMessageHandler implements MessageHandler {
+public class TextualMessageHandler implements MessageHandler {
 
     protected MessageFormatter formatter;
-    protected static Set<UUID> ignoring = new HashSet<UUID>();
+    protected Set<UUID> ignoring = new HashSet<UUID>();
     public static final Pattern COLOR_FINDER_PATTERN = Pattern.compile(ChatColor.COLOR_CHAR + "([a-f0-9klmnor])");
 
-    public AbstractMessageHandler() {
+    public TextualMessageHandler() {
         this.formatter = new MessageFormatterImpl();
     }
 
@@ -41,11 +43,16 @@ public abstract class AbstractMessageHandler implements MessageHandler {
         for (String msg : messages) {
             FancyMessage fancy = createMessage(auction, msg);
 
-            for (CommandSender recipient : getRecipients()) {
-                if (recipient instanceof Player && isIgnoring(((Player) recipient).getUniqueId())) {
-                    continue;
-                } else {
-                    fancy.send(recipient);
+            Collection<CommandSender> sentTo = new HashSet<CommandSender>();
+            for (MessageRecipientGroup group : AuctionsAPI.getAuctionManager().getMessageGroups()) {
+                for (CommandSender recipient : group.getRecipients()) {
+                    if (sentTo.contains(recipient) || (recipient instanceof Player
+                            && isIgnoring(((Player) recipient).getUniqueId()))) {
+                        continue;
+                    } else {
+                        fancy.send(recipient);
+                    }
+                    sentTo.add(recipient);
                 }
             }
         }
@@ -99,14 +106,6 @@ public abstract class AbstractMessageHandler implements MessageHandler {
     public boolean removeIgnoring(UUID playerId) {
         return ignoring.remove(playerId);
     }
-
-    @Override
-    public MessageFormatter getFormatter() {
-        return formatter;
-    }
-
-    @Override
-    public abstract Iterable<? extends CommandSender> getRecipients();
 
     /*
      * A helper method that creates a FancyMessage to send to players
@@ -171,7 +170,7 @@ public abstract class AbstractMessageHandler implements MessageHandler {
     /**
      * A message formatter that handles basic formatting
      */
-    public class MessageFormatterImpl implements MessageFormatter {
+    public static class MessageFormatterImpl implements MessageFormatter {
 
         @Override
         public String format(String message) {

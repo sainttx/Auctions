@@ -3,13 +3,12 @@ package com.sainttx.auction;
 import com.sainttx.auction.api.Auction;
 import com.sainttx.auction.api.AuctionManager;
 import com.sainttx.auction.api.messages.MessageHandler;
+import com.sainttx.auction.api.messages.MessageRecipientGroup;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
-import java.util.EnumSet;
-import java.util.Queue;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
@@ -23,6 +22,7 @@ public class AuctionManagerImpl implements AuctionManager {
 
     // Auctions information
     private Auction currentAuction;
+    private Set<MessageRecipientGroup> recipientGroups = new HashSet<MessageRecipientGroup>();
     private Queue<Auction> auctionQueue = new ConcurrentLinkedQueue<Auction>();
     private Set<Material> banned = EnumSet.noneOf(Material.class);
     private MessageHandler handler;
@@ -149,6 +149,16 @@ public class AuctionManagerImpl implements AuctionManager {
         }
 
         this.handler = handler;
+    }
+
+    @Override
+    public void addMessageGroup(MessageRecipientGroup group) {
+        recipientGroups.add(group);
+    }
+
+    @Override
+    public Collection<MessageRecipientGroup> getMessageGroups() {
+        return recipientGroups;
     }
 
     @Override

@@ -1,10 +1,10 @@
-package com.sainttx.auction.structure.messages;
+package com.sainttx.auction.structure.messages.group;
 
 import com.dthielke.herochat.Channel;
 import com.dthielke.herochat.Chatter;
 import com.dthielke.herochat.Herochat;
 import com.sainttx.auction.AuctionPlugin;
-import com.sainttx.auction.api.messages.AbstractMessageHandler;
+import com.sainttx.auction.api.messages.MessageRecipientGroup;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -15,11 +15,11 @@ import java.util.Set;
 /**
  * Sends messages to all players inside a specific Herochat channel
  */
-public class HerochatHandler extends AbstractMessageHandler {
+public class HerochatGroup implements MessageRecipientGroup {
 
     private AuctionPlugin plugin;
 
-    public HerochatHandler(AuctionPlugin plugin) {
+    public HerochatGroup(AuctionPlugin plugin) {
         this.plugin = plugin;
     }
 

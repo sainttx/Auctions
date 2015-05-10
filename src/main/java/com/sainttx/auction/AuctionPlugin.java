@@ -4,7 +4,8 @@ import com.sainttx.auction.api.AuctionsAPI;
 import com.sainttx.auction.api.reward.Reward;
 import com.sainttx.auction.command.AuctionCommandHandler;
 import com.sainttx.auction.listener.PlayerListener;
-import com.sainttx.auction.structure.messages.GlobalChatHandler;
+import com.sainttx.auction.structure.messages.group.GlobalChatGroup;
+import com.sainttx.auction.structure.messages.handler.TextualMessageHandler;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -63,7 +64,8 @@ public class AuctionPlugin extends JavaPlugin {
 
         // Setup
         getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
-        AuctionsAPI.getAuctionManager().setMessageHandler(new GlobalChatHandler());
+        AuctionsAPI.getAuctionManager().setMessageHandler(new TextualMessageHandler());
+        AuctionsAPI.getAuctionManager().addMessageGroup(new GlobalChatGroup());
         loadConfig();
         loadOfflineRewards();
 
