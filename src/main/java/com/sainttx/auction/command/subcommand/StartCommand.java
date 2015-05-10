@@ -110,7 +110,7 @@ public class StartCommand extends AuctionSubCommand {
                     } else if (item.getType().getMaxDurability() > 0 && item.getDurability() > 0
                             && !plugin.getConfig().getBoolean("auctionSettings.canAuctionDamagedItems", true)) {
                         handler.sendMessage(plugin.getMessage("messages.error.cantAuctionDamagedItems"), player); // can't auction damaged
-                    } else if (!AuctionUtil.searchInventory(player.getInventory(), item, amount)) {
+                    } else if (AuctionUtil.getAmountItems(player.getInventory(), item) < amount) {
                         handler.sendMessage(plugin.getMessage("messages.error.notEnoughOfItem"), player);
                     } else if (!plugin.getConfig().getBoolean("auctionSettings.canAuctionNamedItems", true)
                             && item.getItemMeta().hasDisplayName()) {
@@ -144,7 +144,7 @@ public class StartCommand extends AuctionSubCommand {
                             manager.setCanStartNewAuction(false);
                         } else {
                             manager.addAuctionToQueue(created);
-                            handler.sendMessage(plugin.getMessage("message.auctionPlacedInQueue"), player);
+                            handler.sendMessage(plugin.getMessage("messages.auctionPlacedInQueue"), player);
                         }
                     }
                 }

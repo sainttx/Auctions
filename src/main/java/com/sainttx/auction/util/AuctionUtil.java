@@ -1,108 +1,61 @@
 package com.sainttx.auction.util;
 
-import com.sainttx.auction.api.AuctionsAPI;
-import org.bukkit.World;
-import org.bukkit.entity.Player;
+import org.bukkit.Material;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 public class AuctionUtil {
 
     /**
-     * Gives an item to a player
+     * Gets the amount of slots available for a particular item
      *
-     * @param player    The player to receive the item
-     * @param itemstack The item to be received
-     * @param messages  Any messages to be sent to the player
+     * @param inv  the inventory to search
+     * @param base the item to find slots for
+     * @return the amount of items that {@link Inventory#addItem(ItemStack...)}
+     * will be able to successfully put into the inventory
      */
-    public static void giveItem(Player player, ItemStack itemstack, String... messages) {
-        World world = player.getWorld();
-        boolean dropped = false;
-        int maxsize = itemstack.getMaxStackSize();
-        int amount = itemstack.getAmount();
-        int stacks = amount / maxsize;
-        int remaining = amount % maxsize;
-        ItemStack[] split = new ItemStack[1];
-
-        if (amount > maxsize) {
-            split = new ItemStack[stacks + (remaining > 0 ? 1 : 0)];
-            // ie. 70 stack can only be 64
-            for (int i = 0 ; i < stacks ; i++) {
-                ItemStack maxStackSize = itemstack.clone();
-                maxStackSize.setAmount(maxsize);
-                split[i] = maxStackSize;
-            }
-            if (remaining > 0) {
-                ItemStack remainder = itemstack.clone();
-                remainder.setAmount(remaining);
-                split[stacks] = remainder;
-            }
-        } else {
-            split[0] = itemstack;
+    public static int getFreeSlots(Inventory inv, ItemStack base) {
+        if (inv == null) {
+            throw new IllegalArgumentException("inventory cannot be null");
+        } else if (base == null) {
+            throw new IllegalArgumentException("base item cannot be null");
         }
 
-        for (ItemStack item : split) {
-            if (item != null) {
-                // Check their inventory space
-                if (hasSpace(player.getInventory(), item)) {
-                    player.getInventory().addItem(item);
-                } else {
-                    world.dropItem(player.getLocation(), item);
-                    dropped = true;
-                }
-            }
-        }
-        if (messages.length == 1) {
-            AuctionsAPI.getAuctionManager().getMessageHandler().sendMessage(messages[0], player);
-        }
-        if (dropped) {
-            AuctionsAPI.getAuctionManager().getMessageHandler().sendMessage("messages.notEnoughRoom", player);
-        }
-    }
-
-    /**
-     * Checks if an inventory can fit a split itemstack
-     *
-     * @param inventory The inventory to check
-     * @param itemstack The item being put into the inventory
-     * @return True if the inventory can fit the item, false otherwise
-     */
-    public static boolean hasSpace(Inventory inventory, ItemStack itemstack) {
         int totalFree = 0;
-        for (ItemStack is : inventory.getContents()) {
-            if (is == null) {
-                totalFree += itemstack.getMaxStackSize();
-            } else if (is.isSimilar(itemstack)) {
-                totalFree += is.getAmount() > itemstack.getMaxStackSize() ? 0 : itemstack.getMaxStackSize() - is.getAmount();
+        for (ItemStack is : inv.getContents()) {
+            if (is == null || is.getType() == Material.AIR) {
+                totalFree += base.getMaxStackSize();
+            } else if (is.isSimilar(base)) {
+                totalFree += is.getAmount() > base.getMaxStackSize() ? 0 : base.getMaxStackSize() - is.getAmount();
             }
         }
-        return totalFree >= itemstack.getAmount();
+        return totalFree;
     }
 
     /**
-     * Returns if an inventory has enough of an item
+     * Gets the amount of a specific item inside an inventory
      *
-     * @param inv      The inventory to check
-     * @param item     The item to find
-     * @param numItems The number of items searching for
-     * @return True if the inventory has enough of the item, false otherwise
+     * @param inv  the inventory to search
+     * @param base the item to search for
+     * @return the amount of items that match {@link ItemStack#isSimilar(ItemStack)}
+     * with the base
      */
-    public static boolean searchInventory(Inventory inv, ItemStack item, int numItems) {
+    public static int getAmountItems(Inventory inv, ItemStack base) {
+        if (inv == null) {
+            throw new IllegalArgumentException("inventory cannot be null");
+        } else if (base == null) {
+            throw new IllegalArgumentException("base item cannot be null");
+        }
+
         int count = 0;
         for (ItemStack is : inv) {
             if (is != null) {
-                if (is.isSimilar(item)) {
-                    if (is.getAmount() >= numItems) {
-                        return true;
-                    } else {
-                        count += is.getAmount();
-                    }
+                if (is.isSimilar(base)) {
+                    count += is.getAmount();
                 }
             }
         }
-        if (count >= numItems) {
-            return true;
-        }
-        return false;
+
+        return count;
     }
 }

@@ -1,8 +1,10 @@
 package com.sainttx.auction.api.reward;
 
 import com.sainttx.auction.AuctionPlugin;
+import com.sainttx.auction.api.AuctionsAPI;
 import com.sainttx.auction.util.AuctionUtil;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Map;
@@ -38,7 +40,24 @@ public class ItemReward implements Reward {
 
     @Override
     public void giveItem(Player player) {
-        AuctionUtil.giveItem(player, item);
+        Inventory inventory = player.getInventory();
+        ItemStack reward = item.clone();
+
+        int free = AuctionUtil.getFreeSlots(inventory, reward);
+
+        if (free < reward.getAmount()) { /* not enough space in inventory */
+            ItemStack drop = reward.clone();
+            drop.setAmount(drop.getAmount() - free);
+            reward.setAmount(free);
+
+            if (free > 0) {
+                player.getInventory().addItem(reward);
+            }
+            player.getWorld().dropItem(player.getLocation(), drop);
+            AuctionsAPI.getAuctionManager().getMessageHandler().sendMessage("messages.notEnoughRoom", player);
+        } else {
+            inventory.addItem(reward);
+        }
     }
 
     @Override
