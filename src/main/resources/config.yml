@@ -160,20 +160,34 @@ general:
 # you don't have much difficulty with figuring out what each message does.
 # All messages are formatted for chat colors regardless if there are
 # placeholder present or not.
-#
-# Note: There are currently some exceptions to the 'messages.auctionFormattable'
-#       section, these are as follows:
-# -
 messages:
   # All messages under 'auctionFormattable' mean that messages sent
   # that are from here are first parsed with the current active auction.
   # There are various placeholders that you can insert into these messages
   # that will be formatted will information from the current auctions
   # information. These placeholders are as follows:
+  # [itemamount]    - placeholder for the amount inside the reward/item
+  # [time]          - placeholder for the formatted time left (ie. 30 seconds)
+  # [autowin]       - placeholder for the autowin balance in the auction
+  # [ownername]     - placeholder for the name of the auctions owner. defaults to "Console" if null.
+  # [topbiddername] - placeholder for the name of the auctions top bidder. defaults to "Console" if null.
+  # [increment]     - placeholder for the minimum increment inside an auction
+  # [topbid]        - placeholder for the current top bid in the auction (untaxed)
+  # [taxpercent]    - placeholder for the current tax percent set by 'auctionSettings.taxPercent'
+  # [taxamount]     - placeholder for the current amount of money deducted by the tax
+  # [winnings]      - placeholder for the resulting amount of money that will be won (after tax is deducted)
+  # SPECIFIC MESSAGES ONLY:
+  # [itemName]  - only works with itemFormat
+  # [snipetime] - only works with antiSnipeAdd
+  # [queuepos]  - only works with queuePosition
   #
-  # [snipetime] only works with antiSnipeAdd
-  # [queuepos] only works with queuePosition
+  # Notes: - [ownername] and [topbiddername] will default to "Console" (w/o brackets)
+  #          if there is no valid player entity in those placeholder slots.
   auctionFormattable:
+    # The itemFormat is essentially the way [item] will be formatted inside
+    # auction messages. For example, if you have a message that contains
+    # "Hello [item]!", the [item] placeholder will be replaced with the items
+    # name formatted as seen in itemFormat.
     itemFormat: "&c[itemName]"
     timer: "&6The auction for &c[itemamount]x [item] &6has &c[time] &6remaining"
     increment: "&6The &cbidding increment &6has been set to &c$[increment]"
