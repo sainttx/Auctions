@@ -195,7 +195,7 @@ messages:
   # SPECIFIC MESSAGES ONLY:
   # [itemName]  - only works with itemFormat
   # [snipetime] - only works with antiSnipeAdd
-  # [queuepos]  - only works with queuePosition
+  # [queuepos]  - only works with queuePosition and queueInfoLine
   #
   # Notes: - [ownername] and [topbiddername] will default to "Console" (w/o brackets)
   #          if there is no valid player entity in those placeholder slots.
@@ -221,6 +221,7 @@ messages:
     bid: "&c[topbiddername] &6has bid &c$[topbid] &6on &c[itemamount] [item]"
     antiSnipeAdd: "&6ANTI-SNIPE &e- &c[snipetime] &6seconds have been added to the auction!"
     queuePosition: "&6Your auction is &c#[queuepos] &6in the auction queue"
+    queueInfoLine: "&c#[queuepos]&6. &c[ownername] &6is preparing to auction &c[itemamount] [item]"
   # Error messages are messages sent to players whenever they have failed
   # to define something correctly in their commands, or in other instances
   # like if they are lacking permissions to a command, etc.
@@ -256,6 +257,7 @@ messages:
     cantAuctionBannedLore: "&cYou can't auction off this item as it contains banned lore"
     cantUsePluginInWorld: "&cYou can't use the auctions plugin in this world"
     cantTeleportToDisabledWorld: "&cYou can't teleport into disabled auction worlds while auctioning or participating in an auction"
+    noAuctionsInQueue: "&cThere are no auctions in the queue"
   # All other messages are just standard messages that are sent to
   # players. These messages have no placeholders available.
   pluginReloaded: "&aThe auctions plugin has been reloaded"
@@ -268,6 +270,7 @@ messages:
   auctionsEnabled: "&6Auctions have been re-enabled"
   auctionImpounded: "&6The auction was impounded by [player]"
   auctionPlacedInQueue: "&6Your auction has been queued"
+  queueInfoHeader: "&6Current auctions in the queue:"
   helpMenu:
   - "&6&m----&6[ &eAuction Help Menu &6]&m-----"
   - "&e/auction info &7- &fDisplays current auction information"
@@ -277,4 +280,5 @@ messages:
   - "&e/auction cancel &7- &fCancels the current auction"
   - "&e/auction ignore &7- &fIgnore plugin messages"
   - "&e/auction impound &7- &fImpounds the current auctions contents"
+  - "&e/auction queue &7- &fView all queued auctions"
   - "&e/auction reload &7- &fReload auction configuration"

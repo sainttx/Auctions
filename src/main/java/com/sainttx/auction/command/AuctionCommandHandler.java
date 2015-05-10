@@ -34,6 +34,7 @@ public class AuctionCommandHandler implements CommandExecutor {
         commands.add(new ReloadCommand());
         commands.add(new StartCommand());
         commands.add(new ToggleCommand());
+        commands.add(new QueueCommand());
     }
 
     @Override
