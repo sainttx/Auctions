@@ -148,6 +148,22 @@ public abstract class AbstractAuction implements Auction {
     }
 
     @Override
+    public void impound() {
+        timerTask.cancel();
+        timerTask = null;
+        runNextAuctionTimer();
+
+        // Return the top bidders money
+        if (getTopBidder() != null) {
+            OfflinePlayer topBidder = Bukkit.getOfflinePlayer(getTopBidder());
+            plugin.getEconomy().depositPlayer(topBidder, getTopBid());
+        }
+
+        // Set current auction to null
+        AuctionsAPI.getAuctionManager().setCurrentAuction(null);
+    }
+
+    @Override
     public void cancel() {
         Player owner = Bukkit.getPlayer(ownerUUID);
         timerTask.cancel();

@@ -74,6 +74,13 @@ public interface Auction {
     void start();
 
     /**
+     * Stops this auction and returns the money to the top bidder.
+     * Rewards are left unhandled and are thrown unless other action
+     * is taken by plugin implementations
+     */
+    void impound();
+
+    /**
      * Cancels this auction and returns the items to the owner
      */
     void cancel();

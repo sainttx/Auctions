@@ -29,6 +29,7 @@ public class AuctionCommandHandler implements CommandExecutor {
         commands.add(new CancelCommand());
         commands.add(new EndCommand());
         commands.add(new IgnoreCommand());
+        commands.add(new ImpoundCommand());
         commands.add(new InfoCommand());
         commands.add(new ReloadCommand());
         commands.add(new StartCommand());
