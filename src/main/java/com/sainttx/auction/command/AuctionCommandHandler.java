@@ -7,6 +7,9 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.server.PluginDisableEvent;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -14,27 +17,43 @@ import java.util.Set;
 /**
  * Handles command distribution for the auction plugin
  */
-public class AuctionCommandHandler implements CommandExecutor {
+public class AuctionCommandHandler implements CommandExecutor, Listener {
 
     /*
      * All commands for the plugin
      */
-    private Set<AuctionSubCommand> commands = new HashSet<AuctionSubCommand>();
+    private static Set<AuctionSubCommand> commands = new HashSet<AuctionSubCommand>();
 
     /**
      * Constructor. Initializes all subcommands.
      */
     public AuctionCommandHandler() {
-        commands.add(new BidCommand());
-        commands.add(new CancelCommand());
-        commands.add(new EndCommand());
-        commands.add(new IgnoreCommand());
-        commands.add(new ImpoundCommand());
-        commands.add(new InfoCommand());
-        commands.add(new ReloadCommand());
-        commands.add(new StartCommand());
-        commands.add(new ToggleCommand());
-        commands.add(new QueueCommand());
+        addCommand(new BidCommand());
+        addCommand(new CancelCommand());
+        addCommand(new EndCommand());
+        addCommand(new IgnoreCommand());
+        addCommand(new ImpoundCommand());
+        addCommand(new InfoCommand());
+        addCommand(new ReloadCommand());
+        addCommand(new StartCommand());
+        addCommand(new ToggleCommand());
+        addCommand(new QueueCommand());
+    }
+
+    /**
+     * Registers a sub command
+     *
+     * @param command the command
+     */
+    public static void addCommand(AuctionSubCommand command) {
+        commands.add(command);
+    }
+
+    @EventHandler
+    public void onPluginDisable(PluginDisableEvent event) {
+        if (AuctionPlugin.getPlugin().equals(event.getPlugin())) {
+            commands.clear();
+        }
     }
 
     @Override

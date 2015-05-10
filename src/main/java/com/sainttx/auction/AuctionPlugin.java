@@ -102,6 +102,7 @@ public class AuctionPlugin extends JavaPlugin {
         AuctionCommandHandler handler = new AuctionCommandHandler();
         getCommand("auction").setExecutor(handler);
         getCommand("bid").setExecutor(handler);
+        getServer().getPluginManager().registerEvents(handler, this);
     }
 
     @Override
