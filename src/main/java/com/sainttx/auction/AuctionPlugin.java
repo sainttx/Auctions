@@ -116,6 +116,10 @@ public class AuctionPlugin extends JavaPlugin {
      * @return the message at the path
      */
     public String getMessage(String path) {
+        if (!getConfig().isString(path)) {
+            return path;
+        }
+        
         return getConfig().getString(path);
     }
 
