@@ -205,7 +205,7 @@ messages:
     # "Hello [item]!", the [item] placeholder will be replaced with the items
     # name formatted as seen in itemFormat.
     itemFormat: "&c[itemName]"
-    timer: "&6The auction for &c[itemamount]x [item] &6has &c[time] &6remaining"
+    timer: "&6The auction for &c[itemamount] [item] &6has &c[time] &6remaining"
     increment: "&6The &cbidding increment &6has been set to &c$[increment]"
     info: "&c[ownername] &6is auctioning &c[itemamount] [item] &6for &c$[topbid]"
     autowin:  "&6The host has set the autowin amount to &c$[autowin]"

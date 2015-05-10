@@ -2,6 +2,7 @@ package com.sainttx.auction.structure.messages.handler;
 
 import com.sainttx.auction.AuctionPlugin;
 import com.sainttx.auction.api.Auction;
+import com.sainttx.auction.api.AuctionManager;
 import com.sainttx.auction.api.AuctionsAPI;
 import com.sainttx.auction.api.messages.MessageHandler;
 import com.sainttx.auction.api.messages.MessageRecipientGroup;
@@ -43,19 +44,30 @@ public class TextualMessageHandler implements MessageHandler {
         for (String msg : messages) {
             FancyMessage fancy = createMessage(auction, msg);
 
-            Collection<CommandSender> sentTo = new HashSet<CommandSender>();
-            for (MessageRecipientGroup group : AuctionsAPI.getAuctionManager().getMessageGroups()) {
-                for (CommandSender recipient : group.getRecipients()) {
-                    if (sentTo.contains(recipient) || (recipient instanceof Player
-                            && isIgnoring(((Player) recipient).getUniqueId()))) {
-                        continue;
-                    } else {
-                        fancy.send(recipient);
-                    }
-                    sentTo.add(recipient);
+            for (CommandSender recipient : getAllRecipients()) {
+                if (recipient instanceof Player && isIgnoring(((Player) recipient).getUniqueId())) {
+                    continue;
+                } else{
+                    fancy.send(recipient);
                 }
             }
         }
+    }
+
+    /**
+     * Returns all registered recipients
+     *
+     * @return all recipients from the groups registered in {@link AuctionManager#getMessageGroups()}
+     */
+    protected Collection<CommandSender> getAllRecipients() {
+        Collection<CommandSender> recipients = new HashSet<CommandSender>();
+        for (MessageRecipientGroup group : AuctionsAPI.getAuctionManager().getMessageGroups()) {
+            for (CommandSender recipient : group.getRecipients()) {
+                recipients.add(recipient);
+            }
+        }
+
+        return recipients;
     }
 
     @Override
