@@ -16,6 +16,8 @@ public class ActionBarMessageHandler extends TextualMessageHandler {
 
     @Override
     public void broadcast(String message, Auction auction, boolean force) {
+        super.broadcast(message, auction, force);
+
         AuctionPlugin plugin = AuctionPlugin.getPlugin();
         message = formatter.format(plugin.getMessage("messages.auctionFormattable.actionBarMessage"), auction);
 

@@ -241,6 +241,7 @@ messages:
     endTax: "&6A tax of &c[taxpercent]% ($[taxamount]) &6was charged"
     increment: "&6The &cbidding increment &6has been set to &c$[increment]"
     info: "&c[ownername] &6is auctioning &c[itemamount] [item] &6for &c$[topbid]"
+    infoTopBidder: "&6The current top bidder of the auction is &c[topbiddername] &6with &c$[topbid]"
     price: "&6The &cauction &6begins at &c$[topbid] &6and will last for &c[time]"
     queueInfoLine: "&c#[queuepos]&6. &c[ownername] &6is preparing to auction &c[itemamount] [item]"
     queuePosition: "&6Your auction is &c#[queuepos] &6in the auction queue"

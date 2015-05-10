@@ -95,6 +95,9 @@ public class TextualMessageHandler implements MessageHandler {
         AuctionPlugin plugin = AuctionPlugin.getPlugin();
         sendMessage(recipient, plugin.getMessage("messages.auctionFormattable.info"), auction);
         sendMessage(recipient, plugin.getMessage("messages.auctionFormattable.increment"), auction);
+        if (auction.getTopBidder() != null) {
+            sendMessage(recipient, plugin.getMessage("messages.auctionFormattable.infoTopBidder"), auction);
+        }
 
         if (recipient instanceof Player) {
             Player player = (Player) recipient;

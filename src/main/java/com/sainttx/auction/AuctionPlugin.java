@@ -136,7 +136,6 @@ public class AuctionPlugin extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        plugin = null;
         AuctionManagerImpl.disable();
 
         // Logoff file
@@ -148,6 +147,8 @@ public class AuctionPlugin extends JavaPlugin {
         } catch (IOException ex) {
             ex.printStackTrace();
         }
+
+        plugin = null;
     }
 
     /**
