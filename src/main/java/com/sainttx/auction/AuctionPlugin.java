@@ -95,8 +95,6 @@ public class AuctionPlugin extends JavaPlugin {
         }
 
         getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
-        AuctionsAPI.getAuctionManager().setMessageHandler(new TextualMessageHandler());
-        AuctionsAPI.getAuctionManager().addMessageGroup(new GlobalChatGroup());
         loadConfig();
         loadOfflineRewards();
 
