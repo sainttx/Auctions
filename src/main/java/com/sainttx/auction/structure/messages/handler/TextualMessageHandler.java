@@ -198,7 +198,7 @@ public class TextualMessageHandler implements MessageHandler {
                 throw new IllegalArgumentException("message cannot be null");
             }
             if (auction != null) {
-                message = message.replace("[item]", auction.getReward().getName());
+                message = message.replace("[itemName]", auction.getReward().getName());
                 message = message.replace("[itemamount]", Integer.toString(auction.getReward().getAmount()));
                 message = message.replace("[time]", TimeUtil.getFormattedTime(auction.getTimeLeft()));
                 message = message.replace("[autowin]", formatDouble(auction.getAutowin()));
