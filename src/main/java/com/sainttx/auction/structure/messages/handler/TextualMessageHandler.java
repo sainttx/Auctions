@@ -231,7 +231,7 @@ public class TextualMessageHandler implements MessageHandler {
         private String formatDouble(double d) {
             NumberFormat format = NumberFormat.getInstance(Locale.ENGLISH);
             format.setMaximumFractionDigits(2);
-            format.setMinimumFractionDigits(2);
+            format.setMinimumFractionDigits(0);
             return format.format(d);
         }
 
