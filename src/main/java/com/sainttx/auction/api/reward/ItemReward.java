@@ -1,7 +1,7 @@
 package com.sainttx.auction.api.reward;
 
+import com.sainttx.auction.AuctionPlugin;
 import com.sainttx.auction.util.AuctionUtil;
-import com.sainttx.auction.util.TextUtil;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -43,7 +43,8 @@ public class ItemReward implements Reward {
 
     @Override
     public String getName() {
-        return TextUtil.getItemName(item);
+        AuctionPlugin plugin = AuctionPlugin.getPlugin();
+        return plugin.getItemName(item);
     }
 
     @Override

@@ -5,10 +5,11 @@ import com.sainttx.auction.api.reward.Reward;
 import com.sainttx.auction.command.AuctionCommandHandler;
 import com.sainttx.auction.listener.PlayerListener;
 import com.sainttx.auction.structure.messages.GlobalChatHandler;
-import com.sainttx.auction.util.TextUtil;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -23,6 +24,9 @@ public class AuctionPlugin extends JavaPlugin {
     // Instance
     private static AuctionPlugin plugin;
     private Economy economy;
+
+    // Items file
+    private YamlConfiguration itemsFile;
 
     // Offline items
     private final File offlineFile = new File(getDataFolder(), "offline.yml");
@@ -59,7 +63,6 @@ public class AuctionPlugin extends JavaPlugin {
         AuctionsAPI.getAuctionManager().setMessageHandler(new GlobalChatHandler());
         loadConfig();
         loadOfflineRewards();
-        TextUtil.load(this);
 
         // Commands
         AuctionCommandHandler handler = new AuctionCommandHandler();
@@ -70,7 +73,6 @@ public class AuctionPlugin extends JavaPlugin {
     @Override
     public void onDisable() {
         AuctionManagerImpl.disable();
-        TextUtil.save();
 
         // Logoff file
         try {
@@ -111,6 +113,34 @@ public class AuctionPlugin extends JavaPlugin {
      */
     public String getMessage(String path) {
         return getConfig().getString(path);
+    }
+
+    /**
+     * Gets an items name
+     *
+     * @param item the item
+     * @return the display name of the item
+     */
+    public String getItemName(ItemStack item) {
+        short durability = item.getType().getMaxDurability() > 0 ? 0 : item.getDurability();
+        String search = item.getType().toString() + "." + durability;
+        String ret = itemsFile.getString(search);
+
+        return ret == null ? getMaterialName(item.getType()) : ret;
+    }
+
+    /*
+     * Converts a material to a string (ie. ARMOR_STAND = Armor Stand)
+     */
+    private String getMaterialName(Material material) {
+        String[] split = material.toString().toLowerCase().split("_");
+        StringBuilder builder = new StringBuilder();
+
+        for (String str : split) {
+            builder.append(str.substring(0, 1).toUpperCase() + str.substring(1) + " ");
+        }
+
+        return builder.toString().trim();
     }
 
     /**
@@ -163,17 +193,7 @@ public class AuctionPlugin extends JavaPlugin {
     public void loadConfig() {
         saveDefaultConfig();
         File names = new File(getDataFolder(), "items.yml");
-
-        // Clear & set up auction broadcast times
-        /* AuctionBlah.broadcastTimes.clear();
-        for (String broadcastTime : getConfig().getStringList("general.broadcastTimes")) {
-            try {
-                Integer time = Integer.parseInt(broadcastTime);
-                AuctionBlah.broadcastTimes.add(time);
-            } catch (NumberFormatException ex) {
-                getLogger().info("String \"" + broadcastTime + "\" is an invalid Integer, skipping");
-            }
-        } */
+        File namesFile = new File(plugin.getDataFolder(), "items.yml");
 
         // Save items file name
         if (!names.exists()) {
@@ -186,6 +206,11 @@ public class AuctionPlugin extends JavaPlugin {
                 ex.printStackTrace();
             }
         }
+        if (!namesFile.exists()) {
+            plugin.saveResource("items.yml", false);
+        }
+
+        itemsFile = YamlConfiguration.loadConfiguration(namesFile);
 
         this.offlineConfiguration = YamlConfiguration.loadConfiguration(offlineFile);
     }
