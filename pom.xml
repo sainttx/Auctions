@@ -5,8 +5,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>groupId</groupId>
-    <artifactId>Auction</artifactId>
+    <artifactId>Auctions</artifactId>
     <version>1.4.0</version>
+
+    <name>Auctions by SainttX</name>
+    <description>An elegant auctioning solution that allows text tooltips for auctioned items</description>
+
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -14,7 +18,7 @@
 
     <build>
         <defaultGoal>clean package install</defaultGoal>
-        <finalName>Auction</finalName>
+        <finalName>${project.artifactId}</finalName>
         <sourceDirectory>${basedir}/src/main/java</sourceDirectory>
         <resources>
             <resource>
@@ -49,7 +53,7 @@
                     <relocations>
                         <relocation>
                             <pattern>mkremins.fanciful</pattern>
-                            <shadedPattern>com.sainttx.auction.fanciful</shadedPattern>
+                            <shadedPattern>com.sainttx.auctions.fanciful</shadedPattern>
                         </relocation>
                     </relocations>
                 </configuration>

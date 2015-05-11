@@ -35,12 +35,6 @@ chatSettings:
   # Current options are: TEXT, ACTION_BAR.
   handler: TEXT
 
-    # It is possible to use an action bar
-    # delivery system through the use of extended_clips ActionAnnouncer
-    # plugin (http://www.spigotmc.org/resources/actionannouncer.1320/)
-    # as this plugin supports various placeholders through his
-    # PlaceholderAPI.
-
 # Configuration options for various settings specific to auctions
 # ie. times, bid increments, etc.
 auctionSettings:
