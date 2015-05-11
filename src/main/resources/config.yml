@@ -32,7 +32,13 @@ chatSettings:
     # is all players online.
     global: true
   # The handler is the mechanism for how messages get delivered.
-  # Current options are: TEXT, ACTION_BAR.
+  # Current options are: TEXT, ACTION_BAR. The ACTION_BAR mechanism
+  # will still send messages through the TEXT channel, however it
+  # unlocks a new message option
+  # ('messages.auctionFormattable.actionBarMessage') that is sent to
+  # players whenever any broadcast message is sent. In the case that
+  # you don't want the TEXT channel sending its respective messages,
+  # you should disable the message by setting the message to "" (empty)
   handler: TEXT
 
 # Configuration options for various settings specific to auctions
@@ -192,6 +198,9 @@ general:
 # you don't have much difficulty with figuring out what each message does.
 # All messages are formatted for chat colors regardless if there are
 # placeholder present or not.
+#
+# Notes: - ALL messages can be disabled by setting it's respective self
+#          to "" (empty).
 messages:
   # All messages under 'auctionFormattable' mean that messages sent
   # that are from here are first parsed with the current active auction.
