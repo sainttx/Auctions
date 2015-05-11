@@ -315,4 +315,5 @@ messages:
   - "&e/auction impound &7- &fImpounds the current auctions contents"
   - "&e/auction ignore &7- &fIgnore plugin messages"
   - "&e/auction queue &7- &fView all queued auctions"
+  - "&e/auction toggle &7- &fToggles the plugins disabled/disabled status"
   - "&e/auction reload &7- &fReload auction configuration"
