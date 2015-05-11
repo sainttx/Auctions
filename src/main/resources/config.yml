@@ -233,37 +233,37 @@ messages:
     # auction messages. For example, if you have a message that contains
     # "Hello [item]!", the [item] placeholder will be replaced with the items
     # name formatted as seen in itemFormat.
-    itemFormat: "&c[itemName]"
+    itemFormat: "&b[itemName]"
     # The actionbar message is sent along ALL broadcasts made by the plugin. If
     # you don't want duplicate messages being sent through chat, you'll have to
     # disable the specific message by setting them to nothing (ie. "").
     actionBarMessage: "&e&lAUCTION: &f[ownername] || [itemamount] [itemName] || [time] || [topbiddername] ($[topbid]) || &e/auction info"
-    antiSnipeAdd: "&6ANTI-SNIPE &e- &c[snipetime] &6seconds have been added to the auction!"
-    autowin:  "&6The host has set the autowin amount to &c$[autowin]"
-    bid: "&c[topbiddername] &6has bid &c$[topbid] &6on &c[itemamount] [item]"
-    cancelled: "&6The auction for [item] &6was &ccancelled"
-    end: "&c[topbiddername] &6won &c[itemamount] [item] &6with a bid of &c$[topbid]"
-    endByAutowin: "&6The auction for [item] ended with &c[topbiddername] &6bidding &c$[topbid] &c&n(autowin)"
-    endNoBid: "&6The auction for &c[itemamount] [item] &6ended with no bids"
-    endNotifyOwner: "&6Your auction has ended. Received &c$[winnings]"
-    endTax: "&6A tax of &c[taxpercent]% ($[taxamount]) &6was charged"
-    increment: "&6The &cbidding increment &6has been set to &c$[increment]"
-    info: "&c[ownername] &6is auctioning &c[itemamount] [item] &6for &c$[topbid]"
+    antiSnipeAdd: "&e[Auctions] &f(Antisnipe) [snipetime] seconds were added to the auction"
+    autowin:  "&e[Auctions] &fThe buyout has been set to $[autowin]"
+    bid: "&e[Auctions] &f[topbiddername] bid $[topbid] on &b[itemamount] [item]"
+    cancelled: "&e[Auctions] &fThe auction for &b[itemamount] [item] &fwas cancelled"
+    end: "&e[Auctions] &f[topbiddername] won the auction for &b[itemamount] [item] &fby bidding $[topbid]"
+    endByAutowin: "&e[Auctions] &fThe auction for &b[itemamount [item] &fwas bought out by [topbiddername]"
+    endNoBid: "&e[Auctions] &fThe auction for &b[itemamount] [item] &fhad no winner"
+    endNotifyOwner: "&e[Auctions] &fYour auction ended. Received $[winnings]"
+    endTax: "&e[Auctions] &fYou were taxed $[taxamount] ([taxpercent]%)"
+    increment: "&e[Auctions] &fThe bidding increment is $[increment]"
+    info: "&e[Auctions] &f[ownername] auctions &b[itemamount] [item] &ffor $[topbid]"
     infoTopBidder: "&6The current top bidder of the auction is &c[topbiddername] &6with &c$[topbid]"
-    price: "&6The &cauction &6begins at &c$[topbid] &6and will last for &c[time]"
-    queueInfoLine: "&c#[queuepos]&6. &c[ownername] &6is preparing to auction &c[itemamount] [item]"
-    queuePosition: "&6Your auction is &c#[queuepos] &6in the auction queue"
-    start: "&c[ownername] &6started an auction for &c[itemamount] [item]"
-    timer: "&6The auction for &c[itemamount] [item] &6has &c[time] &6remaining"
-    winner: "&6You won &c[itemamount] [item] &6with a bid of &c$[topbid]"
+    price: "&e[Auctions] &fThe auction will last for [time]"
+    queueInfoLine: "&e[Auctions] &f#[queuepos]. [ownername] will auction &b[itemamount] [item] &ffor $[topbid]"
+    queuePosition: "&e[Auctions] &fYou are #[queuepos] in the queue"
+    start: "&e[Auctions] &f[ownername] auctions &b[itemamount] [item] &ffor $[topbid]"
+    timer: "&e[Auctions] &fAuction for &b[itemamount] [item] &fhas [time] left"
+    winner: "&e[Auctions] &fYou won &b[itemamount] [item] &ffor $[topbid]"
     # These are messages specific to sealed auctions. All placeholders from above
     # will work as intended, however you will have new options available. These
     # are as follows:
     # [bid]      - The current bid that a player just placed
     # [previous] - The last valid bid that a player placed
     sealedAuction:
-      bid: "&cYou &6have placed a bid of &c$[bid]"
-      raise: "&cYou &6have raised your previous bid of &c$[previous] &6to &c$[bid]"
+      bid: "&e[Auctions] &fYou place a bid of $[bid]"
+      raise: "&e[Auctions] &fYou have raised your bid from $[previous] to $[bid]"
 
   # Error messages are messages sent to players whenever they have failed
   # to define something correctly in their commands, or in other instances
@@ -306,20 +306,20 @@ messages:
     startSyntax: "&cUsage: /auction start <amount> <price> [increment] [autowin]"
   # All other messages are just standard messages that are sent to
   # players. These messages have no placeholders available.
-  auctionImpounded: "&6The auction was impounded by [player]"
-  auctionPlacedInQueue: "&6Your auction has been queued"
-  auctionsDisabled: "&cAuctions are now disabled, only those with permission can start auctions"
-  auctionsEnabled: "&6Auctions have been re-enabled"
-  noLongerIgnoring: "&6You are no longer ignoring auction messages"
-  notEnoughRoom: "&6You didn't have enough room in your inventory so some of your winnings were dropped"
-  notifySealedAuction: "&cThis is a sealed auction. All player bids are kept to themselves, the highest bidder wins"
-  nowIgnoring: "&6You are now &cignoring &6auction messages"
-  ownerItemReturn: "&6Your items were refunded as nobody bid on your auction"
-  pluginReloaded: "&aThe auctions plugin has been reloaded"
-  queueInfoHeader: "&6Current auctions in the queue:"
-  savedItemReturn: "&6Your auction winnings were saved and have been returned"
+  auctionImpounded: "&e[Auctions] &fThe auction was impounded by [player]"
+  auctionPlacedInQueue: "&e[Auctions] &fYour auction has been queued"
+  auctionsDisabled: "&e[Auctions] &fAuctions are now disabled"
+  auctionsEnabled: "&e[Auctions] &fAuctions have been re-enabled"
+  noLongerIgnoring: "&e[Auctions] &fYou are no longer ignoring auction messages"
+  notEnoughRoom: "&e[Auctions] &fYou didn't have enough room in your inventory so some of your winnings were dropped"
+  notifySealedAuction: "&e[Auctions] &fThis is a &bsealed &bauction&f. All player bids are kept to themselves, the highest bidder wins"
+  nowIgnoring: "&e[Auctions] &fYou are now &cignoring &fauction messages"
+  ownerItemReturn: "&e[Auctions] &fYour items have been refunded"
+  pluginReloaded: "&e[Auctions] &fThe auctions plugin has been &areloaded"
+  queueInfoHeader: "&e[Auctions] &fCurrent auctions in the queue:"
+  savedItemReturn: "&e[Auctions] &fYour auction winnings were saved and have been returned"
   helpMenu:
-  - "&6&m----&6[ &eAuction Help Menu &6]&m-----"
+  - "&e&m----&e[ &fAuctions Help Menu &e]&m-----"
   - "&e/auction start &7<amount> <price> [increment] [autowin] &7- &fStart an auction"
   - "&e/auction info &7- &fDisplays current auction information"
   - "&e/auction bid &7<amount> &e- &fBid on an auction"
