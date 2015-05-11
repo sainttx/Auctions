@@ -65,31 +65,31 @@ permissions:
   auctions.bypass.end.otherauctions:
     description: Gives a player permission to end other players auctions
     default: op
-  auctions.bypass.general.bannedlore: true
+  auctions.bypass.general.bannedlore:
     description: Gives a player permission to bypass banned lore restrictions
     default: op
-  auctions.bypass.general.bannedmaterial: true
+  auctions.bypass.general.bannedmaterial:
     description: Gives a player permission to bypass banned material restrictions
     default: op
-  auctions.bypass.general.blockedcommands: true
+  auctions.bypass.general.blockedcommands:
     description: Gives a player permission to use blocked commands when auctioning
     default: op
   auctions.bypass.general.creative:
     description: Gives a player permission to start auctions while in creative mode
     default: op
-  auctions.bypass.general.damageditems: true
+  auctions.bypass.general.damageditems:
     description: Gives a player permission to bypass damaged item restrictions
     default: op
   auctions.bypass.general.disabled:
     description: Gives a player permission to start auctions when the plugin is toggled off
     default: op
-  auctions.bypass.general.disabledworld: true
+  auctions.bypass.general.disabledworld:
     description: Gives a player permission to start, bid, and teleport in disabled worlds
     default: op
-  auctions.bypass.general.nameditems: true
+  auctions.bypass.general.nameditems:
     description: Gives a player permission to bypass named item restrictions
     default: op
-  auctions.bypass.start.maxprice: true
+  auctions.bypass.start.maxprice:
     description: Gives a player permission to bypass the max start price restrictions
     default: op
   auctions.command.bid:
