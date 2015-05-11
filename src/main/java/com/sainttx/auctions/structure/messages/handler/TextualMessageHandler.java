@@ -3,6 +3,7 @@ package com.sainttx.auctions.structure.messages.handler;
 import com.sainttx.auctions.AuctionPlugin;
 import com.sainttx.auctions.api.Auction;
 import com.sainttx.auctions.api.AuctionManager;
+import com.sainttx.auctions.api.AuctionType;
 import com.sainttx.auctions.api.AuctionsAPI;
 import com.sainttx.auctions.api.messages.MessageHandler;
 import com.sainttx.auctions.api.messages.MessageRecipientGroup;
@@ -220,6 +221,11 @@ public class TextualMessageHandler implements MessageHandler {
             boolean truncate = plugin.getConfig().getBoolean("general.truncatedNumberFormat", false);
 
             if (auction != null) {
+                if (auction.getType() == AuctionType.SEALED
+                        && plugin.getConfig().getBoolean("auctionSettings.sealedAuctions.concealTopBidder", true)) {
+                    message = message.replace("[topbiddername]", "Hidden")
+                            .replace("[topbid]", "hidden");
+                }
                 message = message.replace("[itemName]", auction.getReward().getName());
                 message = message.replace("[itemamount]", Integer.toString(auction.getReward().getAmount()));
                 message = message.replace("[time]", TimeUtil.getFormattedTime(auction.getTimeLeft()));

@@ -138,6 +138,12 @@ auctionSettings:
     # how many bids a player is allowed to place (or raise their previous)
     # on the auction. Default: 1.
     maxBidsPerPlayer: 1
+    # Setting this option to true will have an effect on the [topbiddername]
+    # and [topbid] placeholders when a sealed auctions message is being
+    # formatted. Rather than giving away the top bidder and top bid, the
+    # formatter will replace the placeholders with "Hidden" and "hidden"
+    # respectively (topbidder, topbid). Default: true.
+    concealTopBidder: true
 
 
 # Various settings unrelated to auction specific options are found in this
