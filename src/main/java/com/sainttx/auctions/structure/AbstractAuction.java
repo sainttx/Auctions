@@ -244,6 +244,10 @@ public abstract class AbstractAuction implements Auction {
                 handler.sendMessage(winner, plugin.getMessage("messages.auctionFormattable.winner"), this);
             }
 
+            if (broadcast && (autowin == -1 || getTopBid() < getAutowin())) {
+                handler.broadcast(plugin.getMessage("messages.auctionFormattable.end"), this, false);
+            }
+
             if (getTopBid() > 0) {
                 double winnings = getTopBid() - getTaxAmount();
                 plugin.getEconomy().depositPlayer(Bukkit.getOfflinePlayer(getOwner()), winnings);
@@ -254,10 +258,6 @@ public abstract class AbstractAuction implements Auction {
                     }
                     handler.sendMessage(owner, plugin.getMessage("messages.auctionFormattable.endNotifyOwner"), this);
                 }
-            }
-
-            if (broadcast && (autowin == -1 || getTopBid() < getAutowin())) {
-                handler.broadcast(plugin.getMessage("messages.auctionFormattable.end"), this, false);
             }
         } else {
             if (owner != null) {
