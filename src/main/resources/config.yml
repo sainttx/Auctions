@@ -250,7 +250,7 @@ messages:
     endTax: "&e[Auctions] &fYou were taxed $[taxamount] ([taxpercent]%)"
     increment: "&e[Auctions] &fThe bidding increment is $[increment]"
     info: "&e[Auctions] &f[ownername] auctions &b[itemamount] [item] &ffor $[startprice]"
-    infoTopBidder: "&6The current top bidder of the auction is &c[topbiddername] &6with &c$[topbid]"
+    infoTopBidder: "&e[Auctions] &f[topbiddername] is winning with a bid of $[topbid]"
     price: "&e[Auctions] &fThe auction will last for [time]"
     queueInfoLine: "&e[Auctions] &f#[queuepos]. [ownername] will auction &b[itemamount] [item] &ffor $[topbid]"
     queuePosition: "&e[Auctions] &fYou are #[queuepos] in the queue"
