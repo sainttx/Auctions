@@ -160,6 +160,10 @@ public abstract class AbstractAuction implements Auction {
         handler.broadcast(plugin.getMessage("messages.auctionFormattable.start"), this, false);
         handler.broadcast(plugin.getMessage("messages.auctionFormattable.price"), this, false);
         handler.broadcast(plugin.getMessage("messages.auctionFormattable.increment"), this, false);
+
+        if (getAutowin() != -1) {
+            handler.broadcast(plugin.getMessage("messages.auctionFormattable.autowin"), this, false);
+        }
     }
 
     @Override
