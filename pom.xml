@@ -47,12 +47,21 @@
                     <artifactSet>
                         <includes>
                             <include>mkremins:fanciful</include>
+                            <include>org.mcstats:metrics-lite</include>
                         </includes>
                     </artifactSet>
                     <relocations>
                         <relocation>
                             <pattern>mkremins.fanciful</pattern>
                             <shadedPattern>com.sainttx.auctions.fanciful</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>net.amoebaman</pattern>
+                            <shadedPattern>com.sainttx.auctions.fanciful.amoebaman</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>org.mcstats</pattern>
+                            <shadedPattern>com.sainttx.auctions.metrics</shadedPattern>
                         </relocation>
                     </relocations>
                 </configuration>
@@ -72,6 +81,10 @@
         <repository>
             <id>spigot-repo</id>
             <url>https://hub.spigotmc.org/nexus/content/groups/public/</url>
+        </repository>
+        <repository>
+            <id>Plugin Metrics</id>
+            <url>http://repo.mcstats.org/content/repositories/public</url>
         </repository>
         <repository>
             <id>vault-repo</id>
@@ -99,6 +112,12 @@
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
             <version>1.8-R0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.mcstats</groupId>
+            <artifactId>metrics-lite</artifactId>
+            <version>R6</version>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.dthielke</groupId>
