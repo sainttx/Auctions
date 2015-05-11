@@ -225,7 +225,9 @@ public class TextualMessageHandler implements MessageHandler {
                 message = message.replace("[time]", TimeUtil.getFormattedTime(auction.getTimeLeft()));
                 message = message.replace("[autowin]", truncate ? truncateNumber(auction.getAutowin()) : formatDouble(auction.getAutowin()));
                 message = message.replace("[ownername]", auction.getOwnerName() == null ? "Console" : auction.getOwnerName());
-                message = message.replace("[topbiddername]", auction.getTopBidderName() == null ? "Console" : auction.getTopBidderName());
+                message = message.replace("[topbiddername]", auction.hasBids()
+                        ? (auction.getTopBidderName() == null ? "Console" : auction.getTopBidderName())
+                        : "Nobody");
                 message = message.replace("[increment]", truncate ? truncateNumber(auction.getBidIncrement()) : formatDouble(auction.getBidIncrement()));
                 message = message.replace("[topbid]", truncate ? truncateNumber(auction.getTopBid()) : formatDouble(auction.getTopBid()));
                 message = message.replace("[taxpercent]", formatDouble(auction.getTax()));
