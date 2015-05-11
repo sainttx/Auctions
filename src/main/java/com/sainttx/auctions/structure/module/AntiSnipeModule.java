@@ -41,6 +41,6 @@ public class AntiSnipeModule implements AuctionModule {
         auction.setTimeLeft(auction.getTimeLeft() + secondsToAdd);
         String message = plugin.getMessage("messages.auctionFormattable.antiSnipeAdd")
                 .replace("[snipetime]", TimeUtil.getFormattedTime(secondsToAdd));
-        manager.getMessageHandler().broadcast(message, auction, false); // TODO: The time will be wrong until we introduce valid placeholders
+        manager.getMessageHandler().broadcast(message, auction, false); 
     }
 }
