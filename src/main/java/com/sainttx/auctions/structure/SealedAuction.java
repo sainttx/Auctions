@@ -76,6 +76,8 @@ public class SealedAuction extends AbstractAuction {
                 handler.sendMessage(player, plugin.getMessage("messages.error.insufficientBalance")); // insufficient funds
             } else {
                 currentBids.put(player.getUniqueId(), bid);
+                amountOfBids.put(player.getUniqueId(), amountOfBids.containsKey(player.getUniqueId())
+                        ? amountOfBids.get(player.getUniqueId()) + 1 : 1);
 
                 if (bid > winningBid) {
                     this.winningBid = bid;
