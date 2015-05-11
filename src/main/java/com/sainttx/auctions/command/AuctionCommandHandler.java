@@ -74,7 +74,7 @@ public class AuctionCommandHandler implements CommandExecutor, Listener {
 
             for (AuctionSubCommand cmd : commands) {
                 if (cmd.canTrigger(sub)) {
-                    if (!sender.hasPermission(cmd.getPermission())) {
+                    if (!sender.hasPermission("auctions.command.*") && !sender.hasPermission(cmd.getPermission())) {
                         AuctionsAPI.getMessageHandler().sendMessage(
                                 sender, plugin.getMessage("messages.error.insufficientPermissions"));
                     } else {

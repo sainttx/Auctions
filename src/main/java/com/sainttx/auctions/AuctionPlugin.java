@@ -73,9 +73,11 @@ public class AuctionPlugin extends JavaPlugin {
         // Message groups
         if (getConfig().getBoolean("integration.herochat.enable")) {
             AuctionsAPI.getAuctionManager().addMessageGroup(new HerochatGroup(this));
+            getLogger().info("Added Herochat recipient group to the list of broadcast listeners");
         }
         if (getConfig().getBoolean("chatSettings.groups.global")) {
             AuctionsAPI.getAuctionManager().addMessageGroup(new GlobalChatGroup());
+            getLogger().info("Added global chat recipient group to the list of broadcast listeners");
         }
 
         // Register placeholders
