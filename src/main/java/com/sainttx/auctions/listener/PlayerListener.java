@@ -49,21 +49,19 @@ public class PlayerListener implements Listener {
         Player player = event.getPlayer();
         String command = event.getMessage().split(" ")[0];
         if (!player.hasPermission("auctions.bypass.general.blockedcommands")
-                && plugin.getConfig().getBoolean("general.blockCommands.ifAuctioning", false)
                 && plugin.getConfig().isList("general.blockedCommands")
                 && plugin.getConfig().getStringList("general.blockedCommands").contains(command.toLowerCase())) {
             Auction auction = AuctionsAPI.getAuctionManager().getCurrentAuction();
 
-            if (AuctionsAPI.getAuctionManager().hasActiveAuction(player)) {
+            if (plugin.getConfig().getBoolean("general.blockCommands.ifAuctioning", false)
+                    && AuctionsAPI.getAuctionManager().hasActiveAuction(player)) {
                 event.setCancelled(true);
                 AuctionsAPI.getMessageHandler().sendMessage(player, plugin.getMessage("messages.error.cantUseCommandWhileAuctioning"));
-            } else if (!player.hasPermission("auctions.bypass.general.blockedcommands")
-                    && plugin.getConfig().getBoolean("general.blockedCommands.ifQueued", false)
+            } else if (plugin.getConfig().getBoolean("general.blockedCommands.ifQueued", false)
                     && AuctionsAPI.getAuctionManager().hasAuctionInQueue(player)) {
                 event.setCancelled(true);
                 AuctionsAPI.getMessageHandler().sendMessage(player, plugin.getMessage("messages.error.cantUseCommandWhileQueued"));
-            } else if (!player.hasPermission("auctions.bypass.general.blockedcommands")
-                    && plugin.getConfig().getBoolean("general.blockCommands.ifTopBidder", false)
+            } else if (plugin.getConfig().getBoolean("general.blockCommands.ifTopBidder", false)
                     && auction != null && player.getUniqueId().equals(auction.getTopBidder())) {
                 event.setCancelled(true);
                 AuctionsAPI.getMessageHandler().sendMessage(player, plugin.getMessage("messages.error.cantUseCommandWhileTopBidder"));
