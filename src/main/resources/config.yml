@@ -124,8 +124,8 @@ auctionSettings:
     addSeconds: 5
   # Various settings regarding sealed auctions can be defined here
   sealedAuctions:
-    # Whether or not sealed auctions are enabled. Default: true.
-    enabled: true
+    # Whether or not sealed auctions are enabled. Default: false.
+    enabled: false
     # Typically in sealed/blind auctions, bidders are only allowed to
     # submit 1 bid and then they must wait until the auction to see
     # who the winner is. This configuration option allows you to configure
