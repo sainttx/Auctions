@@ -27,6 +27,13 @@ public interface Auction {
     String getOwnerName();
 
     /**
+     * Gets whether or not there have been bids placed on this auction
+     *
+     * @return true if somebody has bid
+     */
+    boolean hasBids();
+
+    /**
      * Gets the {@link UUID} of the current top bidder for this auction
      *
      * @return the current {@link UUID} of the winner

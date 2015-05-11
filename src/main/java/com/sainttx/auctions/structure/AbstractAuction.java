@@ -66,6 +66,11 @@ public abstract class AbstractAuction implements Auction {
     }
 
     @Override
+    public boolean hasBids() {
+        return getTopBid() > getStartPrice();
+    }
+
+    @Override
     public UUID getTopBidder() {
         return topBidderUUID;
     }
