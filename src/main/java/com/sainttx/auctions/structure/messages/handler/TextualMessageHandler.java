@@ -222,6 +222,7 @@ public class TextualMessageHandler implements MessageHandler {
 
             if (auction != null) {
                 if (auction.getType() == AuctionType.SEALED
+                        && !auction.hasEnded()
                         && plugin.getConfig().getBoolean("auctionSettings.sealedAuctions.concealTopBidder", true)) {
                     message = message.replace("[topbiddername]", "Hidden")
                             .replace("[topbid]", "hidden");

@@ -34,6 +34,13 @@ public interface Auction {
     boolean hasBids();
 
     /**
+     * Gets whether or not the auction has ended
+     *
+     * @return true if the auction is over
+     */
+    boolean hasEnded();
+
+    /**
      * Gets the {@link UUID} of the current top bidder for this auction
      *
      * @return the current {@link UUID} of the winner

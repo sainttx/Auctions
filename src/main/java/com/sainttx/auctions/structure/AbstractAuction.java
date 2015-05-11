@@ -71,6 +71,11 @@ public abstract class AbstractAuction implements Auction {
     }
 
     @Override
+    public boolean hasEnded() {
+        return timeLeft <= 0 || (getAutowin() != -1 && getAutowin() < getTopBid());
+    }
+
+    @Override
     public UUID getTopBidder() {
         return topBidderUUID;
     }
