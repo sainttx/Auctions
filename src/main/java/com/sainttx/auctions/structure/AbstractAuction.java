@@ -35,6 +35,7 @@ public abstract class AbstractAuction implements Auction {
     protected UUID topBidderUUID;
     protected String topBidderName;
     protected double winningBid;
+    protected double startPrice;
 
     // Auction information
     protected Reward reward;
@@ -87,6 +88,11 @@ public abstract class AbstractAuction implements Auction {
     @Override
     public double getTopBid() {
         return winningBid;
+    }
+
+    @Override
+    public double getStartPrice() {
+        return startPrice;
     }
 
     @Override

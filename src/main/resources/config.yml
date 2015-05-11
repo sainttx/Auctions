@@ -218,6 +218,7 @@ messages:
   # [ownername]     - placeholder for the name of the auctions owner. defaults to "Console" if null.
   # [topbiddername] - placeholder for the name of the auctions top bidder. defaults to "Console" if null.
   # [increment]     - placeholder for the minimum increment inside an auction
+  # [startprice]    - placeholder for the initial start price of an auction
   # [topbid]        - placeholder for the current top bid in the auction (untaxed)
   # [taxpercent]    - placeholder for the current tax percent set by 'auctionSettings.taxPercent'
   # [taxamount]     - placeholder for the current amount of money deducted by the tax
@@ -248,7 +249,7 @@ messages:
     endNotifyOwner: "&e[Auctions] &fYour auction ended. Received $[winnings]"
     endTax: "&e[Auctions] &fYou were taxed $[taxamount] ([taxpercent]%)"
     increment: "&e[Auctions] &fThe bidding increment is $[increment]"
-    info: "&e[Auctions] &f[ownername] auctions &b[itemamount] [item] &ffor $[topbid]"
+    info: "&e[Auctions] &f[ownername] auctions &b[itemamount] [item] &ffor $[startprice]"
     infoTopBidder: "&6The current top bidder of the auction is &c[topbiddername] &6with &c$[topbid]"
     price: "&e[Auctions] &fThe auction will last for [time]"
     queueInfoLine: "&e[Auctions] &f#[queuepos]. [ownername] will auction &b[itemamount] [item] &ffor $[topbid]"

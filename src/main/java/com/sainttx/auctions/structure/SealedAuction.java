@@ -20,7 +20,6 @@ import java.util.UUID;
  */
 public class SealedAuction extends AbstractAuction {
 
-    protected double startBid;
     private Map<UUID, Double> currentBids = new HashMap<UUID, Double>();
     private Map<UUID, Integer> amountOfBids = new HashMap<UUID, Integer>();
 
@@ -35,7 +34,7 @@ public class SealedAuction extends AbstractAuction {
         this.ownerUUID = ownerUUID;
         this.ownerName = ownerName;
         this.winningBid = topBid;
-        this.startBid = topBid;
+        this.startPrice = topBid;
         this.reward = reward;
         this.autowin = autowin;
         this.bidIncrement = bidIncrement;
@@ -50,7 +49,7 @@ public class SealedAuction extends AbstractAuction {
 
         MessageHandler handler = AuctionsAPI.getMessageHandler();
 
-        if (bid < this.startBid) {
+        if (bid < this.startPrice) {
             handler.sendMessage(player, plugin.getMessage("messages.error.bidTooLow"));
         } else if (amountOfBids.containsKey(player.getUniqueId())
                 && amountOfBids.get(player.getUniqueId()) >= plugin.getConfig().getInt("auctionSettings.sealedAuctions.maxBidsPerPlayer", 1)) {

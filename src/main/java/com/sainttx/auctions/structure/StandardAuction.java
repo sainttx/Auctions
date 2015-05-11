@@ -24,6 +24,7 @@ public class StandardAuction extends AbstractAuction {
         this.ownerUUID = ownerUUID;
         this.ownerName = ownerName;
         this.winningBid = topBid;
+        this.startPrice = topBid;
         this.reward = reward;
         this.autowin = autowin;
         this.bidIncrement = bidIncrement;

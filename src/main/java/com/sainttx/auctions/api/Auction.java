@@ -131,6 +131,13 @@ public interface Auction {
     double getTopBid();
 
     /**
+     * Gets the starting price of this auction
+     *
+     * @return the starting price
+     */
+    double getStartPrice();
+
+    /**
      * Handles the event that a player places a bid.
      *
      * @param player the player

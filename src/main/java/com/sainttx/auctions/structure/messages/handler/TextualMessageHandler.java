@@ -230,6 +230,7 @@ public class TextualMessageHandler implements MessageHandler {
                 message = message.replace("[topbid]", truncate ? truncateNumber(auction.getTopBid()) : formatDouble(auction.getTopBid()));
                 message = message.replace("[taxpercent]", formatDouble(auction.getTax()));
                 message = message.replace("[taxamount]", formatDouble(auction.getTaxAmount()));
+                message = message.replace("[startprice]", truncate ? truncateNumber(auction.getStartPrice()) : formatDouble(auction.getStartPrice()));
                 double winnings = auction.getTopBid() - auction.getTaxAmount();
                 message = message.replace("[winnings]", truncate ? truncateNumber(winnings) : formatDouble(winnings));
             }
