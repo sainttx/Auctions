@@ -90,7 +90,8 @@ public class StartCommand extends AuctionSubCommand {
                     handler.sendMessage(sender, plugin.getMessage("messages.error.invalidNumberEntered")); // invalid number
                 } else if (price < plugin.getConfig().getDouble("auctionSettings.minimumStartPrice", 0)) {
                     handler.sendMessage(player, plugin.getMessage("messages.error.startPriceTooLow")); // starting price too low
-                } else if (price > plugin.getConfig().getDouble("auctionSettings.maximumStartPrice", 99999)) {
+                } else if (!player.hasPermission("auctions.bypass.start.maxprice")
+                        && price > plugin.getConfig().getDouble("auctionSettings.maximumStartPrice", 99999)) {
                     handler.sendMessage(player, plugin.getMessage("messages.error.startPriceTooHigh")); // starting price too high
                 } else if (manager.getQueue().size() >= plugin.getConfig().getInt("auctionSettings.auctionQueueLimit", 3)) {
                     handler.sendMessage(player, plugin.getMessage("messages.error.auctionQueueFull")); // queue full
@@ -108,17 +109,20 @@ public class StartCommand extends AuctionSubCommand {
 
                     if (item == null || item.getType() == Material.AIR) {
                         handler.sendMessage(player, plugin.getMessage("messages.error.invalidItemType")); // auctioned nothing
-                    } else if (manager.isBannedMaterial(item.getType())) {
+                    } else if (!player.hasPermission("auctions.bypass.general.bannedmaterial")
+                            && manager.isBannedMaterial(item.getType())) {
                         handler.sendMessage(player, plugin.getMessage("messages.error.invalidItemType")); // item type not allowed
-                    } else if (item.getType().getMaxDurability() > 0 && item.getDurability() > 0
+                    } else if (!player.hasPermission("auctions.bypass.general.damageditems")
+                            && item.getType().getMaxDurability() > 0 && item.getDurability() > 0
                             && !plugin.getConfig().getBoolean("auctionSettings.canAuctionDamagedItems", true)) {
                         handler.sendMessage(player, plugin.getMessage("messages.error.cantAuctionDamagedItems")); // can't auction damaged
                     } else if (AuctionUtil.getAmountItems(player.getInventory(), item) < amount) {
                         handler.sendMessage(player, plugin.getMessage("messages.error.notEnoughOfItem"));
-                    } else if (!plugin.getConfig().getBoolean("auctionSettings.canAuctionNamedItems", true)
+                    } else if (!player.hasPermission("auctions.bypass.general.nameditems")
+                            && !plugin.getConfig().getBoolean("auctionSettings.canAuctionNamedItems", true)
                             && item.getItemMeta().hasDisplayName()) {
                         handler.sendMessage(player, plugin.getMessage("messages.error.cantAuctionNamedItems")); // cant auction named
-                    }  else if (hasBannedLore(item)) {
+                    } else if (!player.hasPermission("auctions.bypass.general.bannedlore") && hasBannedLore(item)) {
                         // The players item contains a piece of denied lore
                         handler.sendMessage(player, plugin.getMessage("messages.error.cantAuctionBannedLore"));
                     } else {

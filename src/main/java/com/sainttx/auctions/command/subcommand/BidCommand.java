@@ -44,7 +44,8 @@ public class BidCommand extends AuctionSubCommand {
                 return true;
             }
 
-            if (plugin.getConfig().isList("general.disabledWorlds")
+            if (!player.hasPermission("auctions.bypass.general.disabledworld")
+                    && plugin.getConfig().isList("general.disabledWorlds")
                     && plugin.getConfig().getStringList("general.disabledWorlds").contains(player.getWorld().getName())) {
                 handler.sendMessage(player, plugin.getMessage("messages.error.cantUsePluginInWorld"));
             } else if (handler.isIgnoring(player.getUniqueId())) {

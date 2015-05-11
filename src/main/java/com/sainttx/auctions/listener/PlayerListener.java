@@ -44,11 +44,12 @@ public class PlayerListener implements Listener {
      * Cancels a players command if they're auctioning
      */
     public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
+        Player player = event.getPlayer();
         String command = event.getMessage().split(" ")[0];
-        if (plugin.getConfig().getBoolean("general.blockCommands.ifAuctioning", false)
+        if (!player.hasPermission("auctions.bypass.general.blockedcommands")
+                && plugin.getConfig().getBoolean("general.blockCommands.ifAuctioning", false)
                 && plugin.getConfig().isList("general.blockedCommands")
                 && plugin.getConfig().getStringList("general.blockedCommands").contains(command.toLowerCase())) {
-            Player player = event.getPlayer();
             Auction auction = AuctionsAPI.getAuctionManager().getCurrentAuction();
 
             if (AuctionsAPI.getAuctionManager().hasActiveAuction(player)) {
@@ -72,6 +73,7 @@ public class PlayerListener implements Listener {
         World target = event.getTo().getWorld();
 
         if (event.getCause() != PlayerTeleportEvent.TeleportCause.ENDER_PEARL
+                && !player.hasPermission("auctions.bypass.general.disabledworld")
                 && plugin.getConfig().isList("general.disabledWorlds")
                 && plugin.getConfig().getStringList("general.disabledWorlds").contains(target.getName())) {
             if (AuctionsAPI.getAuctionManager().hasActiveAuction(player)
