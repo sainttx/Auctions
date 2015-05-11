@@ -83,9 +83,9 @@ public class AuctionPlugin extends JavaPlugin {
         // Register placeholders
         if (canRegisterPlaceholders()) {
             PlaceholderAPIHook.registerPlaceHolders(this);
-            getLogger().info("Successfully registered PlaceholderAPI placeholders.");
+            getLogger().info("Successfully registered PlaceholderAPI placeholders");
         } else {
-            getLogger().info("PlaceholderAPI was not found, chat hooks haven't been registered.");
+            getLogger().info("PlaceholderAPI was not found, chat hooks have NOT been registered");
         }
 
         // Message handler
@@ -99,7 +99,7 @@ public class AuctionPlugin extends JavaPlugin {
                         getLogger().info("Message handler has been set to ACTION_BAR");
                         break;
                     } else {
-                        getLogger().info("Message handler type ACTION_BAR is unavailable for this minecraft version. " +
+                        getLogger().info("Message handler type ACTION_BAR is unavailable for this Minecraft version. " +
                                 "Defaulting to TEXT based message handling");
                     }
                 case TEXT:
@@ -109,7 +109,7 @@ public class AuctionPlugin extends JavaPlugin {
             }
         } catch (Throwable throwable) {
             getLogger().info("Failed to find a valid message handler, please make sure that your value" +
-                    "for 'chatSettings.handler' is a valid message handler type.");
+                    "for 'chatSettings.handler' is a valid message handler type");
             getServer().getPluginManager().disablePlugin(this);
             return;
         }

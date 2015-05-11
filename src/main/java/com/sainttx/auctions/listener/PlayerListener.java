@@ -33,6 +33,8 @@ public class PlayerListener implements Listener {
         Reward reward = plugin.getOfflineReward(player.getUniqueId());
 
         if (reward != null) {
+            plugin.getLogger().info("Giving back saved items of offline player "
+                    + player.getName() + " (uuid: " + player.getUniqueId() + ")");
             reward.giveItem(player);
             AuctionsAPI.getMessageHandler().sendMessage(player, plugin.getMessage("messages.savedItemReturn"));
             plugin.removeOfflineReward(player.getUniqueId());
