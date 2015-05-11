@@ -45,6 +45,8 @@ public class PlaceholderAPIHook {
                     return plugin.formatDouble(current.getTopBid() - current.getTaxAmount());
                 } else if (token.equalsIgnoreCase("itemname")) {
                     return current.getReward().getName();
+                } else if (token.equalsIgnoreCase("startprice")) {
+                    return plugin.formatDouble(current.getStartPrice());
                 } else {
                     return null;
                 }
