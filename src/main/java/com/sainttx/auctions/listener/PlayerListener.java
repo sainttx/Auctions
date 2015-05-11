@@ -57,11 +57,13 @@ public class PlayerListener implements Listener {
             if (AuctionsAPI.getAuctionManager().hasActiveAuction(player)) {
                 event.setCancelled(true);
                 AuctionsAPI.getMessageHandler().sendMessage(player, plugin.getMessage("messages.error.cantUseCommandWhileAuctioning"));
-            } else if (plugin.getConfig().getBoolean("general.blockedCommands.ifQueued", false)
+            } else if (!player.hasPermission("auctions.bypass.general.blockedcommands")
+                    && plugin.getConfig().getBoolean("general.blockedCommands.ifQueued", false)
                     && AuctionsAPI.getAuctionManager().hasAuctionInQueue(player)) {
                 event.setCancelled(true);
                 AuctionsAPI.getMessageHandler().sendMessage(player, plugin.getMessage("messages.error.cantUseCommandWhileQueued"));
-            } else if (plugin.getConfig().getBoolean("general.blockCommands.ifTopBidder", false)
+            } else if (!player.hasPermission("auctions.bypass.general.blockedcommands")
+                    && plugin.getConfig().getBoolean("general.blockCommands.ifTopBidder", false)
                     && auction != null && player.getUniqueId().equals(auction.getTopBidder())) {
                 event.setCancelled(true);
                 AuctionsAPI.getMessageHandler().sendMessage(player, plugin.getMessage("messages.error.cantUseCommandWhileTopBidder"));
