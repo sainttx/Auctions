@@ -243,7 +243,7 @@ messages:
     bid: "&e[Auctions] &f[topbiddername] bid $[topbid] on &b[itemamount] [item]"
     cancelled: "&e[Auctions] &fThe auction for &b[itemamount] [item] &fwas cancelled"
     end: "&e[Auctions] &f[topbiddername] won the auction for &b[itemamount] [item] &fby bidding $[topbid]"
-    endByAutowin: "&e[Auctions] &fThe auction for &b[itemamount [item] &fwas bought out by [topbiddername]"
+    endByAutowin: "&e[Auctions] &fThe auction for &b[itemamount] [item] &fwas bought out by [topbiddername]"
     endNoBid: "&e[Auctions] &fThe auction for &b[itemamount] [item] &fhad no winner"
     endNotifyOwner: "&e[Auctions] &fYour auction ended. Received $[winnings]"
     endTax: "&e[Auctions] &fYou were taxed $[taxamount] ([taxpercent]%)"
