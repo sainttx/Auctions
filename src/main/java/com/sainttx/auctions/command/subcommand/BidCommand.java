@@ -2,6 +2,7 @@ package com.sainttx.auctions.command.subcommand;
 
 import com.sainttx.auctions.api.Auction;
 import com.sainttx.auctions.api.AuctionManager;
+import com.sainttx.auctions.api.AuctionType;
 import com.sainttx.auctions.api.AuctionsAPI;
 import com.sainttx.auctions.api.messages.MessageHandler;
 import com.sainttx.auctions.command.AuctionSubCommand;
@@ -30,6 +31,8 @@ public class BidCommand extends AuctionSubCommand {
             handler.sendMessage(sender, plugin.getMessage("messages.error.bidSyntax"));
         } else if (auction == null) {
             handler.sendMessage(sender, plugin.getMessage("messages.error.noCurrentAuction"));
+        } else if (auction.getType() == AuctionType.SEALED && args.length < 2) {
+            handler.sendMessage(sender, plugin.getMessage("messages.error.bidSyntax"));
         } else {
             Player player = (Player) sender;
 
