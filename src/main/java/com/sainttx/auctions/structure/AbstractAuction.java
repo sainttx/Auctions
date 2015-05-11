@@ -256,7 +256,7 @@ public abstract class AbstractAuction implements Auction {
                 }
             }
 
-            if (broadcast) {
+            if (broadcast && (autowin == -1 || getTopBid() < getAutowin())) {
                 handler.broadcast(plugin.getMessage("messages.auctionFormattable.end"), this, false);
             }
         } else {
