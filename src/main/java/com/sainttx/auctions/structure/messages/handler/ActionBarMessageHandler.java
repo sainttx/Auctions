@@ -38,7 +38,7 @@ public class ActionBarMessageHandler extends TextualMessageHandler {
             base.setTitle(message);
 
             for (CommandSender recipient : getAllRecipients()) {
-                if (recipient instanceof Player && !isIgnoring(((Player) recipient).getUniqueId())) {
+                if (recipient instanceof Player && !isIgnoring(recipient)) {
                     base.send((Player) recipient);
                 }
             }

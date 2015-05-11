@@ -11,7 +11,7 @@ import java.util.UUID;
 public interface MessageHandler {
 
     /**
-     * Broadcasts a message to all recipients in {@link #getRecipients()}
+     * Broadcasts a message to all recipients that are listening
      *
      * @param message the message to send
      * @param force   bypass auction ignore status
@@ -19,8 +19,9 @@ public interface MessageHandler {
     void broadcast(String message, boolean force);
 
     /**
-     * Broadcasts a message to all recipients in {@link #getRecipients()}
-     *  @param message the message to send
+     * Broadcasts a message to all recipients that are listening
+     *
+     * @param message the message to send
      * @param auction the auction to format the message with
      * @param force   bypass auction ignore status
      */
@@ -52,27 +53,28 @@ public interface MessageHandler {
     void sendAuctionInformation(CommandSender recipient, Auction auction);
 
     /**
-     * Returns whether a player is ignoring auctions
+     * Returns whether a commandsender is ignoring auctions
      *
-     * @param playerId the {@link UUID} of the player
-     * @return true if the player is ignoring auctions
+     * @param sender the sender
+     * @return true if the sender is ignoring auctions or if
+     * the sender is not in the recipients list for broadcasts
      */
-    boolean isIgnoring(UUID playerId);
+    boolean isIgnoring(CommandSender sender);
 
     /**
      * Sets a player to be ignoring all non-forced auction messages.
      *
-     * @param playerId the {@link UUID} of the player
+     * @param sender the player
      */
-    void addIgnoring(UUID playerId);
+    void addIgnoring(CommandSender sender);
 
     /**
      * Removes a player that's ignoring all auction messages
      *
-     * @param playerId the {@link UUID} of the player
+     * @param sender the {@link UUID} of the player
      * @return true if a player was actually removed
      */
-    boolean removeIgnoring(UUID playerId);
+    boolean removeIgnoring(CommandSender sender);
 
     /**
      * Represents a message formatting class

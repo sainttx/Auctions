@@ -25,7 +25,7 @@ public class CancelCommand extends AuctionSubCommand {
         if (manager.getCurrentAuction() == null) {
             // No auction
             handler.sendMessage(sender, plugin.getMessage("messages.error.noCurrentAuction"));
-        } else if (sender instanceof Player && manager.getMessageHandler().isIgnoring(((Player) sender).getUniqueId())) {
+        } else if (sender instanceof Player && manager.getMessageHandler().isIgnoring(sender)) {
             // Ignoring
             handler.sendMessage(sender, plugin.getMessage("messages.error.currentlyIgnoring"));
         } else if (manager.getCurrentAuction().getTimeLeft() < plugin.getConfig().getInt("auctionSettings.mustCancelBefore", 15)

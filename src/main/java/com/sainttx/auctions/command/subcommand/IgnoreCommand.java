@@ -26,11 +26,11 @@ public class IgnoreCommand extends AuctionSubCommand {
             MessageHandler handler = manager.getMessageHandler();
             Player player = (Player) sender;
 
-            if (manager.getMessageHandler().isIgnoring(player.getUniqueId())) {
-                handler.removeIgnoring(player.getUniqueId());
+            if (manager.getMessageHandler().isIgnoring(player)) {
+                handler.removeIgnoring(player);
                 handler.sendMessage(player, plugin.getMessage("messages.noLongerIgnoring"));
             } else {
-                handler.addIgnoring(player.getUniqueId());
+                handler.addIgnoring(player);
                 handler.sendMessage(player, plugin.getMessage("messages.nowIgnoring"));
             }
         }

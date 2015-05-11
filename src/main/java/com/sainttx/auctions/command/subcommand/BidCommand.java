@@ -48,7 +48,7 @@ public class BidCommand extends AuctionSubCommand {
                     && plugin.getConfig().isList("general.disabledWorlds")
                     && plugin.getConfig().getStringList("general.disabledWorlds").contains(player.getWorld().getName())) {
                 handler.sendMessage(player, plugin.getMessage("messages.error.cantUsePluginInWorld"));
-            } else if (handler.isIgnoring(player.getUniqueId())) {
+            } else if (handler.isIgnoring(player)) {
                 handler.sendMessage(player, plugin.getMessage("messages.error.currentlyIgnoring")); // player is ignoring
             } else if (auction.getOwner().equals(player.getUniqueId())) {
                 handler.sendMessage(player, plugin.getMessage("messages.error.bidOnOwnAuction")); // cant bid on own auction

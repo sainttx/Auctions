@@ -46,7 +46,7 @@ public class TextualMessageHandler implements MessageHandler {
                 FancyMessage fancy = createMessage(auction, msg);
 
                 for (CommandSender recipient : getAllRecipients()) {
-                    if (recipient instanceof Player && isIgnoring(((Player) recipient).getUniqueId())) {
+                    if (recipient instanceof Player && isIgnoring((recipient))) {
                         continue;
                     } else {
                         fancy.send(recipient);
@@ -111,18 +111,29 @@ public class TextualMessageHandler implements MessageHandler {
     }
 
     @Override
-    public boolean isIgnoring(UUID playerId) {
-        return ignoring.contains(playerId);
+    public boolean isIgnoring(CommandSender sender) {
+        if (sender instanceof Player) {
+            if (ignoring.contains(((Player) sender).getUniqueId())) {
+                return true;
+            }
+        }
+        return !getAllRecipients().contains(sender);
     }
 
     @Override
-    public void addIgnoring(UUID playerId) {
-        ignoring.add(playerId);
+    public void addIgnoring(CommandSender sender) {
+        if (sender instanceof Player) {
+            ignoring.add(((Player) sender).getUniqueId());
+        }
     }
 
     @Override
-    public boolean removeIgnoring(UUID playerId) {
-        return ignoring.remove(playerId);
+    public boolean removeIgnoring(CommandSender sender) {
+        if (sender instanceof Player) {
+            return ignoring.remove(((Player) sender).getUniqueId());
+        } else {
+            return false;
+        }
     }
 
     /*
