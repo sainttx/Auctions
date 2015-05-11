@@ -1,10 +1,12 @@
-package me.sainttx.auction.util;
+package com.sainttx.auctions.util;
+
+import com.sainttx.auctions.AuctionPlugin;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 /**
- * Created by Matthew on 30/01/2015.
+ * A utility class that formats {@link Long} based time diffs into english
  */
 public class TimeUtil {
 
@@ -31,7 +33,7 @@ public class TimeUtil {
     public static String formatDateDiff(Calendar fromDate, Calendar toDate, boolean shortened) {
         boolean future = false;
         if (toDate.equals(fromDate)) {
-            return "&6Now";
+            return "0 seconds";
         }
         if (toDate.after(fromDate)) {
             future = true;
@@ -70,5 +72,16 @@ public class TimeUtil {
             sb.setLength(sb.length() - 2);
         }
         return sb.toString().trim();
+    }
+
+    /**
+     * Return a String representation of time left
+     *
+     * @param timeLeft Time left in seconds
+     * @return String the time left
+     */
+    public static String getFormattedTime(int timeLeft) {
+        return formatDateDiff(System.currentTimeMillis() + (timeLeft * 1000L),
+                AuctionPlugin.getPlugin().getConfig().getBoolean("general.shortenedTimeFormat", false));
     }
 }

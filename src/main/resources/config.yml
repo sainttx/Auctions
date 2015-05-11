@@ -1,67 +1,328 @@
-# Auction plugin by SainttX
+##################################
+#            Auctions            #
+#           by SainttX           #
+##################################
 
-settings:
-  use-shortened-times: false
-  integrate-herochat: false
-  herochat-channel: auction
+# Configuration options for various plugin integration
+# settings can be defined in this section. Each integration
+# option has an enable option that tells the plugin whether
+# or not the option should be used. These integrated plugins
+# are essentially the same things as 'chatSettings.groups'
+# and stack with any defined chat setting groups.
+integration:
+  # Herochat plugin integration options
+  # Find the plugin here: http://dev.bukkit.org/bukkit-plugins/herochat/
+  herochat:
+    enable: false
+    # Defines your Herochat chat channel that players must be joined
+    # to receive messages from the auction plugin. Messages that
+    # are only sent to a single player ignore this and will send no
+    # matter what.
+    channel: "auction"
 
-# General Auction information
-auction-start-fee: 0
-auction-tax-percentage: 0
-default-auction-start-time: 30
-delay-between-auctions-seconds: 5
-default-bid-increment: 50
-minimum-bid-increment: 10
-maximum-bid-increment: 100
-minimum-auction-start-price: 10
-maximum-auction-start-price: 30000
+# Configuration options for various chat group and handler features
+# are defined in this section. As the plugin expands, more options
+# will be added to this section.
+chatSettings:
+  # Configure which plugin groups view messages. All groups stack with
+  # each other so players from multiple groups can be defined to view
+  # messages
+  groups:
+    # 'global' is the standard broadcast group, this groups recipients
+    # is all players online.
+    global: true
+  # The handler is the mechanism for how messages get delivered.
+  # Current options are: TEXT, ACTION_BAR. The ACTION_BAR mechanism
+  # will still send messages through the TEXT channel, however it
+  # unlocks a new message option
+  # ('messages.auctionFormattable.actionBarMessage') that is sent to
+  # players whenever any broadcast message is sent. In the case that
+  # you don't want the TEXT channel sending its respective messages,
+  # you should disable the message by setting the message to "" (empty)
+  handler: TEXT
 
-# Enabling and disabling certain features
-allow-auctioning-named-items: true
-allow-auction-auto-winning: true
-allow-creative-auctioning: false
-allow-auction-help-command: true
-allow-auction-end-command: false
-allow-auction-cancel-command: true
-allow-using-bid-auto-command: true
-allow-damaged-items: true
+# Configuration options for various settings specific to auctions
+# ie. times, bid increments, etc.
+auctionSettings:
+  # How much money users will be charged to start an auction.
+  # If a user doesn't have enough money, they will be unable
+  # to create an auction. Default: 0.
+  startFee: 0
+  # The percentage of the winning amount to be removed from
+  # the servers economy. For example, if a user wins an auction for
+  # $1K and the tax is at 30%, $300 will be removed and the owner
+  # of the auction will only be given $700 as a result. Default: 0.
+  taxPercent: 0
+  # The start time for all auctions. There is currently no
+  # way to specify how long your auction should last through commands
+  # and as such all auctions will have a duration of this time. This
+  # time is configured in seconds and is translated through a utility
+  # class to English. For example, if the time is set to 600, the
+  # formatter will output '10 minutes'. Default: 30.
+  startTime: 30
+  # The delay between all auctions in seconds. This is the time
+  # between when an auction ends and when a new auction from the queue
+  # is started. Auctions that are created within the delay are
+  # automatically added to the queue. Default: 5.
+  delayBetween: 5
+  # The default bid increment to be used when a user doesn't specify
+  # their bid increment through commands. For example, if a user types
+  # /auction start 1 100, the bid increment will default to this
+  # amount. Default: 50.
+  defaultBidIncrement: 50
+  # The minimum bid increment that is allowed to be specified. Users
+  # who attempt to create an auction with an increment that is less
+  # than this amount will be denied. Default: 10
+  minimumBidIncrement: 10
+  # The maximum bid increment that is allowed to be specified. Users
+  # who attempt to create an auction with an increment that is greater
+  # than this amount will be denied. Default: 9999
+  maximumBidIncrement: 9999
+  # The minimum amount that is allowed to be defined as an auction start
+  # price. Users that attempt to create an auction that fail to meet
+  # this criteria will be denied. Default: 0.
+  minimumStartPrice: 0
+  # The maximum amount that is allowed to be defined as an auction start
+  # price. Default: 99999.
+  maximumStartPrice: 99999
+  # Whether or not players can auction items that have been named through
+  # a plugin or anvil. Default: true.
+  canAuctionNamedItems: true
+  # Whether or not players can auction items that have any durability loss.
+  # Default: true.
+  canAuctionDamagedItems: true
+  # Whether or not players can specify an autowin amount in their auction.
+  # If users specify an autowin and this is set to false, they will be
+  # denied the creation of the auction. Default: true.
+  canSpecifyAutowin: true
+  # Whether or not players can auction while in creative mode. Default: false.
+  canAuctionInCreative: false
+  # Whether or not players can use the /bid command with no arguments. If
+  # this is set to true, players can type "/bid" and automatically increment
+  # the auction with the auctions bid increment. When set to false, players
+  # will be required to specify a bid amount. Default: true.
+  canBidAutomatically: true
+  # The maximum amount of auctions that are allowed inside an auction. Users
+  # who attempt to create auctions when the queue is full will be denied.
+  # Default: 3.
+  auctionQueueLimit: 3
+  # Defines the last time, in seconds, that users are allowed to use
+  # the "/auction cancel" command. If an auctions time is less than
+  # what is defined here, users will not be able to cancel their auction
+  # anymore. Default: 15.
+  mustCancelBefore: 15
+  # Various settings regarding auction anti sniping can be defined here.
+  antiSnipe:
+    # Whether or not anti sniping is enabled. Default: true.
+    enable: true
+    # The time left, in seconds, in an auction that anti-snipe can
+    # be enabled at. For example, if set to 3 and a player places a bid
+    # at 2 seconds, anti-snipe will trigger if enabled and add
+    # 'auctionSettings.antiSnipe.addSeconds' seconds to the auction time.
+    # Default: 3.
+    timeThreshold: 3
+    # The maximum amount of times an auction can be sniped, this is
+    # primarily to prevent auctions for going on for indefinite
+    # amount of times. Default: 3.
+    maxPerAuction: 3
+    # The amount of seconds to add whenever an auction is sniped.
+    # Default: 5.
+    addSeconds: 5
+  # Various settings regarding sealed auctions can be defined here
+  sealedAuctions:
+    # Whether or not sealed auctions are enabled. Default: false.
+    enabled: false
+    # Typically in sealed/blind auctions, bidders are only allowed to
+    # submit 1 bid and then they must wait until the auction to see
+    # who the winner is. This configuration option allows you to configure
+    # how many bids a player is allowed to place (or raise their previous)
+    # on the auction. Default: 1.
+    maxBidsPerPlayer: 1
 
-# Blocking commands
-block-commands-when-auctioning: false
-block-commands-if-auction-queued: false
-block-commands-if-top-bidder: false
-blocked-commands:
-- "/test"
 
-# Per world Auctioning
-disabled-worlds:
-- 'testworld'
+# Various settings unrelated to auction specific options are found in this
+# section.
+general:
+  # Whether or not to shorten times that are formatted through the utility
+  # class. For example, this is the difference between times being shown as
+  # "5 minutes 5 seconds" vs. "5m, 5s". Default: false.
+  shortenedTimeFormat: false
+  # Whether or not to truncate any numbers that are formated into messages.
+  # These numbers are monetary values (top bid amount, buyout, etc). Setting
+  # this to true will have applicable numbers truncated. For example, the
+  # number 1234 will be output as "1K", 99874 as "99K", etc. Default: false.
+  truncatedNumberFormat: false
+  # A list of worlds that the auction plugin is disabled in. World names
+  # are all case sensitive.
+  disabledWorlds:
+  - "testworld"
+  # Various settings settings to block commands found in 'general.blockedCommands'
+  # on specific occasions.
+  blockCommands:
+    # This option will block commands when players are the auction owner.
+    # Default: false.
+    ifAuctioning: false
+    # This option will block commands when players have an auction in the
+    # queue. Default: false.
+    ifQueued: false
+    # This option will block commands when players are the top bidder.
+    # Default: false.
+    ifTopBidder: false
+  # A list of commands that are blocked if any of the settings in
+  # 'general.blockCommands.*' are set to true. Commands here should
+  # be defined as the players type them. For example, if a player
+  # types /test hello, it will match the command '/test'. Keep in
+  # mind that all commands are formatted to be all lower cases, so
+  # commands entered here should be in all lower case.
+  blockedCommands:
+  - "/test"
+  # A list of Bukkit Materials that are not allowed to be auctioned.
+  # Valid materials: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html
+  blockedMaterials:
+  - "BEDROCK"
+  # A list of lores that are not allowed to be present inside any
+  # lore strings on an item. For example, if we have "A string of
+  # lore" defined in this list (default) and an item contains
+  # the lore strings "hello", "this is lore", and "lol A string of
+  # lore" the item will not be allowed to go into auction due to
+  # the fact that "A string of lore" is present in the third line.
+  blockedLore:
+  - "A string of lore"
+  # A list of times that the plugin will broadcast the amount
+  # of time left in the auction. The format of this list can
+  # be specified as it currently is ("["#", "#"]") or as above.
+  broadcastTimes: ["60", "30", "10", "3", "2", "1"]
 
-# Broadcast times
-broadcast-times:
-- '60'
-- '30'
-- '10'
-- '3'
-- '2'
-- '1'
+# Every message that is sent from the plugin is found in this section.
+# The message keys are made to be as intuitive as possible so that
+# you don't have much difficulty with figuring out what each message does.
+# All messages are formatted for chat colors regardless if there are
+# placeholder present or not.
+#
+# Notes: - ALL messages can be disabled by setting it's respective self
+#          to "" (empty).
+messages:
+  # All messages under 'auctionFormattable' mean that messages sent
+  # that are from here are first parsed with the current active auction.
+  # There are various placeholders that you can insert into these messages
+  # that will be formatted will information from the current auctions
+  # information. These placeholders are as follows:
+  # [itemName]      - placeholder for the raw name of the item being auctioned
+  # [itemamount]    - placeholder for the amount inside the reward/item
+  # [time]          - placeholder for the formatted time left (ie. 30 seconds)
+  # [autowin]       - placeholder for the autowin balance in the auction
+  # [ownername]     - placeholder for the name of the auctions owner. defaults to "Console" if null.
+  # [topbiddername] - placeholder for the name of the auctions top bidder. defaults to "Console" if null.
+  # [increment]     - placeholder for the minimum increment inside an auction
+  # [topbid]        - placeholder for the current top bid in the auction (untaxed)
+  # [taxpercent]    - placeholder for the current tax percent set by 'auctionSettings.taxPercent'
+  # [taxamount]     - placeholder for the current amount of money deducted by the tax
+  # [winnings]      - placeholder for the resulting amount of money that will be won (after tax is deducted)
+  # SPECIFIC MESSAGES ONLY:
+  # [snipetime] - only works with antiSnipeAdd
+  # [queuepos]  - only works with queuePosition and queueInfoLine
+  #
+  # Notes: - [ownername] and [topbiddername] will default to "Console" (w/o brackets)
+  #          if there is no valid player entity in those placeholder slots.
+  auctionFormattable:
+    # The itemFormat is essentially the way [item] will be formatted inside
+    # auction messages. For example, if you have a message that contains
+    # "Hello [item]!", the [item] placeholder will be replaced with the items
+    # name formatted as seen in itemFormat.
+    itemFormat: "&c[itemName]"
+    # The actionbar message is sent along ALL broadcasts made by the plugin. If
+    # you don't want duplicate messages being sent through chat, you'll have to
+    # disable the specific message by setting them to nothing (ie. "").
+    actionBarMessage: "&e&lAUCTION: &f[ownername] || [itemamount] [itemName] || [time] || [topbiddername] ($[topbid]) || &e/auction info"
+    antiSnipeAdd: "&6ANTI-SNIPE &e- &c[snipetime] &6seconds have been added to the auction!"
+    autowin:  "&6The host has set the autowin amount to &c$[autowin]"
+    bid: "&c[topbiddername] &6has bid &c$[topbid] &6on &c[itemamount] [item]"
+    cancelled: "&6The auction for [item] &6was &ccancelled"
+    end: "&c[topbiddername] &6won &c[itemamount] [item] &6with a bid of &c$[topbid]"
+    endByAutowin: "&6The auction for [item] ended with &c[topbiddername] &6bidding &c$[topbid] &c&n(autowin)"
+    endNoBid: "&6The auction for &c[itemamount] [item] &6ended with no bids"
+    endNotifyOwner: "&6Your auction has ended. Received &c$[winnings]"
+    endTax: "&6A tax of &c[taxpercent]% ($[taxamount]) &6was charged"
+    increment: "&6The &cbidding increment &6has been set to &c$[increment]"
+    info: "&c[ownername] &6is auctioning &c[itemamount] [item] &6for &c$[topbid]"
+    infoTopBidder: "&6The current top bidder of the auction is &c[topbiddername] &6with &c$[topbid]"
+    price: "&6The &cauction &6begins at &c$[topbid] &6and will last for &c[time]"
+    queueInfoLine: "&c#[queuepos]&6. &c[ownername] &6is preparing to auction &c[itemamount] [item]"
+    queuePosition: "&6Your auction is &c#[queuepos] &6in the auction queue"
+    start: "&c[ownername] &6started an auction for &c[itemamount] [item]"
+    timer: "&6The auction for &c[itemamount] [item] &6has &c[time] &6remaining"
+    winner: "&6You won &c[itemamount] [item] &6with a bid of &c$[topbid]"
+    # These are messages specific to sealed auctions. All placeholders from above
+    # will work as intended, however you will have new options available. These
+    # are as follows:
+    # [bid]      - The current bid that a player just placed
+    # [previous] - The last valid bid that a player placed
+    sealedAuction:
+      bid: "&cYou &6have placed a bid of &c$[bid]"
+      raise: "&cYou &6have raised your previous bid of &c$[previous] &6to &c$[bid]"
 
-# Other
-auction-queue-limit: 3
-must-cancel-auction-before: 15
-
-# Anti-snipe
-# max-per-auction is the max amount of times an auction can have time added
-# add-seconds is the amount of time in seconds to add each time the auction is sniped
-enable-anti-snipe: true
-anti-snipe-max-per-auction: 3
-anti-snipe-add-seconds: 5
-
-# Use http://jd.bukkit.org/rb/apidocs/org/bukkit/Material.html
-banned-items:
-- BEDROCK
-
-# If an items lore contains any of the texts here, the item
-# won't be allowed to be put into an auction
-banned-lore:
-- 'A string of lore'
+  # Error messages are messages sent to players whenever they have failed
+  # to define something correctly in their commands, or in other instances
+  # like if they are lacking permissions to a command, etc.
+  error:
+    alreadyHaveAuction: "&cYou already have an ongoing auction"
+    alreadyInAuctionQueue: "&cYou already have an auction placed in the queue"
+    alreadyTopBidder: "&cYou are already the top bidder"
+    auctionQueueFull: "&cThe auction queue is currently full"
+    auctionsDisabled: "&cAuctions are currently disabled"
+    autowinDisabled: "&cPlacing autowin amounts on auctions has been disabled"
+    bidOnOwnAuction: "&cYou cannot bid on your own auction"
+    bidSyntax: "&cUsage: /auction bid <amount>"
+    bidTooLow: "&cYour bid was too low"
+    cantAuctionBannedLore: "&cYou can't auction off this item as it contains banned lore"
+    cantAuctionDamagedItems: "&cYou can't auction damaged items!"
+    cantAuctionNamedItems: "&cYou can't auction off items that have a name"
+    cantCancelNow: "&cYou can't cancel the auction at this point"
+    cantTeleportToDisabledWorld: "&cYou can't teleport into disabled auction worlds while auctioning or participating in an auction"
+    cantUseCommandWhileAuctioning: "&cYou can't use this command while auctioning an item"
+    cantUseCommandWhileQueued: "&cYou can't use this command while having an auction queued"
+    cantUseCommandWhileTopBidder: "&cYou can't use this command while being the top bidder on an auction"
+    cantUsePluginInWorld: "&cYou can't use the auctions plugin in this world"
+    creativeNotAllowed: "&cYou cannot start auctions while in creative"
+    currentlyIgnoring: "&cYou can't do that while ignoring auctions"
+    insufficientBalance: "&cYou don't have enough money to do that"
+    insufficientPermissions: "&cYou don't have enough permissions to use this command"
+    invalidBidIncrement: "&cYour bid increment was either too high or too low"
+    invalidItemType: "&cYou are not allowed to auction this item"
+    invalidNumberEntered: "&cPlease enter a valid number"
+    noAuctionsInQueue: "&cThere are no auctions in the queue"
+    noCurrentAuction: "&cThere is no active auction at this time"
+    notEnoughOfItem: "&cYou don't have enough of that item"
+    notYourAuction: "&cYou aren't able to modify other players auctions"
+    sealedAuctionHaveHigherBid: "&cYou have already placed a bid that is equal or greater than that amount"
+    sealedAuctionsDisabled: "&cSealed auctions are currently disabled"
+    sealedAuctionsMaxBidsReached: "&cYou have reached the maximum number of bids allowed per player on this auction"
+    startPriceTooHigh: "&cYour starting price is too high"
+    startPriceTooLow: "&cYour starting price is too low"
+    startSyntax: "&cUsage: /auction start <amount> <price> [increment] [autowin]"
+  # All other messages are just standard messages that are sent to
+  # players. These messages have no placeholders available.
+  auctionImpounded: "&6The auction was impounded by [player]"
+  auctionPlacedInQueue: "&6Your auction has been queued"
+  auctionsDisabled: "&cAuctions are now disabled, only those with permission can start auctions"
+  auctionsEnabled: "&6Auctions have been re-enabled"
+  noLongerIgnoring: "&6You are no longer ignoring auction messages"
+  notEnoughRoom: "&6You didn't have enough room in your inventory so some of your winnings were dropped"
+  notifySealedAuction: "&cThis is a sealed auction. All player bids are kept to themselves, the highest bidder wins"
+  nowIgnoring: "&6You are now &cignoring &6auction messages"
+  ownerItemReturn: "&6Your items were refunded as nobody bid on your auction"
+  pluginReloaded: "&aThe auctions plugin has been reloaded"
+  queueInfoHeader: "&6Current auctions in the queue:"
+  savedItemReturn: "&6Your auction winnings were saved and have been returned"
+  helpMenu:
+  - "&6&m----&6[ &eAuction Help Menu &6]&m-----"
+  - "&e/auction start &7<amount> <price> [increment] [autowin] &7- &fStart an auction"
+  - "&e/auction info &7- &fDisplays current auction information"
+  - "&e/auction bid &7<amount> &e- &fBid on an auction"
+  - "&e/auction end &7- &fEnds the current auction"
+  - "&e/auction cancel &7- &fCancels the current auction"
+  - "&e/auction impound &7- &fImpounds the current auctions contents"
+  - "&e/auction ignore &7- &fIgnore plugin messages"
+  - "&e/auction queue &7- &fView all queued auctions"
+  - "&e/auction toggle &7- &fToggles the plugins disabled/disabled status"
+  - "&e/auction reload &7- &fReload auction configuration"

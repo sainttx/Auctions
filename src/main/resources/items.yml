@@ -3,6 +3,12 @@ AIR:
   0: Air
 STONE:
   0: Stone
+  1: Granite
+  2: Polished Granite
+  3: Diorite
+  4: Polished Diorite
+  5: Andesite
+  6: Polished Andesite
 GRASS:
   0: Grass
 DIRT:

@@ -1,31 +1,32 @@
-package me.sainttx.auction.struct.messages;
+package com.sainttx.auctions.structure.messages.group;
 
 import com.dthielke.herochat.Channel;
 import com.dthielke.herochat.Chatter;
 import com.dthielke.herochat.Herochat;
-import me.sainttx.auction.AuctionPlugin;
-import me.sainttx.auction.struct.MessageHandler;
+import com.sainttx.auctions.AuctionPlugin;
+import com.sainttx.auctions.api.messages.MessageRecipientGroup;
 import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Created by Matthew on 07/05/2015.
+ * Sends messages to all players inside a specific Herochat channel
  */
-public class HerochatHandler extends MessageHandler {
+public class HerochatGroup implements MessageRecipientGroup {
 
     private AuctionPlugin plugin;
 
-    public HerochatHandler(AuctionPlugin plugin) {
+    public HerochatGroup(AuctionPlugin plugin) {
         this.plugin = plugin;
     }
 
     @Override
-    public Iterable<? extends Player> getRecipients() {
+    public Iterable<? extends CommandSender> getRecipients() {
         return !isHerochatEnabled() ? new HashSet<Player>()
-                : getChannelPlayers(plugin.getConfig().getString("settings.herochat-channel"));
+                : getChannelPlayers(plugin.getMessage("integration.herochat.channel"));
     }
 
     /**
