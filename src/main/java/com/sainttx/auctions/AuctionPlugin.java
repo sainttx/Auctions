@@ -151,6 +151,7 @@ public class AuctionPlugin extends JavaPlugin {
         // Logoff file
         try {
             if (!offlineFile.exists()) {
+                offlineFile.getParentFile().mkdirs();
                 offlineFile.createNewFile();
             }
             offlineConfiguration.save(offlineFile);
