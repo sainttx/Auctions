@@ -29,7 +29,8 @@ public class AntiSnipeModule implements AuctionModule {
     @Override
     public boolean canTrigger() {
         return auction.getTimeLeft() <= plugin.getConfig().getInt("auctionSettings.antiSnipe.timeThreshold", 3)
-                && snipeCount < plugin.getConfig().getInt("auctionSettings.antiSnipe.maxPerAuction", 3);
+                && snipeCount < plugin.getConfig().getInt("auctionSettings.antiSnipe.maxPerAuction", 3)
+                && (auction.getAutowin() == -1 || auction.getTopBid() < auction.getAutowin());
     }
 
     @Override
