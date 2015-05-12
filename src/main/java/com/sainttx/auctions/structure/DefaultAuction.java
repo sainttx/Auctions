@@ -116,6 +116,13 @@ public class DefaultAuction extends AbstractAuction {
             runNextAuctionTimer(); // This handles setting the canStartNewAuction status
         }
 
+        // Return the top bidders money
+        returnMoneyToAll();
+
+        // Broadcast
+        MessageHandler handler = AuctionsAPI.getAuctionManager().getMessageHandler();
+        handler.broadcast(plugin.getMessage("messages.auctionFormattable.cancelled"), this, false);
+
         // Return the item to the owner
         if (getOwner() == null) {
             plugin.getLogger().info("Saving items of offline player " + getOwnerName() + " (uuid: " + getOwner() + ")");
@@ -123,13 +130,6 @@ public class DefaultAuction extends AbstractAuction {
         } else {
             getReward().giveItem(owner);
         }
-
-        // Return the top bidders money
-        returnMoneyToAll();
-
-        // Broadcast
-        MessageHandler handler = AuctionsAPI.getAuctionManager().getMessageHandler();
-        handler.broadcast(plugin.getMessage("messages.auctionFormattable.cancelled"), this, false);
 
         // Set current auction to null
         AuctionsAPI.getAuctionManager().setCurrentAuction(null);
@@ -151,15 +151,6 @@ public class DefaultAuction extends AbstractAuction {
         if (getTopBidder() != null) {
             Player winner = Bukkit.getPlayer(getTopBidder());
 
-            // Give the winner their items
-            if (winner == null) {
-                plugin.getLogger().info("Saving items of offline player " + getTopBidderName() + " (uuid: " + getTopBidder() + ")");
-                plugin.saveOfflinePlayer(getTopBidder(), getReward());
-            } else {
-                getReward().giveItem(winner);
-                handler.sendMessage(winner, plugin.getMessage("messages.auctionFormattable.winner"), this);
-            }
-
             if (broadcast && (autowin == -1 || getTopBid() < getAutowin())) {
                 handler.broadcast(plugin.getMessage("messages.auctionFormattable.end"), this, false);
             }
@@ -175,17 +166,25 @@ public class DefaultAuction extends AbstractAuction {
                     handler.sendMessage(owner, plugin.getMessage("messages.auctionFormattable.endNotifyOwner"), this);
                 }
             }
+
+            // Give the winner their items
+            if (winner == null) {
+                plugin.getLogger().info("Saving items of offline player " + getTopBidderName() + " (uuid: " + getTopBidder() + ")");
+                plugin.saveOfflinePlayer(getTopBidder(), getReward());
+            } else {
+                getReward().giveItem(winner);
+                handler.sendMessage(winner, plugin.getMessage("messages.auctionFormattable.winner"), this);
+            }
         } else {
+            if (broadcast) {
+                handler.broadcast(plugin.getMessage("messages.auctionFormattable.endNoBid"), this, false);
+            }
             if (owner != null) {
-                getReward().giveItem(owner);
                 handler.sendMessage(owner, plugin.getMessage("messages.ownerItemReturn"));
+                getReward().giveItem(owner);
             } else {
                 plugin.getLogger().info("Saving items of offline player " + getOwnerName() + " (uuid: " + getOwner() + ")");
                 plugin.saveOfflinePlayer(getOwner(), getReward());
-            }
-
-            if (broadcast) {
-                handler.broadcast(plugin.getMessage("messages.auctionFormattable.endNoBid"), this, false);
             }
         }
 
