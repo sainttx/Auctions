@@ -8,17 +8,108 @@
     <artifactId>Auctions</artifactId>
     <version>2.0.1-SNAPSHOT</version>
 
-    <name>Auctions by SainttX</name>
+    <name>Auctions</name>
     <description>An elegant auctioning solution that allows text tooltips for auctioned items</description>
+    <licenses>
+        <license>
+            <name>GNU General Public License 3.0</name>
+            <url>LICENSE.txt</url>
+            <distribution>repo</distribution>
+            <comments>License on all contributions</comments>
+        </license>
+    </licenses>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
+
+    <repositories>
+        <repository>
+            <id>spigot-repo</id>
+            <url>https://hub.spigotmc.org/nexus/content/groups/public/</url>
+        </repository>
+
+        <repository>
+            <id>Plugin Metrics</id>
+            <url>http://repo.mcstats.org/content/repositories/public</url>
+        </repository>
+
+        <repository>
+            <id>vault-repo</id>
+            <url>http://nexus.theyeticave.net/content/repositories/pub_releases</url>
+        </repository>
+
+        <repository>
+            <id>fanciful-mvn-repo</id>
+            <url>http://repo.franga2000.com/artifactory/public</url>
+        </repository>
+    </repositories>
+
+    <dependencies>
+        <dependency>
+            <groupId>net.milkbowl.vault</groupId>
+            <artifactId>VaultAPI</artifactId>
+            <version>1.5</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>mkremins</groupId>
+            <artifactId>fanciful</artifactId>
+            <version>0.3.3-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.spigotmc</groupId>
+            <artifactId>spigot-api</artifactId>
+            <version>1.8-R0.1-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mcstats</groupId>
+            <artifactId>metrics-lite</artifactId>
+            <version>R6</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.dthielke</groupId>
+            <artifactId>herochat</artifactId>
+            <version>5.6.7-SNAPSHOT</version>
+            <!-- <version>1.0</version> -->
+            <scope>system</scope>
+            <systemPath>${project.basedir}/libraries/HeroChat.jar</systemPath>
+        </dependency>
+
+        <dependency>
+            <groupId>me.clip</groupId>
+            <artifactId>placeholderapi</artifactId>
+            <version>1.4</version>
+            <!-- <version>1.0</version> -->
+            <scope>system</scope>
+            <systemPath>${project.basedir}/libraries/PlaceholderAPI.jar</systemPath>
+        </dependency>
+    </dependencies>
+
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.10.3</version>
+                <configuration>
+                    <show>public</show>
+                </configuration>
+            </plugin>
+        </plugins>
+    </reporting>
+
     <build>
-        <defaultGoal>clean package install</defaultGoal>
+        <defaultGoal>install</defaultGoal>
         <finalName>${project.artifactId}-${project.version}</finalName>
         <sourceDirectory>${basedir}/src/main/java</sourceDirectory>
+
         <resources>
             <resource>
                 <targetPath>.</targetPath>
@@ -29,6 +120,7 @@
                 </includes>
             </resource>
         </resources>
+
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -39,6 +131,17 @@
                     <target>1.7</target>
                 </configuration>
             </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.10.3</version>
+                <configuration>
+                    <show>private</show>
+                    <nohelp>true</nohelp>
+                </configuration>
+            </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
@@ -74,66 +177,93 @@
                     </execution>
                 </executions>
             </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>2.12</version>
+                <executions>
+                    <execution>
+                        <id>verify-style</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <sourceDirectory>${basedir}/src</sourceDirectory>
+                    <consoleOutput>true</consoleOutput>
+                    <failsOnError>true</failsOnError>
+                    <logViolationsToConsole>true</logViolationsToConsole>
+                    <checkstyleRules>
+                        <module name="Checker">
+                            <!-- Tabs are strictly banned -->
+                            <module name="FileTabCharacter"/>
+
+                            <module name="TreeWalker">
+                                <!-- Important basics -->
+                                <!-- <module name="PackageDeclaration"/> Unlikely that we would miss this in a PR -->
+                                <module name="OuterTypeFilename"/>
+                                <!-- TypeName -> TypeName.java -->
+
+                                <!-- Code -->
+                                <module name="EqualsHashCode"/>
+                                <!-- equals() and hashCode() go together -->
+
+                                <!-- Style -->
+                                <module name="LeftCurly"> <!-- Left brace never goes on another line -->
+                                    <property name="option" value="eol"/>
+                                </module>
+                                <!-- We don't check right brance -->
+                                <module name="DefaultComesLast"/>
+                                <!-- default case in switch should be last -->
+                                <module name="GenericWhitespace"/>
+
+                                <!-- Naming -->
+                                <module name="ClassTypeParameterName">
+                                    <property name="format" value="^[A-Z][a-zA-Z0-9]*$"/>
+                                </module>
+                                <module name="LocalFinalVariableName"/>
+                                <module name="LocalVariableName">
+                                    <property name="format" value="^[a-z_][a-zA-Z0-9]*$"/>
+                                </module>
+                                <module name="MemberName">
+                                    <property name="format" value="^[a-z_][a-zA-Z0-9]*$"/>
+                                </module>
+                                <module name="MethodName">
+                                    <property name="format" value="^[a-z][a-zA-Z0-9]*$"/>
+                                </module>
+                                <!-- <module name="PackageName"/> Unlikely that we would miss this in a PR -->
+                                <module name="ParameterName"/>
+                                <!-- <module name="TypeName"/> Unlikely that we would miss this in a PR -->
+                            </module>
+
+                            <!-- Require the header, something that many people forget and we hate to fix -->
+                            <!-- You should configure the header in your IDE -->
+                            <module name="Header">
+                                <property name="headerFile" value="${basedir}/config/checkstyle/header.txt"/>
+                                <property name="fileExtensions" value="java"/>
+                            </module>
+                        </module>
+                    </checkstyleRules>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-site-plugin</artifactId>
+                <version>3.1</version>
+                <configuration>
+                    <reportPlugins>
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-javadoc-plugin</artifactId>
+                            <version>2.10.3</version>
+                        </plugin>
+                    </reportPlugins>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
-
-    <repositories>
-        <repository>
-            <id>spigot-repo</id>
-            <url>https://hub.spigotmc.org/nexus/content/groups/public/</url>
-        </repository>
-        <repository>
-            <id>Plugin Metrics</id>
-            <url>http://repo.mcstats.org/content/repositories/public</url>
-        </repository>
-        <repository>
-            <id>vault-repo</id>
-            <url>http://nexus.theyeticave.net/content/repositories/pub_releases</url>
-        </repository>
-        <repository>
-            <id>fanciful-mvn-repo</id>
-            <url>http://repo.franga2000.com/artifactory/public</url>
-        </repository>
-    </repositories>
-
-    <dependencies>
-        <dependency>
-            <groupId>net.milkbowl.vault</groupId>
-            <artifactId>VaultAPI</artifactId>
-            <version>1.5</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>mkremins</groupId>
-            <artifactId>fanciful</artifactId>
-            <version>0.3.3-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>org.spigotmc</groupId>
-            <artifactId>spigot-api</artifactId>
-            <version>1.8-R0.1-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>org.mcstats</groupId>
-            <artifactId>metrics-lite</artifactId>
-            <version>R6</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.dthielke</groupId>
-            <artifactId>herochat</artifactId>
-            <version>5.6.7-SNAPSHOT</version>
-            <!-- <version>1.0</version> -->
-            <scope>system</scope>
-            <systemPath>${project.basedir}/libraries/HeroChat.jar</systemPath>
-        </dependency>
-        <dependency>
-            <groupId>me.clip</groupId>
-            <artifactId>placeholderapi</artifactId>
-            <version>1.4</version>
-            <!-- <version>1.0</version> -->
-            <scope>system</scope>
-            <systemPath>${project.basedir}/libraries/PlaceholderAPI.jar</systemPath>
-        </dependency>
-    </dependencies>
 </project>
