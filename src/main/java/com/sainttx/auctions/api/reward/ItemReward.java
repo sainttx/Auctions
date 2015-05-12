@@ -68,15 +68,36 @@ public class ItemReward implements Reward {
         if (free < reward.getAmount()) { /* not enough space in inventory */
             ItemStack drop = reward.clone();
             drop.setAmount(drop.getAmount() - free);
-            reward.setAmount(free);
 
             if (free > 0) {
-                player.getInventory().addItem(reward);
+                reward.setAmount(free);
+                giveItemToPlayer(player, reward);
             }
             player.getWorld().dropItem(player.getLocation(), drop);
             AuctionsAPI.getMessageHandler().sendMessage(player, AuctionPlugin.getPlugin().getMessage("messages.notEnoughRoom"));
         } else {
-            inventory.addItem(reward);
+            giveItemToPlayer(player, reward);
+        }
+    }
+
+    /*
+     * A helper method that gives an item to a player, taking
+     * into consideration stack sizes
+     */
+    private void giveItemToPlayer(Player player, ItemStack item) {
+        if (item.getAmount() > item.getMaxStackSize()) {
+            while (item.getAmount() > item.getMaxStackSize()) {
+                ItemStack give = item.clone();
+                give.setAmount(item.getMaxStackSize());
+                player.getInventory().addItem(give);
+
+                // Lower the stack size
+                item.setAmount(item.getAmount() - item.getMaxStackSize());
+            }
+
+            player.getInventory().addItem(item);
+        } else {
+            player.getInventory().addItem(item);
         }
     }
 
