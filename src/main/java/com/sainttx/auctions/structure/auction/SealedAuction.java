@@ -1,4 +1,4 @@
-package com.sainttx.auctions.structure;
+package com.sainttx.auctions.structure.auction;
 
 import com.sainttx.auctions.AuctionPlugin;
 import com.sainttx.auctions.api.Auction;
@@ -7,6 +7,7 @@ import com.sainttx.auctions.api.AuctionsAPI;
 import com.sainttx.auctions.api.messages.MessageHandler;
 import com.sainttx.auctions.api.module.AuctionModule;
 import com.sainttx.auctions.api.reward.Reward;
+import com.sainttx.auctions.structure.DefaultAuction;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -18,7 +19,7 @@ import java.util.UUID;
 /**
  * An auction that will not broadcast any bids
  */
-public class SealedAuction extends AbstractAuction {
+public class SealedAuction extends DefaultAuction {
 
     private Map<UUID, Double> currentBids = new HashMap<UUID, Double>();
     private Map<UUID, Integer> amountOfBids = new HashMap<UUID, Integer>();
@@ -129,6 +130,7 @@ public class SealedAuction extends AbstractAuction {
 
     @Override
     public void broadcastBid() {
+        // Don't broadcast anything
     }
 
     @Override
@@ -138,7 +140,7 @@ public class SealedAuction extends AbstractAuction {
     }
 
     @Override
-    protected void returnMoneyToAll() {
+    public void returnMoneyToAll() {
         for (Map.Entry<UUID, Double> bidder : currentBids.entrySet()) {
             OfflinePlayer player = Bukkit.getOfflinePlayer(bidder.getKey());
             double bid = bidder.getValue();
@@ -150,7 +152,7 @@ public class SealedAuction extends AbstractAuction {
     /**
      * An implementation of an Auction builder for silent auctions
      */
-    public static class SealedAuctionBuilder extends AbstractAuctionBuilder {
+    public static class SealedAuctionBuilder extends DefaultAuctionBuilder {
 
         public SealedAuctionBuilder(AuctionPlugin plugin) {
             super(plugin);

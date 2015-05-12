@@ -1,17 +1,17 @@
-package com.sainttx.auctions.structure;
+package com.sainttx.auctions.structure.auction;
 
 import com.sainttx.auctions.AuctionPlugin;
 import com.sainttx.auctions.api.Auction;
 import com.sainttx.auctions.api.AuctionType;
-import com.sainttx.auctions.api.AuctionsAPI;
 import com.sainttx.auctions.api.reward.Reward;
+import com.sainttx.auctions.structure.DefaultAuction;
 
 import java.util.UUID;
 
 /**
  * A standard auction implementation
  */
-public class StandardAuction extends AbstractAuction {
+public class StandardAuction extends DefaultAuction {
 
     /**
      * Creates an Auction
@@ -31,15 +31,10 @@ public class StandardAuction extends AbstractAuction {
         this.timeLeft = timeLeft;
     }
 
-    @Override
-    public void broadcastBid() {
-        AuctionsAPI.getMessageHandler().broadcast(plugin.getMessage("messages.auctionFormattable.bid"), this, false);
-    }
-
     /**
      * An implementation of an Auction builder for standard auctions
      */
-    public static class StandardAuctionBuilder extends AbstractAuctionBuilder {
+    public static class StandardAuctionBuilder extends DefaultAuctionBuilder {
 
         public StandardAuctionBuilder(AuctionPlugin plugin) {
             super(plugin);

@@ -3,8 +3,8 @@ package com.sainttx.auctions.api;
 import com.sainttx.auctions.AuctionManagerImpl;
 import com.sainttx.auctions.AuctionPlugin;
 import com.sainttx.auctions.api.messages.MessageHandler;
-import com.sainttx.auctions.structure.SealedAuction;
-import com.sainttx.auctions.structure.StandardAuction;
+import com.sainttx.auctions.structure.auction.SealedAuction;
+import com.sainttx.auctions.structure.auction.StandardAuction;
 
 /**
  * A central API to handle all external Auction plugin needs
