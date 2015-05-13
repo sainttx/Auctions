@@ -85,7 +85,7 @@ public class AuctionPlugin extends JavaPlugin {
                 try {
                     economy = getServer().getServicesManager().getRegistration(Economy.class).getProvider();
                 } catch (Throwable t) {
-                    getLogger().log(Level.SEVERE, "failed to find an economy provider, disabling...", t);
+                    getLogger().log(Level.SEVERE, "failed to find an economy provider, disabling...");
                     getServer().getPluginManager().disablePlugin(AuctionPlugin.this);
                 }
             }
