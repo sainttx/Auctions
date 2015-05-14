@@ -67,7 +67,8 @@ public class TextualMessageHandler implements MessageHandler {
                 FancyMessage fancy = createMessage(auction, msg);
 
                 for (CommandSender recipient : getAllRecipients()) {
-                    if (recipient instanceof Player && isIgnoring((recipient))) {
+                    if (recipient == null || (recipient instanceof Player
+                            && isIgnoring((recipient)))) {
                         continue;
                     } else {
                         fancy.send(recipient);
@@ -104,7 +105,7 @@ public class TextualMessageHandler implements MessageHandler {
         String[] messages = message.split("\n+");
 
         for (String msg : messages) {
-            if (!msg.isEmpty()) {
+            if (!msg.isEmpty() && recipient != null) {
                 FancyMessage fancy = createMessage(auction, msg);
                 fancy.send(recipient);
             }
