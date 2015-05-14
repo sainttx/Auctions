@@ -128,8 +128,8 @@ public class DefaultAuction extends AbstractAuction {
             plugin.getLogger().info("Saving items of offline player " + getOwnerName() + " (uuid: " + getOwner() + ")");
             plugin.saveOfflinePlayer(getOwner(), getReward());
         } else {
-            handler.sendMessage(owner, plugin.getMessage("messages.ownerItemReturn"));
             getReward().giveItem(owner);
+            handler.sendMessage(owner, plugin.getMessage("messages.ownerItemReturn"));
         }
 
         // Set current auction to null
