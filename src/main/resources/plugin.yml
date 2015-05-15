@@ -54,6 +54,7 @@ permissions:
       auctions.command.info: true
       auctions.command.queue: true
       auctions.command.reload: true
+      auctions.command.spam: true
       auctions.command.start: true
       auctions.command.toggle: true
   auctions.bypass.cancel.otherauctions:
@@ -116,6 +117,9 @@ permissions:
   auctions.command.reload:
     description: Gives a player permission to reload the auctions configuration file
     default: op
+  auctions.command.spam:
+    description: Gives a player permission to toggle spammy messages
+    default: true
   auctions.command.start:
     description: Gives a player permission to start auctions
     default: true

@@ -56,6 +56,7 @@ public class AuctionCommandHandler implements CommandExecutor, Listener {
         addCommand(new ImpoundCommand());
         addCommand(new InfoCommand());
         addCommand(new ReloadCommand());
+        addCommand(new SpamCommand());
         addCommand(new StartCommand());
         addCommand(new ToggleCommand());
         addCommand(new QueueCommand());
