@@ -34,6 +34,7 @@ import com.sainttx.auctions.util.ReflectionUtil;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -78,6 +79,7 @@ public class AuctionPlugin extends JavaPlugin {
     public void onEnable() {
         plugin = this;
         saveDefaultConfig();
+        checkOutdatedConfig();
 
         // Set the economy in the next tick so that all plugins are loaded
         Bukkit.getScheduler().runTask(this, new Runnable() {
@@ -139,7 +141,8 @@ public class AuctionPlugin extends JavaPlugin {
         try {
             MetricsLite metrics = new MetricsLite(this);
             metrics.start();
-        } catch (Exception ignored) { }
+        } catch (Exception ignored) {
+        }
 
         getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
         loadConfig();
@@ -161,6 +164,34 @@ public class AuctionPlugin extends JavaPlugin {
             return Class.forName("me.clip.placeholderapi.PlaceholderAPI") != null;
         } catch (Throwable throwable) {
             return false;
+        }
+    }
+
+    /*
+     * A helper method that determines if a plugins configuration is outdated
+     * and prints out the missing pathways in the old config
+     */
+    @SuppressWarnings("deprecation")
+    private void checkOutdatedConfig() {
+        Configuration def = YamlConfiguration.loadConfiguration(getResource("config.yml"));
+        int version = def.getInt("general.configurationVersion");
+
+        if (getConfig().getInt("general.configurationVersion") < version) {
+            File cfg = new File(getDataFolder(), "config.yml");
+            YamlConfiguration curr = YamlConfiguration.loadConfiguration(cfg);
+
+            if (def.getKeys(true).size() > curr.getKeys(true).size()) {
+                getLogger().info("Hey! Your configuration is out of date.");
+                getLogger().info("Here's what your config is missing:");
+
+                for (String key : def.getKeys(true)) {
+                    if (!curr.contains(key)) {
+                        getLogger().info("  - Missing path \"" + key + "\"");
+                    }
+                }
+
+                getLogger().info("That's everything! You can check out the resource thread for the default values.");
+            }
         }
     }
 
