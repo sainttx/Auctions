@@ -28,16 +28,21 @@ import com.sainttx.auctions.api.AuctionsAPI;
 import com.sainttx.auctions.api.messages.MessageHandler;
 import com.sainttx.auctions.api.messages.MessageRecipientGroup;
 import com.sainttx.auctions.api.reward.ItemReward;
+import com.sainttx.auctions.util.ReflectionUtil;
 import com.sainttx.auctions.util.TimeUtil;
-import mkremins.fanciful.FancyMessage;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
+import java.lang.reflect.Method;
 import java.text.NumberFormat;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.logging.Level;
 
 /**
  * A base message handler that handles message sending
@@ -46,7 +51,6 @@ public class TextualMessageHandler implements MessageHandler {
 
     protected MessageFormatter formatter;
     protected Set<UUID> ignoring = new HashSet<UUID>();
-    public static final Pattern COLOR_FINDER_PATTERN = Pattern.compile(ChatColor.COLOR_CHAR + "([a-f0-9klmnor])");
 
     public TextualMessageHandler() {
         this.formatter = new MessageFormatterImpl();
@@ -64,14 +68,16 @@ public class TextualMessageHandler implements MessageHandler {
 
         for (String msg : messages) {
             if (!msg.isEmpty()) {
-                FancyMessage fancy = createMessage(auction, msg);
+                //FancyMessage fancy = createMessage(auction, msg);
+                BaseComponent[] fancy = createMessage(msg, auction);
 
                 for (CommandSender recipient : getAllRecipients()) {
                     if (recipient == null || (recipient instanceof Player
                             && isIgnoring((recipient)))) {
                         continue;
                     } else {
-                        fancy.send(recipient);
+                        Player player = (Player) recipient;
+                        player.spigot().sendMessage(fancy);
                     }
                 }
             }
@@ -106,8 +112,13 @@ public class TextualMessageHandler implements MessageHandler {
 
         for (String msg : messages) {
             if (!msg.isEmpty() && recipient != null) {
-                FancyMessage fancy = createMessage(auction, msg);
-                fancy.send(recipient);
+                BaseComponent[] baseComponents = createMessage(msg, auction);
+                if (!(recipient instanceof Player)) {
+                    recipient.sendMessage(TextComponent.toLegacyText(baseComponents));
+                } else {
+                    Player player = (Player) recipient;
+                    player.spigot().sendMessage(baseComponents);
+                }
             }
         }
     }
@@ -158,64 +169,75 @@ public class TextualMessageHandler implements MessageHandler {
         }
     }
 
-    /*
-     * A helper method that creates a FancyMessage to send to players
+    /**
+     * Converts an {@link org.bukkit.inventory.ItemStack} to a Json string
+     * for sending with {@link net.md_5.bungee.api.chat.BaseComponent}'s.
+     *
+     * @param itemStack the item to convert
+     * @return the Json string representation of the item
      */
-    private FancyMessage createMessage(Auction auction, String message) {
+    private String convertItemStackToJson(ItemStack itemStack) {
+        // ItemStack methods to get a net.minecraft.server.ItemStack object for serialization
+        Class<?> craftItemStackClazz = ReflectionUtil.getOBCClass("inventory.CraftItemStack");
+        Method asNMSCopyMethod = ReflectionUtil.getMethod(craftItemStackClazz, "asNMSCopy", ItemStack.class);
+
+        // NMS Method to serialize a net.minecraft.server.ItemStack to a valid Json string
+        Class<?> nmsItemStackClazz = ReflectionUtil.getNMSClass("ItemStack");
+        Class<?> nbtTagCompoundClazz = ReflectionUtil.getNMSClass("NBTTagCompound");
+        Method saveNmsItemStackMethod = ReflectionUtil.getMethod(nmsItemStackClazz, "save", nbtTagCompoundClazz);
+
+        Object nmsNbtTagCompoundObj; // This will just be an empty NBTTagCompound instance to invoke the saveNms method
+        Object nmsItemStackObj; // This is the net.minecraft.server.ItemStack object received from the asNMSCopy method
+        Object itemAsJsonObject; // This is the net.minecraft.server.ItemStack after being put through saveNmsItem method
+
+        try {
+            nmsNbtTagCompoundObj = nbtTagCompoundClazz.newInstance();
+            nmsItemStackObj = asNMSCopyMethod.invoke(null, itemStack);
+            itemAsJsonObject = saveNmsItemStackMethod.invoke(nmsItemStackObj, nmsNbtTagCompoundObj);
+        } catch (Throwable t) {
+            Bukkit.getLogger().log(Level.SEVERE, "failed to serialize itemstack to nms item", t);
+            return null;
+        }
+
+        // Return a string representation of the serialized object
+        return itemAsJsonObject.toString();
+    }
+
+    /*
+     * Turns the message into BaseComponents using the ChatComponent API
+     */
+    private BaseComponent[] createMessage(String message, Auction auction) {
         AuctionPlugin plugin = AuctionPlugin.getPlugin();
-        FancyMessage fancy = new FancyMessage(ChatColor.WHITE.toString());
+        BaseComponent[] components = TextComponent.fromLegacyText(message);
 
-        if (!message.isEmpty()) {
-            String[] split = message.split(" ");
-            ChatColor current = ChatColor.WHITE;
-
-            for (String str : split) {
-                str = ChatColor.translateAlternateColorCodes('&', str); // Color the word
-                String currentColor = ChatColor.getLastColors(str);
-                current = ChatColor.getByChar(currentColor.isEmpty() ? current.getChar() : currentColor.charAt(1));
-
-                if (str.contains("[item]") && auction != null) {
+        for (BaseComponent component : components) {
+            if (component instanceof TextComponent) {
+                TextComponent textComponent = (TextComponent) component;
+                if (textComponent.getText().contains("[item]") && auction != null) {
                     String rewardName = auction.getReward().getName();
                     String display = plugin.getMessage("messages.auctionFormattable.itemFormat");
                     display = ChatColor.translateAlternateColorCodes('&', display.replace("[itemName]", rewardName));
 
-                    Set<ChatColor> colors = EnumSet.noneOf(ChatColor.class);
-                    Matcher matcher = COLOR_FINDER_PATTERN.matcher(display);
-
-                    while (matcher.find()) {
-                        char cc = matcher.group(1).charAt(0);
-                        colors.add(ChatColor.getByChar(cc));
-                    }
-
-                    fancy.then(ChatColor.stripColor(display));
+                    textComponent.setText(textComponent.getText().replace("[item]", display));
 
                     if (auction.getReward() instanceof ItemReward) {
-                        ItemReward item = (ItemReward) auction.getReward();
-                        fancy.itemTooltip(item.getItem());
-                    }
+                        ItemReward reward = (ItemReward) auction.getReward();
+                        ItemStack itemStack = reward.getItem();
+                        String itemJson = convertItemStackToJson(itemStack);
 
-                    for (ChatColor color : colors) {
-                        if (color.isColor()) {
-                            fancy.color(color);
-                        } else {
-                            fancy.style(color);
-                        }
-                    }
-                } else {
-                    fancy.then(str);
+                        // Prepare a BaseComponent array with the itemJson as a text component
+                        BaseComponent[] hoverEventComponents = new BaseComponent[]{
+                                new TextComponent(itemJson) // The only element of the hover events basecomponents is the item json
+                        };
 
-                    if (current.isColor()) {
-                        fancy.color(current);
-                    } else {
-                        fancy.style(current);
+                        // Create the hover event
+                        HoverEvent event = new HoverEvent(HoverEvent.Action.SHOW_ITEM, hoverEventComponents);
+                        textComponent.setHoverEvent(event);
                     }
                 }
-
-                fancy.then(" "); // Add a space after every word
             }
         }
-
-        return fancy;
+        return components;
     }
 
     /**
@@ -242,8 +264,7 @@ public class TextualMessageHandler implements MessageHandler {
             boolean truncate = plugin.getConfig().getBoolean("general.truncatedNumberFormat", false);
 
             if (auction != null) {
-                if (auction.getType() == AuctionType.SEALED
-                        && !auction.hasEnded()
+                if (auction.getType() == AuctionType.SEALED && !auction.hasEnded()
                         && plugin.getConfig().getBoolean("auctionSettings.sealedAuctions.concealTopBidder", true)) {
                     message = message.replace("[topbiddername]", "Hidden")
                             .replace("[topbid]", "hidden");

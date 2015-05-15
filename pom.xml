@@ -39,31 +39,20 @@
             <id>vault-repo</id>
             <url>http://nexus.theyeticave.net/content/repositories/pub_releases</url>
         </repository>
-
-        <repository>
-            <id>fanciful-mvn-repo</id>
-            <url>http://repo.franga2000.com/artifactory/public</url>
-        </repository>
     </repositories>
 
     <dependencies>
+        <dependency>
+            <groupId>org.spigotmc</groupId>
+            <artifactId>spigot-api</artifactId>
+            <version>1.8.3-R0.1-SNAPSHOT</version>
+        </dependency>
+
         <dependency>
             <groupId>net.milkbowl.vault</groupId>
             <artifactId>VaultAPI</artifactId>
             <version>1.5</version>
             <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>mkremins</groupId>
-            <artifactId>fanciful</artifactId>
-            <version>0.3.3-SNAPSHOT</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.spigotmc</groupId>
-            <artifactId>spigot-api</artifactId>
-            <version>1.8-R0.1-SNAPSHOT</version>
         </dependency>
 
         <dependency>
