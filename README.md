@@ -25,7 +25,7 @@ The subcommands for this plugin are as follows:
 
 * `/auctions start <amount> <price> [increment] [autowin]`
 * `/auctions info`
-* `/auctions bid`
+* `/auctions bid <amount>`
 * `/auctions end`
 * `/auctions cancel`
 * `/auctions impound`
