@@ -15,7 +15,7 @@ The project is written for Java 7 and can be compiled through the use of [Maven]
 
 * Install [Maven](http://maven.apache.org)
 * Clone the repository using `git clone https://github.com/sainttx/Auctions.git`
-* Compile with maven using `mvn clean install`
+* Compile with maven using `mvn` or `mvn clean install`
 
 
 
