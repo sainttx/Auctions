@@ -124,7 +124,7 @@ public class DefaultAuction extends AbstractAuction {
         handler.broadcast(plugin.getMessage("messages.auctionFormattable.cancelled"), this, false);
 
         // Return the item to the owner
-        if (getOwner() == null) {
+        if (owner == null) {
             plugin.getLogger().info("Saving items of offline player " + getOwnerName() + " (uuid: " + getOwner() + ")");
             plugin.saveOfflinePlayer(getOwner(), getReward());
         } else {
