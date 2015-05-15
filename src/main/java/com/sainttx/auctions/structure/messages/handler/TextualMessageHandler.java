@@ -26,6 +26,7 @@ import com.sainttx.auctions.api.AuctionManager;
 import com.sainttx.auctions.api.AuctionType;
 import com.sainttx.auctions.api.AuctionsAPI;
 import com.sainttx.auctions.api.messages.MessageHandler;
+import com.sainttx.auctions.api.messages.MessageHandlerAddon.SpammyMessagePreventer;
 import com.sainttx.auctions.api.messages.MessageRecipientGroup;
 import com.sainttx.auctions.api.reward.ItemReward;
 import com.sainttx.auctions.util.TimeUtil;
@@ -42,10 +43,11 @@ import java.util.regex.Pattern;
 /**
  * A base message handler that handles message sending
  */
-public class TextualMessageHandler implements MessageHandler {
+public class TextualMessageHandler implements MessageHandler, SpammyMessagePreventer {
 
     protected MessageFormatter formatter;
     protected Set<UUID> ignoring = new HashSet<UUID>();
+    private Set<UUID> ignoringBids = new HashSet<UUID>();
     public static final Pattern COLOR_FINDER_PATTERN = Pattern.compile(ChatColor.COLOR_CHAR + "([a-f0-9klmnor])");
 
     public TextualMessageHandler() {
@@ -53,12 +55,12 @@ public class TextualMessageHandler implements MessageHandler {
     }
 
     @Override
-    public void broadcast(String message, boolean force) {
-        broadcast(message, null, force);
+    public void broadcast(String message, boolean spammy) {
+        broadcast(message, null, spammy);
     }
 
     @Override
-    public void broadcast(String message, Auction auction, boolean force) {
+    public void broadcast(String message, Auction auction, boolean spammy) {
         message = formatter.format(message, auction);
         String[] messages = message.split("\n+");
 
@@ -69,6 +71,9 @@ public class TextualMessageHandler implements MessageHandler {
                 for (CommandSender recipient : getAllRecipients()) {
                     if (recipient == null || (recipient instanceof Player
                             && isIgnoring((recipient)))) {
+                        continue;
+                    } else if (spammy && recipient instanceof Player
+                            && isIgnoringSpammy(((Player) recipient).getUniqueId())) {
                         continue;
                     } else {
                         fancy.send(recipient);
@@ -156,6 +161,21 @@ public class TextualMessageHandler implements MessageHandler {
         } else {
             return false;
         }
+    }
+
+    @Override
+    public void addIgnoringSpammy(UUID uuid) {
+        ignoringBids.add(uuid);
+    }
+
+    @Override
+    public void removeIgnoringSpammy(UUID uuid) {
+        ignoringBids.remove(uuid);
+    }
+
+    @Override
+    public boolean isIgnoringSpammy(UUID uuid) {
+        return ignoringBids.contains(uuid);
     }
 
     /*

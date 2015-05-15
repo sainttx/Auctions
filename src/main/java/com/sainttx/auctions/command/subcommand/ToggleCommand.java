@@ -40,7 +40,7 @@ public class ToggleCommand extends AuctionSubCommand {
         AuctionManager manager = AuctionsAPI.getAuctionManager();
         manager.setAuctioningDisabled(!manager.isAuctioningDisabled());
         String message = manager.isAuctioningDisabled() ? "messages.auctionsDisabled" : "messages.auctionsEnabled";
-        manager.getMessageHandler().broadcast(plugin.getMessage(message), true);
+        manager.getMessageHandler().broadcast(plugin.getMessage(message), false);
         return false;
     }
 }
