@@ -213,7 +213,7 @@ public abstract class AbstractAuction implements Auction {
             } else if (plugin.isBroadcastTime(timeLeft)) {
                 MessageHandler handler = AuctionsAPI.getAuctionManager().getMessageHandler();
                 handler.broadcast(plugin.getMessage("messages.auctionFormattable.timer"), AbstractAuction.this,
-                        false);
+                        true);
             }
         }
     }

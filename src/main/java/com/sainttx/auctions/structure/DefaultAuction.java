@@ -204,7 +204,7 @@ public class DefaultAuction extends AbstractAuction {
 
     @Override
     public void broadcastBid() {
-        AuctionsAPI.getMessageHandler().broadcast(plugin.getMessage("messages.auctionFormattable.bid"), this, false);
+        AuctionsAPI.getMessageHandler().broadcast(plugin.getMessage("messages.auctionFormattable.bid"), this, true);
     }
 
     @Override
