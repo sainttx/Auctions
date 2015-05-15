@@ -319,11 +319,13 @@ messages:
     startPriceTooLow: "&cYour starting price is too low"
     startSyntax: "&cUsage: /auction start <amount> <price> [increment] [autowin]"
   # All other messages are just standard messages that are sent to
-  # players. These messages have no placeholders available.
+  # players. These messages have no placeholders available asides from
+  # 'messages.bid', which has the [bid] placeholder.
   auctionImpounded: "&e[Auctions] &fThe auction was impounded by [player]"
   auctionPlacedInQueue: "&e[Auctions] &fYour auction has been queued"
   auctionsDisabled: "&e[Auctions] &fAuctions are now disabled"
   auctionsEnabled: "&e[Auctions] &fAuctions have been re-enabled"
+  bid: "&e[Auctions] &fYou place a bid of $[bid]"
   noLongerHidingSpam: "&e[Auctions] &fYou are no longer hiding spammy messages"
   noLongerIgnoring: "&e[Auctions] &fYou are no longer ignoring auction messages"
   notEnoughRoom: "&e[Auctions] &fYou didn't have enough room in your inventory so some of your winnings were dropped"

@@ -70,6 +70,11 @@ public class DefaultAuction extends AbstractAuction {
             plugin.getEconomy().withdrawPlayer(player, bid);
             broadcastBid();
 
+            // Tell the player a personal bid message
+            String message = plugin.getMessage("messages.bid")
+                    .replace("[bid]", plugin.formatDouble(bid));
+            handler.sendMessage(player, message);
+
             // Trigger our modules
             for (AuctionModule module : modules) {
                 if (module.canTrigger()) {
