@@ -104,7 +104,7 @@ public class StartCommand extends AuctionSubCommand {
                     return true;
                 }
 
-                if (amount < 0) {
+                if (amount <= 0) {
                     handler.sendMessage(player, plugin.getMessage("messages.error.invalidNumberEntered")); // negative amount
                 } else if (amount > 2304) {
                     handler.sendMessage(player, plugin.getMessage("messages.error.notEnoughOfItem")); // not enough
