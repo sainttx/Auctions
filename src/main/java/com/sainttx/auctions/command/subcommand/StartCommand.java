@@ -95,6 +95,12 @@ public class StartCommand extends AuctionSubCommand {
 
                     if (args.length > 3) {
                         increment = Integer.parseInt(args[3]);
+
+                        if (!plugin.getConfig().getBoolean("auctionSettings.incrementCanExceedStartPrice")
+                                && increment > price) {
+                            handler.sendMessage(sender, plugin.getMessage("messages.error.biddingIncrementExceedsStart"));
+                            return true;
+                        }
                     }
                     if (args.length > 4) {
                         autowin = Double.parseDouble(args[4]);

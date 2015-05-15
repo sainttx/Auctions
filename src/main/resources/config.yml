@@ -78,6 +78,11 @@ auctionSettings:
   # who attempt to create an auction with an increment that is greater
   # than this amount will be denied. Default: 9999
   maximumBidIncrement: 9999
+  # Whether or not players can set an increment that exceeds the starting
+  # price of the auction. For example, set to false and a player starts
+  # an auction with a starting price of $1000, the bidding increment
+  # set by the player can't exceed $1000. Default: true.
+  incrementCanExceedStartPrice: true
   # The minimum amount that is allowed to be defined as an auction start
   # price. Users that attempt to create an auction that fail to meet
   # this criteria will be denied. Default: 0.
@@ -282,6 +287,7 @@ messages:
     auctionQueueFull: "&cThe auction queue is currently full"
     auctionsDisabled: "&cAuctions are currently disabled"
     autowinDisabled: "&cPlacing autowin amounts on auctions has been disabled"
+    biddingIncrementExceedsStart: "&cYour bidding increment cannot exceed your start price"
     bidOnOwnAuction: "&cYou cannot bid on your own auction"
     bidSyntax: "&cUsage: /auction bid <amount>"
     bidTooLow: "&cYour bid was too low"
