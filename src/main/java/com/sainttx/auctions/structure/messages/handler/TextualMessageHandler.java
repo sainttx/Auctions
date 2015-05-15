@@ -31,6 +31,7 @@ import com.sainttx.auctions.api.messages.MessageRecipientGroup;
 import com.sainttx.auctions.api.reward.ItemReward;
 import com.sainttx.auctions.util.TimeUtil;
 import mkremins.fanciful.FancyMessage;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -95,6 +96,8 @@ public class TextualMessageHandler implements MessageHandler, SpammyMessagePreve
                 recipients.add(recipient);
             }
         }
+
+        recipients.add(Bukkit.getConsoleSender());
 
         return recipients;
     }
