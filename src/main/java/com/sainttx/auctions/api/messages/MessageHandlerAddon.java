@@ -37,14 +37,14 @@ public interface MessageHandlerAddon {
          *
          * @param uuid the players {@link UUID}
          */
-        void addIgnoringSpammy(UUID uuid);
+        void addIgnoringSpam(UUID uuid);
 
         /**
          * Removes a player from ignoring all spammy messages
          *
          * @param uuid the players {@link UUID}
          */
-        void removeIgnoringSpammy(UUID uuid);
+        void removeIgnoringSpam(UUID uuid);
 
         /**
          * Gets whether a player is ignoring spammy messages
@@ -52,6 +52,6 @@ public interface MessageHandlerAddon {
          * @param uuid the players {@link UUID}
          * @return true if the player is ignoring bids
          */
-        boolean isIgnoringSpammy(UUID uuid);
+        boolean isIgnoringSpam(UUID uuid);
     }
 }

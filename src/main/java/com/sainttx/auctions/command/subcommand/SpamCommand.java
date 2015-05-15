@@ -49,11 +49,11 @@ public class SpamCommand extends AuctionSubCommand {
             SpammyMessagePreventer preventer = (SpammyMessagePreventer) AuctionsAPI.getMessageHandler();
             Player player = (Player) sender;
 
-            if (!preventer.isIgnoringSpammy(player.getUniqueId())) {
-                preventer.addIgnoringSpammy(player.getUniqueId());
+            if (!preventer.isIgnoringSpam(player.getUniqueId())) {
+                preventer.addIgnoringSpam(player.getUniqueId());
                 handler.sendMessage(sender, plugin.getMessage("messages.nowHidingSpam"));
             } else {
-                preventer.removeIgnoringSpammy(player.getUniqueId());
+                preventer.removeIgnoringSpam(player.getUniqueId());
                 handler.sendMessage(sender, plugin.getMessage("messages.noLongerHidingSpam"));
             }
         }

@@ -73,7 +73,7 @@ public class TextualMessageHandler implements MessageHandler, SpammyMessagePreve
                             && isIgnoring((recipient)))) {
                         continue;
                     } else if (spammy && recipient instanceof Player
-                            && isIgnoringSpammy(((Player) recipient).getUniqueId())) {
+                            && isIgnoringSpam(((Player) recipient).getUniqueId())) {
                         continue;
                     } else {
                         fancy.send(recipient);
@@ -164,17 +164,17 @@ public class TextualMessageHandler implements MessageHandler, SpammyMessagePreve
     }
 
     @Override
-    public void addIgnoringSpammy(UUID uuid) {
+    public void addIgnoringSpam(UUID uuid) {
         ignoringBids.add(uuid);
     }
 
     @Override
-    public void removeIgnoringSpammy(UUID uuid) {
+    public void removeIgnoringSpam(UUID uuid) {
         ignoringBids.remove(uuid);
     }
 
     @Override
-    public boolean isIgnoringSpammy(UUID uuid) {
+    public boolean isIgnoringSpam(UUID uuid) {
         return ignoringBids.contains(uuid);
     }
 
