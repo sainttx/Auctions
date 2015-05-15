@@ -51,7 +51,7 @@ public class DefaultAuction extends AbstractAuction {
 
         MessageHandler handler = AuctionsAPI.getMessageHandler();
 
-        if (bid < getTopBid() + getBidIncrement()) {
+        if (bid < (hasBids() ? getTopBid() + getBidIncrement() : getStartPrice())) {
             handler.sendMessage(player, plugin.getMessage("messages.error.bidTooLow")); // the bid wasnt enough
         } else if (plugin.getEconomy().getBalance(player) < bid) {
             handler.sendMessage(player, plugin.getMessage("messages.error.insufficientBalance")); // insufficient funds
@@ -63,6 +63,7 @@ public class DefaultAuction extends AbstractAuction {
                 plugin.getEconomy().depositPlayer(oldPlayer, getTopBid());
             }
 
+            this.hasBidBeenPlaced = true;
             this.winningBid = bid;
             this.topBidderName = player.getName();
             this.topBidderUUID = player.getUniqueId();

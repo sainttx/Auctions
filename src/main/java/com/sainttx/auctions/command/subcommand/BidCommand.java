@@ -60,7 +60,7 @@ public class BidCommand extends AuctionSubCommand {
 
             try {
                 bid = args.length < 2
-                        ? auction.getTopBid() + auction.getBidIncrement()
+                        ? (auction.hasBids() ? auction.getTopBid() + auction.getBidIncrement() : auction.getStartPrice())
                         : Double.parseDouble(args[1]);
             } catch (NumberFormatException ex) {
                 handler.sendMessage(sender, plugin.getMessage("messages.error.invalidNumberEntered"));

@@ -53,6 +53,7 @@ public abstract class AbstractAuction implements Auction {
     protected String topBidderName;
     protected double winningBid;
     protected double startPrice;
+    protected boolean hasBidBeenPlaced;
 
     // Auction information
     protected Reward reward;
@@ -73,7 +74,7 @@ public abstract class AbstractAuction implements Auction {
 
     @Override
     public boolean hasBids() {
-        return getTopBid() > getStartPrice();
+        return hasBidBeenPlaced;
     }
 
     @Override
