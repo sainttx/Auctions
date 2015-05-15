@@ -173,25 +173,29 @@ public class AuctionPlugin extends JavaPlugin {
      */
     @SuppressWarnings("deprecation")
     private void checkOutdatedConfig() {
-        Configuration def = YamlConfiguration.loadConfiguration(getResource("config.yml"));
-        int version = def.getInt("general.configurationVersion");
+        try {
+            Configuration def = YamlConfiguration.loadConfiguration(getResource("config.yml"));
+            int version = def.getInt("general.configurationVersion");
 
-        if (getConfig().getInt("general.configurationVersion") < version) {
-            File cfg = new File(getDataFolder(), "config.yml");
-            YamlConfiguration curr = YamlConfiguration.loadConfiguration(cfg);
+            if (getConfig().getInt("general.configurationVersion") < version) {
+                File cfg = new File(getDataFolder(), "config.yml");
+                YamlConfiguration curr = YamlConfiguration.loadConfiguration(cfg);
 
-            if (def.getKeys(true).size() > curr.getKeys(true).size()) {
-                getLogger().info("Hey! Your configuration is out of date.");
-                getLogger().info("Here's what your config is missing:");
+                if (def.getKeys(true).size() > curr.getKeys(true).size()) {
+                    getLogger().info("Hey! Your configuration is out of date.");
+                    getLogger().info("Here's what your config is missing:");
 
-                for (String key : def.getKeys(true)) {
-                    if (!curr.contains(key)) {
-                        getLogger().info("  - Missing path \"" + key + "\"");
+                    for (String key : def.getKeys(true)) {
+                        if (!curr.contains(key)) {
+                            getLogger().info("  - Missing path \"" + key + "\"");
+                        }
                     }
-                }
 
-                getLogger().info("That's everything! You can check out the resource thread for the default values.");
+                    getLogger().info("That's everything! You can check out the resource thread for the default values.");
+                }
             }
+        } catch (Exception ex) {
+            getLogger().severe("Failed to determine if Auctions configuration is out of date");
         }
     }
 
