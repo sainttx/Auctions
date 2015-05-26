@@ -250,7 +250,7 @@ messages:
     # you don't want duplicate messages being sent through chat, you'll have to
     # disable the specific message by setting them to nothing (ie. "").
     actionBarMessage: "&e&lAUCTION: &f[ownername] || [itemamount] [itemName] || [time] || [topbiddername] ($[topbid]) || &e/auction info"
-    antiSnipeAdd: "&e[Auctions] &f(Antisnipe) [snipetime] seconds were added to the auction"
+    antiSnipeAdd: "&e[Auctions] &f(Antisnipe) [snipetime] were added to the auction"
     autowin:  "&e[Auctions] &fThe buyout has been set to $[autowin]"
     bid: "&e[Auctions] &f[topbiddername] bid $[topbid] on &b[itemamount] [item]"
     cancelled: "&e[Auctions] &fThe auction for &b[itemamount] [item] &fwas cancelled"
