@@ -21,6 +21,7 @@
 package com.sainttx.auctions.command;
 
 import com.sainttx.auctions.AuctionPlugin;
+import com.sainttx.auctions.api.AuctionManager;
 import com.sainttx.auctions.api.AuctionsAPI;
 import com.sainttx.auctions.command.subcommand.*;
 import org.bukkit.ChatColor;
@@ -81,7 +82,13 @@ public class AuctionCommandHandler implements CommandExecutor, Listener {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (args.length == 0 && !command.getName().equalsIgnoreCase("bid")) {
-            sendMenu(sender);
+            AuctionPlugin plugin = AuctionPlugin.getPlugin();
+            AuctionManager manager = AuctionsAPI.getAuctionManager();
+            if (manager.getCurrentAuction() == null) {
+                manager.getMessageHandler().sendMessage(sender, plugin.getMessage("messages.error.noCurrentAuction"));
+            } else {
+                manager.getMessageHandler().sendAuctionInformation(sender, manager.getCurrentAuction());
+            }
         } else {
             AuctionPlugin plugin = AuctionPlugin.getPlugin();
             String sub;
