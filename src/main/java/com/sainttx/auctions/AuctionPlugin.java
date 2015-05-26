@@ -25,6 +25,7 @@ import com.sainttx.auctions.api.messages.MessageHandlerType;
 import com.sainttx.auctions.api.reward.Reward;
 import com.sainttx.auctions.command.AuctionCommandHandler;
 import com.sainttx.auctions.hook.PlaceholderAPIHook;
+import com.sainttx.auctions.listener.InventoryListener;
 import com.sainttx.auctions.listener.PlayerListener;
 import com.sainttx.auctions.structure.messages.group.GlobalChatGroup;
 import com.sainttx.auctions.structure.messages.group.HerochatGroup;
@@ -145,6 +146,7 @@ public class AuctionPlugin extends JavaPlugin {
         }
 
         getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
+        getServer().getPluginManager().registerEvents(new InventoryListener(this), this);
         loadConfig();
         loadOfflineRewards();
 

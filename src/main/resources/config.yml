@@ -303,6 +303,7 @@ messages:
     cantUsePluginInWorld: "&cYou can't use the auctions plugin in this world"
     creativeNotAllowed: "&cYou cannot start auctions while in creative"
     currentlyIgnoring: "&cYou can't do that while ignoring auctions"
+    differentItem: "&cYou can't place different items into the inventory"
     insufficientBalance: "&cYou don't have enough money to do that"
     insufficientPermissions: "&cYou don't have enough permissions to use this command"
     invalidBidIncrement: "&cYour bid increment was either too high or too low"
@@ -317,7 +318,7 @@ messages:
     sealedAuctionsMaxBidsReached: "&cYou have reached the maximum number of bids allowed per player on this auction"
     startPriceTooHigh: "&cYour starting price is too high"
     startPriceTooLow: "&cYour starting price is too low"
-    startSyntax: "&cUsage: /auction start <amount> <price> [increment] [autowin]"
+    startSyntax: "&cUsage: /auction start <price>"
   # All other messages are just standard messages that are sent to
   # players. These messages have no placeholders available asides from
   # 'messages.bid', which has the [bid] placeholder.
