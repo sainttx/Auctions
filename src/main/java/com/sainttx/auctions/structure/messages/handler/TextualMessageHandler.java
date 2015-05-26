@@ -35,6 +35,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.BookMeta;
 
 import java.text.NumberFormat;
 import java.util.*;
@@ -214,7 +216,13 @@ public class TextualMessageHandler implements MessageHandler, SpammyMessagePreve
 
                     if (auction.getReward() instanceof ItemReward) {
                         ItemReward item = (ItemReward) auction.getReward();
-                        fancy.itemTooltip(item.getItem());
+                        ItemStack tooltip = item.getItem().clone();
+                        if (tooltip.getItemMeta() instanceof BookMeta) {
+                            BookMeta meta = (BookMeta) tooltip.getItemMeta();
+                            meta.setPages();
+                            tooltip.setItemMeta(meta);
+                        }
+                        fancy.itemTooltip(tooltip);
                     }
 
                     for (ChatColor color : colors) {

@@ -26,9 +26,12 @@ import com.sainttx.auctions.api.AuctionType;
 import com.sainttx.auctions.api.AuctionsAPI;
 import com.sainttx.auctions.api.messages.MessageHandler;
 import com.sainttx.auctions.command.AuctionSubCommand;
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.BookMeta;
 
 /**
  * Handles the /auction bid command for the auction plugin
