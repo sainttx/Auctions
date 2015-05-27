@@ -105,7 +105,8 @@ public class StartCommand extends AuctionSubCommand {
                     if (args.length > 4) {
                         autowin = Double.parseDouble(args[4]);
 
-                        if (autowin > plugin.getConfig().getDouble("auctionSettings.maximumAutowinAmount", 1000000D)) {
+                        if (!player.hasPermission("auctions.bypass.start.maxautowin")
+                                && autowin > plugin.getConfig().getDouble("auctionSettings.maximumAutowinAmount", 1000000D)) {
                             handler.sendMessage(sender, plugin.getMessage("messages.error.autowinTooHigh"));
                             return true;
                         }
