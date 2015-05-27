@@ -90,6 +90,9 @@ auctionSettings:
   # The maximum amount that is allowed to be defined as an auction start
   # price. Default: 99999.
   maximumStartPrice: 99999
+  # The maximum amount that is allow to be defined as an auction autowin
+  # price. Default: 1000000 (1M).
+  maximumAutowinAmount: 1000000
   # Whether or not players can auction items that have been named through
   # a plugin or anvil. Default: true.
   canAuctionNamedItems: true
@@ -287,6 +290,7 @@ messages:
     auctionQueueFull: "&cThe auction queue is currently full"
     auctionsDisabled: "&cAuctions are currently disabled"
     autowinDisabled: "&cPlacing autowin amounts on auctions has been disabled"
+    autowinTooHigh: "&cYour autowin amount is too high"
     biddingIncrementExceedsStart: "&cYour bidding increment cannot exceed your start price"
     bidOnOwnAuction: "&cYou cannot bid on your own auction"
     bidSyntax: "&cUsage: /auction bid <amount>"
