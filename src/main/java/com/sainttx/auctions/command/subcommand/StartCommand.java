@@ -171,7 +171,7 @@ public class StartCommand extends AuctionSubCommand {
                         }
 
                         // check if we can add an anti snipe module
-                        if (plugin.getConfig().getBoolean("auctionSettings.antiSnipe.enabled", true)) {
+                        if (plugin.getConfig().getBoolean("auctionSettings.antiSnipe.enable", true)) {
                             created.addModule(new AntiSnipeModule(created));
                         }
 
