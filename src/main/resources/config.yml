@@ -160,7 +160,7 @@ general:
   # A value that is used by the plugin to determine if your configuration
   # is out of date. This value should not be modified. The plugin will
   # tell you in console whether or not your config is out of date.
-  configurationVersion: 3
+  configurationVersion: 4
   # Whether or not to shorten times that are formatted through the utility
   # class. For example, this is the difference between times being shown as
   # "5 minutes 5 seconds" vs. "5m, 5s". Default: false.
