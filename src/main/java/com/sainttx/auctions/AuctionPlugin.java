@@ -22,6 +22,7 @@ package com.sainttx.auctions;
 
 import com.sainttx.auctions.api.AuctionsAPI;
 import com.sainttx.auctions.api.messages.MessageHandlerType;
+import com.sainttx.auctions.api.reward.ItemReward;
 import com.sainttx.auctions.api.reward.Reward;
 import com.sainttx.auctions.command.AuctionCommandHandler;
 import com.sainttx.auctions.hook.PlaceholderAPIHook;
@@ -374,7 +375,19 @@ public class AuctionPlugin extends JavaPlugin {
         }
         this.offlineConfiguration = YamlConfiguration.loadConfiguration(offlineFile);
         for (String string : offlineConfiguration.getKeys(false)) {
-            Reward reward = (Reward) offlineConfiguration.get(string);
+            Object obj = offlineConfiguration.get(string);
+            Reward reward;
+
+            if (obj instanceof Reward) {
+                reward = (Reward) offlineConfiguration.get(string);
+            } else if (obj instanceof ItemStack) {
+                reward = new ItemReward((ItemStack) obj);
+            } else {
+                getLogger().info("Cannot load offline reward for player with UUID \""
+                        + string + "\", unknown reward type \"" + obj.getClass().getName() + "\"");
+                continue;
+            }
+
             offlineRewardCache.put(UUID.fromString(string), reward);
         }
     }
