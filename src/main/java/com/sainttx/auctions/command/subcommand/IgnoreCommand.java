@@ -34,7 +34,7 @@ import org.bukkit.entity.Player;
 public class IgnoreCommand extends AuctionSubCommand {
 
     public IgnoreCommand() {
-        super("auctions.command.ignore", "ignore", "i");
+        super("auctions.command.ignore", "ignore");
     }
 
     @Override
