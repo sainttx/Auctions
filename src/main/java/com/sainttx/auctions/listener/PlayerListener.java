@@ -96,8 +96,7 @@ public class PlayerListener implements Listener {
 
         if (event.getCause() != PlayerTeleportEvent.TeleportCause.ENDER_PEARL
                 && !player.hasPermission("auctions.bypass.general.disabledworld")
-                && plugin.getConfig().isList("general.disabledWorlds")
-                && plugin.getConfig().getStringList("general.disabledWorlds").contains(target.getName())) {
+                && plugin.isWorldDisabled(target)) {
             if (AuctionsAPI.getAuctionManager().hasActiveAuction(player)
                     || AuctionsAPI.getAuctionManager().hasAuctionInQueue(player)) {
                 event.setCancelled(true);

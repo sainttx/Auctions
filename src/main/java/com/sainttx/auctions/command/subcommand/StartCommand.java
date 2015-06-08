@@ -60,6 +60,9 @@ public class StartCommand extends AuctionSubCommand {
             handler.sendMessage(sender, plugin.getMessage("messages.error.startSyntax"));
         } else if (manager.isAuctioningDisabled() && !sender.hasPermission("auctions.bypass.general.disabled")) {
             handler.sendMessage(sender, plugin.getMessage("messages.error.auctionsDisabled"));
+        } else if (!sender.hasPermission("auctions.bypass.general.disabledworld")
+                && plugin.isWorldDisabled(((Player) sender).getWorld())) {
+            handler.sendMessage(sender, plugin.getMessage("messages.error.cantUsePluginInWorld"));
         } else if (!plugin.getConfig().getBoolean("auctionSettings.sealedAuctions.enabled", false)
                 && cmd.getName().equalsIgnoreCase("sealedauction")) {
             handler.sendMessage(sender, plugin.getMessage("messages.error.sealedAuctionsDisabled"));

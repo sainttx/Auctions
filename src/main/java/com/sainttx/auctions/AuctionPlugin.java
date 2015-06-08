@@ -35,6 +35,7 @@ import com.sainttx.auctions.util.ReflectionUtil;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
@@ -236,6 +237,17 @@ public class AuctionPlugin extends JavaPlugin {
     public boolean isBroadcastTime(int time) {
         return getConfig().isList("general.broadcastTimes")
                 && getConfig().getStringList("general.broadcastTimes").contains(Integer.toString(time));
+    }
+
+    /**
+     * Gets whether a world is disabled
+     *
+     * @param world the world
+     * @return true if the world is disabled
+     */
+    public boolean isWorldDisabled(World world) {
+        return getConfig().isList("general.disabledWorlds")
+                && getConfig().getStringList("general.disabledWorlds").contains(world.getName());
     }
 
     /**
