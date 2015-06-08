@@ -29,6 +29,7 @@ import com.sainttx.auctions.api.messages.MessageHandler;
 import com.sainttx.auctions.api.messages.MessageHandlerAddon.SpammyMessagePreventer;
 import com.sainttx.auctions.api.messages.MessageRecipientGroup;
 import com.sainttx.auctions.api.reward.ItemReward;
+import com.sainttx.auctions.api.reward.Reward;
 import com.sainttx.auctions.util.TimeUtil;
 import mkremins.fanciful.FancyMessage;
 import org.bukkit.Bukkit;
@@ -37,6 +38,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import java.text.NumberFormat;
 import java.util.*;
@@ -200,7 +202,7 @@ public class TextualMessageHandler implements MessageHandler, SpammyMessagePreve
                 current = ChatColor.getByChar(currentColor.isEmpty() ? current.getChar() : currentColor.charAt(1));
 
                 if (str.contains("[item]") && auction != null) {
-                    String rewardName = auction.getReward().getName();
+                    String rewardName = getRewardName(plugin, auction.getReward());
                     String display = plugin.getMessage("messages.auctionFormattable.itemFormat");
                     display = ChatColor.translateAlternateColorCodes('&', display.replace("[itemName]", rewardName));
 
@@ -249,6 +251,34 @@ public class TextualMessageHandler implements MessageHandler, SpammyMessagePreve
         return fancy;
     }
 
+    /*
+     * A helper method that gets an items name
+     */
+    private static String getRewardName(AuctionPlugin plugin, Reward reward) {
+        if (plugin.getConfig().getBoolean("general.useItemDisplayName", false)
+                && reward instanceof ItemReward) {
+            ItemReward itemReward = (ItemReward) reward;
+            return getItemRewardName(itemReward);
+        } else {
+            return reward.getName();
+        }
+    }
+
+    /*
+     * A helper method to get an items display name. Will default to
+     * the items material name if the item lacks a display name.
+     */
+    public static String getItemRewardName(ItemReward reward) {
+        ItemStack item = reward.getItem();
+        ItemMeta meta = item.getItemMeta();
+
+        if (meta != null && meta.hasDisplayName()) {
+            return meta.getDisplayName();
+        } else {
+            return reward.getName();
+        }
+    }
+
     /**
      * A message formatter that handles basic formatting
      */
@@ -279,7 +309,8 @@ public class TextualMessageHandler implements MessageHandler, SpammyMessagePreve
                     message = message.replace("[topbiddername]", "Hidden")
                             .replace("[topbid]", "hidden");
                 }
-                message = message.replace("[itemName]", auction.getReward().getName());
+
+                message = message.replace("[itemName]", getRewardName(plugin, auction.getReward()));
                 message = message.replace("[itemamount]", Integer.toString(auction.getReward().getAmount()));
                 message = message.replace("[time]", TimeUtil.getFormattedTime(auction.getTimeLeft()));
                 message = message.replace("[autowin]", truncate ? truncateNumber(auction.getAutowin()) : formatDouble(auction.getAutowin()));
