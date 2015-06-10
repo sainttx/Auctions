@@ -201,6 +201,10 @@ public class TextualMessageHandler implements MessageHandler, SpammyMessagePreve
                 String currentColor = ChatColor.getLastColors(str);
                 current = ChatColor.getByChar(currentColor.isEmpty() ? current.getChar() : currentColor.charAt(1));
 
+                if (current == ChatColor.RESET) {
+                    current = ChatColor.WHITE;
+                }
+
                 if (str.contains("[item]") && auction != null) {
                     String rewardName = getRewardName(plugin, auction.getReward());
                     String display = plugin.getMessage("messages.auctionFormattable.itemFormat");
@@ -228,6 +232,9 @@ public class TextualMessageHandler implements MessageHandler, SpammyMessagePreve
                     }
 
                     for (ChatColor color : colors) {
+                        if (color == ChatColor.RESET) {
+                            color = ChatColor.WHITE;
+                        }
                         if (color.isColor()) {
                             fancy.color(color);
                         } else {
