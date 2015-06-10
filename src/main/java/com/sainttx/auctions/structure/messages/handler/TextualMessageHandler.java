@@ -210,6 +210,10 @@ public class TextualMessageHandler implements MessageHandler, SpammyMessagePreve
                     String display = plugin.getMessage("messages.auctionFormattable.itemFormat");
                     display = ChatColor.translateAlternateColorCodes('&', display.replace("[itemName]", rewardName));
 
+                    if (plugin.getConfig().getBoolean("general.stripItemDisplayNameColor", false)) {
+                        display = ChatColor.stripColor(display);
+                    }
+
                     Set<ChatColor> colors = EnumSet.noneOf(ChatColor.class);
                     Matcher matcher = COLOR_FINDER_PATTERN.matcher(display);
 
@@ -218,7 +222,7 @@ public class TextualMessageHandler implements MessageHandler, SpammyMessagePreve
                         colors.add(ChatColor.getByChar(cc));
                     }
 
-                    fancy.then(ChatColor.stripColor(display));
+                    fancy.then(display);
 
                     if (auction.getReward() instanceof ItemReward) {
                         ItemReward item = (ItemReward) auction.getReward();

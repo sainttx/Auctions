@@ -176,6 +176,9 @@ general:
   # set to true then the auction will display "Awesome Sword" as opposed
   # to "Diamond Sword" in auction formattable messages. Default: false.
   useItemDisplayName: false
+  # Whether or not to strip an items display name colors when outputing it
+  # in auction formattable messages. Default: false.
+  stripItemDisplayNameColor: false
   # A list of worlds that the auction plugin is disabled in. World names
   # are all case sensitive.
   disabledWorlds:
