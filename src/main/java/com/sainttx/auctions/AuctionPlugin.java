@@ -119,7 +119,7 @@ public class AuctionPlugin extends JavaPlugin {
             switch (type) {
                 case ACTION_BAR:
                     String version = ReflectionUtil.getVersion();
-                    if (version.startsWith("v1_8_R2") || version.startsWith("v1_8_R1")) {
+                    if (version.startsWith("v1_8_R")) {
                         AuctionsAPI.getAuctionManager().setMessageHandler(new ActionBarMessageHandler());
                         getLogger().info("Message handler has been set to ACTION_BAR");
                         break;

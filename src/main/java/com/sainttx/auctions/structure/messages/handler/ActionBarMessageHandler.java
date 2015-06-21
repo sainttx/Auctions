@@ -40,7 +40,7 @@ public class ActionBarMessageHandler extends TextualMessageHandler {
         String version = ReflectionUtil.getVersion();
         if (version.startsWith("v1_8_R1")) {
             base = new ActionBarObjectv1_8_R1();
-        } else if (version.startsWith("v1_8_R2")) {
+        } else if (version.startsWith("v1_8_R2") || version.startsWith("v1_8_R3")) {
             base = new ActionBarObjectv1_8_R3();
         } else {
             throw new IllegalStateException("this server version is unsupported");
