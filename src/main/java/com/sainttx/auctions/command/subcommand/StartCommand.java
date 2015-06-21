@@ -36,6 +36,7 @@ import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
@@ -93,7 +94,11 @@ public class StartCommand extends AuctionSubCommand {
                 double autowin = -1;
 
                 try {
-                    amount = Integer.parseInt(args[1]);
+                    if (args[1].equalsIgnoreCase("all")) {
+                        amount = getNumSimilarItem(player, player.getItemInHand());
+                    } else {
+                        amount = Integer.parseInt(args[1]);
+                    }
                     price = Double.parseDouble(args[2]);
 
                     if (args.length > 3) {
@@ -195,6 +200,26 @@ public class StartCommand extends AuctionSubCommand {
         }
 
         return false;
+    }
+
+    /*
+     * Gets the total amount of an item that a player is holding
+     */
+    private int getNumSimilarItem(Player player, ItemStack item) {
+        Inventory inv = player.getInventory();
+        int amount = 0;
+
+        if (item == null || item.getType() == Material.AIR) {
+            return 1;
+        }
+
+        for (ItemStack itm : inv) {
+            if (itm != null && itm.isSimilar(item)) {
+                amount += itm.getAmount();
+            }
+        }
+
+        return amount;
     }
 
     /**

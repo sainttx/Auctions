@@ -330,7 +330,7 @@ messages:
     sealedAuctionsMaxBidsReached: "&cYou have reached the maximum number of bids allowed per player on this auction"
     startPriceTooHigh: "&cYour starting price is too high"
     startPriceTooLow: "&cYour starting price is too low"
-    startSyntax: "&cUsage: /auction start <amount> <price> [increment] [autowin]"
+    startSyntax: "&cUsage: /auction start <amount|all> <price> [increment] [autowin]"
   # All other messages are just standard messages that are sent to
   # players. These messages have no placeholders available asides from
   # 'messages.bid', which has the [bid] placeholder.
