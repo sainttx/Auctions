@@ -170,12 +170,6 @@ general:
   # this to true will have applicable numbers truncated. For example, the
   # number 1234 will be output as "1K", 99874 as "99K", etc. Default: false.
   truncatedNumberFormat: false
-  # Whether or not to use the auctioned items display name, if available,
-  # instead of the items actual name. For example, if a player auctions a
-  # Diamond Sword with display name "Awesome Sword" and this option is
-  # set to true then the auction will display "Awesome Sword" as opposed
-  # to "Diamond Sword" in auction formattable messages. Default: false.
-  useItemDisplayName: false
   # Whether or not to strip an items display name colors when outputing it
   # in auction formattable messages. Default: false.
   stripItemDisplayNameColor: false
@@ -235,6 +229,7 @@ messages:
   # that will be formatted will information from the current auctions
   # information. These placeholders are as follows:
   # [itemName]      - placeholder for the raw name of the item being auctioned
+  # [itemDisplayName] - placeholder for display name of the item being auctioned
   # [itemamount]    - placeholder for the amount inside the reward/item
   # [time]          - placeholder for the formatted time left (ie. 30 seconds)
   # [autowin]       - placeholder for the autowin balance in the auction

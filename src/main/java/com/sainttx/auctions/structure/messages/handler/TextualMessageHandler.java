@@ -206,9 +206,11 @@ public class TextualMessageHandler implements MessageHandler, SpammyMessagePreve
                 }
 
                 if (str.contains("[item]") && auction != null) {
-                    String rewardName = getRewardName(plugin, auction.getReward());
+                    String rewardName = getRewardName(auction.getReward());
                     String display = plugin.getMessage("messages.auctionFormattable.itemFormat");
-                    display = ChatColor.translateAlternateColorCodes('&', display.replace("[itemName]", rewardName));
+                    display = ChatColor.translateAlternateColorCodes('&',
+                            display.replace("[itemName]", rewardName)
+                                    .replace("[itemDisplayName]", getItemDisplayName(auction.getReward())));
 
                     if (plugin.getConfig().getBoolean("general.stripItemDisplayNameColor", false)) {
                         display = ChatColor.stripColor(display);
@@ -263,16 +265,22 @@ public class TextualMessageHandler implements MessageHandler, SpammyMessagePreve
     }
 
     /*
+     * Gets the display name of an item
+     */
+    private static String getItemDisplayName(Reward reward) {
+        if (reward instanceof ItemReward) {
+            ItemReward ir = (ItemReward) reward;
+            return getItemRewardName(ir);
+        } else {
+            return getRewardName(reward);
+        }
+    }
+
+    /*
      * A helper method that gets an items name
      */
-    private static String getRewardName(AuctionPlugin plugin, Reward reward) {
-        if (plugin.getConfig().getBoolean("general.useItemDisplayName", false)
-                && reward instanceof ItemReward) {
-            ItemReward itemReward = (ItemReward) reward;
-            return getItemRewardName(itemReward);
-        } else {
-            return reward.getName();
-        }
+    private static String getRewardName(Reward reward) {
+        return reward.getName();
     }
 
     /*
@@ -321,7 +329,8 @@ public class TextualMessageHandler implements MessageHandler, SpammyMessagePreve
                             .replace("[topbid]", "hidden");
                 }
 
-                message = message.replace("[itemName]", getRewardName(plugin, auction.getReward()));
+                message = message.replace("[itemName]", getRewardName(auction.getReward()));
+                message = message.replace("[itemDisplayName]", getItemDisplayName(auction.getReward()));
                 message = message.replace("[itemamount]", Integer.toString(auction.getReward().getAmount()));
                 message = message.replace("[time]", TimeUtil.getFormattedTime(auction.getTimeLeft()));
                 message = message.replace("[autowin]", truncate ? truncateNumber(auction.getAutowin()) : formatDouble(auction.getAutowin()));
