@@ -86,7 +86,7 @@ public class TimeUtil {
             }
         }
         if (sb.length() == 0) {
-            return "now";
+            return "0 seconds";
         }
         if (shortened) {
             sb.setLength(sb.length() - 2);
