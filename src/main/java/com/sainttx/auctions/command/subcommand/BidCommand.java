@@ -26,12 +26,9 @@ import com.sainttx.auctions.api.AuctionType;
 import com.sainttx.auctions.api.AuctionsAPI;
 import com.sainttx.auctions.api.messages.MessageHandler;
 import com.sainttx.auctions.command.AuctionSubCommand;
-import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.BookMeta;
 
 /**
  * Handles the /auction bid command for the auction plugin
@@ -71,8 +68,7 @@ public class BidCommand extends AuctionSubCommand {
             }
 
             if (!player.hasPermission("auctions.bypass.general.disabledworld")
-                    && plugin.getConfig().isList("general.disabledWorlds")
-                    && plugin.getConfig().getStringList("general.disabledWorlds").contains(player.getWorld().getName())) {
+                    && plugin.isWorldDisabled(player.getWorld())) {
                 handler.sendMessage(player, plugin.getMessage("messages.error.cantUsePluginInWorld"));
             } else if (handler.isIgnoring(player)) {
                 handler.sendMessage(player, plugin.getMessage("messages.error.currentlyIgnoring")); // player is ignoring

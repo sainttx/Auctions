@@ -29,6 +29,7 @@ import com.sainttx.auctions.api.messages.MessageHandler;
 import com.sainttx.auctions.api.messages.MessageHandlerAddon.SpammyMessagePreventer;
 import com.sainttx.auctions.api.messages.MessageRecipientGroup;
 import com.sainttx.auctions.api.reward.ItemReward;
+import com.sainttx.auctions.api.reward.Reward;
 import com.sainttx.auctions.util.TimeUtil;
 import mkremins.fanciful.FancyMessage;
 import org.bukkit.Bukkit;
@@ -37,6 +38,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import java.text.NumberFormat;
 import java.util.*;
@@ -199,10 +201,20 @@ public class TextualMessageHandler implements MessageHandler, SpammyMessagePreve
                 String currentColor = ChatColor.getLastColors(str);
                 current = ChatColor.getByChar(currentColor.isEmpty() ? current.getChar() : currentColor.charAt(1));
 
+                if (current == ChatColor.RESET) {
+                    current = ChatColor.WHITE;
+                }
+
                 if (str.contains("[item]") && auction != null) {
-                    String rewardName = auction.getReward().getName();
+                    String rewardName = getRewardName(auction.getReward());
                     String display = plugin.getMessage("messages.auctionFormattable.itemFormat");
-                    display = ChatColor.translateAlternateColorCodes('&', display.replace("[itemName]", rewardName));
+                    display = ChatColor.translateAlternateColorCodes('&',
+                            display.replace("[itemName]", rewardName)
+                                    .replace("[itemDisplayName]", getItemDisplayName(auction.getReward())));
+
+                    if (plugin.getConfig().getBoolean("general.stripItemDisplayNameColor", false)) {
+                        display = ChatColor.stripColor(display);
+                    }
 
                     Set<ChatColor> colors = EnumSet.noneOf(ChatColor.class);
                     Matcher matcher = COLOR_FINDER_PATTERN.matcher(display);
@@ -212,7 +224,7 @@ public class TextualMessageHandler implements MessageHandler, SpammyMessagePreve
                         colors.add(ChatColor.getByChar(cc));
                     }
 
-                    fancy.then(ChatColor.stripColor(display));
+                    fancy.then(display);
 
                     if (auction.getReward() instanceof ItemReward) {
                         ItemReward item = (ItemReward) auction.getReward();
@@ -226,6 +238,9 @@ public class TextualMessageHandler implements MessageHandler, SpammyMessagePreve
                     }
 
                     for (ChatColor color : colors) {
+                        if (color == ChatColor.RESET) {
+                            color = ChatColor.WHITE;
+                        }
                         if (color.isColor()) {
                             fancy.color(color);
                         } else {
@@ -247,6 +262,40 @@ public class TextualMessageHandler implements MessageHandler, SpammyMessagePreve
         }
 
         return fancy;
+    }
+
+    /*
+     * Gets the display name of an item
+     */
+    private static String getItemDisplayName(Reward reward) {
+        if (reward instanceof ItemReward) {
+            ItemReward ir = (ItemReward) reward;
+            return getItemRewardName(ir);
+        } else {
+            return getRewardName(reward);
+        }
+    }
+
+    /*
+     * A helper method that gets an items name
+     */
+    private static String getRewardName(Reward reward) {
+        return reward.getName();
+    }
+
+    /*
+     * A helper method to get an items display name. Will default to
+     * the items material name if the item lacks a display name.
+     */
+    public static String getItemRewardName(ItemReward reward) {
+        ItemStack item = reward.getItem();
+        ItemMeta meta = item.getItemMeta();
+
+        if (meta != null && meta.hasDisplayName()) {
+            return meta.getDisplayName();
+        } else {
+            return reward.getName();
+        }
     }
 
     /**
@@ -279,7 +328,9 @@ public class TextualMessageHandler implements MessageHandler, SpammyMessagePreve
                     message = message.replace("[topbiddername]", "Hidden")
                             .replace("[topbid]", "hidden");
                 }
-                message = message.replace("[itemName]", auction.getReward().getName());
+
+                message = message.replace("[itemName]", getRewardName(auction.getReward()));
+                message = message.replace("[itemDisplayName]", getItemDisplayName(auction.getReward()));
                 message = message.replace("[itemamount]", Integer.toString(auction.getReward().getAmount()));
                 message = message.replace("[time]", TimeUtil.getFormattedTime(auction.getTimeLeft()));
                 message = message.replace("[autowin]", truncate ? truncateNumber(auction.getAutowin()) : formatDouble(auction.getAutowin()));

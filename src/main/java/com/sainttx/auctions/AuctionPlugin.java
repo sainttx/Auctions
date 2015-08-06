@@ -22,6 +22,7 @@ package com.sainttx.auctions;
 
 import com.sainttx.auctions.api.AuctionsAPI;
 import com.sainttx.auctions.api.messages.MessageHandlerType;
+import com.sainttx.auctions.api.reward.ItemReward;
 import com.sainttx.auctions.api.reward.Reward;
 import com.sainttx.auctions.command.AuctionCommandHandler;
 import com.sainttx.auctions.hook.PlaceholderAPIHook;
@@ -35,6 +36,7 @@ import com.sainttx.auctions.util.ReflectionUtil;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
@@ -118,7 +120,7 @@ public class AuctionPlugin extends JavaPlugin {
             switch (type) {
                 case ACTION_BAR:
                     String version = ReflectionUtil.getVersion();
-                    if (version.startsWith("v1_8_R2") || version.startsWith("v1_8_R1")) {
+                    if (version.startsWith("v1_8_R")) {
                         AuctionsAPI.getAuctionManager().setMessageHandler(new ActionBarMessageHandler());
                         getLogger().info("Message handler has been set to ACTION_BAR");
                         break;
@@ -237,6 +239,17 @@ public class AuctionPlugin extends JavaPlugin {
     public boolean isBroadcastTime(int time) {
         return getConfig().isList("general.broadcastTimes")
                 && getConfig().getStringList("general.broadcastTimes").contains(Integer.toString(time));
+    }
+
+    /**
+     * Gets whether a world is disabled
+     *
+     * @param world the world
+     * @return true if the world is disabled
+     */
+    public boolean isWorldDisabled(World world) {
+        return getConfig().isList("general.disabledWorlds")
+                && getConfig().getStringList("general.disabledWorlds").contains(world.getName());
     }
 
     /**
@@ -376,7 +389,19 @@ public class AuctionPlugin extends JavaPlugin {
         }
         this.offlineConfiguration = YamlConfiguration.loadConfiguration(offlineFile);
         for (String string : offlineConfiguration.getKeys(false)) {
-            Reward reward = (Reward) offlineConfiguration.get(string);
+            Object obj = offlineConfiguration.get(string);
+            Reward reward;
+
+            if (obj instanceof Reward) {
+                reward = (Reward) offlineConfiguration.get(string);
+            } else if (obj instanceof ItemStack) {
+                reward = new ItemReward((ItemStack) obj);
+            } else {
+                getLogger().info("Cannot load offline reward for player with UUID \""
+                        + string + "\", unknown reward type \"" + obj.getClass().getName() + "\"");
+                continue;
+            }
+
             offlineRewardCache.put(UUID.fromString(string), reward);
         }
     }

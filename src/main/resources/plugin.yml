@@ -42,6 +42,7 @@ permissions:
       auctions.bypass.general.disabledworld: true
       auctions.bypass.general.nameditems: true
       auctions.bypass.start.maxprice: true
+      auctions.bypass.start.maxautowin: true
   auctions.command.*:
     description: Gives access to all auction sub commands
     default: op
@@ -91,7 +92,10 @@ permissions:
     description: Gives a player permission to bypass named item restrictions
     default: op
   auctions.bypass.start.maxprice:
-    description: Gives a player permission to bypass the max start price restrictions
+    description: Gives a player permission to bypass max start price restrictions
+    default: op
+  auctions.bypass.start.maxautowin:
+    description: Gives a player to bypass max autowin price restrictions
     default: op
   auctions.command.bid:
     description: Gives a player permission to bid on auctions

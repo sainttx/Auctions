@@ -50,6 +50,9 @@ public class StartCommand extends AuctionSubCommand {
             handler.sendMessage(sender, plugin.getMessage("messages.error.startSyntax"));
         } else if (manager.isAuctioningDisabled() && !sender.hasPermission("auctions.bypass.general.disabled")) {
             handler.sendMessage(sender, plugin.getMessage("messages.error.auctionsDisabled"));
+        } else if (!sender.hasPermission("auctions.bypass.general.disabledworld")
+                && plugin.isWorldDisabled(((Player) sender).getWorld())) {
+            handler.sendMessage(sender, plugin.getMessage("messages.error.cantUsePluginInWorld"));
         } else if (!plugin.getConfig().getBoolean("auctionSettings.sealedAuctions.enabled", false)
                 && cmd.getName().equalsIgnoreCase("sealedauction")) {
             handler.sendMessage(sender, plugin.getMessage("messages.error.sealedAuctionsDisabled"));
@@ -64,9 +67,31 @@ public class StartCommand extends AuctionSubCommand {
                 handler.sendMessage(player, plugin.getMessage("messages.error.creativeNotAllowed"));
             } else {
                 double price; // the starting cost
+                int increment = -1;
+                double autowin = -1;
 
                 try {
                     price = Double.parseDouble(args[1]);
+
+
+                    if (args.length > 3) {
+                        increment = Integer.parseInt(args[3]);
+
+                        if (!plugin.getConfig().getBoolean("auctionSettings.incrementCanExceedStartPrice")
+                                && increment > price) {
+                            handler.sendMessage(sender, plugin.getMessage("messages.error.biddingIncrementExceedsStart"));
+                            return true;
+                        }
+                    }
+                    if (args.length > 4) {
+                        autowin = Double.parseDouble(args[4]);
+
+                        if (!player.hasPermission("auctions.bypass.start.maxautowin")
+                                && autowin > plugin.getConfig().getDouble("auctionSettings.maximumAutowinAmount", 1000000D)) {
+                            handler.sendMessage(sender, plugin.getMessage("messages.error.autowinTooHigh"));
+                            return true;
+                        }
+                    }
                 } catch (NumberFormatException ex) {
                     handler.sendMessage(sender, plugin.getMessage("messages.error.invalidNumberEntered"));
                     return true;
