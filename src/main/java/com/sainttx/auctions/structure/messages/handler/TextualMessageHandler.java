@@ -74,8 +74,7 @@ public class TextualMessageHandler implements MessageHandler, SpammyMessagePreve
                 FancyMessage fancy = createMessage(auction, msg);
 
                 for (CommandSender recipient : getAllRecipients()) {
-                    if (recipient == null || (recipient instanceof Player
-                            && isIgnoring((recipient)))) {
+                    if (recipient == null || isIgnoring((recipient))) {
                         continue;
                     } else if (spammy && recipient instanceof Player
                             && isIgnoringSpam(((Player) recipient).getUniqueId())) {
