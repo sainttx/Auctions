@@ -147,8 +147,11 @@ public class DefaultAuction extends AbstractAuction {
         AuctionManager manager = AuctionsAPI.getAuctionManager();
         MessageHandler handler = manager.getMessageHandler();
         Player owner = Bukkit.getPlayer(getOwner());
-        timerTask.cancel();
-        timerTask = null;
+
+        if (timerTask != null) {
+            timerTask.cancel();
+            timerTask = null;
+        }
 
         // Run the next auction timer
         if (plugin.isEnabled()) {
