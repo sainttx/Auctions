@@ -124,7 +124,7 @@ public class StartCommand extends AuctionSubCommand {
                     return true;
                 }
 
-                if (amount <= 0) {
+                if (amount <= 0 || autowin < 0) {
                     handler.sendMessage(player, plugin.getMessage("messages.error.invalidNumberEntered")); // negative amount
                 } else if (amount > 2304) {
                     handler.sendMessage(player, plugin.getMessage("messages.error.notEnoughOfItem")); // not enough
@@ -174,7 +174,7 @@ public class StartCommand extends AuctionSubCommand {
                         Auction created = builder.build();
 
                         // check if we can add an autowin module
-                        if (created.getAutowin() != -1) {
+                        if (created.getAutowin() > 0) {
                             created.addModule(new AutoWinModule(created, autowin));
                         }
 
