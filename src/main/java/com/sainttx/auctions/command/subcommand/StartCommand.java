@@ -113,7 +113,10 @@ public class StartCommand extends AuctionSubCommand {
                     if (args.length > 4) {
                         autowin = Double.parseDouble(args[4]);
 
-                        if (!player.hasPermission("auctions.bypass.start.maxautowin")
+                        if (autowin < 0) {
+                            handler.sendMessage(player, plugin.getMessage("messages.error.invalidNumberEntered")); // negative amount
+                            return true;
+                        } else if (!player.hasPermission("auctions.bypass.start.maxautowin")
                                 && autowin > plugin.getConfig().getDouble("auctionSettings.maximumAutowinAmount", 1000000D)) {
                             handler.sendMessage(sender, plugin.getMessage("messages.error.autowinTooHigh"));
                             return true;
@@ -124,7 +127,7 @@ public class StartCommand extends AuctionSubCommand {
                     return true;
                 }
 
-                if (amount <= 0 || autowin < 0) {
+                if (amount <= 0) {
                     handler.sendMessage(player, plugin.getMessage("messages.error.invalidNumberEntered")); // negative amount
                 } else if (amount > 2304) {
                     handler.sendMessage(player, plugin.getMessage("messages.error.notEnoughOfItem")); // not enough
