@@ -157,7 +157,19 @@ auctionSettings:
     # formatter will replace the placeholders with "Hidden" and "hidden"
     # respectively (topbidder, topbid). Default: true.
     concealTopBidder: true
-
+  # Various settings regarding server command execution post-auction completion
+  commandsAfterAuction:
+    # Whether or not to execute any commands after an auction completes.
+    # Default: false.
+    enable: false
+    # Whether to only auction items if a player won the bidding. Default: true.
+    onlyIfSold: true
+    # Any commands to run after an auction executes. There are 2 placeholders
+    # that can be used in this section:
+    # [owner] - the name of the player who started the auction
+    # [winner] - the name of the player who won the auctions bid
+    commands:
+    - "say [winner] won [owner]'s auction!"
 
 # Various settings unrelated to auction specific options are found in this
 # section.
