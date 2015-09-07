@@ -20,7 +20,6 @@
 
 package com.sainttx.auctions.api;
 
-import com.sainttx.auctions.AuctionManagerImpl;
 import com.sainttx.auctions.AuctionPlugin;
 import com.sainttx.auctions.api.messages.MessageHandler;
 import com.sainttx.auctions.structure.auction.SealedAuction;
@@ -29,24 +28,35 @@ import com.sainttx.auctions.structure.auction.StandardAuction;
 /**
  * A central API to handle all external Auction plugin needs
  */
-public class AuctionsAPI {
+public class Auctions {
+
+    private static AuctionManager manager;
+
+    /**
+     * Sets the AuctionManager singleton instance
+     *
+     * @param manager the new manager instance
+     */
+    public static void setManager(AuctionManager manager) {
+        Auctions.manager = manager;
+    }
 
     /**
      * Gets the Auction Manager instance
      *
      * @return the auction manager
      */
-    public static AuctionManager getAuctionManager() {
-        return AuctionManagerImpl.getAuctionManager();
+    public static AuctionManager getManager() {
+        return manager;
     }
 
     /**
-     * Gets the MessageHandler of {@link #getAuctionManager()}
+     * Gets the MessageHandler of {@link #getManager()}
      *
      * @return the message handler
      */
     public static MessageHandler getMessageHandler() {
-        return getAuctionManager().getMessageHandler();
+        return manager.getMessageHandler();
     }
 
     /**
@@ -55,16 +65,16 @@ public class AuctionsAPI {
      * @param type the type of auction
      * @return an auction builder for the specific auction type
      */
-    public static Auction.Builder getAuctionBuilder(AuctionType type) {
+    public static Auction.Builder getAuctionBuilder(AuctionPlugin plugin, AuctionType type) {
         if (type == null) {
             throw new IllegalArgumentException("type cannot be null");
         }
 
         switch (type) {
             case STANDARD:
-                return new StandardAuction.StandardAuctionBuilder(AuctionPlugin.getPlugin());
+                return new StandardAuction.StandardAuctionBuilder(plugin);
             case SEALED:
-                return new SealedAuction.SealedAuctionBuilder(AuctionPlugin.getPlugin());
+                return new SealedAuction.SealedAuctionBuilder(plugin);
             default:
                 return null;
         }

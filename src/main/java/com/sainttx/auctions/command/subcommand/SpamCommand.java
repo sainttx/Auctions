@@ -20,7 +20,8 @@
 
 package com.sainttx.auctions.command.subcommand;
 
-import com.sainttx.auctions.api.AuctionsAPI;
+import com.sainttx.auctions.AuctionPlugin;
+import com.sainttx.auctions.api.Auctions;
 import com.sainttx.auctions.api.messages.MessageHandler;
 import com.sainttx.auctions.api.messages.MessageHandlerAddon.SpammyMessagePreventer;
 import com.sainttx.auctions.command.AuctionSubCommand;
@@ -33,28 +34,26 @@ import org.bukkit.entity.Player;
  */
 public class SpamCommand extends AuctionSubCommand {
 
-    public SpamCommand() {
-        super("auctions.command.spam", "spam", "spammy", "hidespam", "togglespam");
+    public SpamCommand(AuctionPlugin plugin) {
+        super(plugin, "auctions.command.spam", "spam", "spammy", "hidespam", "togglespam");
     }
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        MessageHandler handler = AuctionsAPI.getMessageHandler();
-
         if (!(sender instanceof Player)) {
             sender.sendMessage("Only players can toggle spammy auction messages");
-        } else if (!(handler instanceof SpammyMessagePreventer)) {
-            handler.sendMessage(sender, plugin.getMessage("messages.error.cantHideSpam"));
+        } else if (!(plugin.getMessageHandler() instanceof SpammyMessagePreventer)) {
+            plugin.getMessageHandler().sendMessage(sender, plugin.getMessage("messages.error.cantHideSpam"));
         } else {
-            SpammyMessagePreventer preventer = (SpammyMessagePreventer) AuctionsAPI.getMessageHandler();
+            SpammyMessagePreventer preventer = (SpammyMessagePreventer) plugin.getMessageHandler();
             Player player = (Player) sender;
 
             if (!preventer.isIgnoringSpam(player.getUniqueId())) {
                 preventer.addIgnoringSpam(player.getUniqueId());
-                handler.sendMessage(sender, plugin.getMessage("messages.nowHidingSpam"));
+                plugin.getMessageHandler().sendMessage(sender, plugin.getMessage("messages.nowHidingSpam"));
             } else {
                 preventer.removeIgnoringSpam(player.getUniqueId());
-                handler.sendMessage(sender, plugin.getMessage("messages.noLongerHidingSpam"));
+                plugin.getMessageHandler().sendMessage(sender, plugin.getMessage("messages.noLongerHidingSpam"));
             }
         }
         return false;

@@ -23,7 +23,7 @@ package com.sainttx.auctions.structure;
 import com.sainttx.auctions.AuctionPlugin;
 import com.sainttx.auctions.api.AuctionManager;
 import com.sainttx.auctions.api.AuctionType;
-import com.sainttx.auctions.api.AuctionsAPI;
+import com.sainttx.auctions.api.Auctions;
 import com.sainttx.auctions.api.event.AuctionEndEvent;
 import com.sainttx.auctions.api.messages.MessageHandler;
 import com.sainttx.auctions.api.module.AuctionModule;
@@ -50,14 +50,12 @@ public class DefaultAuction extends AbstractAuction {
             throw new IllegalArgumentException("player cannot be null");
         }
 
-        MessageHandler handler = AuctionsAPI.getMessageHandler();
-
         if (bid < (hasBids() ? getTopBid() + getBidIncrement() : getStartPrice())) {
-            handler.sendMessage(player, plugin.getMessage("messages.error.bidTooLow")); // the bid wasnt enough
+            plugin.getMessageHandler().sendMessage(player, plugin.getMessage("messages.error.bidTooLow")); // the bid wasnt enough
         } else if (plugin.getEconomy().getBalance(player) < bid) {
-            handler.sendMessage(player, plugin.getMessage("messages.error.insufficientBalance")); // insufficient funds
+            plugin.getMessageHandler().sendMessage(player, plugin.getMessage("messages.error.insufficientBalance")); // insufficient funds
         } else if (player.getUniqueId().equals(getTopBidder())) {
-            handler.sendMessage(player, plugin.getMessage("messages.error.alreadyTopBidder")); // already top bidder
+            plugin.getMessageHandler().sendMessage(player, plugin.getMessage("messages.error.alreadyTopBidder")); // already top bidder
         } else {
             if (getTopBidder() != null) { // give the old winner their money back
                 OfflinePlayer oldPlayer = Bukkit.getOfflinePlayer(getTopBidder());
@@ -74,7 +72,7 @@ public class DefaultAuction extends AbstractAuction {
             // Tell the player a personal bid message
             String message = plugin.getMessage("messages.bid")
                     .replace("[bid]", plugin.formatDouble(bid));
-            handler.sendMessage(player, message);
+            plugin.getMessageHandler().sendMessage(player, message);
 
             // Trigger our modules
             for (AuctionModule module : modules) {
@@ -87,8 +85,7 @@ public class DefaultAuction extends AbstractAuction {
 
     @Override
     protected void startMessages() {
-        AuctionManager manager = AuctionsAPI.getAuctionManager();
-        MessageHandler handler = manager.getMessageHandler();
+        MessageHandler handler = plugin.getManager().getMessageHandler();
 
         handler.broadcast(plugin.getMessage("messages.auctionFormattable.start"), this, false);
         handler.broadcast(plugin.getMessage("messages.auctionFormattable.price"), this, false);
@@ -109,7 +106,7 @@ public class DefaultAuction extends AbstractAuction {
         returnMoneyToAll();
 
         // Set current auction to null
-        AuctionsAPI.getAuctionManager().setCurrentAuction(null);
+        plugin.getManager().setCurrentAuction(null);
     }
 
     @Override
@@ -127,7 +124,7 @@ public class DefaultAuction extends AbstractAuction {
         returnMoneyToAll();
 
         // Broadcast
-        MessageHandler handler = AuctionsAPI.getAuctionManager().getMessageHandler();
+        MessageHandler handler = plugin.getManager().getMessageHandler();
         handler.broadcast(plugin.getMessage("messages.auctionFormattable.cancelled"), this, false);
 
         // Return the item to the owner
@@ -140,13 +137,12 @@ public class DefaultAuction extends AbstractAuction {
         }
 
         // Set current auction to null
-        AuctionsAPI.getAuctionManager().setCurrentAuction(null);
+        plugin.getManager().setCurrentAuction(null);
     }
 
     @Override
     public void end(boolean broadcast) {
-        AuctionManager manager = AuctionsAPI.getAuctionManager();
-        MessageHandler handler = manager.getMessageHandler();
+        MessageHandler handler = plugin.getManager().getMessageHandler();
         Player owner = Bukkit.getPlayer(getOwner());
 
         AuctionEndEvent event = new AuctionEndEvent(this);
@@ -203,7 +199,7 @@ public class DefaultAuction extends AbstractAuction {
         }
 
         // Set current auction to null
-        AuctionsAPI.getAuctionManager().setCurrentAuction(null);
+        plugin.getManager().setCurrentAuction(null);
     }
 
     @Override
@@ -216,7 +212,7 @@ public class DefaultAuction extends AbstractAuction {
 
     @Override
     public void broadcastBid() {
-        AuctionsAPI.getMessageHandler().broadcast(plugin.getMessage("messages.auctionFormattable.bid"), this, true);
+        plugin.getMessageHandler().broadcast(plugin.getMessage("messages.auctionFormattable.bid"), this, true);
     }
 
     @Override
@@ -226,11 +222,11 @@ public class DefaultAuction extends AbstractAuction {
             plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
                 @Override
                 public void run() {
-                    AuctionsAPI.getAuctionManager().setCanStartNewAuction(true);
+                    plugin.getManager().setCanStartNewAuction(true);
 
                     // Start the next auction in the queue
-                    if (AuctionsAPI.getAuctionManager().getCurrentAuction() == null) {
-                        AuctionsAPI.getAuctionManager().startNextAuction();
+                    if (plugin.getManager().getCurrentAuction() == null) {
+                        plugin.getManager().startNextAuction();
                     }
                 }
             }, plugin.getConfig().getLong("auctionSettings.delayBetween", 5L) * 20L);

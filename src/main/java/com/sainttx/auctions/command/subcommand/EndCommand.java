@@ -20,8 +20,9 @@
 
 package com.sainttx.auctions.command.subcommand;
 
+import com.sainttx.auctions.AuctionPlugin;
 import com.sainttx.auctions.api.AuctionManager;
-import com.sainttx.auctions.api.AuctionsAPI;
+import com.sainttx.auctions.api.Auctions;
 import com.sainttx.auctions.command.AuctionSubCommand;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -32,13 +33,13 @@ import org.bukkit.entity.Player;
  */
 public class EndCommand extends AuctionSubCommand {
 
-    public EndCommand() {
-        super("auctions.command.end", "end", "e");
+    public EndCommand(AuctionPlugin plugin) {
+        super(plugin, "auctions.command.end", "end", "e");
     }
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        AuctionManager manager = AuctionsAPI.getAuctionManager();
+        AuctionManager manager = plugin.getManager();
 
         if (manager.getCurrentAuction() == null) {
             manager.getMessageHandler().sendMessage(sender, plugin.getMessage("messages.error.noCurrentAuction"));

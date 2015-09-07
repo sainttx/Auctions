@@ -32,11 +32,12 @@ import java.util.Set;
  */
 public abstract class AuctionSubCommand implements CommandExecutor {
 
-    protected AuctionPlugin plugin = AuctionPlugin.getPlugin();
+    protected final AuctionPlugin plugin;
     private Set<String> aliases = new HashSet<String>();
     private String permission;
 
-    public AuctionSubCommand(String permission, String... aliases) {
+    public AuctionSubCommand(AuctionPlugin plugin, String permission, String... aliases) {
+        this.plugin = plugin;
         this.permission = permission;
         this.aliases.addAll(Arrays.asList(aliases));
     }

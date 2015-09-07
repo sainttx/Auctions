@@ -20,8 +20,9 @@
 
 package com.sainttx.auctions.command.subcommand;
 
+import com.sainttx.auctions.AuctionPlugin;
 import com.sainttx.auctions.api.AuctionManager;
-import com.sainttx.auctions.api.AuctionsAPI;
+import com.sainttx.auctions.api.Auctions;
 import com.sainttx.auctions.api.messages.MessageHandler;
 import com.sainttx.auctions.command.AuctionSubCommand;
 import org.bukkit.command.Command;
@@ -33,13 +34,13 @@ import org.bukkit.entity.Player;
  */
 public class CancelCommand extends AuctionSubCommand {
 
-    public CancelCommand() {
-        super("auctions.command.cancel", "cancel", "c", "can");
+    public CancelCommand(AuctionPlugin plugin) {
+        super(plugin, "auctions.command.cancel", "cancel", "c", "can");
     }
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        AuctionManager manager = AuctionsAPI.getAuctionManager();
+        AuctionManager manager = plugin.getManager();
         MessageHandler handler = manager.getMessageHandler();
 
         if (manager.getCurrentAuction() == null) {

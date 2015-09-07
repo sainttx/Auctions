@@ -23,7 +23,7 @@ package com.sainttx.auctions.structure.module;
 import com.sainttx.auctions.AuctionPlugin;
 import com.sainttx.auctions.api.Auction;
 import com.sainttx.auctions.api.AuctionManager;
-import com.sainttx.auctions.api.AuctionsAPI;
+import com.sainttx.auctions.api.Auctions;
 import com.sainttx.auctions.api.event.AuctionAddTimeEvent;
 import com.sainttx.auctions.api.module.AuctionModule;
 import com.sainttx.auctions.util.TimeUtil;
@@ -37,14 +37,16 @@ import org.bukkit.Bukkit;
  */
 public class AntiSnipeModule implements AuctionModule {
 
-    private AuctionPlugin plugin = AuctionPlugin.getPlugin();
+    private AuctionPlugin plugin;
     private Auction auction;
     private int snipeCount; // how many times the auction has been sniped
 
-    public AntiSnipeModule(Auction auction) {
+    public AntiSnipeModule(AuctionPlugin plugin, Auction auction) {
         if (auction == null) {
             throw new IllegalArgumentException("auction cannot be null");
         }
+
+        this.plugin = plugin;
         this.auction = auction;
     }
 
@@ -57,7 +59,6 @@ public class AntiSnipeModule implements AuctionModule {
 
     @Override
     public void trigger() {
-        AuctionManager manager = AuctionsAPI.getAuctionManager();
         int secondsToAdd = plugin.getConfig().getInt("auctionSettings.antiSnipe.addSeconds", 5);
 
         AuctionAddTimeEvent event = new AuctionAddTimeEvent(auction, secondsToAdd);
@@ -70,7 +71,8 @@ public class AntiSnipeModule implements AuctionModule {
         snipeCount++;
         auction.setTimeLeft(auction.getTimeLeft() + event.getSecondsToAdd());
         String message = plugin.getMessage("messages.auctionFormattable.antiSnipeAdd")
-                .replace("[snipetime]", TimeUtil.getFormattedTime(event.getSecondsToAdd()));
-        manager.getMessageHandler().broadcast(message, auction, false);
+                .replace("[snipetime]", TimeUtil.getFormattedTime(event.getSecondsToAdd(),
+                        plugin.getConfig().getBoolean("general.shortenedTimeFormat", false)));
+        plugin.getManager().getMessageHandler().broadcast(message, auction, false);
     }
 }

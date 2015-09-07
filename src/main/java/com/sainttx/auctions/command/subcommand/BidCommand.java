@@ -20,10 +20,11 @@
 
 package com.sainttx.auctions.command.subcommand;
 
+import com.sainttx.auctions.AuctionPlugin;
 import com.sainttx.auctions.api.Auction;
 import com.sainttx.auctions.api.AuctionManager;
 import com.sainttx.auctions.api.AuctionType;
-import com.sainttx.auctions.api.AuctionsAPI;
+import com.sainttx.auctions.api.Auctions;
 import com.sainttx.auctions.api.event.AuctionPreBidEvent;
 import com.sainttx.auctions.api.messages.MessageHandler;
 import com.sainttx.auctions.command.AuctionSubCommand;
@@ -37,15 +38,14 @@ import org.bukkit.entity.Player;
  */
 public class BidCommand extends AuctionSubCommand {
 
-    public BidCommand() {
-        super("auctions.command.bid", "bid", "b");
+    public BidCommand(AuctionPlugin plugin) {
+        super(plugin, "auctions.command.bid", "bid", "b");
     }
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        AuctionManager manager = AuctionsAPI.getAuctionManager();
-        MessageHandler handler = manager.getMessageHandler();
-        Auction auction = manager.getCurrentAuction();
+        MessageHandler handler = plugin.getManager().getMessageHandler();
+        Auction auction = plugin.getManager().getCurrentAuction();
 
         if (!(sender instanceof Player)) {
             sender.sendMessage("Only players can place bids on auctions");

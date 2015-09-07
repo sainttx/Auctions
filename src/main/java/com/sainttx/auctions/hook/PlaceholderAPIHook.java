@@ -22,7 +22,7 @@ package com.sainttx.auctions.hook;
 
 import com.sainttx.auctions.AuctionPlugin;
 import com.sainttx.auctions.api.Auction;
-import com.sainttx.auctions.api.AuctionsAPI;
+import com.sainttx.auctions.api.Auctions;
 import com.sainttx.auctions.util.TimeUtil;
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.clip.placeholderapi.PlaceholderHook;
@@ -40,13 +40,14 @@ public class PlaceholderAPIHook {
         PlaceholderAPI.registerPlaceholderHook(plugin, new PlaceholderHook() {
             @Override
             public String onPlaceholderRequest(Player player, String token) {
-                Auction current = AuctionsAPI.getAuctionManager().getCurrentAuction();
+                Auction current = plugin.getManager().getCurrentAuction();
                 if (current == null) {
                     return "unknown";
                 } else if (token.equalsIgnoreCase("itemamount")) {
                     return Integer.toString(current.getReward().getAmount());
                 } else if (token.equalsIgnoreCase("time")) {
-                    return TimeUtil.getFormattedTime(current.getTimeLeft());
+                    return TimeUtil.getFormattedTime(current.getTimeLeft(),
+                            plugin.getConfig().getBoolean("general.shortenedTimeFormat", false));
                 } else if (token.equalsIgnoreCase("autowin")) {
                     return plugin.formatDouble(current.getAutowin());
                 } else if (token.equalsIgnoreCase("ownername")) {

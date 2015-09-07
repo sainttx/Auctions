@@ -59,10 +59,10 @@ public class TimeUtil {
             future = true;
         }
         StringBuilder sb = new StringBuilder();
-        int[] types = new int[]{Calendar.YEAR, Calendar.MONTH, Calendar.DAY_OF_MONTH, Calendar.HOUR_OF_DAY, Calendar.MINUTE, Calendar.SECOND};
+        int[] types = new int[]{ Calendar.YEAR, Calendar.MONTH, Calendar.DAY_OF_MONTH, Calendar.HOUR_OF_DAY, Calendar.MINUTE, Calendar.SECOND };
         String[] names = new String[]{ "year", "years", "month", "months", "day", "days", "hour", "hours", "minute", "minutes", "second", "seconds" };
         int accuracy = 0;
-        for (int i = 0; i < types.length; i++) {
+        for (int i = 0 ; i < types.length ; i++) {
             if (accuracy > 2) {
                 break;
             }
@@ -97,11 +97,11 @@ public class TimeUtil {
     /**
      * Return a String representation of time left
      *
-     * @param timeLeft Time left in seconds
+     * @param timeLeft  Time left in seconds
+     * @param shortened whether or not to shorten the time
      * @return String the time left
      */
-    public static String getFormattedTime(int timeLeft) {
-        return formatDateDiff(System.currentTimeMillis() + (timeLeft * 1000L),
-                AuctionPlugin.getPlugin().getConfig().getBoolean("general.shortenedTimeFormat", false));
+    public static String getFormattedTime(int timeLeft, boolean shortened) {
+        return formatDateDiff(System.currentTimeMillis() + (timeLeft * 1000L), shortened);
     }
 }

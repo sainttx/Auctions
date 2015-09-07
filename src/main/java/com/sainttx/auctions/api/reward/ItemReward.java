@@ -21,7 +21,7 @@
 package com.sainttx.auctions.api.reward;
 
 import com.sainttx.auctions.AuctionPlugin;
-import com.sainttx.auctions.api.AuctionsAPI;
+import com.sainttx.auctions.api.Auctions;
 import com.sainttx.auctions.util.AuctionUtil;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -34,18 +34,20 @@ import java.util.Map;
  */
 public class ItemReward implements Reward {
 
+    private AuctionPlugin plugin;
     private ItemStack item;
 
     /* for deserialization of item rewards */
     public ItemReward(Map<String, Object> itemSerialized) {
-        this(ItemStack.deserialize(itemSerialized));
+        this.item = ItemStack.deserialize(itemSerialized);
     }
 
-    public ItemReward(ItemStack item) {
+    public ItemReward(AuctionPlugin plugin, ItemStack item) {
         if (item == null) {
             throw new IllegalArgumentException("item cannot be null");
         }
 
+        this.plugin = plugin;
         this.item = item;
     }
 
@@ -74,7 +76,10 @@ public class ItemReward implements Reward {
                 giveItemToPlayer(player, reward);
             }
             player.getWorld().dropItem(player.getLocation(), drop);
-            AuctionsAPI.getMessageHandler().sendMessage(player, AuctionPlugin.getPlugin().getMessage("messages.notEnoughRoom"));
+
+            if (plugin != null) {
+                plugin.getMessageHandler().sendMessage(player, plugin.getMessage("messages.notEnoughRoom"));
+            }
         } else {
             giveItemToPlayer(player, reward);
         }
@@ -103,7 +108,6 @@ public class ItemReward implements Reward {
 
     @Override
     public String getName() {
-        AuctionPlugin plugin = AuctionPlugin.getPlugin();
         return plugin.getItemName(item);
     }
 

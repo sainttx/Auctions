@@ -20,10 +20,11 @@
 
 package com.sainttx.auctions.command.subcommand;
 
+import com.sainttx.auctions.AuctionPlugin;
 import com.sainttx.auctions.api.Auction;
 import com.sainttx.auctions.api.AuctionManager;
 import com.sainttx.auctions.api.AuctionType;
-import com.sainttx.auctions.api.AuctionsAPI;
+import com.sainttx.auctions.api.Auctions;
 import com.sainttx.auctions.api.event.AuctionCreateEvent;
 import com.sainttx.auctions.api.messages.MessageHandler;
 import com.sainttx.auctions.api.reward.ItemReward;
@@ -48,20 +49,19 @@ import java.util.List;
  */
 public class StartCommand extends AuctionSubCommand {
 
-    public StartCommand() {
-        super("auctions.command.start", "start", "s", "star");
+    public StartCommand(AuctionPlugin plugin) {
+        super(plugin, "auctions.command.start", "start", "s", "star");
     }
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        AuctionManager manager = AuctionsAPI.getAuctionManager();
-        MessageHandler handler = manager.getMessageHandler();
+        MessageHandler handler = plugin.getManager().getMessageHandler();
 
         if (!(sender instanceof Player)) {
             sender.sendMessage("Only players can start auctions");
         } else if (args.length < 3) {
             handler.sendMessage(sender, plugin.getMessage("messages.error.startSyntax"));
-        } else if (manager.isAuctioningDisabled() && !sender.hasPermission("auctions.bypass.general.disabled")) {
+        } else if (plugin.getManager().isAuctioningDisabled() && !sender.hasPermission("auctions.bypass.general.disabled")) {
             handler.sendMessage(sender, plugin.getMessage("messages.error.auctionsDisabled"));
         } else if (!sender.hasPermission("auctions.bypass.general.disabledworld")
                 && plugin.isWorldDisabled(((Player) sender).getWorld())) {
@@ -85,9 +85,9 @@ public class StartCommand extends AuctionSubCommand {
                 Auction.Builder builder;
 
                 if (cmd.getName().equals("sealedauction")) {
-                    builder = AuctionsAPI.getAuctionBuilder(AuctionType.SEALED);
+                    builder = Auctions.getAuctionBuilder(plugin, AuctionType.SEALED);
                 } else {
-                    builder = AuctionsAPI.getAuctionBuilder(AuctionType.STANDARD);
+                    builder = Auctions.getAuctionBuilder(plugin, AuctionType.STANDARD);
                 }
 
                 int amount; // the amount of items to auction
@@ -140,16 +140,16 @@ public class StartCommand extends AuctionSubCommand {
                 } else if (!player.hasPermission("auctions.bypass.start.maxprice")
                         && price > plugin.getConfig().getDouble("auctionSettings.maximumStartPrice", 99999)) {
                     handler.sendMessage(player, plugin.getMessage("messages.error.startPriceTooHigh")); // starting price too high
-                } else if (manager.getQueue().size() >= plugin.getConfig().getInt("auctionSettings.auctionQueueLimit", 3)) {
+                } else if (plugin.getManager().getQueue().size() >= plugin.getConfig().getInt("auctionSettings.auctionQueueLimit", 3)) {
                     handler.sendMessage(player, plugin.getMessage("messages.error.auctionQueueFull")); // queue full
                 } else if (increment != -1 && (increment < plugin.getConfig().getInt("auctionSettings.minimumBidIncrement", 10)
                         || increment > plugin.getConfig().getInt("auctionSettings.maximumBidIncrement", 9999))) {
                     handler.sendMessage(player, plugin.getMessage("messages.error.invalidBidIncrement"));
                 } else if (autowin != -1 && !plugin.getConfig().getBoolean("auctionSettings.canSpecifyAutowin", true)) {
                     handler.sendMessage(player, plugin.getMessage("messages.error.autowinDisabled"));
-                } else if (manager.hasActiveAuction(player)) {
+                } else if (plugin.getManager().hasActiveAuction(player)) {
                     handler.sendMessage(player, plugin.getMessage("messages.error.alreadyHaveAuction"));
-                } else if (manager.hasAuctionInQueue(player)) {
+                } else if (plugin.getManager().hasAuctionInQueue(player)) {
                     handler.sendMessage(player, plugin.getMessage("messages.error.alreadyInAuctionQueue"));
                 } else {
                     ItemStack item = player.getItemInHand().clone();
@@ -157,7 +157,7 @@ public class StartCommand extends AuctionSubCommand {
                     if (item == null || item.getType() == Material.AIR) {
                         handler.sendMessage(player, plugin.getMessage("messages.error.invalidItemType")); // auctioned nothing
                     } else if (!player.hasPermission("auctions.bypass.general.bannedmaterial")
-                            && manager.isBannedMaterial(item.getType())) {
+                            && plugin.getManager().isBannedMaterial(item.getType())) {
                         handler.sendMessage(player, plugin.getMessage("messages.error.invalidItemType")); // item type not allowed
                     } else if (!player.hasPermission("auctions.bypass.general.damageditems")
                             && item.getType().getMaxDurability() > 0 && item.getDurability() > 0
@@ -174,7 +174,7 @@ public class StartCommand extends AuctionSubCommand {
                         handler.sendMessage(player, plugin.getMessage("messages.error.cantAuctionBannedLore"));
                     } else {
                         item.setAmount(amount);
-                        Reward reward = new ItemReward(item);
+                        Reward reward = new ItemReward(plugin, item);
                         builder.bidIncrement(increment)
                                 .reward(reward)
                                 .owner(player)
@@ -184,12 +184,12 @@ public class StartCommand extends AuctionSubCommand {
 
                         // check if we can add an autowin module
                         if (created.getAutowin() > 0) {
-                            created.addModule(new AutoWinModule(created, autowin));
+                            created.addModule(new AutoWinModule(plugin, created, autowin));
                         }
 
                         // check if we can add an anti snipe module
                         if (plugin.getConfig().getBoolean("auctionSettings.antiSnipe.enable", true)) {
-                            created.addModule(new AntiSnipeModule(created));
+                            created.addModule(new AntiSnipeModule(plugin, created));
                         }
 
                         AuctionCreateEvent event = new AuctionCreateEvent(created, player);
@@ -202,12 +202,12 @@ public class StartCommand extends AuctionSubCommand {
                         player.getInventory().removeItem(item); // take the item from the player
                         plugin.getEconomy().withdrawPlayer(player, fee); // withdraw the start fee
 
-                        if (manager.canStartNewAuction()) {
-                            manager.setCurrentAuction(created);
+                        if (plugin.getManager().canStartNewAuction()) {
+                            plugin.getManager().setCurrentAuction(created);
                             created.start();
-                            manager.setCanStartNewAuction(false);
+                            plugin.getManager().setCanStartNewAuction(false);
                         } else {
-                            manager.addAuctionToQueue(created);
+                            plugin.getManager().addAuctionToQueue(created);
                             handler.sendMessage(player, plugin.getMessage("messages.auctionPlacedInQueue"));
                         }
                     }

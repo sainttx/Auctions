@@ -21,10 +21,11 @@
 package com.sainttx.auctions.structure.messages.actionbar;
 
 import com.sainttx.auctions.AuctionPlugin;
-import com.sainttx.auctions.api.AuctionsAPI;
+import com.sainttx.auctions.api.Auctions;
 import com.sainttx.auctions.structure.messages.handler.TextualMessageHandler;
 import com.sainttx.auctions.util.ReflectionUtil;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
@@ -34,12 +35,15 @@ import java.lang.reflect.Method;
  */
 public class ActionBarObjectv1_8_R3 extends ActionBarObject {
 
+    private AuctionPlugin plugin;
     private String rawTitle;
 
-    public ActionBarObjectv1_8_R3() {
+    public ActionBarObjectv1_8_R3(AuctionPlugin plugin) {
+        this(plugin, null);
     }
 
-    public ActionBarObjectv1_8_R3(String title) {
+    public ActionBarObjectv1_8_R3(AuctionPlugin plugin, String title) {
+        this.plugin = plugin;
         this.setTitle(title);
     }
 
@@ -59,9 +63,9 @@ public class ActionBarObjectv1_8_R3 extends ActionBarObject {
             Method method = ReflectionUtil.getMethod(playerConnection.getClass(), "sendPacket", ReflectionUtil.getNMSClass("Packet"));
             method.invoke(playerConnection, packet);
         } catch (Throwable t) {
-            AuctionPlugin.getPlugin().getLogger().severe("Failed to send action bar");
-            AuctionsAPI.getAuctionManager().setMessageHandler(new TextualMessageHandler());
-            AuctionPlugin.getPlugin().getLogger().info("Message handler has been set to TEXT as a safety precaution");
+            plugin.getLogger().severe("Failed to send action bar");
+            plugin.getManager().setMessageHandler(new TextualMessageHandler(plugin));
+            plugin.getLogger().info("Message handler has been set to TEXT as a safety precaution");
         }
     }
 

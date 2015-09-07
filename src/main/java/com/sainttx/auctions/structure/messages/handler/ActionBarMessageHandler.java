@@ -37,14 +37,14 @@ public class ActionBarMessageHandler extends TextualMessageHandler {
 
     private ActionBarObject base;
 
-    public ActionBarMessageHandler(JavaPlugin plugin) {
+    public ActionBarMessageHandler(AuctionPlugin plugin) {
         super(plugin);
 
         String version = ReflectionUtil.getVersion();
         if (version.startsWith("v1_8_R1")) {
-            base = new ActionBarObjectv1_8_R1();
+            this.base = new ActionBarObjectv1_8_R1(plugin);
         } else if (version.startsWith("v1_8_R2") || version.startsWith("v1_8_R3")) {
-            base = new ActionBarObjectv1_8_R3();
+            this.base = new ActionBarObjectv1_8_R3(plugin);
         } else {
             throw new IllegalStateException("this server version is unsupported");
         }
@@ -53,9 +53,7 @@ public class ActionBarMessageHandler extends TextualMessageHandler {
     @Override
     public void broadcast(String message, Auction auction, boolean spammy) {
         super.broadcast(message, auction, spammy);
-
-        AuctionPlugin plugin = AuctionPlugin.getPlugin();
-        message = formatter.format(plugin.getMessage("messages.auctionFormattable.actionBarMessage"), auction);
+        message = formatter.format(this.plugin.getMessage("messages.auctionFormattable.actionBarMessage"), auction);
 
         if (!message.isEmpty()) {
             base.setTitle(message);

@@ -23,7 +23,7 @@ package com.sainttx.auctions.structure;
 import com.sainttx.auctions.AuctionPlugin;
 import com.sainttx.auctions.api.Auction;
 import com.sainttx.auctions.api.AuctionType;
-import com.sainttx.auctions.api.AuctionsAPI;
+import com.sainttx.auctions.api.Auctions;
 import com.sainttx.auctions.api.event.AuctionStartEvent;
 import com.sainttx.auctions.api.messages.MessageHandler;
 import com.sainttx.auctions.api.module.AuctionModule;
@@ -215,7 +215,7 @@ public abstract class AbstractAuction implements Auction {
             if (timeLeft <= 0) {
                 end(true);
             } else if (plugin.isBroadcastTime(timeLeft)) {
-                MessageHandler handler = AuctionsAPI.getAuctionManager().getMessageHandler();
+                MessageHandler handler = plugin.getManager().getMessageHandler();
                 handler.broadcast(plugin.getMessage("messages.auctionFormattable.timer"), AbstractAuction.this,
                         true);
             }

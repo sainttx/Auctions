@@ -20,9 +20,10 @@
 
 package com.sainttx.auctions.command.subcommand;
 
+import com.sainttx.auctions.AuctionPlugin;
 import com.sainttx.auctions.api.Auction;
 import com.sainttx.auctions.api.AuctionManager;
-import com.sainttx.auctions.api.AuctionsAPI;
+import com.sainttx.auctions.api.Auctions;
 import com.sainttx.auctions.command.AuctionSubCommand;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -34,13 +35,13 @@ import java.util.Queue;
  */
 public class QueueCommand extends AuctionSubCommand {
 
-    public QueueCommand() {
-        super("auctions.command.queue", "queue", "q");
+    public QueueCommand(AuctionPlugin plugin) {
+        super(plugin, "auctions.command.queue", "queue", "q");
     }
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        AuctionManager manager = AuctionsAPI.getAuctionManager();
+        AuctionManager manager = plugin.getManager();
         Queue<Auction> queue = manager.getQueue();
 
         if (queue.isEmpty()) {

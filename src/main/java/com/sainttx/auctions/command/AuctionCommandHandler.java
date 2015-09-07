@@ -21,7 +21,7 @@
 package com.sainttx.auctions.command;
 
 import com.sainttx.auctions.AuctionPlugin;
-import com.sainttx.auctions.api.AuctionsAPI;
+import com.sainttx.auctions.api.Auctions;
 import com.sainttx.auctions.command.subcommand.*;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -40,26 +40,25 @@ import java.util.Set;
  */
 public class AuctionCommandHandler implements CommandExecutor, Listener {
 
-    /*
-     * All commands for the plugin
-     */
-    private static Set<AuctionSubCommand> commands = new HashSet<AuctionSubCommand>();
+    private AuctionPlugin plugin;
+    private Set<AuctionSubCommand> commands = new HashSet<AuctionSubCommand>();
 
     /**
      * Constructor. Initializes all subcommands.
      */
-    public AuctionCommandHandler() {
-        addCommand(new BidCommand());
-        addCommand(new CancelCommand());
-        addCommand(new EndCommand());
-        addCommand(new IgnoreCommand());
-        addCommand(new ImpoundCommand());
-        addCommand(new InfoCommand());
-        addCommand(new ReloadCommand());
-        addCommand(new SpamCommand());
-        addCommand(new StartCommand());
-        addCommand(new ToggleCommand());
-        addCommand(new QueueCommand());
+    public AuctionCommandHandler(AuctionPlugin plugin) {
+        this.plugin = plugin;
+        this.addCommand(new BidCommand(plugin));
+        this.addCommand(new CancelCommand(plugin));
+        this.addCommand(new EndCommand(plugin));
+        this.addCommand(new IgnoreCommand(plugin));
+        this.addCommand(new ImpoundCommand(plugin));
+        this.addCommand(new InfoCommand(plugin));
+        this.addCommand(new ReloadCommand(plugin));
+        this.addCommand(new SpamCommand(plugin));
+        this.addCommand(new StartCommand(plugin));
+        this.addCommand(new ToggleCommand(plugin));
+        this.addCommand(new QueueCommand(plugin));
     }
 
     /**
@@ -67,13 +66,13 @@ public class AuctionCommandHandler implements CommandExecutor, Listener {
      *
      * @param command the command
      */
-    public static void addCommand(AuctionSubCommand command) {
+    public void addCommand(AuctionSubCommand command) {
         commands.add(command);
     }
 
     @EventHandler
     public void onPluginDisable(PluginDisableEvent event) {
-        if (AuctionPlugin.getPlugin().equals(event.getPlugin())) {
+        if (plugin.equals(event.getPlugin())) {
             commands.clear();
         }
     }
@@ -83,7 +82,6 @@ public class AuctionCommandHandler implements CommandExecutor, Listener {
         if (args.length == 0 && !command.getName().equalsIgnoreCase("bid")) {
             sendMenu(sender);
         } else {
-            AuctionPlugin plugin = AuctionPlugin.getPlugin();
             String sub;
 
             if (command.getName().equalsIgnoreCase("bid")) {
@@ -96,7 +94,7 @@ public class AuctionCommandHandler implements CommandExecutor, Listener {
             for (AuctionSubCommand cmd : commands) {
                 if (cmd.canTrigger(sub)) {
                     if (!sender.hasPermission("auctions.command.*") && !sender.hasPermission(cmd.getPermission())) {
-                        AuctionsAPI.getMessageHandler().sendMessage(
+                        plugin.getMessageHandler().sendMessage(
                                 sender, plugin.getMessage("messages.error.insufficientPermissions"));
                     } else {
                         cmd.onCommand(sender, command, label, args);
@@ -125,8 +123,6 @@ public class AuctionCommandHandler implements CommandExecutor, Listener {
      * @param sender The sender to send the menu too
      */
     public void sendMenu(CommandSender sender) {
-        AuctionPlugin plugin = AuctionPlugin.getPlugin();
-
         for (String message : plugin.getConfig().getStringList("messages.helpMenu")) {
             sender.sendMessage(ChatColor.translateAlternateColorCodes('&', message));
         }

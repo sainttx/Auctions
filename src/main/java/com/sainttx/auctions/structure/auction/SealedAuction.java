@@ -23,7 +23,7 @@ package com.sainttx.auctions.structure.auction;
 import com.sainttx.auctions.AuctionPlugin;
 import com.sainttx.auctions.api.Auction;
 import com.sainttx.auctions.api.AuctionType;
-import com.sainttx.auctions.api.AuctionsAPI;
+import com.sainttx.auctions.api.Auctions;
 import com.sainttx.auctions.api.messages.MessageHandler;
 import com.sainttx.auctions.api.module.AuctionModule;
 import com.sainttx.auctions.api.reward.Reward;
@@ -68,13 +68,11 @@ public class SealedAuction extends DefaultAuction {
             throw new IllegalArgumentException("player cannot be null");
         }
 
-        MessageHandler handler = AuctionsAPI.getMessageHandler();
-
         if (bid < this.startPrice) {
-            handler.sendMessage(player, plugin.getMessage("messages.error.bidTooLow"));
+            plugin.getMessageHandler().sendMessage(player, plugin.getMessage("messages.error.bidTooLow"));
         } else if (amountOfBids.containsKey(player.getUniqueId())
                 && amountOfBids.get(player.getUniqueId()) >= plugin.getConfig().getInt("auctionSettings.sealedAuctions.maxBidsPerPlayer", 1)) {
-            handler.sendMessage(player, plugin.getMessage("messages.error.sealedAuctionsMaxBidsReached"));
+            plugin.getMessageHandler().sendMessage(player, plugin.getMessage("messages.error.sealedAuctionsMaxBidsReached"));
         } else {
             double raiseAmount = bid;
             double previousBid = currentBids.containsKey(player.getUniqueId())
@@ -82,10 +80,10 @@ public class SealedAuction extends DefaultAuction {
 
             if (previousBid > 0) {
                 if (bid < previousBid + getBidIncrement()) {
-                    handler.sendMessage(player, plugin.getMessage("messages.error.bidTooLow"));
+                    plugin.getMessageHandler().sendMessage(player, plugin.getMessage("messages.error.bidTooLow"));
                     return;
                 } else if (bid <= previousBid) {
-                    handler.sendMessage(player, plugin.getMessage("messages.error.sealedAuctionHaveHigherBid"));
+                    plugin.getMessageHandler().sendMessage(player, plugin.getMessage("messages.error.sealedAuctionHaveHigherBid"));
                     return;
                 } else {
                     raiseAmount -= previousBid;
@@ -93,7 +91,7 @@ public class SealedAuction extends DefaultAuction {
             }
 
             if (plugin.getEconomy().getBalance(player) < raiseAmount) {
-                handler.sendMessage(player, plugin.getMessage("messages.error.insufficientBalance")); // insufficient funds
+                plugin.getMessageHandler().sendMessage(player, plugin.getMessage("messages.error.insufficientBalance")); // insufficient funds
             } else {
                 currentBids.put(player.getUniqueId(), bid);
                 amountOfBids.put(player.getUniqueId(), amountOfBids.containsKey(player.getUniqueId())
@@ -108,12 +106,12 @@ public class SealedAuction extends DefaultAuction {
                 if (previousBid == 0) {
                     String message = plugin.getMessage("messages.auctionFormattable.sealedAuction.bid")
                             .replace("[bid]", plugin.formatDouble(bid));
-                    handler.sendMessage(player, message);
+                    plugin.getMessageHandler().sendMessage(player, message);
                 } else {
                     String message = plugin.getMessage("messages.auctionFormattable.sealedAuction.raise")
                             .replace("[bid]", plugin.formatDouble(bid))
                             .replace("[previous]", plugin.formatDouble(previousBid));
-                    handler.sendMessage(player, message);
+                    plugin.getMessageHandler().sendMessage(player, message);
                 }
 
                 // Raise amount
@@ -156,7 +154,7 @@ public class SealedAuction extends DefaultAuction {
     @Override
     protected void startMessages() {
         super.startMessages();
-        AuctionsAPI.getMessageHandler().broadcast(plugin.getMessage("messages.notifySealedAuction"), this, false);
+        plugin.getMessageHandler().broadcast(plugin.getMessage("messages.notifySealedAuction"), this, false);
     }
 
     @Override

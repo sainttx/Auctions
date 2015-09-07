@@ -22,7 +22,7 @@ package com.sainttx.auctions.structure.module;
 
 import com.sainttx.auctions.AuctionPlugin;
 import com.sainttx.auctions.api.Auction;
-import com.sainttx.auctions.api.AuctionsAPI;
+import com.sainttx.auctions.api.Auctions;
 import com.sainttx.auctions.api.module.AuctionModule;
 
 /**
@@ -31,13 +31,15 @@ import com.sainttx.auctions.api.module.AuctionModule;
  */
 public class AutoWinModule implements AuctionModule {
 
+    private AuctionPlugin plugin;
     private Auction auction;
     private double trigger;
 
-    public AutoWinModule(Auction auction, double trigger) {
+    public AutoWinModule(AuctionPlugin plugin, Auction auction, double trigger) {
         if (auction == null) {
             throw new IllegalArgumentException("auction cannot be null");
         }
+        this.plugin = plugin;
         this.auction = auction;
         this.trigger = trigger;
     }
@@ -49,8 +51,7 @@ public class AutoWinModule implements AuctionModule {
 
     @Override
     public void trigger() {
-        AuctionPlugin plugin = AuctionPlugin.getPlugin();
-        AuctionsAPI.getMessageHandler().broadcast(plugin.getMessage("messages.auctionFormattable.endByAutowin"), auction, false);
+        plugin.getMessageHandler().broadcast(plugin.getMessage("messages.auctionFormattable.endByAutowin"), auction, false);
         auction.end(true);
     }
 }

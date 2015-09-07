@@ -20,7 +20,9 @@
 
 package com.sainttx.auctions;
 
-import com.sainttx.auctions.api.AuctionsAPI;
+import com.sainttx.auctions.api.AuctionManager;
+import com.sainttx.auctions.api.Auctions;
+import com.sainttx.auctions.api.messages.MessageHandler;
 import com.sainttx.auctions.api.messages.MessageHandlerType;
 import com.sainttx.auctions.api.reward.ItemReward;
 import com.sainttx.auctions.api.reward.Reward;
@@ -57,7 +59,7 @@ import java.util.logging.Level;
 public class AuctionPlugin extends JavaPlugin {
 
     // Instance
-    private static AuctionPlugin plugin;
+    private AuctionManager manager;
     private Economy economy;
 
     // Items file
@@ -68,18 +70,8 @@ public class AuctionPlugin extends JavaPlugin {
     private YamlConfiguration offlineConfiguration;
     private Map<UUID, Reward> offlineRewardCache = new HashMap<UUID, Reward>();
 
-    /**
-     * Returns the Auction Plugin instance
-     *
-     * @return The auction plugin instance
-     */
-    public static AuctionPlugin getPlugin() {
-        return plugin;
-    }
-
     @Override
     public void onEnable() {
-        plugin = this;
         saveDefaultConfig();
         checkOutdatedConfig();
 
@@ -95,13 +87,17 @@ public class AuctionPlugin extends JavaPlugin {
             }
         });
 
+        // Create manager instance
+        this.manager = new AuctionManagerImpl(this);
+        Auctions.setManager(manager);
+
         // Message groups
         if (getConfig().getBoolean("integration.herochat.enable")) {
-            AuctionsAPI.getAuctionManager().addMessageGroup(new HerochatGroup(this));
+            manager.addMessageGroup(new HerochatGroup(this));
             getLogger().info("Added Herochat recipient group to the list of broadcast listeners");
         }
         if (getConfig().getBoolean("chatSettings.groups.global")) {
-            AuctionsAPI.getAuctionManager().addMessageGroup(new GlobalChatGroup());
+            manager.addMessageGroup(new GlobalChatGroup());
             getLogger().info("Added global chat recipient group to the list of broadcast listeners");
         }
 
@@ -120,7 +116,7 @@ public class AuctionPlugin extends JavaPlugin {
                 case ACTION_BAR:
                     String version = ReflectionUtil.getVersion();
                     if (version.startsWith("v1_8_R")) {
-                        AuctionsAPI.getAuctionManager().setMessageHandler(new ActionBarMessageHandler());
+                        manager.setMessageHandler(new ActionBarMessageHandler(this));
                         getLogger().info("Message handler has been set to ACTION_BAR");
                         break;
                     } else {
@@ -128,7 +124,7 @@ public class AuctionPlugin extends JavaPlugin {
                                 "Defaulting to TEXT based message handling");
                     }
                 case TEXT:
-                    AuctionsAPI.getAuctionManager().setMessageHandler(new TextualMessageHandler());
+                    manager.setMessageHandler(new TextualMessageHandler(this));
                     getLogger().info("Message handler has been set to TEXT");
                     break;
             }
@@ -151,7 +147,7 @@ public class AuctionPlugin extends JavaPlugin {
         loadOfflineRewards();
 
         // Commands
-        AuctionCommandHandler handler = new AuctionCommandHandler();
+        AuctionCommandHandler handler = new AuctionCommandHandler(this);
         getCommand("auction").setExecutor(handler);
         getCommand("sealedauction").setExecutor(handler);
         getCommand("bid").setExecutor(handler);
@@ -203,7 +199,7 @@ public class AuctionPlugin extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        AuctionManagerImpl.disable();
+        ((AuctionManagerImpl) manager).disable();
 
         // Logoff file
         try {
@@ -216,7 +212,25 @@ public class AuctionPlugin extends JavaPlugin {
             ex.printStackTrace();
         }
 
-        plugin = null;
+        Auctions.setManager(null);
+    }
+
+    /**
+     * Returns the AuctionManager instance
+     *
+     * @return the manager instance
+     */
+    public AuctionManager getManager() {
+        return manager;
+    }
+
+    /**
+     * Returns the current MessageHandler
+     *
+     * @return the handler instance
+     */
+    public MessageHandler getMessageHandler() {
+        return manager.getMessageHandler();
     }
 
     /**
@@ -354,14 +368,14 @@ public class AuctionPlugin extends JavaPlugin {
      */
     public void loadConfig() {
         File names = new File(getDataFolder(), "items.yml");
-        File namesFile = new File(plugin.getDataFolder(), "items.yml");
+        File namesFile = new File(getDataFolder(), "items.yml");
 
         // Save items file name
         if (!names.exists()) {
             saveResource("items.yml", false);
         }
         if (!namesFile.exists()) {
-            plugin.saveResource("items.yml", false);
+            saveResource("items.yml", false);
         }
 
         itemsFile = YamlConfiguration.loadConfiguration(namesFile);
@@ -393,7 +407,7 @@ public class AuctionPlugin extends JavaPlugin {
             if (obj instanceof Reward) {
                 reward = (Reward) offlineConfiguration.get(string);
             } else if (obj instanceof ItemStack) {
-                reward = new ItemReward((ItemStack) obj);
+                reward = new ItemReward(this, (ItemStack) obj);
             } else {
                 getLogger().info("Cannot load offline reward for player with UUID \""
                         + string + "\", unknown reward type \"" + obj.getClass().getName() + "\"");

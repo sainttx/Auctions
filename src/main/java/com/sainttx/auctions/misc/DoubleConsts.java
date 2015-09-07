@@ -18,33 +18,19 @@
  * along with Auctions.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sainttx.auctions.api.event;
-
-import com.sainttx.auctions.api.Auction;
-import org.bukkit.event.HandlerList;
+package com.sainttx.auctions.misc;
 
 /**
  * Created by Matthew on 9/7/2015.
  */
-public class AuctionEndEvent extends AuctionEvent {
+public class DoubleConsts {
 
-    private static final HandlerList handlers = new HandlerList();
+    public static final double THOUSAND = 1000L;
+    public static final double MILLION = 1000000L;
+    public static final double BILLION = 1000000000L;
+    public static final double TRILLION = 1000000000000L;
 
-    /**
-     * Called when an auction ends
-     *
-     * @param auction the auction that ends
-     */
-    public AuctionEndEvent(final Auction auction) {
-        super(auction);
-    }
+    private DoubleConsts() {
 
-    @Override
-    public HandlerList getHandlers() {
-        return handlers;
-    }
-
-    public static HandlerList getHandlerList() {
-        return handlers;
     }
 }

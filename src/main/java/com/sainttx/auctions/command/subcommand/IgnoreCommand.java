@@ -20,8 +20,9 @@
 
 package com.sainttx.auctions.command.subcommand;
 
+import com.sainttx.auctions.AuctionPlugin;
 import com.sainttx.auctions.api.AuctionManager;
-import com.sainttx.auctions.api.AuctionsAPI;
+import com.sainttx.auctions.api.Auctions;
 import com.sainttx.auctions.api.messages.MessageHandler;
 import com.sainttx.auctions.command.AuctionSubCommand;
 import org.bukkit.command.Command;
@@ -33,8 +34,8 @@ import org.bukkit.entity.Player;
  */
 public class IgnoreCommand extends AuctionSubCommand {
 
-    public IgnoreCommand() {
-        super("auctions.command.ignore", "ignore");
+    public IgnoreCommand(AuctionPlugin plugin) {
+        super(plugin, "auctions.command.ignore", "ignore");
     }
 
     @Override
@@ -42,11 +43,10 @@ public class IgnoreCommand extends AuctionSubCommand {
         if (!(sender instanceof Player)) {
             sender.sendMessage("Only players can ignore the plugin");
         } else {
-            AuctionManager manager = AuctionsAPI.getAuctionManager();
-            MessageHandler handler = manager.getMessageHandler();
+            MessageHandler handler = plugin.getManager().getMessageHandler();
             Player player = (Player) sender;
 
-            if (manager.getMessageHandler().isIgnoring(player)) {
+            if (handler.isIgnoring(player)) {
                 handler.removeIgnoring(player);
                 handler.sendMessage(player, plugin.getMessage("messages.noLongerIgnoring"));
             } else {

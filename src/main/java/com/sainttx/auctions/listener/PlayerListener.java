@@ -22,7 +22,7 @@ package com.sainttx.auctions.listener;
 
 import com.sainttx.auctions.AuctionPlugin;
 import com.sainttx.auctions.api.Auction;
-import com.sainttx.auctions.api.AuctionsAPI;
+import com.sainttx.auctions.api.Auctions;
 import com.sainttx.auctions.api.reward.Reward;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -55,7 +55,7 @@ public class PlayerListener implements Listener {
         if (reward != null) {
             plugin.getLogger().info("Giving back saved items of offline player "
                     + player.getName() + " (uuid: " + player.getUniqueId() + ")");
-            AuctionsAPI.getMessageHandler().sendMessage(player, plugin.getMessage("messages.savedItemReturn"));
+            plugin.getMessageHandler().sendMessage(player, plugin.getMessage("messages.savedItemReturn"));
             reward.giveItem(player);
             plugin.removeOfflineReward(player.getUniqueId());
         }
@@ -71,20 +71,18 @@ public class PlayerListener implements Listener {
         if (!player.hasPermission("auctions.bypass.general.blockedcommands")
                 && plugin.getConfig().isList("general.blockedCommands")
                 && plugin.getConfig().getStringList("general.blockedCommands").contains(command.toLowerCase())) {
-            Auction auction = AuctionsAPI.getAuctionManager().getCurrentAuction();
-
             if (plugin.getConfig().getBoolean("general.blockCommands.ifAuctioning", false)
-                    && AuctionsAPI.getAuctionManager().hasActiveAuction(player)) {
+                    && plugin.getManager().hasActiveAuction(player)) {
                 event.setCancelled(true);
-                AuctionsAPI.getMessageHandler().sendMessage(player, plugin.getMessage("messages.error.cantUseCommandWhileAuctioning"));
+                plugin.getMessageHandler().sendMessage(player, plugin.getMessage("messages.error.cantUseCommandWhileAuctioning"));
             } else if (plugin.getConfig().getBoolean("general.blockCommands.ifQueued", false)
-                    && AuctionsAPI.getAuctionManager().hasAuctionInQueue(player)) {
+                    && plugin.getManager().hasAuctionInQueue(player)) {
                 event.setCancelled(true);
-                AuctionsAPI.getMessageHandler().sendMessage(player, plugin.getMessage("messages.error.cantUseCommandWhileQueued"));
+                plugin.getMessageHandler().sendMessage(player, plugin.getMessage("messages.error.cantUseCommandWhileQueued"));
             } else if (plugin.getConfig().getBoolean("general.blockCommands.ifTopBidder", false)
-                    && auction != null && player.getUniqueId().equals(auction.getTopBidder())) {
+                    && plugin.getManager().getCurrentAuction() != null && player.getUniqueId().equals(plugin.getManager().getCurrentAuction().getTopBidder())) {
                 event.setCancelled(true);
-                AuctionsAPI.getMessageHandler().sendMessage(player, plugin.getMessage("messages.error.cantUseCommandWhileTopBidder"));
+                plugin.getMessageHandler().sendMessage(player, plugin.getMessage("messages.error.cantUseCommandWhileTopBidder"));
             }
         }
     }
@@ -97,16 +95,16 @@ public class PlayerListener implements Listener {
         if (event.getCause() != PlayerTeleportEvent.TeleportCause.ENDER_PEARL
                 && !player.hasPermission("auctions.bypass.general.disabledworld")
                 && plugin.isWorldDisabled(target)) {
-            if (AuctionsAPI.getAuctionManager().hasActiveAuction(player)
-                    || AuctionsAPI.getAuctionManager().hasAuctionInQueue(player)) {
+            if (plugin.getManager().hasActiveAuction(player)
+                    || plugin.getManager().hasAuctionInQueue(player)) {
                 event.setCancelled(true);
-                AuctionsAPI.getMessageHandler().sendMessage(player, plugin.getMessage("messages.error.cantTeleportToDisabledWorld"));
+                plugin.getMessageHandler().sendMessage(player, plugin.getMessage("messages.error.cantTeleportToDisabledWorld"));
             } else {
-                Auction auction = AuctionsAPI.getAuctionManager().getCurrentAuction();
+                Auction auction = plugin.getManager().getCurrentAuction();
 
                 if (auction != null && player.getUniqueId().equals(auction.getTopBidder())) {
                     event.setCancelled(true);
-                    AuctionsAPI.getMessageHandler().sendMessage(player, plugin.getMessage("messages.error.cantTeleportToDisabledWorld"));
+                    plugin.getMessageHandler().sendMessage(player, plugin.getMessage("messages.error.cantTeleportToDisabledWorld"));
                 }
             }
         }

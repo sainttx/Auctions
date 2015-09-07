@@ -37,10 +37,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  */
 public class AuctionManagerImpl implements AuctionManager {
 
-    // Instance
-    private static AuctionManagerImpl manager = new AuctionManagerImpl();
-
     // Auctions information
+    private final AuctionPlugin plugin;
     private Auction currentAuction;
     private Set<MessageRecipientGroup> recipientGroups = new HashSet<MessageRecipientGroup>();
     private Queue<Auction> auctionQueue = new ConcurrentLinkedQueue<Auction>();
@@ -49,42 +47,24 @@ public class AuctionManagerImpl implements AuctionManager {
     private boolean disabled;
     private boolean canAuction = true;
 
-    private AuctionManagerImpl() {
-        if (manager != null) {
-            throw new IllegalStateException("cannot create new instances of the manager");
-        }
-
+    AuctionManagerImpl(final AuctionPlugin plugin) {
+        this.plugin = plugin;
         loadBannedMaterials();
-    }
-
-    /**
-     * Singleton. Returns the auction manager instance.
-     *
-     * @return the only auction manager instance
-     */
-    public static AuctionManagerImpl getAuctionManager() {
-        if (manager == null) { // Should never happen
-            manager = new AuctionManagerImpl();
-            Bukkit.getLogger().info("Created a new auction manager instance.");
-        }
-
-        return manager;
     }
 
     /**
      * Called when the Auctions plugin disables
      */
-    protected static void disable() {
-        if (getAuctionManager().getCurrentAuction() != null) {
-            getAuctionManager().getCurrentAuction().cancel();
+    void disable() {
+        if (getCurrentAuction() != null) {
+            getCurrentAuction().cancel();
         }
 
-        for (Auction auction : getAuctionManager().getQueue()) {
+        // Clear queue
+        for (Auction auction : getQueue()) {
             auction.end(false);
         }
-        getAuctionManager().getQueue().clear();
-
-        manager = null;
+        getQueue().clear();
     }
 
     @Override
@@ -200,7 +180,6 @@ public class AuctionManagerImpl implements AuctionManager {
      * Loads all banned items into memory 
      */
     private void loadBannedMaterials() {
-        AuctionPlugin plugin = AuctionPlugin.getPlugin();
         if (!plugin.getConfig().isList("general.blockedMaterials")) {
             return;
         }

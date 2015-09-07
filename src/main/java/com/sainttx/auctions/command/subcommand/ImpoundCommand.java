@@ -20,9 +20,10 @@
 
 package com.sainttx.auctions.command.subcommand;
 
+import com.sainttx.auctions.AuctionPlugin;
 import com.sainttx.auctions.api.Auction;
 import com.sainttx.auctions.api.AuctionManager;
-import com.sainttx.auctions.api.AuctionsAPI;
+import com.sainttx.auctions.api.Auctions;
 import com.sainttx.auctions.api.messages.MessageHandler;
 import com.sainttx.auctions.api.reward.Reward;
 import com.sainttx.auctions.command.AuctionSubCommand;
@@ -35,15 +36,14 @@ import org.bukkit.entity.Player;
  */
 public class ImpoundCommand extends AuctionSubCommand {
 
-    public ImpoundCommand() {
-        super("auctions.command.impound", "impound");
+    public ImpoundCommand(AuctionPlugin plugin) {
+        super(plugin, "auctions.command.impound", "impound");
     }
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        AuctionManager manager = AuctionsAPI.getAuctionManager();
-        MessageHandler handler = manager.getMessageHandler();
-        Auction auction = manager.getCurrentAuction();
+        MessageHandler handler = plugin.getManager().getMessageHandler();
+        Auction auction = plugin.getManager().getCurrentAuction();
 
         if (!(sender instanceof Player)) {
             sender.sendMessage("Only players can impound auctions");

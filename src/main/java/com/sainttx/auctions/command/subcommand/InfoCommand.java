@@ -20,8 +20,9 @@
 
 package com.sainttx.auctions.command.subcommand;
 
+import com.sainttx.auctions.AuctionPlugin;
 import com.sainttx.auctions.api.AuctionManager;
-import com.sainttx.auctions.api.AuctionsAPI;
+import com.sainttx.auctions.api.Auctions;
 import com.sainttx.auctions.command.AuctionSubCommand;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -31,18 +32,16 @@ import org.bukkit.command.CommandSender;
  */
 public class InfoCommand extends AuctionSubCommand {
 
-    public InfoCommand() {
-        super("auctions.command.info", "info", "i");
+    public InfoCommand(AuctionPlugin plugin) {
+        super(plugin, "auctions.command.info", "info", "i");
     }
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        AuctionManager manager = AuctionsAPI.getAuctionManager();
-
-        if (manager.getCurrentAuction() == null) {
-            manager.getMessageHandler().sendMessage(sender, plugin.getMessage("messages.error.noCurrentAuction"));
+        if (plugin.getManager().getCurrentAuction() == null) {
+            plugin.getManager().getMessageHandler().sendMessage(sender, plugin.getMessage("messages.error.noCurrentAuction"));
         } else {
-            manager.getMessageHandler().sendAuctionInformation(sender, manager.getCurrentAuction());
+            plugin.getManager().getMessageHandler().sendAuctionInformation(sender, plugin.getManager().getCurrentAuction());
         }
         return false;
     }

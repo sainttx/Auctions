@@ -24,12 +24,13 @@ import com.sainttx.auctions.AuctionPlugin;
 import com.sainttx.auctions.api.Auction;
 import com.sainttx.auctions.api.AuctionManager;
 import com.sainttx.auctions.api.AuctionType;
-import com.sainttx.auctions.api.AuctionsAPI;
+import com.sainttx.auctions.api.Auctions;
 import com.sainttx.auctions.api.messages.MessageHandler;
 import com.sainttx.auctions.api.messages.MessageHandlerAddon.SpammyMessagePreventer;
 import com.sainttx.auctions.api.messages.MessageRecipientGroup;
 import com.sainttx.auctions.api.reward.ItemReward;
 import com.sainttx.auctions.api.reward.Reward;
+import com.sainttx.auctions.misc.DoubleConsts;
 import com.sainttx.auctions.util.TimeUtil;
 import mkremins.fanciful.FancyMessage;
 import org.bukkit.Bukkit;
@@ -39,7 +40,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.plugin.java.JavaPlugin;
 
 import java.text.NumberFormat;
 import java.util.*;
@@ -56,10 +56,10 @@ public class TextualMessageHandler implements MessageHandler, SpammyMessagePreve
 
     MessageFormatter formatter;
     Set<UUID> ignoring = new HashSet<UUID>();
-    private JavaPlugin plugin;
+    protected final AuctionPlugin plugin;
     private Set<UUID> ignoringBids = new HashSet<UUID>();
 
-    public TextualMessageHandler(JavaPlugin plugin) {
+    public TextualMessageHandler(AuctionPlugin plugin) {
         this.plugin = plugin;
         this.formatter = new MessageFormatterImpl();
     }
@@ -104,14 +104,13 @@ public class TextualMessageHandler implements MessageHandler, SpammyMessagePreve
      */
     protected Collection<CommandSender> getAllRecipients() {
         Collection<CommandSender> recipients = new HashSet<CommandSender>();
-        for (MessageRecipientGroup group : AuctionsAPI.getAuctionManager().getMessageGroups()) {
+        for (MessageRecipientGroup group : plugin.getManager().getMessageGroups()) {
             for (CommandSender recipient : group.getRecipients()) {
                 recipients.add(recipient);
             }
         }
 
         recipients.add(Bukkit.getConsoleSender());
-
         return recipients;
     }
 
@@ -140,7 +139,6 @@ public class TextualMessageHandler implements MessageHandler, SpammyMessagePreve
 
     @Override
     public void sendAuctionInformation(CommandSender recipient, Auction auction) {
-        AuctionPlugin plugin = AuctionPlugin.getPlugin();
         sendMessage(recipient, plugin.getMessage("messages.auctionFormattable.info"), auction);
         sendMessage(recipient, plugin.getMessage("messages.auctionFormattable.increment"), auction);
         if (auction.getTopBidder() != null) {
@@ -149,7 +147,7 @@ public class TextualMessageHandler implements MessageHandler, SpammyMessagePreve
 
         if (recipient instanceof Player) {
             Player player = (Player) recipient;
-            int queuePosition = AuctionsAPI.getAuctionManager().getQueuePosition(player);
+            int queuePosition = plugin.getManager().getQueuePosition(player);
             if (queuePosition > 0) {
                 String message = plugin.getMessage("messages.auctionFormattable.queuePosition")
                         .replace("[queuepos]", Integer.toString(queuePosition));
@@ -203,7 +201,6 @@ public class TextualMessageHandler implements MessageHandler, SpammyMessagePreve
      * A helper method that creates a FancyMessage to send to players
      */
     private FancyMessage createMessage(Auction auction, String message) {
-        AuctionPlugin plugin = AuctionPlugin.getPlugin();
         FancyMessage fancy = new FancyMessage(ChatColor.WHITE.toString());
 
         if (!message.isEmpty()) {
@@ -281,7 +278,7 @@ public class TextualMessageHandler implements MessageHandler, SpammyMessagePreve
     /*
      * Gets the display name of an item
      */
-    private static String getItemDisplayName(Reward reward) {
+    private String getItemDisplayName(Reward reward) {
         if (reward instanceof ItemReward) {
             ItemReward ir = (ItemReward) reward;
             return getItemRewardName(ir);
@@ -293,7 +290,7 @@ public class TextualMessageHandler implements MessageHandler, SpammyMessagePreve
     /*
      * A helper method that gets an items name
      */
-    private static String getRewardName(Reward reward) {
+    private String getRewardName(Reward reward) {
         return reward.getName();
     }
 
@@ -301,7 +298,7 @@ public class TextualMessageHandler implements MessageHandler, SpammyMessagePreve
      * A helper method to get an items display name. Will default to
      * the items material name if the item lacks a display name.
      */
-    public static String getItemRewardName(ItemReward reward) {
+    public String getItemRewardName(ItemReward reward) {
         ItemStack item = reward.getItem();
         ItemMeta meta = item.getItemMeta();
 
@@ -315,12 +312,7 @@ public class TextualMessageHandler implements MessageHandler, SpammyMessagePreve
     /**
      * A message formatter that handles basic formatting
      */
-    public static class MessageFormatterImpl implements MessageFormatter {
-
-        static final long THOUSAND = 1000L;
-        static final long MILLION = 1000000L;
-        static final long BILLION = 1000000000L;
-        static final long TRILLION = 1000000000000L;
+    public class MessageFormatterImpl implements MessageFormatter {
 
         @Override
         public String format(String message) {
@@ -332,7 +324,6 @@ public class TextualMessageHandler implements MessageHandler, SpammyMessagePreve
             if (message == null) {
                 throw new IllegalArgumentException("message cannot be null");
             }
-            AuctionPlugin plugin = AuctionPlugin.getPlugin();
             boolean truncate = plugin.getConfig().getBoolean("general.truncatedNumberFormat", false);
 
             if (auction != null) {
@@ -346,7 +337,8 @@ public class TextualMessageHandler implements MessageHandler, SpammyMessagePreve
                 message = message.replace("[itemName]", getRewardName(auction.getReward()));
                 message = message.replace("[itemDisplayName]", getItemDisplayName(auction.getReward()));
                 message = message.replace("[itemamount]", Integer.toString(auction.getReward().getAmount()));
-                message = message.replace("[time]", TimeUtil.getFormattedTime(auction.getTimeLeft()));
+                message = message.replace("[time]", TimeUtil.getFormattedTime(auction.getTimeLeft(),
+                        plugin.getConfig().getBoolean("general.shortenedTimeFormat", false)));
                 message = message.replace("[autowin]", truncate ? truncateNumber(auction.getAutowin()) : formatDouble(auction.getAutowin()));
                 message = message.replace("[ownername]", auction.getOwnerName() == null ? "Console" : auction.getOwnerName());
                 message = message.replace("[topbiddername]", auction.hasBids()
@@ -377,9 +369,11 @@ public class TextualMessageHandler implements MessageHandler, SpammyMessagePreve
          * A helper method to truncate numbers to the nearest amount
          */
         private String truncateNumber(double x) {
-            return x < THOUSAND ? formatDouble(x) : x < MILLION ? formatDouble(x / THOUSAND) + "K" :
-                    x < BILLION ? formatDouble(x / MILLION) + "M" : x < TRILLION ? formatDouble(x / BILLION) + "B" :
-                            formatDouble(x / TRILLION) + "T";
+            return x < DoubleConsts.THOUSAND ? formatDouble(x) :
+                    x < DoubleConsts.MILLION ? formatDouble(x / DoubleConsts.THOUSAND) + "K" :
+                            x < DoubleConsts.BILLION ? formatDouble(x / DoubleConsts.MILLION) + "M" :
+                                    x < DoubleConsts.TRILLION ? formatDouble(x / DoubleConsts.BILLION) + "B" :
+                                            formatDouble(x / DoubleConsts.TRILLION) + "T";
         }
     }
 }
