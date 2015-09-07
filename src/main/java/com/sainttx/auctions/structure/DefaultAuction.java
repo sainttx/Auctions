@@ -24,6 +24,7 @@ import com.sainttx.auctions.AuctionPlugin;
 import com.sainttx.auctions.api.AuctionManager;
 import com.sainttx.auctions.api.AuctionType;
 import com.sainttx.auctions.api.AuctionsAPI;
+import com.sainttx.auctions.api.event.AuctionEndEvent;
 import com.sainttx.auctions.api.messages.MessageHandler;
 import com.sainttx.auctions.api.module.AuctionModule;
 import com.sainttx.auctions.api.reward.Reward;
@@ -38,7 +39,7 @@ import java.util.UUID;
  */
 public class DefaultAuction extends AbstractAuction {
 
-    protected DefaultAuction(AuctionPlugin plugin, AuctionType type) {
+    public DefaultAuction(AuctionPlugin plugin, AuctionType type) {
         this.plugin = plugin;
         this.type = type;
     }
@@ -147,6 +148,9 @@ public class DefaultAuction extends AbstractAuction {
         AuctionManager manager = AuctionsAPI.getAuctionManager();
         MessageHandler handler = manager.getMessageHandler();
         Player owner = Bukkit.getPlayer(getOwner());
+
+        AuctionEndEvent event = new AuctionEndEvent(this);
+        Bukkit.getPluginManager().callEvent(event);
 
         if (timerTask != null) {
             timerTask.cancel();

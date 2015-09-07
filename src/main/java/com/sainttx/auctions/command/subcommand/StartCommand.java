@@ -24,6 +24,7 @@ import com.sainttx.auctions.api.Auction;
 import com.sainttx.auctions.api.AuctionManager;
 import com.sainttx.auctions.api.AuctionType;
 import com.sainttx.auctions.api.AuctionsAPI;
+import com.sainttx.auctions.api.event.AuctionCreateEvent;
 import com.sainttx.auctions.api.messages.MessageHandler;
 import com.sainttx.auctions.api.reward.ItemReward;
 import com.sainttx.auctions.api.reward.Reward;
@@ -31,6 +32,7 @@ import com.sainttx.auctions.command.AuctionSubCommand;
 import com.sainttx.auctions.structure.module.AntiSnipeModule;
 import com.sainttx.auctions.structure.module.AutoWinModule;
 import com.sainttx.auctions.util.AuctionUtil;
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
@@ -173,7 +175,11 @@ public class StartCommand extends AuctionSubCommand {
                     } else {
                         item.setAmount(amount);
                         Reward reward = new ItemReward(item);
-                        builder.bidIncrement(increment).reward(reward).owner(player).topBid(price).autowin(autowin);
+                        builder.bidIncrement(increment)
+                                .reward(reward)
+                                .owner(player)
+                                .topBid(price)
+                                .autowin(autowin);
                         Auction created = builder.build();
 
                         // check if we can add an autowin module
@@ -184,6 +190,13 @@ public class StartCommand extends AuctionSubCommand {
                         // check if we can add an anti snipe module
                         if (plugin.getConfig().getBoolean("auctionSettings.antiSnipe.enable", true)) {
                             created.addModule(new AntiSnipeModule(created));
+                        }
+
+                        AuctionCreateEvent event = new AuctionCreateEvent(created, player);
+                        Bukkit.getPluginManager().callEvent(event);
+
+                        if (event.isCancelled()) {
+                            return true;
                         }
 
                         player.getInventory().removeItem(item); // take the item from the player

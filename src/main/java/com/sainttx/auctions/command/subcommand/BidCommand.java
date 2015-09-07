@@ -24,8 +24,10 @@ import com.sainttx.auctions.api.Auction;
 import com.sainttx.auctions.api.AuctionManager;
 import com.sainttx.auctions.api.AuctionType;
 import com.sainttx.auctions.api.AuctionsAPI;
+import com.sainttx.auctions.api.event.AuctionPreBidEvent;
 import com.sainttx.auctions.api.messages.MessageHandler;
 import com.sainttx.auctions.command.AuctionSubCommand;
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -55,7 +57,6 @@ public class BidCommand extends AuctionSubCommand {
             handler.sendMessage(sender, plugin.getMessage("messages.error.bidSyntax"));
         } else {
             Player player = (Player) sender;
-
             double bid;
 
             try {
@@ -75,6 +76,13 @@ public class BidCommand extends AuctionSubCommand {
             } else if (auction.getOwner().equals(player.getUniqueId())) {
                 handler.sendMessage(player, plugin.getMessage("messages.error.bidOnOwnAuction")); // cant bid on own auction
             } else {
+                AuctionPreBidEvent event = new AuctionPreBidEvent(auction, player, bid);
+                Bukkit.getPluginManager().callEvent(event);
+
+                if (event.isCancelled()) {
+                    return true;
+                }
+
                 auction.placeBid(player, bid);
             }
         }

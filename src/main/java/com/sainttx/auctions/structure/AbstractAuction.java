@@ -24,9 +24,11 @@ import com.sainttx.auctions.AuctionPlugin;
 import com.sainttx.auctions.api.Auction;
 import com.sainttx.auctions.api.AuctionType;
 import com.sainttx.auctions.api.AuctionsAPI;
+import com.sainttx.auctions.api.event.AuctionStartEvent;
 import com.sainttx.auctions.api.messages.MessageHandler;
 import com.sainttx.auctions.api.module.AuctionModule;
 import com.sainttx.auctions.api.reward.Reward;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -131,6 +133,8 @@ public abstract class AbstractAuction implements Auction {
     public void start() {
         this.timerTask = plugin.getServer().getScheduler().runTaskTimer(plugin, new AuctionTimer(), 20L, 20L);
         startMessages();
+        AuctionStartEvent event = new AuctionStartEvent(this);
+        Bukkit.getPluginManager().callEvent(event);
     }
 
     @Override

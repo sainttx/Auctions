@@ -24,8 +24,10 @@ import com.sainttx.auctions.AuctionPlugin;
 import com.sainttx.auctions.api.Auction;
 import com.sainttx.auctions.api.AuctionManager;
 import com.sainttx.auctions.api.AuctionsAPI;
+import com.sainttx.auctions.api.event.AuctionAddTimeEvent;
 import com.sainttx.auctions.api.module.AuctionModule;
 import com.sainttx.auctions.util.TimeUtil;
+import org.bukkit.Bukkit;
 
 /**
  * A module that ends adds time to an auction iff the auction
@@ -56,12 +58,19 @@ public class AntiSnipeModule implements AuctionModule {
     @Override
     public void trigger() {
         AuctionManager manager = AuctionsAPI.getAuctionManager();
-        snipeCount++;
         int secondsToAdd = plugin.getConfig().getInt("auctionSettings.antiSnipe.addSeconds", 5);
 
-        auction.setTimeLeft(auction.getTimeLeft() + secondsToAdd);
+        AuctionAddTimeEvent event = new AuctionAddTimeEvent(auction, secondsToAdd);
+        Bukkit.getPluginManager().callEvent(event);
+
+        if (event.isCancelled()) {
+            return;
+        }
+
+        snipeCount++;
+        auction.setTimeLeft(auction.getTimeLeft() + event.getSecondsToAdd());
         String message = plugin.getMessage("messages.auctionFormattable.antiSnipeAdd")
-                .replace("[snipetime]", TimeUtil.getFormattedTime(secondsToAdd));
+                .replace("[snipetime]", TimeUtil.getFormattedTime(event.getSecondsToAdd()));
         manager.getMessageHandler().broadcast(message, auction, false);
     }
 }
