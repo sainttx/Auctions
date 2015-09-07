@@ -88,7 +88,7 @@ public class TextualMessageHandler implements MessageHandler, SpammyMessagePreve
                         try {
                             fancy.send(recipient);
                         } catch (Exception ex) {
-                            plugin.getLogger().log(Level.SEVERE, "failed to send message to recipient \"" + recipient.getName() + "\"", ex);
+                            plugin.getLogger().log(Level.SEVERE, "failed to send message to recipient \"" + recipient.getName() + "\"");
                             continue;
                         }
                     }
@@ -130,7 +130,7 @@ public class TextualMessageHandler implements MessageHandler, SpammyMessagePreve
                 try {
                     fancy.send(recipient);
                 } catch (Exception ex) {
-                    plugin.getLogger().log(Level.SEVERE, "failed to send message to recipient \"" + recipient.getName() + "\"", ex);
+                    plugin.getLogger().log(Level.SEVERE, "failed to send message to recipient \"" + recipient.getName() + "\"");
                     continue;
                 }
             }
