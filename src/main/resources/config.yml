@@ -119,6 +119,11 @@ auctionSettings:
   # what is defined here, users will not be able to cancel their auction
   # anymore. Default: 15.
   mustCancelBefore: 15
+  # Defined the first time, in seconds, that users are allowed to use
+  # the "/auction cancel" command. If an auctions time is greater than what is
+  # defined here, users will not be able to cancel their auction anymore. This
+  # option can be disabled by specifying '-1'. Default: -1.
+  mustCancelAfter: -1
   # Various settings regarding auction anti sniping can be defined here.
   antiSnipe:
     # Whether or not anti sniping is enabled. Default: true.
