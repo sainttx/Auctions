@@ -22,8 +22,6 @@ package com.sainttx.auctions.structure.module;
 
 import com.sainttx.auctions.AuctionPlugin;
 import com.sainttx.auctions.api.Auction;
-import com.sainttx.auctions.api.AuctionManager;
-import com.sainttx.auctions.api.Auctions;
 import com.sainttx.auctions.api.event.AuctionAddTimeEvent;
 import com.sainttx.auctions.api.module.AuctionModule;
 import com.sainttx.auctions.util.TimeUtil;
@@ -52,7 +50,8 @@ public class AntiSnipeModule implements AuctionModule {
 
     @Override
     public boolean canTrigger() {
-        return auction.getTimeLeft() <= plugin.getConfig().getInt("auctionSettings.antiSnipe.timeThreshold", 3)
+        return plugin.getConfig().getBoolean("auctionSettings.antiSnipe.enable", true)
+                && auction.getTimeLeft() <= plugin.getConfig().getInt("auctionSettings.antiSnipe.timeThreshold", 3)
                 && snipeCount < plugin.getConfig().getInt("auctionSettings.antiSnipe.maxPerAuction", 3)
                 && (auction.getAutowin() == -1 || auction.getTopBid() < auction.getAutowin());
     }
