@@ -28,6 +28,7 @@ import com.sainttx.auctions.structure.messages.actionbar.ActionBarObjectv1_8_R3;
 import com.sainttx.auctions.util.ReflectionUtil;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.java.JavaPlugin;
 
 /**
  * Created by Matthew on 10/05/2015.
@@ -36,7 +37,9 @@ public class ActionBarMessageHandler extends TextualMessageHandler {
 
     private ActionBarObject base;
 
-    public ActionBarMessageHandler() {
+    public ActionBarMessageHandler(JavaPlugin plugin) {
+        super(plugin);
+
         String version = ReflectionUtil.getVersion();
         if (version.startsWith("v1_8_R1")) {
             base = new ActionBarObjectv1_8_R1();

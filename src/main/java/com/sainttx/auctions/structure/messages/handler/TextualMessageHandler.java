@@ -39,9 +39,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import java.text.NumberFormat;
 import java.util.*;
+import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -50,12 +52,15 @@ import java.util.regex.Pattern;
  */
 public class TextualMessageHandler implements MessageHandler, SpammyMessagePreventer {
 
-    protected MessageFormatter formatter;
-    protected Set<UUID> ignoring = new HashSet<UUID>();
-    private Set<UUID> ignoringBids = new HashSet<UUID>();
     public static final Pattern COLOR_FINDER_PATTERN = Pattern.compile(ChatColor.COLOR_CHAR + "([a-f0-9klmnor])");
 
-    public TextualMessageHandler() {
+    MessageFormatter formatter;
+    Set<UUID> ignoring = new HashSet<UUID>();
+    private JavaPlugin plugin;
+    private Set<UUID> ignoringBids = new HashSet<UUID>();
+
+    public TextualMessageHandler(JavaPlugin plugin) {
+        this.plugin = plugin;
         this.formatter = new MessageFormatterImpl();
     }
 
@@ -80,7 +85,12 @@ public class TextualMessageHandler implements MessageHandler, SpammyMessagePreve
                             && isIgnoringSpam(((Player) recipient).getUniqueId())) {
                         continue;
                     } else {
-                        fancy.send(recipient);
+                        try {
+                            fancy.send(recipient);
+                        } catch (Exception ex) {
+                            plugin.getLogger().log(Level.SEVERE, "failed to send message to recipient \"" + recipient.getName() + "\"", ex);
+                            continue;
+                        }
                     }
                 }
             }
@@ -118,7 +128,12 @@ public class TextualMessageHandler implements MessageHandler, SpammyMessagePreve
         for (String msg : messages) {
             if (!msg.isEmpty() && recipient != null) {
                 FancyMessage fancy = createMessage(auction, msg);
-                fancy.send(recipient);
+                try {
+                    fancy.send(recipient);
+                } catch (Exception ex) {
+                    plugin.getLogger().log(Level.SEVERE, "failed to send message to recipient \"" + recipient.getName() + "\"", ex);
+                    continue;
+                }
             }
         }
     }
