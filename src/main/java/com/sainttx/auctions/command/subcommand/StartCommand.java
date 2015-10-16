@@ -147,6 +147,8 @@ public class StartCommand extends AuctionSubCommand {
                     handler.sendMessage(player, plugin.getMessage("messages.error.invalidBidIncrement"));
                 } else if (autowin != -1 && !plugin.getConfig().getBoolean("auctionSettings.canSpecifyAutowin", true)) {
                     handler.sendMessage(player, plugin.getMessage("messages.error.autowinDisabled"));
+                } else if (autowin != -1 && Double.compare(autowin, price) <= 0) {
+                    handler.sendMessage(player, plugin.getMessage("messages.error.autowinBelowStart"));
                 } else if (plugin.getManager().hasActiveAuction(player)) {
                     handler.sendMessage(player, plugin.getMessage("messages.error.alreadyHaveAuction"));
                 } else if (plugin.getManager().hasAuctionInQueue(player)) {

@@ -310,6 +310,7 @@ messages:
     alreadyTopBidder: "&cYou are already the top bidder"
     auctionQueueFull: "&cThe auction queue is currently full"
     auctionsDisabled: "&cAuctions are currently disabled"
+    autowinBelowStart: "&cYour autowin amount must be greater than the start price"
     autowinDisabled: "&cPlacing autowin amounts on auctions has been disabled"
     autowinTooHigh: "&cYour autowin amount is too high"
     biddingIncrementExceedsStart: "&cYour bidding increment cannot exceed your start price"
