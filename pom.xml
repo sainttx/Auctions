@@ -30,23 +30,43 @@
             <url>https://hub.spigotmc.org/nexus/content/groups/public/</url>
         </repository>
 
-        <repository>
+        <!-- <repository>
             <id>Plugin Metrics</id>
             <url>http://repo.mcstats.org/content/repositories/public</url>
-        </repository>
+        </repository> -->
 
         <repository>
             <id>vault-repo</id>
             <url>http://nexus.theyeticave.net/content/repositories/pub_releases</url>
         </repository>
 
+        <!--
         <repository>
             <id>fanciful-mvn-repo</id>
             <url>http://repo.franga2000.com/artifactory/public</url>
         </repository>
+        -->
     </repositories>
 
     <dependencies>
+        <dependency>
+            <groupId>com.dthielke</groupId>
+            <artifactId>herochat</artifactId>
+            <version>5.7.0-SNAPSHOT</version>
+            <!-- <version>1.0</version> -->
+            <scope>system</scope>
+            <systemPath>${project.basedir}/libraries/Herochat-5.7.0-SNAPSHOT-local.jar</systemPath>
+        </dependency>
+
+        <dependency>
+            <groupId>me.clip</groupId>
+            <artifactId>placeholderapi</artifactId>
+            <version>1.4</version>
+            <!-- <version>1.0</version> -->
+            <scope>system</scope>
+            <systemPath>${project.basedir}/libraries/PlaceholderAPI.jar</systemPath>
+        </dependency>
+
         <dependency>
             <groupId>net.milkbowl.vault</groupId>
             <artifactId>VaultAPI</artifactId>
@@ -66,30 +86,13 @@
             <version>1.8-R0.1-SNAPSHOT</version>
         </dependency>
 
+        <!--
         <dependency>
             <groupId>org.mcstats</groupId>
             <artifactId>metrics-lite</artifactId>
             <version>R6</version>
             <scope>compile</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>com.dthielke</groupId>
-            <artifactId>herochat</artifactId>
-            <version>5.6.7-SNAPSHOT</version>
-            <!-- <version>1.0</version> -->
-            <scope>system</scope>
-            <systemPath>${project.basedir}/libraries/HeroChat.jar</systemPath>
-        </dependency>
-
-        <dependency>
-            <groupId>me.clip</groupId>
-            <artifactId>placeholderapi</artifactId>
-            <version>1.4</version>
-            <!-- <version>1.0</version> -->
-            <scope>system</scope>
-            <systemPath>${project.basedir}/libraries/PlaceholderAPI.jar</systemPath>
-        </dependency>
+        </dependency> -->
     </dependencies>
 
     <reporting>
@@ -150,7 +153,7 @@
                     <artifactSet>
                         <includes>
                             <include>mkremins:fanciful</include>
-                            <include>org.mcstats:metrics-lite</include>
+                            <!-- <include>org.mcstats:metrics-lite</include> -->
                         </includes>
                     </artifactSet>
                     <relocations>
@@ -162,10 +165,12 @@
                             <pattern>net.amoebaman</pattern>
                             <shadedPattern>com.sainttx.auctions.fanciful.amoebaman</shadedPattern>
                         </relocation>
+                        <!--
                         <relocation>
                             <pattern>org.mcstats</pattern>
                             <shadedPattern>com.sainttx.auctions.metrics</shadedPattern>
                         </relocation>
+                        -->
                     </relocations>
                 </configuration>
                 <executions>

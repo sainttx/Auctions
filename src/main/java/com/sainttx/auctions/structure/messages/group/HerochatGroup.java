@@ -20,9 +20,9 @@
 
 package com.sainttx.auctions.structure.messages.group;
 
-import com.dthielke.herochat.Channel;
-import com.dthielke.herochat.Chatter;
-import com.dthielke.herochat.Herochat;
+import com.herochat.Herochat;
+import com.herochat.api.Channel;
+import com.herochat.api.Chatter;
 import com.sainttx.auctions.AuctionPlugin;
 import com.sainttx.auctions.api.messages.MessageRecipientGroup;
 import org.bukkit.Bukkit;
@@ -84,10 +84,12 @@ public class HerochatGroup implements MessageRecipientGroup {
         }
 
         Channel ch = Herochat.getChannelManager().getChannel(channel);
-        Set<Chatter> members = ch.getMembers();
+        for (Player player : plugin.getServer().getOnlinePlayers()) {
+            Chatter chatter = Herochat.getChatterManager().getChatter(player);
 
-        for (Chatter c : members) {
-            players.add(c.getPlayer());
+            if (chatter.getChannels().contains(ch)) {
+                players.add(player);
+            }
         }
 
         return players;

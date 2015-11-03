@@ -43,7 +43,6 @@ import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.mcstats.MetricsLite;
 
 import java.io.File;
 import java.io.IOException;
@@ -137,11 +136,11 @@ public class AuctionPlugin extends JavaPlugin {
         }
 
         // Enable plugin metrics
-        try {
+        /* try {
             MetricsLite metrics = new MetricsLite(this);
             metrics.start();
         } catch (Exception ignored) {
-        }
+        } */
 
         getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
         getServer().getPluginManager().registerEvents(new AuctionListener(this), this);
