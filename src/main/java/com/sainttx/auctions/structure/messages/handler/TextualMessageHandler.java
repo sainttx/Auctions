@@ -36,6 +36,7 @@ import mkremins.fanciful.FancyMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
@@ -84,6 +85,10 @@ public class TextualMessageHandler implements MessageHandler, SpammyMessagePreve
                     } else if (spammy && recipient instanceof Player
                             && isIgnoringSpam(((Player) recipient).getUniqueId())) {
                         continue;
+                    } else if (recipient instanceof ConsoleCommandSender
+                            && plugin.getConfig().getBoolean("chatSettings.stripColorsForConsole", true)) {
+                        String oldFormat = fancy.toOldMessageFormat();
+                        recipient.sendMessage(ChatColor.stripColor(oldFormat));
                     } else {
                         try {
                             fancy.send(recipient);

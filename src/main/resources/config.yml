@@ -40,6 +40,9 @@ chatSettings:
   # you don't want the TEXT channel sending its respective messages,
   # you should disable the message by setting the message to "" (empty)
   handler: TEXT
+  # This allows you to specify whether or not messages sent to the console
+  # should be stripped of their color. Default: true.
+  stripColorsForConsole: true
 
 # Configuration options for various settings specific to auctions
 # ie. times, bid increments, etc.
