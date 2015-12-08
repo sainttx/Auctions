@@ -178,6 +178,11 @@ general:
   # is out of date. This value should not be modified. The plugin will
   # tell you in console whether or not your config is out of date.
   configurationVersion: 6
+  # This value allowed you to set the delay for when a players offline auction
+  # item is given back to them after logging in. This functionality allows the
+  # restoring of items after plugins such as PlayerSQL set a players inventory.
+  # Default: 20 ticks (20 ticks = 1 second).
+  offlineRewardTickDelay: 20
   # Whether or not to shorten times that are formatted through the utility
   # class. For example, this is the difference between times being shown as
   # "5 minutes 5 seconds" vs. "5m, 5s". Default: false.
