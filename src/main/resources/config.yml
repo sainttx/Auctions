@@ -177,7 +177,7 @@ general:
   # A value that is used by the plugin to determine if your configuration
   # is out of date. This value should not be modified. The plugin will
   # tell you in console whether or not your config is out of date.
-  configurationVersion: 6
+  configurationVersion: 7
   # This value allowed you to set the delay for when a players offline auction
   # item is given back to them after logging in. This functionality allows the
   # restoring of items after plugins such as PlayerSQL set a players inventory.
