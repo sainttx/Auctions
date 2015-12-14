@@ -1,4 +1,4 @@
-name: ${project.artifactId}
+name: ${project.name}
 main: com.sainttx.auctions.AuctionPlugin
 version: ${project.version}
 description: ${project.description}

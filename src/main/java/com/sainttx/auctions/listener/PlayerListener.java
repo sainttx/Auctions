@@ -24,6 +24,7 @@ import com.sainttx.auctions.AuctionPlugin;
 import com.sainttx.auctions.api.Auction;
 import com.sainttx.auctions.api.Auctions;
 import com.sainttx.auctions.api.reward.Reward;
+import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -31,6 +32,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
+
+import java.util.UUID;
 
 /**
  * Monitors specific events for the auction plugin
@@ -50,14 +53,24 @@ public class PlayerListener implements Listener {
      */
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
-        Reward reward = plugin.getOfflineReward(player.getUniqueId());
+        final UUID uuid = player.getUniqueId();
+        final Reward reward = plugin.getOfflineReward(player.getUniqueId());
 
         if (reward != null) {
-            plugin.getLogger().info("Giving back saved items of offline player "
-                    + player.getName() + " (uuid: " + player.getUniqueId() + ")");
-            plugin.getMessageHandler().sendMessage(player, plugin.getMessage("messages.savedItemReturn"));
-            reward.giveItem(player);
-            plugin.removeOfflineReward(player.getUniqueId());
+            plugin.getServer().getScheduler().runTaskLater(plugin, new Runnable() {
+                @Override
+                public void run() {
+                    Player player = Bukkit.getPlayer(uuid);
+
+                    if (player != null) {
+                        plugin.getLogger().info("Giving back saved items of offline player "
+                                + player.getName() + " (uuid: " + player.getUniqueId() + ")");
+                        plugin.getMessageHandler().sendMessage(player, plugin.getMessage("messages.savedItemReturn"));
+                        reward.giveItem(player);
+                        plugin.removeOfflineReward(player.getUniqueId());
+                    }
+                }
+            }, plugin.getConfig().getLong("general.offlineRewardTickDelay"));
         }
     }
 
