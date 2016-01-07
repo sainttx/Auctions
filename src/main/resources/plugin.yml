@@ -99,7 +99,7 @@ permissions:
     default: op
   auctions.command.bid:
     description: Gives a player permission to bid on auctions
-    default: true
+    default: op
   auctions.command.cancel:
     description: Gives a player permission to cancel their own auction
     default: op
@@ -108,25 +108,25 @@ permissions:
     default: op
   auctions.command.ignore:
     description: Gives a player permission to ignore broadcasts from the plugin
-    default: true
+    default: op
   auctions.command.impound:
     description: Gives a player permission to impound any auction
     default: op
   auctions.command.info:
     description: Gives a player permission to view information about the current ongoing auction
-    default: true
+    default: op
   auctions.command.queue:
     description: Gives a player permission to view auctions that have been placed in queue
-    default: true
+    default: op
   auctions.command.reload:
     description: Gives a player permission to reload the auctions configuration file
     default: op
   auctions.command.spam:
     description: Gives a player permission to toggle spammy messages
-    default: true
+    default: op
   auctions.command.start:
     description: Gives a player permission to start auctions
-    default: true
+    default: op
   auctions.command.toggle:
     description: Gives a player permission to toggle the plugins auction status
     default: op
