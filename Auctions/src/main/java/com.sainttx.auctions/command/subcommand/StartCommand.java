@@ -22,13 +22,12 @@ package com.sainttx.auctions.command.subcommand;
 
 import com.sainttx.auctions.AuctionPluginImpl;
 import com.sainttx.auctions.api.Auction;
-import com.sainttx.auctions.api.AuctionType;
-import com.sainttx.auctions.api.Auctions;
 import com.sainttx.auctions.api.event.AuctionCreateEvent;
 import com.sainttx.auctions.api.messages.MessageHandler;
 import com.sainttx.auctions.api.reward.ItemReward;
 import com.sainttx.auctions.api.reward.Reward;
 import com.sainttx.auctions.command.AuctionSubCommand;
+import com.sainttx.auctions.structure.auction.StandardAuction;
 import com.sainttx.auctions.structure.module.AntiSnipeModule;
 import com.sainttx.auctions.structure.module.AutoWinModule;
 import com.sainttx.auctions.util.AuctionUtil;
@@ -81,13 +80,7 @@ public class StartCommand extends AuctionSubCommand {
                     && !player.hasPermission("auctions.bypass.general.creative")) {
                 handler.sendMessage(player, plugin.getMessage("messages.error.creativeNotAllowed"));
             } else {
-                Auction.Builder builder;
-
-                if (cmd.getName().equals("sealedauction")) {
-                    builder = Auctions.getAuctionBuilder(plugin, AuctionType.SEALED);
-                } else {
-                    builder = Auctions.getAuctionBuilder(plugin, AuctionType.STANDARD);
-                }
+                Auction.Builder builder = new StandardAuction.StandardAuctionBuilder(plugin);
 
                 int amount; // the amount of items to auction
                 double price; // the starting cost
