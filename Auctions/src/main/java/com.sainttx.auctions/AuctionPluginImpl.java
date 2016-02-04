@@ -69,7 +69,7 @@ public class AuctionPluginImpl extends JavaPlugin implements com.sainttx.auction
     // Offline items
     private final File offlineFile = new File(getDataFolder(), "offline.yml");
     private YamlConfiguration offlineConfiguration;
-    private Map<UUID, Reward> offlineRewardCache = new HashMap<UUID, Reward>();
+    private Map<UUID, Reward> offlineRewardCache = new HashMap<>();
 
     @Override
     public void onEnable() {
@@ -77,14 +77,12 @@ public class AuctionPluginImpl extends JavaPlugin implements com.sainttx.auction
         checkOutdatedConfig();
 
         // Set the economy in the next tick so that all plugins are loaded
-        Bukkit.getScheduler().runTask(this, new Runnable() {
-            public void run() {
-                try {
-                    economy = getServer().getServicesManager().getRegistration(Economy.class).getProvider();
-                } catch (Throwable t) {
-                    getLogger().log(Level.SEVERE, "failed to find an economy provider, disabling...");
-                    getServer().getPluginManager().disablePlugin(AuctionPluginImpl.this);
-                }
+        Bukkit.getScheduler().runTask(this, () -> {
+            try {
+                economy = getServer().getServicesManager().getRegistration(Economy.class).getProvider();
+            } catch (Throwable t) {
+                getLogger().log(Level.SEVERE, "failed to find an economy provider, disabling...");
+                getServer().getPluginManager().disablePlugin(AuctionPluginImpl.this);
             }
         });
 
@@ -185,11 +183,9 @@ public class AuctionPluginImpl extends JavaPlugin implements com.sainttx.auction
                     getLogger().info("Hey! Your configuration is out of date.");
                     getLogger().info("Here's what your config is missing:");
 
-                    for (String key : def.getKeys(true)) {
-                        if (!curr.contains(key)) {
-                            getLogger().info("  - Missing path \"" + key + "\"");
-                        }
-                    }
+                    def.getKeys(true).stream()
+                            .filter(key -> !curr.contains(key))
+                            .forEach(key -> getLogger().info("  - Missing path \"" + key + "\""));
 
                     getLogger().info("That's everything! You can check out the resource thread for the default values.");
                 }

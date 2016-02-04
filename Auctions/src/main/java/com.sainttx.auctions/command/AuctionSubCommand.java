@@ -33,7 +33,7 @@ import java.util.Set;
 public abstract class AuctionSubCommand implements CommandExecutor {
 
     protected final AuctionPluginImpl plugin;
-    private Set<String> aliases = new HashSet<String>();
+    private Set<String> aliases = new HashSet<>();
     private String permission;
 
     public AuctionSubCommand(AuctionPluginImpl plugin, String permission, String... aliases) {

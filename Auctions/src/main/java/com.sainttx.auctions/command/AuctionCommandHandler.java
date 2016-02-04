@@ -40,7 +40,7 @@ import java.util.Set;
 public class AuctionCommandHandler implements CommandExecutor, Listener {
 
     private AuctionPluginImpl plugin;
-    private Set<AuctionSubCommand> commands = new HashSet<AuctionSubCommand>();
+    private Set<AuctionSubCommand> commands = new HashSet<>();
 
     /**
      * Constructor. Initializes all subcommands.

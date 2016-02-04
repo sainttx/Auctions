@@ -43,7 +43,7 @@ public abstract class AbstractAuction implements Auction {
     // Instance
     protected AuctionPluginImpl plugin;
     protected AuctionType type;
-    protected Collection<AuctionModule> modules = new HashSet<AuctionModule>();
+    protected Collection<AuctionModule> modules = new HashSet<>();
 
     // Auction owner information
     protected UUID ownerUUID;
@@ -153,7 +153,7 @@ public abstract class AbstractAuction implements Auction {
 
     @Override
     public Collection<AuctionModule> getModules() {
-        return new HashSet<AuctionModule>(modules);
+        return new HashSet<>(modules);
     }
 
     @Override

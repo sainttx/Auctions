@@ -54,9 +54,9 @@ import java.util.logging.Level;
 public class TextualMessageHandler implements MessageHandler, SpammyMessagePreventer {
 
     MessageFormatter formatter;
-    Set<UUID> ignoring = new HashSet<UUID>();
+    Set<UUID> ignoring = new HashSet<>();
     protected final AuctionPluginImpl plugin;
-    private Set<UUID> ignoringBids = new HashSet<UUID>();
+    private Set<UUID> ignoringBids = new HashSet<>();
 
     public TextualMessageHandler(AuctionPluginImpl plugin) {
         this.plugin = plugin;

@@ -56,18 +56,15 @@ public class PlayerListener implements Listener {
         final Reward reward = plugin.getOfflineReward(player.getUniqueId());
 
         if (reward != null) {
-            plugin.getServer().getScheduler().runTaskLater(plugin, new Runnable() {
-                @Override
-                public void run() {
-                    Player player = Bukkit.getPlayer(uuid);
+            plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
+                Player player1 = Bukkit.getPlayer(uuid);
 
-                    if (player != null) {
-                        plugin.getLogger().info("Giving back saved items of offline player "
-                                + player.getName() + " (uuid: " + player.getUniqueId() + ")");
-                        plugin.getMessageHandler().sendMessage(player, plugin.getMessage("messages.savedItemReturn"));
-                        reward.giveItem(player);
-                        plugin.removeOfflineReward(player.getUniqueId());
-                    }
+                if (player1 != null) {
+                    plugin.getLogger().info("Giving back saved items of offline player "
+                            + player1.getName() + " (uuid: " + player1.getUniqueId() + ")");
+                    plugin.getMessageHandler().sendMessage(player1, plugin.getMessage("messages.savedItemReturn"));
+                    reward.giveItem(player1);
+                    plugin.removeOfflineReward(player1.getUniqueId());
                 }
             }, plugin.getConfig().getLong("general.offlineRewardTickDelay"));
         }

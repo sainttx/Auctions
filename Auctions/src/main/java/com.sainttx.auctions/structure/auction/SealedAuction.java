@@ -39,8 +39,8 @@ import java.util.UUID;
  */
 public class SealedAuction extends DefaultAuction {
 
-    private Map<UUID, Double> currentBids = new HashMap<UUID, Double>();
-    private Map<UUID, Integer> amountOfBids = new HashMap<UUID, Integer>();
+    private Map<UUID, Double> currentBids = new HashMap<>();
+    private Map<UUID, Integer> amountOfBids = new HashMap<>();
 
     /**
      * Creates an Auction
@@ -116,11 +116,9 @@ public class SealedAuction extends DefaultAuction {
                 plugin.getEconomy().withdrawPlayer(player, raiseAmount);
 
                 // Trigger modules
-                for (AuctionModule module : modules) {
-                    if (module.canTrigger()) {
-                        module.trigger();
-                    }
-                }
+                modules.stream()
+                        .filter(AuctionModule::canTrigger)
+                        .forEach(AuctionModule::trigger);
             }
         }
 
@@ -133,14 +131,14 @@ public class SealedAuction extends DefaultAuction {
 
         // Return all money except for top bidder
         if (getTopBidder() != null) {
-            for (Map.Entry<UUID, Double> bidder : currentBids.entrySet()) {
-                if (!bidder.getKey().equals(getTopBidder())) {
-                    OfflinePlayer player = Bukkit.getOfflinePlayer(bidder.getKey());
-                    double bid = bidder.getValue();
+            currentBids.entrySet().stream()
+                    .filter(bidder -> !bidder.getKey().equals(getTopBidder()))
+                    .forEach(bidder -> {
+                        OfflinePlayer player = Bukkit.getOfflinePlayer(bidder.getKey());
+                        double bid = bidder.getValue();
 
-                    plugin.getEconomy().depositPlayer(player, bid);
-                }
-            }
+                        plugin.getEconomy().depositPlayer(player, bid);
+                    });
         }
     }
 

@@ -31,6 +31,7 @@ import org.bukkit.entity.Player;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Sends messages to all players inside a specific Herochat channel
@@ -76,7 +77,7 @@ public class HerochatGroup implements MessageRecipientGroup {
      * @return all participants of the channel
      */
     public Set<Player> getChannelPlayers(String channel) {
-        Set<Player> players = new HashSet<Player>();
+        Set<Player> players = new HashSet<>();
 
         if (!isValidChannel(channel)) {
             plugin.getLogger().info("\"" + channel + "\" is not a valid channel, sending message to nobody.");
@@ -86,9 +87,9 @@ public class HerochatGroup implements MessageRecipientGroup {
         Channel ch = Herochat.getChannelManager().getChannel(channel);
         Set<Chatter> members = ch.getMembers();
 
-        for (Chatter c : members) {
-            players.add(c.getPlayer());
-        }
+        players.addAll(
+                members.stream().map(Chatter::getPlayer).collect(Collectors.toList())
+        );
 
         return players;
     }

@@ -39,8 +39,8 @@ public class AuctionManagerImpl implements AuctionManager {
     // Auctions information
     private final AuctionPluginImpl plugin;
     private Auction currentAuction;
-    private Set<MessageRecipientGroup> recipientGroups = new HashSet<MessageRecipientGroup>();
-    private Queue<Auction> auctionQueue = new ConcurrentLinkedQueue<Auction>();
+    private Set<MessageRecipientGroup> recipientGroups = new HashSet<>();
+    private Queue<Auction> auctionQueue = new ConcurrentLinkedQueue<>();
     private Set<Material> banned = EnumSet.noneOf(Material.class);
     private MessageHandler handler;
     private boolean disabled;

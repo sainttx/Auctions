@@ -26,7 +26,6 @@ import com.sainttx.auctions.structure.messages.actionbar.ActionBarObject;
 import com.sainttx.auctions.structure.messages.actionbar.ActionBarObjectv1_8_R1;
 import com.sainttx.auctions.structure.messages.actionbar.ActionBarObjectv1_8_R3;
 import com.sainttx.auctions.util.ReflectionUtil;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 /**
@@ -57,11 +56,10 @@ public class ActionBarMessageHandler extends TextualMessageHandler {
         if (!message.isEmpty()) {
             base.setTitle(message);
 
-            for (CommandSender recipient : getAllRecipients()) {
-                if (recipient instanceof Player && !isIgnoring(recipient)) {
-                    base.send((Player) recipient);
-                }
-            }
+            getAllRecipients().stream()
+                    .filter(recipient -> recipient instanceof Player
+                            && !isIgnoring(recipient))
+                    .forEach(recipient -> base.send((Player) recipient));
         }
     }
 }
