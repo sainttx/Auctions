@@ -130,24 +130,6 @@ public class ReflectionUtil {
     }
 
     /**
-     * Gets an Enum value from a class
-     *
-     * @param clazz The enum class
-     * @param value The value of the enum
-     * @return The enum object
-     */
-    public static Object getEnumerateFromClass(Class<?> clazz, String value) {
-        Method valueOfMethod = getMethod(clazz, "valueOf", String.class);
-        try {
-            return valueOfMethod.invoke(null, value);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-
-        return null;
-    }
-
-    /**
      * Get a method from a class that has the specific paramaters
      *
      * @param clazz      The class we are searching
@@ -207,40 +189,6 @@ public class ReflectionUtil {
             fields.put(fieldName, null);
             loadedFields.put(clazz, fields);
             return null;
-        }
-    }
-
-
-    /**
-     * A utility class that will send a player the PacketPlayOutCamera packet
-     * to put them into spectate mode of a player. The player will not be able to
-     * get out of the spectator mode because the server won't detect them and won't
-     * send the packet to fix their view.
-     *
-     * @param player The player who will be spectating
-     * @param target The target that will be spectated
-     */
-    public static void makePlayerSpectateEntity(Player player, Entity target) {
-        try {
-            // Get the NMS player and the NMS target
-            Method playerHandle = getMethod(player.getClass(), "getHandle");
-            Object nmsPlayer = playerHandle.invoke(player);
-
-            Method targetHandle = getMethod(target.getClass(), "getHandle");
-            Object nmsTargetEntity = targetHandle.invoke(target);
-
-            /* The following method is the method that sets the entity as the players
-            'spectatee' and will send the PacketPlayOutCamera method. The only issue
-            is that the Player will likely be able to dismount the entity. This issue can be
-            avoided by listening to PlayerSneakEvent and cancelling the event if certain
-            criteria are met (ie. if the player is in GameMode.SPECTATE, etc).
-            This method name is currently "e" inside EntityPlayer.class (found around) line 1020
-            and is likely to change whenever a major server version update takes place. */
-            Method setEntityAsPassengerMethod = getMethod(nmsPlayer.getClass(), "e", getNMSClass("Entity"));
-            setEntityAsPassengerMethod.invoke(nmsPlayer, nmsTargetEntity);
-        } catch (Exception e) {
-            Bukkit.getLogger().log(Level.SEVERE, "Failed to make player spectate entity", e);
-            e.printStackTrace();
         }
     }
 }
