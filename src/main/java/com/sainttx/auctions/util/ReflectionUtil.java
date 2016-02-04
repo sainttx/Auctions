@@ -21,7 +21,6 @@
 package com.sainttx.auctions.util;
 
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
 import java.lang.reflect.Constructor;
@@ -29,7 +28,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
 
 public class ReflectionUtil {
 

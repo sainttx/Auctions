@@ -22,7 +22,6 @@ package com.sainttx.auctions.structure.module;
 
 import com.sainttx.auctions.AuctionPlugin;
 import com.sainttx.auctions.api.Auction;
-import com.sainttx.auctions.api.Auctions;
 import com.sainttx.auctions.api.module.AuctionModule;
 
 /**

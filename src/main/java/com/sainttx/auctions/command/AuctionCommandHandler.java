@@ -21,7 +21,6 @@
 package com.sainttx.auctions.command;
 
 import com.sainttx.auctions.AuctionPlugin;
-import com.sainttx.auctions.api.Auctions;
 import com.sainttx.auctions.command.subcommand.*;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;

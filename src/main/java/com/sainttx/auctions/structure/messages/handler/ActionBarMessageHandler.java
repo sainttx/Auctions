@@ -28,7 +28,6 @@ import com.sainttx.auctions.structure.messages.actionbar.ActionBarObjectv1_8_R3;
 import com.sainttx.auctions.util.ReflectionUtil;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.java.JavaPlugin;
 
 /**
  * Created by Matthew on 10/05/2015.

@@ -23,7 +23,6 @@ package com.sainttx.auctions.command.subcommand;
 import com.sainttx.auctions.AuctionPlugin;
 import com.sainttx.auctions.api.Auction;
 import com.sainttx.auctions.api.AuctionManager;
-import com.sainttx.auctions.api.Auctions;
 import com.sainttx.auctions.command.AuctionSubCommand;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;

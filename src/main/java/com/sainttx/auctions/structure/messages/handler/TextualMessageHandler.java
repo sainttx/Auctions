@@ -24,7 +24,6 @@ import com.sainttx.auctions.AuctionPlugin;
 import com.sainttx.auctions.api.Auction;
 import com.sainttx.auctions.api.AuctionManager;
 import com.sainttx.auctions.api.AuctionType;
-import com.sainttx.auctions.api.Auctions;
 import com.sainttx.auctions.api.messages.MessageHandler;
 import com.sainttx.auctions.api.messages.MessageHandlerAddon.SpammyMessagePreventer;
 import com.sainttx.auctions.api.messages.MessageRecipientGroup;

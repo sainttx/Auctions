@@ -20,8 +20,6 @@
 
 package com.sainttx.auctions.util;
 
-import com.sainttx.auctions.AuctionPlugin;
-
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 

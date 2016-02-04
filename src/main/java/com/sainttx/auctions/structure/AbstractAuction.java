@@ -23,7 +23,6 @@ package com.sainttx.auctions.structure;
 import com.sainttx.auctions.AuctionPlugin;
 import com.sainttx.auctions.api.Auction;
 import com.sainttx.auctions.api.AuctionType;
-import com.sainttx.auctions.api.Auctions;
 import com.sainttx.auctions.api.event.AuctionStartEvent;
 import com.sainttx.auctions.api.messages.MessageHandler;
 import com.sainttx.auctions.api.module.AuctionModule;

@@ -21,11 +21,9 @@
 package com.sainttx.auctions.structure.messages.actionbar;
 
 import com.sainttx.auctions.AuctionPlugin;
-import com.sainttx.auctions.api.Auctions;
 import com.sainttx.auctions.structure.messages.handler.TextualMessageHandler;
 import com.sainttx.auctions.util.ReflectionUtil;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.java.JavaPlugin;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
