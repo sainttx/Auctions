@@ -36,7 +36,7 @@ public class AuctionAddTimeEvent extends AuctionEvent implements Cancellable {
     /**
      * Created when an anti snipe module is attempting to add time to an auction
      *
-     * @param auction      the affected auction
+     * @param auction the affected auction
      * @param secondsToAdd the number of seconds to add
      */
     public AuctionAddTimeEvent(final Auction auction, int secondsToAdd) {

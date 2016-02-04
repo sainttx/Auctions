@@ -312,7 +312,7 @@ public class AuctionPlugin extends JavaPlugin {
      * Saves a players auctioned reward to file if the plugin was unable
      * to return it
      *
-     * @param uuid   The ID of a player
+     * @param uuid The ID of a player
      * @param reward The reward that was auctioned
      */
     public void saveOfflinePlayer(UUID uuid, Reward reward) {

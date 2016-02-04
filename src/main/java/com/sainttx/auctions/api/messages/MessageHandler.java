@@ -34,7 +34,7 @@ public interface MessageHandler {
      * Broadcasts a message to all recipients that are listening
      *
      * @param message the message to send
-     * @param force   bypass auction ignore status
+     * @param force bypass auction ignore status
      */
     void broadcast(String message, boolean force);
 
@@ -43,7 +43,7 @@ public interface MessageHandler {
      *
      * @param message the message to send
      * @param auction the auction to format the message with
-     * @param force   bypass auction ignore status
+     * @param force bypass auction ignore status
      */
     void broadcast(String message, Auction auction, boolean force);
 
@@ -51,7 +51,7 @@ public interface MessageHandler {
      * Sends a message to a recipient
      *
      * @param recipient the receiver of the message
-     * @param message   the message to send
+     * @param message the message to send
      */
     void sendMessage(CommandSender recipient, String message);
 
@@ -59,8 +59,8 @@ public interface MessageHandler {
      * Sends a message to a recipient
      *
      * @param recipient the receiver of the message
-     * @param message   the message to send
-     * @param auction   the auction to format the message with
+     * @param message the message to send
+     * @param auction the auction to format the message with
      */
     void sendMessage(CommandSender recipient, String message, Auction auction);
 
@@ -68,7 +68,7 @@ public interface MessageHandler {
      * Sends an auctions information to a recipient
      *
      * @param recipient the recipient of the message
-     * @param auction   the auction to give information about
+     * @param auction the auction to give information about
      */
     void sendAuctionInformation(CommandSender recipient, Auction auction);
 

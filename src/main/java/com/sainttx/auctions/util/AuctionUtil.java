@@ -32,7 +32,7 @@ public class AuctionUtil {
     /**
      * Gets the amount of slots available for a particular item
      *
-     * @param inv  the inventory to search
+     * @param inv the inventory to search
      * @param base the item to find slots for
      * @return the amount of items that {@link Inventory#addItem(ItemStack...)}
      * will be able to successfully put into the inventory
@@ -58,7 +58,7 @@ public class AuctionUtil {
     /**
      * Gets the amount of a specific item inside an inventory
      *
-     * @param inv  the inventory to search
+     * @param inv the inventory to search
      * @param base the item to search for
      * @return the amount of items that match {@link ItemStack#isSimilar(ItemStack)}
      * with the base

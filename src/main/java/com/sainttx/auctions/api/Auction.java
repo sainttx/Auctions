@@ -123,7 +123,7 @@ public interface Auction {
      * Ends the auction as if the timer ran out
      *
      * @param broadcast whether or not to broadcast any
-     *                  information about this auction ending
+     * information about this auction ending
      */
     void end(boolean broadcast);
 
@@ -175,7 +175,7 @@ public interface Auction {
      * Handles the event that a player places a bid.
      *
      * @param player the player
-     * @param bid    the amount bid by the player
+     * @param bid the amount bid by the player
      */
     void placeBid(Player player, double bid);
 

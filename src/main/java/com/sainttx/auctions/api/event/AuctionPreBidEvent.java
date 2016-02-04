@@ -39,8 +39,8 @@ public class AuctionPreBidEvent extends AuctionEvent implements Cancellable {
      * Called when a player attempts to bid on an auction with a command
      *
      * @param auction the affected auction
-     * @param who     the bidding player
-     * @param amount  the amount that the player is bidding
+     * @param who the bidding player
+     * @param amount the amount that the player is bidding
      */
     public AuctionPreBidEvent(final Auction auction, Player who, double amount) {
         super(auction);

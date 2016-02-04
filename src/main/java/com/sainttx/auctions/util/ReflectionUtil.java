@@ -115,7 +115,7 @@ public class ReflectionUtil {
     /**
      * Get a classes constructor
      *
-     * @param clazz  The constructor class
+     * @param clazz The constructor class
      * @param params The parameters in the constructor
      * @return The constructor object
      */
@@ -130,9 +130,9 @@ public class ReflectionUtil {
     /**
      * Get a method from a class that has the specific paramaters
      *
-     * @param clazz      The class we are searching
+     * @param clazz The class we are searching
      * @param methodName The name of the method
-     * @param params     Any parameters that the method has
+     * @param params Any parameters that the method has
      * @return The method with appropriate paramaters
      */
     public static Method getMethod(Class<?> clazz, String methodName, Class<?>... params) {
@@ -162,7 +162,7 @@ public class ReflectionUtil {
     /**
      * Get a field with a particular name from a class
      *
-     * @param clazz     The class
+     * @param clazz The class
      * @param fieldName The name of the field
      * @return The field object
      */

@@ -95,7 +95,7 @@ public class TimeUtil {
     /**
      * Return a String representation of time left
      *
-     * @param timeLeft  Time left in seconds
+     * @param timeLeft Time left in seconds
      * @param shortened whether or not to shorten the time
      * @return String the time left
      */
