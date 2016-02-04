@@ -42,6 +42,11 @@ public class ReflectionUtil {
     private static Map<String, Class<?>> loadedNMSClasses = new HashMap<String, Class<?>>();
 
     /*
+     * Cache of OBS classes that we've searched for
+     */
+    private static Map<String, Class<?>> loadedOBCClasses = new HashMap<String, Class<?>>();
+
+    /*
      * Cache of methods that we've found in particular classes
      */
     private static Map<Class<?>, Map<String, Method>> loadedMethods = new HashMap<Class<?>, Map<String, Method>>();
@@ -87,6 +92,32 @@ public class ReflectionUtil {
         }
 
         loadedNMSClasses.put(nmsClassName, clazz);
+        return clazz;
+    }
+
+    /**
+     * Get a class from the org.bukkit.craftbukkit package
+     *
+     * @param obcClassName the path to the class
+     * @return the found class at the specified path
+     */
+    public synchronized static Class<?> getOBCClass(String obcClassName) {
+        if (loadedOBCClasses.containsKey(obcClassName)) {
+            return loadedOBCClasses.get(obcClassName);
+        }
+
+        String clazzName = "org.bukkit.craftbukkit." + getVersion() + obcClassName;
+        Class<?> clazz;
+
+        try {
+            clazz = Class.forName(clazzName);
+        } catch (Throwable t) {
+            t.printStackTrace();
+            loadedOBCClasses.put(obcClassName, null);
+            return null;
+        }
+
+        loadedOBCClasses.put(obcClassName, clazz);
         return clazz;
     }
 

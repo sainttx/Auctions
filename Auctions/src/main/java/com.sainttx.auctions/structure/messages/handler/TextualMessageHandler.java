@@ -30,29 +30,28 @@ import com.sainttx.auctions.api.messages.MessageRecipientGroup;
 import com.sainttx.auctions.api.reward.ItemReward;
 import com.sainttx.auctions.api.reward.Reward;
 import com.sainttx.auctions.misc.DoubleConsts;
+import com.sainttx.auctions.util.ReflectionUtil;
 import com.sainttx.auctions.util.TimeUtil;
-import mkremins.fanciful.FancyMessage;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.lang.reflect.Method;
 import java.text.NumberFormat;
 import java.util.*;
 import java.util.logging.Level;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * A base message handler that handles message sending
  */
 public class TextualMessageHandler implements MessageHandler, SpammyMessagePreventer {
-
-    public static final Pattern COLOR_FINDER_PATTERN = Pattern.compile(ChatColor.COLOR_CHAR + "([a-f0-9klmnor])");
 
     MessageFormatter formatter;
     Set<UUID> ignoring = new HashSet<UUID>();
@@ -76,7 +75,7 @@ public class TextualMessageHandler implements MessageHandler, SpammyMessagePreve
 
         for (String msg : messages) {
             if (!msg.isEmpty()) {
-                FancyMessage fancy = createMessage(auction, msg);
+                BaseComponent[] fancy = createMessage(msg, auction);
 
                 for (CommandSender recipient : getAllRecipients()) {
                     if (recipient == null || isIgnoring((recipient))) {
@@ -86,11 +85,12 @@ public class TextualMessageHandler implements MessageHandler, SpammyMessagePreve
                         continue;
                     } else if (recipient instanceof ConsoleCommandSender
                             && plugin.getConfig().getBoolean("chatSettings.stripColorsForConsole", true)) {
-                        String oldFormat = fancy.toOldMessageFormat();
+                        String oldFormat = TextComponent.toLegacyText(fancy);
                         recipient.sendMessage(ChatColor.stripColor(oldFormat));
                     } else {
                         try {
-                            fancy.send(recipient);
+                            Player player = (Player) recipient;
+                            player.spigot().sendMessage(fancy);
                         } catch (Exception ex) {
                             plugin.getLogger().log(Level.SEVERE, "failed to send message to recipient \"" + recipient.getName() + "\"");
                             continue;
@@ -130,12 +130,12 @@ public class TextualMessageHandler implements MessageHandler, SpammyMessagePreve
 
         for (String msg : messages) {
             if (!msg.isEmpty() && recipient != null) {
-                FancyMessage fancy = createMessage(auction, msg);
-                try {
-                    fancy.send(recipient);
-                } catch (Exception ex) {
-                    plugin.getLogger().log(Level.SEVERE, "failed to send message to recipient \"" + recipient.getName() + "\"");
-                    continue;
+                BaseComponent[] baseComponents = createMessage(msg, auction);
+                if (!(recipient instanceof Player)) {
+                    recipient.sendMessage(TextComponent.toLegacyText(baseComponents));
+                } else {
+                    Player player = (Player) recipient;
+                    player.spigot().sendMessage(baseComponents);
                 }
             }
         }
@@ -202,81 +202,74 @@ public class TextualMessageHandler implements MessageHandler, SpammyMessagePreve
     }
 
     /*
-     * A helper method that creates a FancyMessage to send to players
-     */
-    private FancyMessage createMessage(Auction auction, String message) {
-        FancyMessage fancy = new FancyMessage(ChatColor.WHITE.toString());
+         * Turns the message into BaseComponents using the ChatComponent API
+         */
+    private BaseComponent[] createMessage(String message, Auction auction) {
+        BaseComponent[] components = TextComponent.fromLegacyText(message);
 
-        if (!message.isEmpty()) {
-            String[] split = message.split(" ");
-            ChatColor current = ChatColor.WHITE;
-
-            for (String str : split) {
-                str = ChatColor.translateAlternateColorCodes('&', str); // Color the word
-                String currentColor = ChatColor.getLastColors(str);
-                current = ChatColor.getByChar(currentColor.isEmpty() ? current.getChar() : currentColor.charAt(1));
-
-                if (current == ChatColor.RESET) {
-                    current = ChatColor.WHITE;
-                }
-
-                if (str.contains("[item]") && auction != null) {
-                    String rewardName = getRewardName(auction.getReward());
+        for (BaseComponent component : components) {
+            if (component instanceof TextComponent) {
+                TextComponent textComponent = (TextComponent) component;
+                if (textComponent.getText().contains("[item]") && auction != null) {
+                    String rewardName = auction.getReward().getName();
                     String display = plugin.getMessage("messages.auctionFormattable.itemFormat");
-                    display = ChatColor.translateAlternateColorCodes('&',
-                            display.replace("[itemName]", rewardName)
-                                    .replace("[itemDisplayName]", getItemDisplayName(auction.getReward())));
+                    display = ChatColor.translateAlternateColorCodes('&', display.replace("[itemName]", rewardName));
 
-                    if (plugin.getConfig().getBoolean("general.stripItemDisplayNameColor", false)) {
-                        display = ChatColor.stripColor(display);
-                    }
-
-                    Set<ChatColor> colors = EnumSet.noneOf(ChatColor.class);
-                    Matcher matcher = COLOR_FINDER_PATTERN.matcher(display);
-
-                    while (matcher.find()) {
-                        char cc = matcher.group(1).charAt(0);
-                        colors.add(ChatColor.getByChar(cc));
-                    }
-
-                    fancy.then(display);
+                    textComponent.setText(textComponent.getText().replace("[item]", display));
 
                     if (auction.getReward() instanceof ItemReward) {
-                        ItemReward item = (ItemReward) auction.getReward();
-                        ItemStack tooltip = item.getItem().clone();
-                        if (tooltip.getItemMeta() instanceof BookMeta) {
-                            BookMeta meta = (BookMeta) tooltip.getItemMeta();
-                            meta.setPages();
-                            tooltip.setItemMeta(meta);
-                        }
-                        fancy.itemTooltip(tooltip);
-                    }
+                        ItemReward reward = (ItemReward) auction.getReward();
+                        ItemStack itemStack = reward.getItem();
+                        String itemJson = convertItemStackToJson(itemStack);
 
-                    for (ChatColor color : colors) {
-                        if (color == ChatColor.RESET) {
-                            color = ChatColor.WHITE;
-                        }
-                        if (color.isColor()) {
-                            fancy.color(color);
-                        } else {
-                            fancy.style(color);
-                        }
-                    }
-                } else {
-                    fancy.then(str);
+                        // Prepare a BaseComponent array with the itemJson as a text component
+                        BaseComponent[] hoverEventComponents = new BaseComponent[]{
+                                new TextComponent(itemJson) // The only element of the hover events basecomponents is the item json
+                        };
 
-                    if (current.isColor()) {
-                        fancy.color(current);
-                    } else {
-                        fancy.style(current);
+                        // Create the hover event
+                        HoverEvent event = new HoverEvent(HoverEvent.Action.SHOW_ITEM, hoverEventComponents);
+                        textComponent.setHoverEvent(event);
                     }
                 }
-
-                fancy.then(" "); // Add a space after every word
             }
         }
+        return components;
+    }
 
-        return fancy;
+
+    /**
+     * Converts an {@link org.bukkit.inventory.ItemStack} to a Json string
+     * for sending with {@link net.md_5.bungee.api.chat.BaseComponent}'s.
+     *
+     * @param itemStack the item to convert
+     * @return the Json string representation of the item
+     */
+    private String convertItemStackToJson(ItemStack itemStack) {
+        // ItemStack methods to get a net.minecraft.server.ItemStack object for serialization
+        Class<?> craftItemStackClazz = ReflectionUtil.getOBCClass("inventory.CraftItemStack");
+        Method asNMSCopyMethod = ReflectionUtil.getMethod(craftItemStackClazz, "asNMSCopy", ItemStack.class);
+
+        // NMS Method to serialize a net.minecraft.server.ItemStack to a valid Json string
+        Class<?> nmsItemStackClazz = ReflectionUtil.getNMSClass("ItemStack");
+        Class<?> nbtTagCompoundClazz = ReflectionUtil.getNMSClass("NBTTagCompound");
+        Method saveNmsItemStackMethod = ReflectionUtil.getMethod(nmsItemStackClazz, "save", nbtTagCompoundClazz);
+
+        Object nmsNbtTagCompoundObj; // This will just be an empty NBTTagCompound instance to invoke the saveNms method
+        Object nmsItemStackObj; // This is the net.minecraft.server.ItemStack object received from the asNMSCopy method
+        Object itemAsJsonObject; // This is the net.minecraft.server.ItemStack after being put through saveNmsItem method
+
+        try {
+            nmsNbtTagCompoundObj = nbtTagCompoundClazz.newInstance();
+            nmsItemStackObj = asNMSCopyMethod.invoke(null, itemStack);
+            itemAsJsonObject = saveNmsItemStackMethod.invoke(nmsItemStackObj, nmsNbtTagCompoundObj);
+        } catch (Throwable t) {
+            plugin.getLogger().log(Level.SEVERE, "failed to serialize itemstack to nms item", t);
+            return null;
+        }
+
+        // Return a string representation of the serialized object
+        return itemAsJsonObject.toString();
     }
 
     /*
