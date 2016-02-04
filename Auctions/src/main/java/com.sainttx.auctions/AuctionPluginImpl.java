@@ -174,11 +174,11 @@ public class AuctionPluginImpl extends JavaPlugin implements com.sainttx.auction
     @SuppressWarnings("deprecation")
     private void checkOutdatedConfig() {
         try {
-            Configuration def = YamlConfiguration.loadConfiguration(getResource("Auctions/src/main/resources/config.yml"));
+            Configuration def = YamlConfiguration.loadConfiguration(getResource("config.yml"));
             int version = def.getInt("general.configurationVersion");
 
             if (getConfig().getInt("general.configurationVersion") < version) {
-                File cfg = new File(getDataFolder(), "Auctions/src/main/resources/config.yml");
+                File cfg = new File(getDataFolder(), "config.yml");
                 YamlConfiguration curr = YamlConfiguration.loadConfiguration(cfg);
 
                 if (def.getKeys(true).size() > curr.getKeys(true).size()) {
@@ -369,15 +369,15 @@ public class AuctionPluginImpl extends JavaPlugin implements com.sainttx.auction
      * Loads the configuration
      */
     public void loadConfig() {
-        File names = new File(getDataFolder(), "Auctions/src/main/resources/items.yml");
-        File namesFile = new File(getDataFolder(), "Auctions/src/main/resources/items.yml");
+        File names = new File(getDataFolder(), "items.yml");
+        File namesFile = new File(getDataFolder(), "items.yml");
 
         // Save items file name
         if (!names.exists()) {
-            saveResource("Auctions/src/main/resources/items.yml", false);
+            saveResource("items.yml", false);
         }
         if (!namesFile.exists()) {
-            saveResource("Auctions/src/main/resources/items.yml", false);
+            saveResource("items.yml", false);
         }
 
         itemsFile = YamlConfiguration.loadConfiguration(namesFile);
