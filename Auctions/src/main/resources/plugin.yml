@@ -1,5 +1,5 @@
 name: ${project.name}
-main: com.sainttx.auctions.AuctionPluginImplImpl
+main: com.sainttx.auctions.AuctionPluginImpl
 version: ${project.version}
 description: ${project.description}
 authors: [ SainttX ]
