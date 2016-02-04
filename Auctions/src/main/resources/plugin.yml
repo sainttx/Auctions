@@ -1,0 +1,132 @@
+name: ${project.name}
+main: com.sainttx.auctions.AuctionPluginImplImpl
+version: ${project.version}
+description: ${project.description}
+authors: [ SainttX ]
+website: https://github.com/sainttx/Auctions
+
+depend: [Vault]
+softdepend: [Herochat, PlaceholderAPI]
+
+commands:
+  auction:
+    description: All commands for Auction
+    aliases: [auc, auctions]
+  sealedauction:
+    description: Command to start sealed auctions
+    aliases: [sauc, sauctions, sauction]
+  bid:
+    description: Bid on an ongoing auction
+    aliases: [b]
+    
+permissions:
+  auctions.*:
+    description: Gives access to all Auction commands
+    default: op
+    children:
+      auctions.bypass.*: true
+      auctions.command.*: true
+  auctions.bypass.*:
+    description: Gives a player access to all bypass permission nodes
+    default: op
+    children:
+      auctions.bypass.cancel.otherauctions: true
+      auctions.bypass.cancel.timer: true
+      auctions.bypass.end.otherauctions: true
+      auctions.bypass.general.bannedlore: true
+      auctions.bypass.general.bannedmaterial: true
+      auctions.bypass.general.blockedcommands: true
+      auctions.bypass.general.creative: true
+      auctions.bypass.general.damageditems: true
+      auctions.bypass.general.disabled: true
+      auctions.bypass.general.disabledworld: true
+      auctions.bypass.general.nameditems: true
+      auctions.bypass.start.maxprice: true
+      auctions.bypass.start.maxautowin: true
+  auctions.command.*:
+    description: Gives access to all auction sub commands
+    default: op
+    children:
+      auctions.command.bid: true
+      auctions.command.cancel: true
+      auctions.command.end: true
+      auctions.command.ignore: true
+      auctions.command.impound: true
+      auctions.command.info: true
+      auctions.command.queue: true
+      auctions.command.reload: true
+      auctions.command.spam: true
+      auctions.command.start: true
+      auctions.command.toggle: true
+  auctions.bypass.cancel.otherauctions:
+    description: Gives a player permission to cancel other players auctions
+    default: op
+  auctions.bypass.cancel.timer:
+    description: Gives a player permission to bypass timer restriction when cancelling auctions
+    default: op
+  auctions.bypass.end.otherauctions:
+    description: Gives a player permission to end other players auctions
+    default: op
+  auctions.bypass.general.bannedlore:
+    description: Gives a player permission to bypass banned lore restrictions
+    default: op
+  auctions.bypass.general.bannedmaterial:
+    description: Gives a player permission to bypass banned material restrictions
+    default: op
+  auctions.bypass.general.blockedcommands:
+    description: Gives a player permission to use blocked commands when auctioning
+    default: op
+  auctions.bypass.general.creative:
+    description: Gives a player permission to start auctions while in creative mode
+    default: op
+  auctions.bypass.general.damageditems:
+    description: Gives a player permission to bypass damaged item restrictions
+    default: op
+  auctions.bypass.general.disabled:
+    description: Gives a player permission to start auctions when the plugin is toggled off
+    default: op
+  auctions.bypass.general.disabledworld:
+    description: Gives a player permission to start, bid, and teleport in disabled worlds
+    default: op
+  auctions.bypass.general.nameditems:
+    description: Gives a player permission to bypass named item restrictions
+    default: op
+  auctions.bypass.start.maxprice:
+    description: Gives a player permission to bypass max start price restrictions
+    default: op
+  auctions.bypass.start.maxautowin:
+    description: Gives a player to bypass max autowin price restrictions
+    default: op
+  auctions.command.bid:
+    description: Gives a player permission to bid on auctions
+    default: op
+  auctions.command.cancel:
+    description: Gives a player permission to cancel their own auction
+    default: op
+  auctions.command.end:
+    description: Gives a player permission to end their own auction
+    default: op
+  auctions.command.ignore:
+    description: Gives a player permission to ignore broadcasts from the plugin
+    default: op
+  auctions.command.impound:
+    description: Gives a player permission to impound any auction
+    default: op
+  auctions.command.info:
+    description: Gives a player permission to view information about the current ongoing auction
+    default: op
+  auctions.command.queue:
+    description: Gives a player permission to view auctions that have been placed in queue
+    default: op
+  auctions.command.reload:
+    description: Gives a player permission to reload the auctions configuration file
+    default: op
+  auctions.command.spam:
+    description: Gives a player permission to toggle spammy messages
+    default: op
+  auctions.command.start:
+    description: Gives a player permission to start auctions
+    default: op
+  auctions.command.toggle:
+    description: Gives a player permission to toggle the plugins auction status
+    default: op
