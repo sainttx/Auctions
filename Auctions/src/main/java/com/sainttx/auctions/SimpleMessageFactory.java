@@ -194,6 +194,7 @@ public class SimpleMessageFactory implements MessageFactory {
      * @return a String with all auction placeholders replaced
      */
     public String replaceAuctionPlaceholders(String message, Auction auction) {
+        // TODO: Placeholder for enchantments, durability, various item information
         return message
                 // Format reward information placeholders
                 .replace("[itemName]", auction.getReward().getName())

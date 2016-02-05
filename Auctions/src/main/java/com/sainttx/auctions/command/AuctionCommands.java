@@ -23,6 +23,7 @@ package com.sainttx.auctions.command;
 import com.sainttx.auctions.api.Auction;
 import com.sainttx.auctions.api.AuctionManager;
 import com.sainttx.auctions.api.AuctionPlugin;
+import com.sainttx.auctions.api.MessageFactory;
 import com.sainttx.auctions.api.event.AuctionCreateEvent;
 import com.sainttx.auctions.api.event.AuctionPreBidEvent;
 import com.sainttx.auctions.api.messages.MessageHandler;
@@ -49,10 +50,12 @@ public class AuctionCommands {
 
     private final AuctionPlugin plugin;
     private final AuctionManager manager;
+    private final MessageFactory messageFactory;
 
     public AuctionCommands(final AuctionPlugin plugin) {
         this.plugin = plugin;
         this.manager = plugin.getManager();
+        this.messageFactory = plugin.getMessageFactory();
     }
 
     @Command(
@@ -64,7 +67,7 @@ public class AuctionCommands {
     public void impound(CommandSender sender, @Optional Auction auction) {
         MessageHandler handler = plugin.getManager().getMessageHandler();
 
-        if (!(sender instanceof Player)) {
+        if (!(sender instanceof Player)) { // TODO: Allow console to impound?
             sender.sendMessage("Only players can impound auctions");
         } else if (auction == null) {
             handler.sendMessage(sender, plugin.getMessage("messages.error.noCurrentAuction"));

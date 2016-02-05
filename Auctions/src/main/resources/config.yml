@@ -265,7 +265,7 @@ messages:
     # The actionbar message is sent along ALL broadcasts made by the plugin. If
     # you don't want duplicate messages being sent through chat, you'll have to
     # disable the specific message by setting them to nothing (ie. "").
-    actionBarMessage: "&e&lAUCTION: &f[ownername] || [itemamount] [itemName] || [time] || [topbiddername] ($[topbid]) || &e/auction info"
+    # actionBarMessage: "&e&lAUCTION: &f[ownername] || [itemamount] [itemName] || [time] || [topbiddername] ($[topbid]) || &e/auction info"
     antiSnipeAdd: "&e[Auctions] &f(Antisnipe) [snipetime] were added to the auction"
     autowin:  "&e[Auctions] &fThe buyout has been set to $[autowin]"
     bid: "&e[Auctions] &f[topbiddername] bid $[topbid] on &b[itemamount] [item]"
@@ -289,9 +289,9 @@ messages:
     # are as follows:
     # [bid]      - The current bid that a player just placed
     # [previous] - The last valid bid that a player placed
-    sealedAuction:
-      bid: "&e[Auctions] &fYou place a bid of $[bid]"
-      raise: "&e[Auctions] &fYou have raised your bid from $[previous] to $[bid]"
+    # sealedAuction:
+    #  bid: "&e[Auctions] &fYou place a bid of $[bid]"
+    #  raise: "&e[Auctions] &fYou have raised your bid from $[previous] to $[bid]"
 
   # Error messages are messages sent to players whenever they have failed
   # to define something correctly in their commands, or in other instances
@@ -307,13 +307,13 @@ messages:
     autowinTooHigh: "&cYour autowin amount is too high"
     biddingIncrementExceedsStart: "&cYour bidding increment cannot exceed your start price"
     bidOnOwnAuction: "&cYou cannot bid on your own auction"
-    bidSyntax: "&cUsage: /auction bid <amount>"
+    # bidSyntax: "&cUsage: /auction bid <amount>"
     bidTooLow: "&cYour bid was too low"
     cantAuctionBannedLore: "&cYou can't auction off this item as it contains banned lore"
     cantAuctionDamagedItems: "&cYou can't auction damaged items!"
     cantAuctionNamedItems: "&cYou can't auction off items that have a name"
     cantCancelNow: "&cYou can't cancel the auction at this point"
-    cantHideSpam: "&cThe current message handler does not allow for spammy message prevention"
+    # cantHideSpam: "&cThe current message handler does not allow for spammy message prevention"
     cantTeleportToDisabledWorld: "&cYou can't teleport into disabled auction worlds while auctioning or participating in an auction"
     cantUseCommandWhileAuctioning: "&cYou can't use this command while auctioning an item"
     cantUseCommandWhileQueued: "&cYou can't use this command while having an auction queued"
@@ -325,17 +325,17 @@ messages:
     insufficientPermissions: "&cYou don't have enough permissions to use this command"
     invalidBidIncrement: "&cYour bid increment was either too high or too low"
     invalidItemType: "&cYou are not allowed to auction this item"
-    invalidNumberEntered: "&cPlease enter a valid number"
+    # invalidNumberEntered: "&cPlease enter a valid number"
     noAuctionsInQueue: "&cThere are no auctions in the queue"
     noCurrentAuction: "&cThere is no active auction at this time"
     notEnoughOfItem: "&cYou don't have enough of that item"
     notYourAuction: "&cYou aren't able to modify other players auctions"
-    sealedAuctionHaveHigherBid: "&cYou have already placed a bid that is equal or greater than that amount"
-    sealedAuctionsDisabled: "&cSealed auctions are currently disabled"
-    sealedAuctionsMaxBidsReached: "&cYou have reached the maximum number of bids allowed per player on this auction"
+    # sealedAuctionHaveHigherBid: "&cYou have already placed a bid that is equal or greater than that amount"
+    # sealedAuctionsDisabled: "&cSealed auctions are currently disabled"
+    # sealedAuctionsMaxBidsReached: "&cYou have reached the maximum number of bids allowed per player on this auction"
     startPriceTooHigh: "&cYour starting price is too high"
     startPriceTooLow: "&cYour starting price is too low"
-    startSyntax: "&cUsage: /auction start <amount|all> <price> [increment] [autowin]"
+    # startSyntax: "&cUsage: /auction start <amount|all> <price> [increment] [autowin]"
   # All other messages are just standard messages that are sent to
   # players. These messages have no placeholders available asides from
   # 'messages.bid', which has the [bid] placeholder.
@@ -354,16 +354,16 @@ messages:
   pluginReloaded: "&e[Auctions] &fThe auctions plugin has been &areloaded"
   queueInfoHeader: "&e[Auctions] &fCurrent auctions in the queue:"
   savedItemReturn: "&e[Auctions] &fYour auction winnings were saved and have been returned"
-  helpMenu:
-  - "&e&m----&e[ &fAuctions Help Menu &e]&m-----"
-  - "&e/auction start &7<amount> <price> [increment] [autowin] &7- &fStart an auction"
-  - "&e/auction info &7- &fDisplays current auction information"
-  - "&e/auction bid &7<amount> &e- &fBid on an auction"
-  - "&e/auction end &7- &fEnds the current auction"
-  - "&e/auction cancel &7- &fCancels the current auction"
-  - "&e/auction impound &7- &fImpounds the current auctions contents"
-  - "&e/auction ignore &7- &fIgnore plugin messages"
-  - "&e/auction spam &7- &fIgnore only the spammy messages"
-  - "&e/auction queue &7- &fView all queued auctions"
-  - "&e/auction toggle &7- &fToggles the plugins disabled/disabled status"
-  - "&e/auction reload &7- &fReload auction configuration"
+  #helpMenu:
+  #- "&e&m----&e[ &fAuctions Help Menu &e]&m-----"
+  #- "&e/auction start &7<amount> <price> [increment] [autowin] &7- &fStart an auction"
+  #- "&e/auction info &7- &fDisplays current auction information"
+  #- "&e/auction bid &7<amount> &e- &fBid on an auction"
+  #- "&e/auction end &7- &fEnds the current auction"
+  #- "&e/auction cancel &7- &fCancels the current auction"
+  #- "&e/auction impound &7- &fImpounds the current auctions contents"
+  #- "&e/auction ignore &7- &fIgnore plugin messages"
+  #- "&e/auction spam &7- &fIgnore only the spammy messages"
+  #- "&e/auction queue &7- &fView all queued auctions"
+  #- "&e/auction toggle &7- &fToggles the plugins disabled/disabled status"
+  #- "&e/auction reload &7- &fReload auction configuration"
