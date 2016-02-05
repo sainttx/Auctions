@@ -20,8 +20,8 @@
 
 package com.sainttx.auctions.api;
 
-import com.sainttx.auctions.api.messages.MessageHandler;
 import com.sainttx.auctions.api.messages.MessageRecipientGroup;
+import com.sainttx.auctions.api.messages.MessageHandler;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 

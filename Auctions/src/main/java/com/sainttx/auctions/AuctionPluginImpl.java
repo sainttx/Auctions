@@ -20,6 +20,7 @@
 
 package com.sainttx.auctions;
 
+import com.sainttx.auctions.api.AuctionPlugin;
 import com.google.common.base.Joiner;
 import com.sainttx.auctions.api.AuctionManager;
 import com.sainttx.auctions.api.Auctions;
@@ -74,7 +75,7 @@ import java.util.stream.Collectors;
 /**
  * The auction plugin class
  */
-public class AuctionPluginImpl extends JavaPlugin implements com.sainttx.auctions.api.AuctionPlugin {
+public class AuctionPluginImpl extends JavaPlugin implements AuctionPlugin {
 
     // Instance
     private AuctionManager manager;
