@@ -33,7 +33,6 @@ import com.sainttx.auctions.api.reward.Reward;
 import com.sainttx.auctions.structure.auction.StandardAuction;
 import com.sainttx.auctions.structure.module.AntiSnipeModule;
 import com.sainttx.auctions.structure.module.AutoWinModule;
-import com.sainttx.auctions.util.AuctionUtil;
 import com.sk89q.intake.Command;
 import com.sk89q.intake.Require;
 import com.sk89q.intake.parametric.annotation.Optional;
@@ -346,7 +345,7 @@ public class AuctionCommands {
                             && item.getType().getMaxDurability() > 0 && item.getDurability() > 0
                             && !plugin.getConfig().getBoolean("auctionSettings.canAuctionDamagedItems", true)) {
                         handler.sendMessage(player, plugin.getMessage("messages.error.cantAuctionDamagedItems")); // can't auction damaged
-                    } else if (AuctionUtil.getAmountItems(player.getInventory(), item) < numItems) {
+                    } else if (!player.getInventory().containsAtLeast(item, numItems)) {
                         handler.sendMessage(player, plugin.getMessage("messages.error.notEnoughOfItem"));
                     } else if (!player.hasPermission("auctions.bypass.general.nameditems")
                             && !plugin.getConfig().getBoolean("auctionSettings.canAuctionNamedItems", true)
