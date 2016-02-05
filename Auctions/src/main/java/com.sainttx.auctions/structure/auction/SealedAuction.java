@@ -22,6 +22,7 @@ package com.sainttx.auctions.structure.auction;
 
 import com.sainttx.auctions.AuctionPluginImpl;
 import com.sainttx.auctions.api.Auction;
+import com.sainttx.auctions.api.AuctionPlugin;
 import com.sainttx.auctions.api.AuctionType;
 import com.sainttx.auctions.api.module.AuctionModule;
 import com.sainttx.auctions.api.reward.Reward;
@@ -47,7 +48,7 @@ public class SealedAuction extends DefaultAuction {
      *
      * @param plugin the auction plugin instance
      */
-    private SealedAuction(AuctionPluginImpl plugin, UUID ownerUUID, String ownerName,
+    private SealedAuction(AuctionPlugin plugin, UUID ownerUUID, String ownerName,
                           double topBid, Reward reward, double autowin, double bidIncrement, int timeLeft) {
         super(plugin, AuctionType.SEALED);
         this.ownerUUID = ownerUUID;

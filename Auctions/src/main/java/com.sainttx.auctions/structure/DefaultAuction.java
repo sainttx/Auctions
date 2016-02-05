@@ -20,7 +20,7 @@
 
 package com.sainttx.auctions.structure;
 
-import com.sainttx.auctions.AuctionPluginImpl;
+import com.sainttx.auctions.api.AuctionPlugin;
 import com.sainttx.auctions.api.AuctionType;
 import com.sainttx.auctions.api.event.AuctionEndEvent;
 import com.sainttx.auctions.api.messages.MessageHandler;
@@ -37,7 +37,7 @@ import java.util.UUID;
  */
 public class DefaultAuction extends AbstractAuction {
 
-    public DefaultAuction(AuctionPluginImpl plugin, AuctionType type) {
+    public DefaultAuction(AuctionPlugin plugin, AuctionType type) {
         this.plugin = plugin;
         this.type = type;
     }
@@ -237,7 +237,7 @@ public class DefaultAuction extends AbstractAuction {
      */
     public static abstract class DefaultAuctionBuilder implements Builder {
 
-        protected AuctionPluginImpl plugin;
+        protected AuctionPlugin plugin;
         protected double increment = -1;
         protected int time = -1;
         protected Reward reward;
@@ -246,7 +246,7 @@ public class DefaultAuction extends AbstractAuction {
         protected UUID ownerId;
         protected String ownerName;
 
-        public DefaultAuctionBuilder(AuctionPluginImpl plugin) {
+        public DefaultAuctionBuilder(AuctionPlugin plugin) {
             this.plugin = plugin;
         }
 

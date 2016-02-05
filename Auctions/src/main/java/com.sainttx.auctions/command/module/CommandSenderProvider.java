@@ -18,27 +18,31 @@
  * along with Auctions.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sainttx.auctions.command.subcommand;
+package com.sainttx.auctions.command.module;
 
-import com.sainttx.auctions.AuctionPluginImpl;
-import com.sainttx.auctions.command.AuctionSubCommand;
-import org.bukkit.command.Command;
+import com.sk89q.intake.argument.ArgumentException;
+import com.sk89q.intake.argument.CommandArgs;
+import com.sk89q.intake.parametric.Provider;
+import com.sk89q.intake.parametric.ProvisionException;
 import org.bukkit.command.CommandSender;
 
-/**
- * Handles the /auction reload command for the auction plugin
- */
-public class ReloadCommand extends AuctionSubCommand {
+import java.lang.annotation.Annotation;
+import java.util.List;
 
-    public ReloadCommand(AuctionPluginImpl plugin) {
-        super(plugin, "auctions.command.reload", "reload", "r", "rel");
+public class CommandSenderProvider implements Provider<CommandSender> {
+
+    @Override
+    public boolean isProvided() {
+        return false;
     }
 
     @Override
-    public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        plugin.getMessageHandler().sendMessage(sender, plugin.getMessage("messages.pluginReloaded"));
-        plugin.reloadConfig();
-        plugin.loadConfig();
-        return false;
+    public CommandSender get(CommandArgs arguments, List<? extends Annotation> modifiers) throws ArgumentException, ProvisionException {
+        return arguments.getNamespace().get(CommandSender.class);
+    }
+
+    @Override
+    public List<String> getSuggestions(String prefix) {
+        return null;
     }
 }

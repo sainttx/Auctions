@@ -20,8 +20,8 @@
 
 package com.sainttx.auctions.structure;
 
-import com.sainttx.auctions.AuctionPluginImpl;
 import com.sainttx.auctions.api.Auction;
+import com.sainttx.auctions.api.AuctionPlugin;
 import com.sainttx.auctions.api.AuctionType;
 import com.sainttx.auctions.api.event.AuctionStartEvent;
 import com.sainttx.auctions.api.messages.MessageHandler;
@@ -41,7 +41,7 @@ import java.util.UUID;
 public abstract class AbstractAuction implements Auction {
 
     // Instance
-    protected AuctionPluginImpl plugin;
+    protected AuctionPlugin plugin;
     protected AuctionType type;
     protected Collection<AuctionModule> modules = new HashSet<>();
 

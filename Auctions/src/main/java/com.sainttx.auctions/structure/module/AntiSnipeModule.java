@@ -20,8 +20,8 @@
 
 package com.sainttx.auctions.structure.module;
 
-import com.sainttx.auctions.AuctionPluginImpl;
 import com.sainttx.auctions.api.Auction;
+import com.sainttx.auctions.api.AuctionPlugin;
 import com.sainttx.auctions.api.event.AuctionAddTimeEvent;
 import com.sainttx.auctions.api.module.AuctionModule;
 import com.sainttx.auctions.util.TimeUtil;
@@ -35,11 +35,11 @@ import org.bukkit.Bukkit;
  */
 public class AntiSnipeModule implements AuctionModule {
 
-    private AuctionPluginImpl plugin;
+    private AuctionPlugin plugin;
     private Auction auction;
     private int snipeCount; // how many times the auction has been sniped
 
-    public AntiSnipeModule(AuctionPluginImpl plugin, Auction auction) {
+    public AntiSnipeModule(AuctionPlugin plugin, Auction auction) {
         if (auction == null) {
             throw new IllegalArgumentException("auction cannot be null");
         }

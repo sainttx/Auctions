@@ -20,13 +20,15 @@
 
 package com.sainttx.auctions;
 
+import com.google.common.base.Joiner;
 import com.sainttx.auctions.api.AuctionManager;
 import com.sainttx.auctions.api.Auctions;
 import com.sainttx.auctions.api.messages.MessageHandler;
 import com.sainttx.auctions.api.messages.MessageHandlerType;
 import com.sainttx.auctions.api.reward.ItemReward;
 import com.sainttx.auctions.api.reward.Reward;
-import com.sainttx.auctions.command.AuctionCommandHandler;
+import com.sainttx.auctions.command.AuctionCommands;
+import com.sainttx.auctions.command.module.CommandModule;
 import com.sainttx.auctions.hook.PlaceholderAPIHook;
 import com.sainttx.auctions.listener.AuctionListener;
 import com.sainttx.auctions.listener.PlayerListener;
@@ -35,10 +37,25 @@ import com.sainttx.auctions.structure.messages.group.HerochatGroup;
 import com.sainttx.auctions.structure.messages.handler.ActionBarMessageHandler;
 import com.sainttx.auctions.structure.messages.handler.TextualMessageHandler;
 import com.sainttx.auctions.util.ReflectionUtil;
+import com.sk89q.intake.CommandException;
+import com.sk89q.intake.Intake;
+import com.sk89q.intake.InvalidUsageException;
+import com.sk89q.intake.InvocationCommandException;
+import com.sk89q.intake.argument.Namespace;
+import com.sk89q.intake.dispatcher.Dispatcher;
+import com.sk89q.intake.fluent.CommandGraph;
+import com.sk89q.intake.parametric.Injector;
+import com.sk89q.intake.parametric.ParametricBuilder;
+import com.sk89q.intake.parametric.provider.PrimitivesModule;
+import com.sk89q.intake.util.auth.AuthorizationException;
 import net.milkbowl.vault.economy.Economy;
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
@@ -48,11 +65,11 @@ import org.mcstats.MetricsLite;
 import java.io.File;
 import java.io.IOException;
 import java.text.NumberFormat;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 /**
  * The auction plugin class
@@ -70,6 +87,24 @@ public class AuctionPluginImpl extends JavaPlugin implements com.sainttx.auction
     private final File offlineFile = new File(getDataFolder(), "offline.yml");
     private YamlConfiguration offlineConfiguration;
     private Map<UUID, Reward> offlineRewardCache = new HashMap<>();
+
+    private ExecutorService executorService = Executors.newSingleThreadExecutor();
+    private Dispatcher dispatcher;
+
+    // All valid commands
+    private Map<String, String> commands = new TreeMap<String, String>() {{
+        put("start", "auctions.command.start");
+        put("bid", "auctions.command.bid");
+        put("info", "auctions.command.info");
+        put("end", "auctions.command.end");
+        put("cancel", "auctions.command.cancel");
+        put("impound", "auctions.command.impound");
+        put("ignore", "auctions.command.ignore");
+        put("spam", "auctions.command.spam");
+        put("queue", "auctions.command.queue");
+        put("toggle", "auctions.command.toggle");
+        put("reload", "auctions.command.reload");
+    }};
 
     @Override
     public void onEnable() {
@@ -141,17 +176,30 @@ public class AuctionPluginImpl extends JavaPlugin implements com.sainttx.auction
         } catch (Exception ignored) {
         }
 
+        Injector injector = Intake.createInjector();
+        injector.install(new CommandModule());
+        injector.install(new PrimitivesModule());
+        ParametricBuilder builder = new ParametricBuilder(injector);
+
+        // The authorizer will test whether the command sender has permission.
+        builder.setAuthorizer((locals, permission) -> {
+            CommandSender sender = locals.get(CommandSender.class);
+            return sender != null && sender.hasPermission(permission);
+        });
+
+        dispatcher = new CommandGraph()
+                .builder(builder)
+                .commands()
+                .group("auction")
+                .registerMethods(new AuctionCommands(this))
+                .parent()
+                .graph()
+                .getDispatcher();
+
         getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
         getServer().getPluginManager().registerEvents(new AuctionListener(this), this);
         loadConfig();
         loadOfflineRewards();
-
-        // Commands
-        AuctionCommandHandler handler = new AuctionCommandHandler(this);
-        getCommand("auction").setExecutor(handler);
-        getCommand("sealedauction").setExecutor(handler);
-        getCommand("bid").setExecutor(handler);
-        getServer().getPluginManager().registerEvents(handler, this);
     }
 
     /*
@@ -213,6 +261,56 @@ public class AuctionPluginImpl extends JavaPlugin implements com.sainttx.auction
         Auctions.setManager(null);
     }
 
+    @Override
+    public boolean onCommand(final CommandSender sender, Command command, String label, String[] args) {
+        // Reconstruct the full command message.
+        final String message = command.getName() + " " + StringUtils.join(args, " ");
+        final Namespace namespace = new Namespace();
+
+        // The CommandSender is made always available.
+        namespace.put(CommandSender.class, sender);
+
+        // Used to determine command prefix.
+        final boolean isConsole = sender == Bukkit.getConsoleSender();
+
+        // Execute the command. The dispatcher runs asynchronously, allowing parameter bindings
+        // to be resolved without blocking the server thread. The command runs synchronously.
+        getExecutorService().execute(() -> {
+            try {
+                // Execute dispatcher with the fully reconstructed command message.
+                dispatcher.call(message, namespace, Collections.emptyList());
+            } catch (InvalidUsageException e) {
+                // Invalid command usage should not be harmful. Print something friendly.
+                if (e.isFullHelpSuggested()) {
+                    StringBuilder builder = new StringBuilder(ChatColor.RED + "Subcommands: ");
+                    Joiner joiner = Joiner.on(", ");
+
+                    // Join all sub-commands that the player has permission for
+                    String str = joiner.join(
+                            commands.entrySet().stream()
+                                    .filter(entry -> sender.hasPermission(entry.getValue()))
+                                    .map(Map.Entry::getKey)
+                                    .collect(Collectors.toList())
+                    );
+
+                    builder.append(str);
+                    sender.sendMessage(builder.toString());
+                } else {
+                    sender.sendMessage(ChatColor.RED + "Usage: " + e.getSimpleUsageString(isConsole ? "" : "/"));
+                }
+                sender.sendMessage(ChatColor.RED + e.getMessage());
+            } catch (AuthorizationException e) {
+                // Print friendly message in case of permission failure.
+                sender.sendMessage(ChatColor.RED + "Permission denied.");
+            } catch (CommandException | InvocationCommandException e) {
+                // Everything else is unexpected and should be considered an error.
+                throw new RuntimeException(e);
+            }
+        });
+
+        return true;
+    }
+
     /**
      * Returns the AuctionManager instance
      *
@@ -238,6 +336,15 @@ public class AuctionPluginImpl extends JavaPlugin implements com.sainttx.auction
      */
     public Economy getEconomy() {
         return economy;
+    }
+
+    /**
+     * Returns the asynchronous task executor
+     *
+     * @return the executor service
+     */
+    public ExecutorService getExecutorService() {
+        return executorService;
     }
 
     /**

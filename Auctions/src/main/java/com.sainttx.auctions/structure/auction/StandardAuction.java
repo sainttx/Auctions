@@ -20,8 +20,8 @@
 
 package com.sainttx.auctions.structure.auction;
 
-import com.sainttx.auctions.AuctionPluginImpl;
 import com.sainttx.auctions.api.Auction;
+import com.sainttx.auctions.api.AuctionPlugin;
 import com.sainttx.auctions.api.AuctionType;
 import com.sainttx.auctions.api.reward.Reward;
 import com.sainttx.auctions.structure.DefaultAuction;
@@ -38,7 +38,7 @@ public class StandardAuction extends DefaultAuction {
      *
      * @param plugin the auction plugin instance
      */
-    private StandardAuction(AuctionPluginImpl plugin, UUID ownerUUID, String ownerName,
+    private StandardAuction(AuctionPlugin plugin, UUID ownerUUID, String ownerName,
                             double topBid, Reward reward, double autowin, double bidIncrement, int timeLeft) {
         super(plugin, AuctionType.STANDARD);
         this.ownerUUID = ownerUUID;
@@ -56,7 +56,7 @@ public class StandardAuction extends DefaultAuction {
      */
     public static class StandardAuctionBuilder extends DefaultAuctionBuilder {
 
-        public StandardAuctionBuilder(AuctionPluginImpl plugin) {
+        public StandardAuctionBuilder(AuctionPlugin plugin) {
             super(plugin);
         }
 

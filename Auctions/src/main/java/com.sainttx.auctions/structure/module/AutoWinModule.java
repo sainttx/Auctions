@@ -20,8 +20,8 @@
 
 package com.sainttx.auctions.structure.module;
 
-import com.sainttx.auctions.AuctionPluginImpl;
 import com.sainttx.auctions.api.Auction;
+import com.sainttx.auctions.api.AuctionPlugin;
 import com.sainttx.auctions.api.module.AuctionModule;
 
 /**
@@ -30,11 +30,11 @@ import com.sainttx.auctions.api.module.AuctionModule;
  */
 public class AutoWinModule implements AuctionModule {
 
-    private AuctionPluginImpl plugin;
+    private AuctionPlugin plugin;
     private Auction auction;
     private double trigger;
 
-    public AutoWinModule(AuctionPluginImpl plugin, Auction auction, double trigger) {
+    public AutoWinModule(AuctionPlugin plugin, Auction auction, double trigger) {
         if (auction == null) {
             throw new IllegalArgumentException("auction cannot be null");
         }

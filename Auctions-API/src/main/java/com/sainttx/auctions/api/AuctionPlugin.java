@@ -22,6 +22,7 @@ package com.sainttx.auctions.api;
 
 import com.sainttx.auctions.api.messages.MessageHandler;
 import com.sainttx.auctions.api.reward.Reward;
+import net.milkbowl.vault.economy.Economy;
 import org.bukkit.World;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
@@ -43,6 +44,13 @@ public interface AuctionPlugin extends Plugin {
      * @return the handler instance
      */
     MessageHandler getMessageHandler();
+
+    /**
+     * Returns the Vault economy provider
+     *
+     * @return the vault economy provider
+     */
+    Economy getEconomy();
 
     /**
      * Returns whether or not a time is an auction broadcast interval
