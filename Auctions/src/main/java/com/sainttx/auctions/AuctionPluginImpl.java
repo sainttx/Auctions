@@ -20,16 +20,16 @@
 
 package com.sainttx.auctions;
 
-import com.sainttx.auctions.api.AuctionPlugin;
 import com.google.common.base.Joiner;
 import com.sainttx.auctions.api.AuctionManager;
+import com.sainttx.auctions.api.AuctionPlugin;
 import com.sainttx.auctions.api.Auctions;
 import com.sainttx.auctions.api.messages.MessageHandler;
 import com.sainttx.auctions.api.messages.MessageHandlerType;
 import com.sainttx.auctions.api.reward.ItemReward;
 import com.sainttx.auctions.api.reward.Reward;
 import com.sainttx.auctions.command.AuctionCommands;
-import com.sainttx.auctions.command.module.CommandModule;
+import com.sainttx.auctions.command.module.AuctionsModule;
 import com.sainttx.auctions.hook.PlaceholderAPIHook;
 import com.sainttx.auctions.listener.AuctionListener;
 import com.sainttx.auctions.listener.PlayerListener;
@@ -178,7 +178,7 @@ public class AuctionPluginImpl extends JavaPlugin implements AuctionPlugin {
         }
 
         Injector injector = Intake.createInjector();
-        injector.install(new CommandModule());
+        injector.install(new AuctionsModule());
         injector.install(new PrimitivesModule());
         ParametricBuilder builder = new ParametricBuilder(injector);
 
@@ -269,6 +269,7 @@ public class AuctionPluginImpl extends JavaPlugin implements AuctionPlugin {
         final Namespace namespace = new Namespace();
 
         // The CommandSender is made always available.
+        namespace.put(AuctionPlugin.class, this);
         namespace.put(CommandSender.class, sender);
 
         // Used to determine command prefix.

@@ -42,7 +42,6 @@ import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
@@ -64,9 +63,8 @@ public class AuctionCommands {
             max = 0
     )
     @Require("auctions.command.impound")
-    public void impound(CommandSender sender) {
+    public void impound(CommandSender sender, @Optional Auction auction) {
         MessageHandler handler = plugin.getManager().getMessageHandler();
-        Auction auction = plugin.getManager().getCurrentAuction();
 
         if (!(sender instanceof Player)) {
             sender.sendMessage("Only players can impound auctions");
@@ -91,9 +89,8 @@ public class AuctionCommands {
             max = 1
     )
     @Require("auctions.command.bid")
-    public void bid(Player player, @Optional Double amount) {
+    public void bid(Player player, @Optional Auction auction, @Optional Double amount) {
         MessageHandler handler = plugin.getManager().getMessageHandler();
-        Auction auction = plugin.getManager().getCurrentAuction();
 
         if (amount == null && !plugin.getConfig().getBoolean("auctionSettings.canBidAutomatically", true)) {
             handler.sendMessage(player, plugin.getMessage("messages.error.bidSyntax"));
@@ -126,32 +123,31 @@ public class AuctionCommands {
             max = 0
     )
     @Require("auctions.command.cancel")
-    public void cancel(CommandSender sender) {
-        AuctionManager manager = plugin.getManager();
+    public void cancel(CommandSender sender, @Optional Auction auction) {
         MessageHandler handler = manager.getMessageHandler();
 
-        if (manager.getCurrentAuction() == null) {
+        if (auction == null) {
             // No auction
             handler.sendMessage(sender, plugin.getMessage("messages.error.noCurrentAuction"));
         } else if (sender instanceof Player && manager.getMessageHandler().isIgnoring(sender)) {
             // Ignoring
             handler.sendMessage(sender, plugin.getMessage("messages.error.currentlyIgnoring"));
-        } else if (manager.getCurrentAuction().getTimeLeft() < plugin.getConfig().getInt("auctionSettings.mustCancelBefore", 15)
+        } else if (auction.getTimeLeft() < plugin.getConfig().getInt("auctionSettings.mustCancelBefore", 15)
                 && !sender.hasPermission("auctions.bypass.cancel.timer")) {
             // Can't cancel
             handler.sendMessage(sender, plugin.getMessage("messages.error.cantCancelNow"));
         } else if (plugin.getConfig().getInt("auctionSettings.mustCancelAfter", -1) != -1
-                && manager.getCurrentAuction().getTimeLeft() > plugin.getConfig().getInt("auctionSettings.mustCancelAfter", -1)
+                && auction.getTimeLeft() > plugin.getConfig().getInt("auctionSettings.mustCancelAfter", -1)
                 && !sender.hasPermission("auctions.bypass.cancel.timer")) {
             // Can't cancel
             handler.sendMessage(sender, plugin.getMessage("messages.error.cantCancelNow"));
         } else if (sender instanceof Player
-                && !manager.getCurrentAuction().getOwner().equals(((Player) sender).getUniqueId())
+                && !auction.getOwner().equals(((Player) sender).getUniqueId())
                 && !sender.hasPermission("auctions.bypass.cancel.otherauctions")) {
             // Can't cancel other peoples auction
             handler.sendMessage(sender, plugin.getMessage("messages.error.notYourAuction"));
         } else {
-            manager.getCurrentAuction().cancel();
+            auction.cancel();
         }
     }
 
@@ -161,15 +157,15 @@ public class AuctionCommands {
             max = 0
     )
     @Require("auctions.command.end")
-    public void end(CommandSender sender) {
-        if (manager.getCurrentAuction() == null) {
+    public void end(CommandSender sender, @Optional Auction auction) {
+        if (auction == null) {
             manager.getMessageHandler().sendMessage(sender, plugin.getMessage("messages.error.noCurrentAuction"));
         } else if (!sender.hasPermission("auctions.bypass.end.otherauctions")
                 && sender instanceof Player
-                && !manager.getCurrentAuction().getOwner().equals(((Player) sender).getUniqueId())) {
+                && !auction.getOwner().equals(((Player) sender).getUniqueId())) {
             manager.getMessageHandler().sendMessage(sender, plugin.getMessage("messages.error.notYourAuction"));
         } else {
-            manager.getCurrentAuction().end(true);
+            auction.end(true);
             manager.setCurrentAuction(null);
         }
     }
@@ -198,11 +194,11 @@ public class AuctionCommands {
             max = 0
     )
     @Require("auctions.command.info")
-    public void info(CommandSender sender) {
-        if (plugin.getManager().getCurrentAuction() == null) {
+    public void info(CommandSender sender, @Optional Auction auction) {
+        if (auction == null) {
             plugin.getManager().getMessageHandler().sendMessage(sender, plugin.getMessage("messages.error.noCurrentAuction"));
         } else {
-            plugin.getManager().getMessageHandler().sendAuctionInformation(sender, plugin.getManager().getCurrentAuction());
+            plugin.getManager().getMessageHandler().sendAuctionInformation(sender, auction);
         }
     }
 
@@ -418,26 +414,6 @@ public class AuctionCommands {
         plugin.getManager().setAuctioningDisabled(!plugin.getManager().isAuctioningDisabled());
         String message = plugin.getManager().isAuctioningDisabled() ? "messages.auctionsDisabled" : "messages.auctionsEnabled";
         plugin.getManager().getMessageHandler().broadcast(plugin.getMessage(message), false);
-    }
-
-    /*
-     * Gets the total amount of an item that a player is holding
-     */
-    private int getNumSimilarItem(Player player, ItemStack item) {
-        Inventory inv = player.getInventory();
-        int amount = 0;
-
-        if (item == null || item.getType() == Material.AIR) {
-            return 1;
-        }
-
-        for (ItemStack itm : inv) {
-            if (itm != null && itm.isSimilar(item)) {
-                amount += itm.getAmount();
-            }
-        }
-
-        return amount;
     }
 
     /**

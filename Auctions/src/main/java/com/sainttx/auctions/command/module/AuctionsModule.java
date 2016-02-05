@@ -20,15 +20,17 @@
 
 package com.sainttx.auctions.command.module;
 
+import com.sainttx.auctions.api.Auction;
 import com.sk89q.intake.parametric.AbstractModule;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class CommandModule extends AbstractModule {
+public class AuctionsModule extends AbstractModule {
 
     @Override
     protected void configure() {
         bind(CommandSender.class).toProvider(new CommandSenderProvider());
         bind(Player.class).toProvider(new PlayerProvider());
+        bind(Auction.class).toProvider(new CurrentAuctionProvider());
     }
 }
