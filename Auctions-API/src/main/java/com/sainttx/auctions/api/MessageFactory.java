@@ -39,7 +39,7 @@ public interface MessageFactory {
      *         scheduled for execution
      * @throws NullPointerException if the task is null
      */
-    Future<?> submit(CommandSender recipient, Message message);
+    Future<?> submit(final CommandSender recipient, final Message message);
 
     /**
      * Submits a task to fetch, format, and send a message and returns a Future
@@ -55,5 +55,5 @@ public interface MessageFactory {
      *         scheduled for execution
      * @throws NullPointerException if the task is null
      */
-    Future<?> submit(CommandSender recipient, Message message, Auction auction);
+    Future<?> submit(final CommandSender recipient, final Message message, final Auction auction);
 }
