@@ -52,6 +52,13 @@ public interface AuctionPlugin extends Plugin {
     Economy getEconomy();
 
     /**
+     * Returns the {@link MessageFactory} instance
+     *
+     * @return the message factory
+     */
+    MessageFactory getMessageFactory();
+
+    /**
      * Returns the {@link Settings} for the plugin.
      *
      * @return the settings

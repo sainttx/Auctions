@@ -21,10 +21,7 @@
 package com.sainttx.auctions;
 
 import com.google.common.base.Joiner;
-import com.sainttx.auctions.api.AuctionManager;
-import com.sainttx.auctions.api.AuctionPlugin;
-import com.sainttx.auctions.api.Auctions;
-import com.sainttx.auctions.api.Settings;
+import com.sainttx.auctions.api.*;
 import com.sainttx.auctions.api.messages.MessageHandler;
 import com.sainttx.auctions.api.messages.MessageHandlerType;
 import com.sainttx.auctions.api.reward.ItemReward;
@@ -328,6 +325,11 @@ public class AuctionPluginImpl extends JavaPlugin implements AuctionPlugin {
     @Override
     public Economy getEconomy() {
         return economy;
+    }
+
+    @Override
+    public MessageFactory getMessageFactory() {
+        return null;
     }
 
     @Override
