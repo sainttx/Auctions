@@ -20,6 +20,11 @@
 
 package com.sainttx.auctions.api;
 
+/**
+ * Represents a configuration message that can be sent to a player.
+ * {@link #getPath()} will return the corresponding path inside of
+ * config.yml to the actual unformatted message.
+ */
 public interface Message {
 
     /**
