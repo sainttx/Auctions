@@ -50,17 +50,15 @@ public class AntiSnipeModule implements AuctionModule {
 
     @Override
     public boolean canTrigger() {
-        return plugin.getConfig().getBoolean("auctionSettings.antiSnipe.enable", true)
-                && auction.getTimeLeft() <= plugin.getConfig().getInt("auctionSettings.antiSnipe.timeThreshold", 3)
-                && snipeCount < plugin.getConfig().getInt("auctionSettings.antiSnipe.maxPerAuction", 3)
+        return plugin.getSettings().isAntiSnipeEnabled()
+                && auction.getTimeLeft() <= plugin.getSettings().getAntiSnipeTimeThreshold()
+                && snipeCount < plugin.getSettings().getMaximumAntiSnipesPerAuction()
                 && (auction.getAutowin() == -1 || auction.getTopBid() < auction.getAutowin());
     }
 
     @Override
     public void trigger() {
-        int secondsToAdd = plugin.getConfig().getInt("auctionSettings.antiSnipe.addSeconds", 5);
-
-        AuctionAddTimeEvent event = new AuctionAddTimeEvent(auction, secondsToAdd);
+        AuctionAddTimeEvent event = new AuctionAddTimeEvent(auction, plugin.getSettings().getAntiSnipeExtraTime());
         Bukkit.getPluginManager().callEvent(event);
 
         if (event.isCancelled()) {
@@ -71,7 +69,7 @@ public class AntiSnipeModule implements AuctionModule {
         auction.setTimeLeft(auction.getTimeLeft() + event.getSecondsToAdd());
         String message = plugin.getMessage("messages.auctionFormattable.antiSnipeAdd")
                 .replace("[snipetime]", TimeUtil.getFormattedTime(event.getSecondsToAdd(),
-                        plugin.getConfig().getBoolean("general.shortenedTimeFormat", false)));
+                        plugin.getSettings().shouldUseShortenedTimes()));
         plugin.getManager().getMessageHandler().broadcast(message, auction, false);
     }
 }

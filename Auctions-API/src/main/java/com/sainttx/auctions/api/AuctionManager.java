@@ -20,9 +20,8 @@
 
 package com.sainttx.auctions.api;
 
-import com.sainttx.auctions.api.messages.MessageRecipientGroup;
 import com.sainttx.auctions.api.messages.MessageHandler;
-import org.bukkit.Material;
+import com.sainttx.auctions.api.messages.MessageRecipientGroup;
 import org.bukkit.entity.Player;
 
 import java.util.Collection;
@@ -147,12 +146,4 @@ public interface AuctionManager {
      * Starts the next auction in the queue
      */
     void startNextAuction();
-
-    /**
-     * Gets whether or not a {@link Material} is disallowed
-     *
-     * @param material the material
-     * @return true if the material is not allowed
-     */
-    boolean isBannedMaterial(Material material);
 }

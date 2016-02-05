@@ -24,6 +24,7 @@ import com.google.common.base.Joiner;
 import com.sainttx.auctions.api.AuctionManager;
 import com.sainttx.auctions.api.AuctionPlugin;
 import com.sainttx.auctions.api.Auctions;
+import com.sainttx.auctions.api.Settings;
 import com.sainttx.auctions.api.messages.MessageHandler;
 import com.sainttx.auctions.api.messages.MessageHandlerType;
 import com.sainttx.auctions.api.reward.ItemReward;
@@ -54,7 +55,6 @@ import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.Configuration;
@@ -80,6 +80,7 @@ public class AuctionPluginImpl extends JavaPlugin implements AuctionPlugin {
     // Instance
     private AuctionManager manager;
     private Economy economy;
+    private Settings settings;
 
     // Items file
     private YamlConfiguration itemsFile;
@@ -111,6 +112,7 @@ public class AuctionPluginImpl extends JavaPlugin implements AuctionPlugin {
     public void onEnable() {
         saveDefaultConfig();
         checkOutdatedConfig();
+        settings = new LocalSettings(this);
 
         // Set the economy in the next tick so that all plugins are loaded
         Bukkit.getScheduler().runTask(this, () -> {
@@ -123,7 +125,7 @@ public class AuctionPluginImpl extends JavaPlugin implements AuctionPlugin {
         });
 
         // Create manager instance
-        this.manager = new AuctionManagerImpl(this);
+        this.manager = new AuctionManagerImpl();
         Auctions.setManager(manager);
 
         // Message groups
@@ -313,31 +315,24 @@ public class AuctionPluginImpl extends JavaPlugin implements AuctionPlugin {
         return true;
     }
 
-    /**
-     * Returns the AuctionManager instance
-     *
-     * @return the manager instance
-     */
+    @Override
     public AuctionManager getManager() {
         return manager;
     }
 
-    /**
-     * Returns the current MessageHandler
-     *
-     * @return the handler instance
-     */
+    @Override
     public MessageHandler getMessageHandler() {
         return manager.getMessageHandler();
     }
 
-    /**
-     * Returns the Vault Economy provider
-     *
-     * @return Vault's economy hook
-     */
+    @Override
     public Economy getEconomy() {
         return economy;
+    }
+
+    @Override
+    public Settings getSettings() {
+        return settings;
     }
 
     /**
@@ -349,34 +344,7 @@ public class AuctionPluginImpl extends JavaPlugin implements AuctionPlugin {
         return executorService;
     }
 
-    /**
-     * Returns whether or not a time is an auction broadcast interval
-     *
-     * @param time the time in seconds left in an auction
-     * @return true if the time is a broadcast time
-     */
-    public boolean isBroadcastTime(int time) {
-        return getConfig().isList("general.broadcastTimes")
-                && getConfig().getStringList("general.broadcastTimes").contains(Integer.toString(time));
-    }
-
-    /**
-     * Gets whether a world is disabled
-     *
-     * @param world the world
-     * @return true if the world is disabled
-     */
-    public boolean isWorldDisabled(World world) {
-        return getConfig().isList("general.disabledWorlds")
-                && getConfig().getStringList("general.disabledWorlds").contains(world.getName());
-    }
-
-    /**
-     * Gets a message from configuration
-     *
-     * @param path the path to the message
-     * @return the message at the path
-     */
+    @Override
     public String getMessage(String path) {
         if (!getConfig().isString(path)) {
             return path;
@@ -385,12 +353,7 @@ public class AuctionPluginImpl extends JavaPlugin implements AuctionPlugin {
         return getConfig().getString(path);
     }
 
-    /**
-     * Gets an items name
-     *
-     * @param item the item
-     * @return the display name of the item
-     */
+    @Override
     public String getItemName(ItemStack item) {
         short durability = item.getType().getMaxDurability() > 0 ? 0 : item.getDurability();
         String search = item.getType().toString() + "." + durability;
@@ -413,13 +376,7 @@ public class AuctionPluginImpl extends JavaPlugin implements AuctionPlugin {
         return builder.toString().trim();
     }
 
-    /**
-     * Saves a players auctioned reward to file if the plugin was unable
-     * to return it
-     *
-     * @param uuid The ID of a player
-     * @param reward The reward that was auctioned
-     */
+    @Override
     public void saveOfflinePlayer(UUID uuid, Reward reward) {
         offlineConfiguration.set(uuid.toString(), reward);
         offlineRewardCache.put(uuid, reward);
@@ -431,21 +388,12 @@ public class AuctionPluginImpl extends JavaPlugin implements AuctionPlugin {
         }
     }
 
-    /**
-     * Gets a stored reward for a UUID. Returns null if there is no reward for the id.
-     *
-     * @param uuid the uuid
-     * @return the stored reward
-     */
+    @Override
     public Reward getOfflineReward(UUID uuid) {
         return offlineRewardCache.get(uuid);
     }
 
-    /**
-     * Removes a reward that is stored for a UUID
-     *
-     * @param uuid the uuid
-     */
+    @Override
     public void removeOfflineReward(UUID uuid) {
         offlineRewardCache.remove(uuid);
         offlineConfiguration.set(uuid.toString(), null);
@@ -457,12 +405,7 @@ public class AuctionPluginImpl extends JavaPlugin implements AuctionPlugin {
         }
     }
 
-    /**
-     * Formats a double to english
-     *
-     * @param d the double
-     * @return the english string representation
-     */
+    @Override
     public String formatDouble(double d) {
         NumberFormat format = NumberFormat.getInstance(Locale.ENGLISH);
         format.setMaximumFractionDigits(2);

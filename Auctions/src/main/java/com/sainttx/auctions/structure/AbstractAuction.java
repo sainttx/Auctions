@@ -135,13 +135,8 @@ public abstract class AbstractAuction implements Auction {
     }
 
     @Override
-    public double getTax() {
-        return plugin.getConfig().getInt("auctionSettings.taxPercent", 0);
-    }
-
-    @Override
     public double getTaxAmount() {
-        return (getTopBid() * getTax()) / 100;
+        return (getTopBid() * plugin.getSettings().getTaxPercent()) / 100;
     }
 
     @Override
@@ -206,7 +201,7 @@ public abstract class AbstractAuction implements Auction {
 
             if (timeLeft <= 0) {
                 end(true);
-            } else if (plugin.isBroadcastTime(timeLeft)) {
+            } else if (plugin.getSettings().isBroadcastTime(timeLeft)) {
                 MessageHandler handler = plugin.getManager().getMessageHandler();
                 handler.broadcast(plugin.getMessage("messages.auctionFormattable.timer"), AbstractAuction.this,
                         true);

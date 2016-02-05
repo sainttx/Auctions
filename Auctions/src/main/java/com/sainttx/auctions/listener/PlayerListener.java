@@ -24,7 +24,6 @@ import com.sainttx.auctions.AuctionPluginImpl;
 import com.sainttx.auctions.api.Auction;
 import com.sainttx.auctions.api.reward.Reward;
 import org.bukkit.Bukkit;
-import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -66,7 +65,7 @@ public class PlayerListener implements Listener {
                     reward.giveItem(player1);
                     plugin.removeOfflineReward(player1.getUniqueId());
                 }
-            }, plugin.getConfig().getLong("general.offlineRewardTickDelay"));
+            }, plugin.getSettings().getOfflineRewardTickDelay());
         }
     }
 
@@ -76,20 +75,20 @@ public class PlayerListener implements Listener {
      */
     public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
         Player player = event.getPlayer();
-        String command = event.getMessage().split(" ")[0];
+        String command = event.getMessage().split(" ")[0].toLowerCase();
         if (!player.hasPermission("auctions.bypass.general.blockedcommands")
-                && plugin.getConfig().isList("general.blockedCommands")
-                && plugin.getConfig().getStringList("general.blockedCommands").contains(command.toLowerCase())) {
-            if (plugin.getConfig().getBoolean("general.blockCommands.ifAuctioning", false)
+                && plugin.getSettings().isBlockedCommand(command)) {
+            if (plugin.getSettings().shouldBlockCommandsIfAuctioning()
                     && plugin.getManager().hasActiveAuction(player)) {
                 event.setCancelled(true);
                 plugin.getMessageHandler().sendMessage(player, plugin.getMessage("messages.error.cantUseCommandWhileAuctioning"));
-            } else if (plugin.getConfig().getBoolean("general.blockCommands.ifQueued", false)
+            } else if (plugin.getSettings().shouldBlockCommandsIfQueued()
                     && plugin.getManager().hasAuctionInQueue(player)) {
                 event.setCancelled(true);
                 plugin.getMessageHandler().sendMessage(player, plugin.getMessage("messages.error.cantUseCommandWhileQueued"));
-            } else if (plugin.getConfig().getBoolean("general.blockCommands.ifTopBidder", false)
-                    && plugin.getManager().getCurrentAuction() != null && player.getUniqueId().equals(plugin.getManager().getCurrentAuction().getTopBidder())) {
+            } else if (plugin.getSettings().shouldBlockCommandsIfTopBidder()
+                    && plugin.getManager().getCurrentAuction() != null
+                    && player.getUniqueId().equals(plugin.getManager().getCurrentAuction().getTopBidder())) {
                 event.setCancelled(true);
                 plugin.getMessageHandler().sendMessage(player, plugin.getMessage("messages.error.cantUseCommandWhileTopBidder"));
             }
@@ -99,11 +98,11 @@ public class PlayerListener implements Listener {
     @EventHandler(ignoreCancelled = true)
     public void onPlayerTeleport(PlayerTeleportEvent event) {
         Player player = event.getPlayer();
-        World target = event.getTo().getWorld();
+        String targetWorldName = event.getTo().getWorld().getName();
 
         if (event.getCause() != PlayerTeleportEvent.TeleportCause.ENDER_PEARL
                 && !player.hasPermission("auctions.bypass.general.disabledworld")
-                && plugin.isWorldDisabled(target)) {
+                && plugin.getSettings().isDisabledWorld(targetWorldName)) {
             if (plugin.getManager().hasActiveAuction(player)
                     || plugin.getManager().hasAuctionInQueue(player)) {
                 event.setCancelled(true);

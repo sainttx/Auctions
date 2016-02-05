@@ -23,7 +23,6 @@ package com.sainttx.auctions.api;
 import com.sainttx.auctions.api.messages.MessageHandler;
 import com.sainttx.auctions.api.reward.Reward;
 import net.milkbowl.vault.economy.Economy;
-import org.bukkit.World;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
@@ -53,20 +52,11 @@ public interface AuctionPlugin extends Plugin {
     Economy getEconomy();
 
     /**
-     * Returns whether or not a time is an auction broadcast interval
+     * Returns the {@link Settings} for the plugin.
      *
-     * @param time the time in seconds left in an auction
-     * @return true if the time is a broadcast time
+     * @return the settings
      */
-    boolean isBroadcastTime(int time);
-
-    /**
-     * Gets whether a world is disabled
-     *
-     * @param world the world
-     * @return true if the world is disabled
-     */
-    boolean isWorldDisabled(World world);
+    Settings getSettings();
 
     /**
      * Gets a message from configuration

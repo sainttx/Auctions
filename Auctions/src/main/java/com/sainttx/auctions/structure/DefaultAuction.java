@@ -162,7 +162,7 @@ public class DefaultAuction extends AbstractAuction {
                 plugin.getEconomy().depositPlayer(Bukkit.getOfflinePlayer(getOwner()), winnings);
 
                 if (owner != null) {
-                    if (getTax() > 0) {
+                    if (plugin.getSettings().getTaxPercent() > 0) {
                         handler.sendMessage(owner, plugin.getMessage("messages.auctionFormattable.endTax"), this);
                     }
                     handler.sendMessage(owner, plugin.getMessage("messages.auctionFormattable.endNotifyOwner"), this);
@@ -221,7 +221,7 @@ public class DefaultAuction extends AbstractAuction {
                         plugin.getManager().startNextAuction();
                     }
                 }
-            }, plugin.getConfig().getLong("auctionSettings.delayBetween", 5L) * 20L);
+            }, plugin.getSettings().getDelayBetweenAuctions() * 20L);
         }
     }
 
@@ -291,10 +291,10 @@ public class DefaultAuction extends AbstractAuction {
                 throw new IllegalStateException("bid hasn't been set");
             }
             if (increment == -1) {
-                increment = plugin.getConfig().getInt("auctionSettings.defaultBidIncrement", 50);
+                increment = plugin.getSettings().getDefaultBidIncrement();
             }
             if (time == -1) {
-                time = plugin.getConfig().getInt("auctionSettings.startTime", 30);
+                time = plugin.getSettings().getStartTime();
             }
         }
     }

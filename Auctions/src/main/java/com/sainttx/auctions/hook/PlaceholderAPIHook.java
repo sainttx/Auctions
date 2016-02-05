@@ -45,8 +45,7 @@ public class PlaceholderAPIHook {
                 } else if (token.equalsIgnoreCase("itemamount")) {
                     return Integer.toString(current.getReward().getAmount());
                 } else if (token.equalsIgnoreCase("time")) {
-                    return TimeUtil.getFormattedTime(current.getTimeLeft(),
-                            plugin.getConfig().getBoolean("general.shortenedTimeFormat", false));
+                    return TimeUtil.getFormattedTime(current.getTimeLeft(), plugin.getSettings().shouldUseShortenedTimes());
                 } else if (token.equalsIgnoreCase("autowin")) {
                     return plugin.formatDouble(current.getAutowin());
                 } else if (token.equalsIgnoreCase("ownername")) {
@@ -58,7 +57,7 @@ public class PlaceholderAPIHook {
                 } else if (token.equalsIgnoreCase("topbid")) {
                     return plugin.formatDouble(current.getTopBid());
                 } else if (token.equalsIgnoreCase("taxpercent")) {
-                    return plugin.formatDouble(current.getTax());
+                    return plugin.formatDouble(plugin.getSettings().getTaxPercent());
                 } else if (token.equalsIgnoreCase("taxamount")) {
                     return plugin.formatDouble(current.getTaxAmount());
                 } else if (token.equalsIgnoreCase("winnings")) {

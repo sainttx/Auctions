@@ -90,13 +90,13 @@ public class AuctionCommands {
     public void bid(Player player, @Optional Auction auction, @Optional Double amount) {
         MessageHandler handler = plugin.getManager().getMessageHandler();
 
-        if (amount == null && !plugin.getConfig().getBoolean("auctionSettings.canBidAutomatically", true)) {
+        if (amount == null && !plugin.getSettings().canBidAutomatically()) {
             handler.sendMessage(player, plugin.getMessage("messages.error.bidSyntax"));
         } else if (auction == null) {
             handler.sendMessage(player, plugin.getMessage("messages.error.noCurrentAuction"));
         } else {
             if (!player.hasPermission("auctions.bypass.general.disabledworld")
-                    && plugin.isWorldDisabled(player.getWorld())) {
+                    && plugin.getSettings().isDisabledWorld(player.getWorld().getName())) {
                 handler.sendMessage(player, plugin.getMessage("messages.error.cantUsePluginInWorld"));
             } else if (handler.isIgnoring(player)) {
                 handler.sendMessage(player, plugin.getMessage("messages.error.currentlyIgnoring")); // player is ignoring
@@ -128,12 +128,12 @@ public class AuctionCommands {
         } else if (sender instanceof Player && manager.getMessageHandler().isIgnoring(sender)) {
             // Ignoring
             handler.sendMessage(sender, plugin.getMessage("messages.error.currentlyIgnoring"));
-        } else if (auction.getTimeLeft() < plugin.getConfig().getInt("auctionSettings.mustCancelBefore", 15)
+        } else if (auction.getTimeLeft() < plugin.getSettings().getMustCancelBeforeTime() // TODO: Check
                 && !sender.hasPermission("auctions.bypass.cancel.timer")) {
             // Can't cancel
             handler.sendMessage(sender, plugin.getMessage("messages.error.cantCancelNow"));
-        } else if (plugin.getConfig().getInt("auctionSettings.mustCancelAfter", -1) != -1
-                && auction.getTimeLeft() > plugin.getConfig().getInt("auctionSettings.mustCancelAfter", -1)
+        } else if (plugin.getSettings().getMustCancelAfterTime() != -1
+                && auction.getTimeLeft() > plugin.getSettings().getMustCancelAfterTime() // TODO: Check
                 && !sender.hasPermission("auctions.bypass.cancel.timer")) {
             // Can't cancel
             handler.sendMessage(sender, plugin.getMessage("messages.error.cantCancelNow"));
@@ -271,24 +271,22 @@ public class AuctionCommands {
         if (plugin.getManager().isAuctioningDisabled() && !player.hasPermission("auctions.bypass.general.disabled")) {
             handler.sendMessage(player, plugin.getMessage("messages.error.auctionsDisabled"));
         } else if (!player.hasPermission("auctions.bypass.general.disabledworld")
-                && plugin.isWorldDisabled(player.getWorld())) {
+                && plugin.getSettings().isDisabledWorld(player.getWorld().getName())) {
             handler.sendMessage(player, plugin.getMessage("messages.error.cantUsePluginInWorld"));
         } else {
-            double fee = plugin.getConfig().getDouble("auctionSettings.startFee", 0);
-
             if (handler.isIgnoring(player)) {
                 handler.sendMessage(player, plugin.getMessage("messages.error.currentlyIgnoring")); // player is ignoring
-            } else if (fee > plugin.getEconomy().getBalance(player)) {
+            } else if (plugin.getSettings().getStartFee() > plugin.getEconomy().getBalance(player)) { // TODO: Double.compare
                 handler.sendMessage(player, plugin.getMessage("messages.error.insufficientBalance")); // not enough funds
             } else if (player.getGameMode() == GameMode.CREATIVE
-                    && !plugin.getConfig().getBoolean("auctionSettings.canAuctionInCreative", false)
+                    && !plugin.getSettings().canAuctionInCreative()
                     && !player.hasPermission("auctions.bypass.general.creative")) {
                 handler.sendMessage(player, plugin.getMessage("messages.error.creativeNotAllowed"));
             } else {
                 Auction.Builder builder = new StandardAuction.StandardAuctionBuilder(plugin);
 
                 if (bidIncrement != null) {
-                    if (!plugin.getConfig().getBoolean("auctionSettings.incrementCanExceedStartPrice")
+                    if (!plugin.getSettings().canBidIncrementExceedStartPrice()
                             && bidIncrement > startingPrice) {
                         handler.sendMessage(player, plugin.getMessage("messages.error.biddingIncrementExceedsStart"));
                         return;
@@ -300,7 +298,7 @@ public class AuctionCommands {
                         handler.sendMessage(player, plugin.getMessage("messages.error.invalidNumberEntered")); // negative amount
                         return;
                     } else if (!player.hasPermission("auctions.bypass.start.maxautowin")
-                            && autoWinPrice > plugin.getConfig().getDouble("auctionSettings.maximumAutowinAmount", 1000000D)) {
+                            && autoWinPrice > plugin.getSettings().getMaximumAutowin()) { // TODO: double.compare
                         handler.sendMessage(player, plugin.getMessage("messages.error.autowinTooHigh"));
                         return;
                     }
@@ -312,17 +310,17 @@ public class AuctionCommands {
                     handler.sendMessage(player, plugin.getMessage("messages.error.notEnoughOfItem")); // not enough
                 } else if (Double.isInfinite(startingPrice) || Double.isNaN(startingPrice) || (autoWinPrice != null && (Double.isInfinite(autoWinPrice) || Double.isNaN(autoWinPrice)))) {
                     handler.sendMessage(player, plugin.getMessage("messages.error.invalidNumberEntered")); // invalid number
-                } else if (startingPrice < plugin.getConfig().getDouble("auctionSettings.minimumStartPrice", 0)) {
+                } else if (startingPrice < plugin.getSettings().getMinimumStartPrice()) { // TODO: Double.compare
                     handler.sendMessage(player, plugin.getMessage("messages.error.startPriceTooLow")); // starting price too low
                 } else if (!player.hasPermission("auctions.bypass.start.maxprice")
-                        && startingPrice > plugin.getConfig().getDouble("auctionSettings.maximumStartPrice", 99999)) {
+                        && startingPrice > plugin.getSettings().getMaximumStartPrice()) {  // TODO: Double.compare
                     handler.sendMessage(player, plugin.getMessage("messages.error.startPriceTooHigh")); // starting price too high
-                } else if (plugin.getManager().getQueue().size() >= plugin.getConfig().getInt("auctionSettings.auctionQueueLimit", 3)) {
+                } else if (plugin.getManager().getQueue().size() >= plugin.getSettings().getAuctionQueueLimit()) {
                     handler.sendMessage(player, plugin.getMessage("messages.error.auctionQueueFull")); // queue full
-                } else if (bidIncrement != null && (bidIncrement < plugin.getConfig().getInt("auctionSettings.minimumBidIncrement", 10)
-                        || bidIncrement > plugin.getConfig().getInt("auctionSettings.maximumBidIncrement", 9999))) {
+                } else if (bidIncrement != null && (bidIncrement < plugin.getSettings().getMinimumBidIncrement()  // TODO: Double.compare
+                        || bidIncrement > plugin.getSettings().getMaximumBidIncrement())) {  // TODO: Double.compare
                     handler.sendMessage(player, plugin.getMessage("messages.error.invalidBidIncrement"));
-                } else if (autoWinPrice != null && !plugin.getConfig().getBoolean("auctionSettings.canSpecifyAutowin", true)) {
+                } else if (autoWinPrice != null && !plugin.getSettings().canSpecifyAutowin()) {
                     handler.sendMessage(player, plugin.getMessage("messages.error.autowinDisabled"));
                 } else if (autoWinPrice != null && Double.compare(autoWinPrice, startingPrice) <= 0) {
                     handler.sendMessage(player, plugin.getMessage("messages.error.autowinBelowStart"));
@@ -336,16 +334,16 @@ public class AuctionCommands {
                     if (item == null || item.getType() == Material.AIR) {
                         handler.sendMessage(player, plugin.getMessage("messages.error.invalidItemType")); // auctioned nothing
                     } else if (!player.hasPermission("auctions.bypass.general.bannedmaterial")
-                            && plugin.getManager().isBannedMaterial(item.getType())) {
+                            && plugin.getSettings().isBlockedMaterial(item.getType())) {
                         handler.sendMessage(player, plugin.getMessage("messages.error.invalidItemType")); // item type not allowed
                     } else if (!player.hasPermission("auctions.bypass.general.damageditems")
                             && item.getType().getMaxDurability() > 0 && item.getDurability() > 0
-                            && !plugin.getConfig().getBoolean("auctionSettings.canAuctionDamagedItems", true)) {
+                            && !plugin.getSettings().canAuctionDamagedItems()) {
                         handler.sendMessage(player, plugin.getMessage("messages.error.cantAuctionDamagedItems")); // can't auction damaged
                     } else if (!player.getInventory().containsAtLeast(item, numItems)) {
                         handler.sendMessage(player, plugin.getMessage("messages.error.notEnoughOfItem"));
                     } else if (!player.hasPermission("auctions.bypass.general.nameditems")
-                            && !plugin.getConfig().getBoolean("auctionSettings.canAuctionNamedItems", true)
+                            && !plugin.getSettings().canAuctionNamedItems()
                             && item.getItemMeta().hasDisplayName()) {
                         handler.sendMessage(player, plugin.getMessage("messages.error.cantAuctionNamedItems")); // cant auction named
                     } else if (!player.hasPermission("auctions.bypass.general.bannedlore") && hasBannedLore(item)) {
@@ -371,7 +369,7 @@ public class AuctionCommands {
                         }
 
                         // check if we can add an anti snipe module
-                        if (plugin.getConfig().getBoolean("auctionSettings.antiSnipe.enable", true)) {
+                        if (plugin.getSettings().isAntiSnipeEnabled()) {
                             created.addModule(new AntiSnipeModule(plugin, created));
                         }
 
@@ -383,7 +381,7 @@ public class AuctionCommands {
                         }
 
                         player.getInventory().removeItem(item); // take the item from the player
-                        plugin.getEconomy().withdrawPlayer(player, fee); // withdraw the start fee
+                        plugin.getEconomy().withdrawPlayer(player, plugin.getSettings().getStartFee()); // withdraw the start fee
 
                         if (plugin.getManager().canStartNewAuction()) {
                             plugin.getManager().setCurrentAuction(created);
@@ -419,18 +417,12 @@ public class AuctionCommands {
      * @return true if the item has a banned piece of lore
      */
     public boolean hasBannedLore(ItemStack item) {
-        List<String> bannedLore = plugin.getConfig().getStringList("general.blockedLore");
+        if (item.getItemMeta().hasLore()) {
+            List<String> lore = item.getItemMeta().getLore();
 
-        if (bannedLore != null && !bannedLore.isEmpty()) {
-            if (item.getItemMeta().hasLore()) {
-                List<String> lore = item.getItemMeta().getLore();
-
-                for (String loreItem : lore) {
-                    for (String banned : bannedLore) {
-                        if (loreItem.contains(banned)) {
-                            return true;
-                        }
-                    }
+            for (String loreItem : lore) {
+                if (plugin.getSettings().isBlockedLore(loreItem)) {
+                    return true;
                 }
             }
         }

@@ -24,10 +24,12 @@ import com.sainttx.auctions.api.Auction;
 import com.sainttx.auctions.api.AuctionManager;
 import com.sainttx.auctions.api.messages.MessageHandler;
 import com.sainttx.auctions.api.messages.MessageRecipientGroup;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Queue;
+import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
@@ -37,18 +39,15 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class AuctionManagerImpl implements AuctionManager {
 
     // Auctions information
-    private final AuctionPluginImpl plugin;
     private Auction currentAuction;
     private Set<MessageRecipientGroup> recipientGroups = new HashSet<>();
     private Queue<Auction> auctionQueue = new ConcurrentLinkedQueue<>();
-    private Set<Material> banned = EnumSet.noneOf(Material.class);
     private MessageHandler handler;
     private boolean disabled;
     private boolean canAuction = true;
 
-    AuctionManagerImpl(final AuctionPluginImpl plugin) {
-        this.plugin = plugin;
-        loadBannedMaterials();
+    AuctionManagerImpl() {
+
     }
 
     /**
@@ -167,31 +166,6 @@ public class AuctionManagerImpl implements AuctionManager {
         if (next != null) {
             next.start();
             currentAuction = next;
-        }
-    }
-
-    @Override
-    public boolean isBannedMaterial(Material material) {
-        return banned.contains(material);
-    }
-
-    /* 
-     * Loads all banned items into memory 
-     */
-    private void loadBannedMaterials() {
-        if (!plugin.getConfig().isList("general.blockedMaterials")) {
-            return;
-        }
-
-        for (String materialString : plugin.getConfig().getStringList("general.blockedMaterials")) {
-            Material material = Material.getMaterial(materialString);
-
-            if (material == null) {
-                plugin.getLogger().info("Material \"" + materialString + "\" is not a valid Material and will not be blocked.");
-            } else {
-                banned.add(material);
-                plugin.getLogger().info("Material \"" + material.toString() + "\" added as a blocked material.");
-            }
         }
     }
 }

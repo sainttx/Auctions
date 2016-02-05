@@ -135,14 +135,6 @@ public interface Auction {
     double getAutowin();
 
     /**
-     * Gets the percentage of money that will be removed from
-     * the winning amount
-     *
-     * @return the tax percent of this auction
-     */
-    double getTax();
-
-    /**
      * Gets the current tax impact on the top bid
      *
      * @return the current dollar amount that will be removed

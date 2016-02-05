@@ -82,8 +82,7 @@ public class TextualMessageHandler implements MessageHandler, SpammyMessagePreve
                     } else if (spammy && recipient instanceof Player
                             && isIgnoringSpam(((Player) recipient).getUniqueId())) {
                         continue;
-                    } else if (recipient instanceof ConsoleCommandSender
-                            && plugin.getConfig().getBoolean("chatSettings.stripColorsForConsole", true)) {
+                    } else if (recipient instanceof ConsoleCommandSender) {
                         String oldFormat = TextComponent.toLegacyText(fancy);
                         recipient.sendMessage(ChatColor.stripColor(oldFormat));
                     } else {
@@ -92,7 +91,6 @@ public class TextualMessageHandler implements MessageHandler, SpammyMessagePreve
                             player.spigot().sendMessage(fancy);
                         } catch (Exception ex) {
                             plugin.getLogger().log(Level.SEVERE, "failed to send message to recipient \"" + recipient.getName() + "\"");
-                            continue;
                         }
                     }
                 }
@@ -320,14 +318,13 @@ public class TextualMessageHandler implements MessageHandler, SpammyMessagePreve
             if (message == null) {
                 throw new IllegalArgumentException("message cannot be null");
             }
-            boolean truncate = plugin.getConfig().getBoolean("general.truncatedNumberFormat", false);
+            boolean truncate = plugin.getSettings().shouldTruncateNumbers();
 
             if (auction != null) {
                 message = message.replace("[itemName]", getRewardName(auction.getReward()));
                 message = message.replace("[itemDisplayName]", getItemDisplayName(auction.getReward()));
                 message = message.replace("[itemamount]", Integer.toString(auction.getReward().getAmount()));
-                message = message.replace("[time]", TimeUtil.getFormattedTime(auction.getTimeLeft(),
-                        plugin.getConfig().getBoolean("general.shortenedTimeFormat", false)));
+                message = message.replace("[time]", TimeUtil.getFormattedTime(auction.getTimeLeft(), plugin.getSettings().shouldUseShortenedTimes()));
                 message = message.replace("[autowin]", truncate ? truncateNumber(auction.getAutowin()) : formatDouble(auction.getAutowin()));
                 message = message.replace("[ownername]", auction.getOwnerName() == null ? "Console" : auction.getOwnerName());
                 message = message.replace("[topbiddername]", auction.hasBids()
@@ -335,7 +332,7 @@ public class TextualMessageHandler implements MessageHandler, SpammyMessagePreve
                         : "Nobody");
                 message = message.replace("[increment]", truncate ? truncateNumber(auction.getBidIncrement()) : formatDouble(auction.getBidIncrement()));
                 message = message.replace("[topbid]", truncate ? truncateNumber(auction.getTopBid()) : formatDouble(auction.getTopBid()));
-                message = message.replace("[taxpercent]", formatDouble(auction.getTax()));
+                message = message.replace("[taxpercent]", formatDouble(plugin.getSettings().getTaxPercent()));
                 message = message.replace("[taxamount]", formatDouble(auction.getTaxAmount()));
                 message = message.replace("[startprice]", truncate ? truncateNumber(auction.getStartPrice()) : formatDouble(auction.getStartPrice()));
                 double winnings = auction.getTopBid() - auction.getTaxAmount();

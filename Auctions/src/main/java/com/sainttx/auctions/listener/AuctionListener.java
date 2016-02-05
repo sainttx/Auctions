@@ -26,8 +26,6 @@ import com.sainttx.auctions.api.event.AuctionEndEvent;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
-import java.util.List;
-
 /**
  * Listens for various auction events
  */
@@ -42,30 +40,23 @@ public class AuctionListener implements Listener {
     @EventHandler
     public void onAuctionEnd(AuctionEndEvent event) {
         // Verify this feature is enabled
-        if (!plugin.getConfig().getBoolean("auctionSettings.commandsAfterAuction.enable", false)) {
+        if (!plugin.getSettings().shouldRunPostAuctionCommands()) {
             return;
         }
 
         Auction auction = event.getAuction();
 
         // Check if there must be an auction winner
-        if (plugin.getConfig().getBoolean("auctionSettings.commandsAfterAuction.onlyIfSold", true)
-                && auction.getTopBidder() == null) {
-            return;
-        }
-
-        // Verify we have a list of commands to go through
-        if (!plugin.getConfig().isList("auctionSettings.commandsAfterAuction.commands")) {
+        if (plugin.getSettings().shouldRunPostAuctionCommandsOnlyIfSold() && auction.getTopBidder() == null) {
             return;
         }
 
         // Execute commands
-        List<String> commands = plugin.getConfig().getStringList("auctionSettings.commandsAfterAuction.commands");
         String winner = auction.getTopBidderName() == null ? "[winner]" : auction.getTopBidderName();
-        for (String command : commands) {
+        plugin.getSettings().getPostAuctionCommands().forEach(command -> {
             command = command.replace("[owner]", auction.getOwnerName());
             command = command.replace("[winner]", winner);
             plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), command);
-        }
+        });
     }
 }

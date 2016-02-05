@@ -144,22 +144,6 @@ auctionSettings:
     # The amount of seconds to add whenever an auction is sniped.
     # Default: 5.
     addSeconds: 5
-  # Various settings regarding sealed auctions can be defined here
-  sealedAuctions:
-    # Whether or not sealed auctions are enabled. Default: false.
-    enabled: false
-    # Typically in sealed/blind auctions, bidders are only allowed to
-    # submit 1 bid and then they must wait until the auction to see
-    # who the winner is. This configuration option allows you to configure
-    # how many bids a player is allowed to place (or raise their previous)
-    # on the auction. Default: 1.
-    maxBidsPerPlayer: 1
-    # Setting this option to true will have an effect on the [topbiddername]
-    # and [topbid] placeholders when a sealed auctions message is being
-    # formatted. Rather than giving away the top bidder and top bid, the
-    # formatter will replace the placeholders with "Hidden" and "hidden"
-    # respectively (topbidder, topbid). Default: true.
-    concealTopBidder: true
   # Various settings regarding server command execution post-auction completion
   commandsAfterAuction:
     # Whether or not to execute any commands after an auction completes.
