@@ -71,7 +71,7 @@ public class SimpleMessageFactory implements MessageFactory {
     }
 
     @Override
-    public Future<?> submit(Collection<CommandSender> recipients, Message message) {
+    public Future<?> submit(Collection<? extends CommandSender> recipients, Message message) {
         final String rawMessage = plugin.getConfig().getString(message.getPath());
         return executorService.submit(() -> {
             String coloredMessage = ChatColor.translateAlternateColorCodes('&', rawMessage);
@@ -80,7 +80,7 @@ public class SimpleMessageFactory implements MessageFactory {
     }
 
     @Override
-    public Future<?> submit(Collection<CommandSender> recipients, Message message, Auction auction) {
+    public Future<?> submit(Collection<? extends CommandSender> recipients, Message message, Auction auction) {
         final String rawMessage = plugin.getConfig().getString(message.getPath());
         return executorService.submit(() -> {
             String coloredMessage = ChatColor.translateAlternateColorCodes('&', rawMessage);
@@ -90,7 +90,7 @@ public class SimpleMessageFactory implements MessageFactory {
     }
 
     // Splits a string at its new lines (\n) and sends the resulting array to a recipient
-    private void splitAndSendMessage(Collection<CommandSender> recipients, String message, Auction auction) {
+    private void splitAndSendMessage(Collection<? extends CommandSender> recipients, String message, Auction auction) {
         String[] messageArray = message.split("\n");
 
         for (String line : messageArray) {

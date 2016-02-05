@@ -70,7 +70,7 @@ public interface MessageFactory {
      *         scheduled for execution
      * @throws NullPointerException if the task is null
      */
-    Future<?> submit(final Collection<CommandSender> recipients, final Message message);
+    Future<?> submit(final Collection<? extends CommandSender> recipients, final Message message);
 
     /**
      * Submits a task to fetch, format, and send a message to a group of recipients
@@ -86,5 +86,5 @@ public interface MessageFactory {
      *         scheduled for execution
      * @throws NullPointerException if the task is null
      */
-    Future<?> submit(final Collection<CommandSender> recipients, final Message message, final Auction auction);
+    Future<?> submit(final Collection<? extends CommandSender> recipients, final Message message, final Auction auction);
 }
