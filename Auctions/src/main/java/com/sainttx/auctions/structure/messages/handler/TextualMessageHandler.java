@@ -29,23 +29,16 @@ import com.sainttx.auctions.api.messages.MessageRecipientGroup;
 import com.sainttx.auctions.api.reward.ItemReward;
 import com.sainttx.auctions.api.reward.Reward;
 import com.sainttx.auctions.misc.DoubleConsts;
-import com.sainttx.auctions.util.ReflectionUtil;
 import com.sainttx.auctions.util.TimeUtil;
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.HoverEvent;
-import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.lang.reflect.Method;
 import java.text.NumberFormat;
 import java.util.*;
-import java.util.logging.Level;
 
 /**
  * A base message handler that handles message sending
@@ -69,7 +62,8 @@ public class TextualMessageHandler implements MessageHandler, SpammyMessagePreve
 
     @Override
     public void broadcast(String message, Auction auction, boolean spammy) {
-        message = formatter.format(message, auction);
+        throw new UnsupportedOperationException();
+        /* message = formatter.format(message, auction);
         String[] messages = message.split("\n+");
 
         for (String msg : messages) {
@@ -95,7 +89,7 @@ public class TextualMessageHandler implements MessageHandler, SpammyMessagePreve
                     }
                 }
             }
-        }
+        } */
     }
 
     /**
@@ -122,7 +116,8 @@ public class TextualMessageHandler implements MessageHandler, SpammyMessagePreve
 
     @Override
     public void sendMessage(CommandSender recipient, String message, Auction auction) {
-        message = formatter.format(message, auction);
+        throw new UnsupportedOperationException();
+        /* message = formatter.format(message, auction);
         String[] messages = message.split("\n+");
 
         for (String msg : messages) {
@@ -135,12 +130,13 @@ public class TextualMessageHandler implements MessageHandler, SpammyMessagePreve
                     player.spigot().sendMessage(baseComponents);
                 }
             }
-        }
+        } */
     }
 
     @Override
     public void sendAuctionInformation(CommandSender recipient, Auction auction) {
-        sendMessage(recipient, plugin.getMessage("messages.auctionFormattable.info"), auction);
+        throw new UnsupportedOperationException();
+        /* sendMessage(recipient, plugin.getMessage("messages.auctionFormattable.info"), auction);
         sendMessage(recipient, plugin.getMessage("messages.auctionFormattable.increment"), auction);
         if (auction.getTopBidder() != null) {
             sendMessage(recipient, plugin.getMessage("messages.auctionFormattable.infoTopBidder"), auction);
@@ -154,7 +150,7 @@ public class TextualMessageHandler implements MessageHandler, SpammyMessagePreve
                         .replace("[queuepos]", Integer.toString(queuePosition));
                 sendMessage(player, message, auction);
             }
-        }
+        } */
     }
 
     @Override
@@ -196,77 +192,6 @@ public class TextualMessageHandler implements MessageHandler, SpammyMessagePreve
     @Override
     public boolean isIgnoringSpam(UUID uuid) {
         return ignoringBids.contains(uuid);
-    }
-
-    /*
-         * Turns the message into BaseComponents using the ChatComponent API
-         */
-    private BaseComponent[] createMessage(String message, Auction auction) {
-        BaseComponent[] components = TextComponent.fromLegacyText(message);
-
-        for (BaseComponent component : components) {
-            if (component instanceof TextComponent) {
-                TextComponent textComponent = (TextComponent) component;
-                if (textComponent.getText().contains("[item]") && auction != null) {
-                    String rewardName = auction.getReward().getName();
-                    String display = plugin.getMessage("messages.auctionFormattable.itemFormat");
-                    display = ChatColor.translateAlternateColorCodes('&', display.replace("[itemName]", rewardName));
-
-                    textComponent.setText(textComponent.getText().replace("[item]", display));
-
-                    if (auction.getReward() instanceof ItemReward) {
-                        ItemReward reward = (ItemReward) auction.getReward();
-                        ItemStack itemStack = reward.getItem();
-                        String itemJson = convertItemStackToJson(itemStack);
-
-                        // Prepare a BaseComponent array with the itemJson as a text component
-                        BaseComponent[] hoverEventComponents = new BaseComponent[]{
-                                new TextComponent(itemJson) // The only element of the hover events basecomponents is the item json
-                        };
-
-                        // Create the hover event
-                        HoverEvent event = new HoverEvent(HoverEvent.Action.SHOW_ITEM, hoverEventComponents);
-                        textComponent.setHoverEvent(event);
-                    }
-                }
-            }
-        }
-        return components;
-    }
-
-
-    /**
-     * Converts an {@link org.bukkit.inventory.ItemStack} to a Json string
-     * for sending with {@link net.md_5.bungee.api.chat.BaseComponent}'s.
-     *
-     * @param itemStack the item to convert
-     * @return the Json string representation of the item
-     */
-    private String convertItemStackToJson(ItemStack itemStack) {
-        // ItemStack methods to get a net.minecraft.server.ItemStack object for serialization
-        Class<?> craftItemStackClazz = ReflectionUtil.getOBCClass("inventory.CraftItemStack");
-        Method asNMSCopyMethod = ReflectionUtil.getMethod(craftItemStackClazz, "asNMSCopy", ItemStack.class);
-
-        // NMS Method to serialize a net.minecraft.server.ItemStack to a valid Json string
-        Class<?> nmsItemStackClazz = ReflectionUtil.getNMSClass("ItemStack");
-        Class<?> nbtTagCompoundClazz = ReflectionUtil.getNMSClass("NBTTagCompound");
-        Method saveNmsItemStackMethod = ReflectionUtil.getMethod(nmsItemStackClazz, "save", nbtTagCompoundClazz);
-
-        Object nmsNbtTagCompoundObj; // This will just be an empty NBTTagCompound instance to invoke the saveNms method
-        Object nmsItemStackObj; // This is the net.minecraft.server.ItemStack object received from the asNMSCopy method
-        Object itemAsJsonObject; // This is the net.minecraft.server.ItemStack after being put through saveNmsItem method
-
-        try {
-            nmsNbtTagCompoundObj = nbtTagCompoundClazz.newInstance();
-            nmsItemStackObj = asNMSCopyMethod.invoke(null, itemStack);
-            itemAsJsonObject = saveNmsItemStackMethod.invoke(nmsItemStackObj, nmsNbtTagCompoundObj);
-        } catch (Throwable t) {
-            plugin.getLogger().log(Level.SEVERE, "failed to serialize itemstack to nms item", t);
-            return null;
-        }
-
-        // Return a string representation of the serialized object
-        return itemAsJsonObject.toString();
     }
 
     /*

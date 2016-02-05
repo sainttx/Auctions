@@ -26,7 +26,6 @@ import com.sainttx.auctions.structure.messages.actionbar.ActionBarObject;
 import com.sainttx.auctions.structure.messages.actionbar.ActionBarObjectv1_8_R1;
 import com.sainttx.auctions.structure.messages.actionbar.ActionBarObjectv1_8_R3;
 import com.sainttx.auctions.util.ReflectionUtil;
-import org.bukkit.entity.Player;
 
 /**
  * Created by Matthew on 10/05/2015.
@@ -51,7 +50,7 @@ public class ActionBarMessageHandler extends TextualMessageHandler {
     @Override
     public void broadcast(String message, Auction auction, boolean spammy) {
         super.broadcast(message, auction, spammy);
-        message = formatter.format(this.plugin.getMessage("messages.auctionFormattable.actionBarMessage"), auction);
+        /* message = formatter.format(this.plugin.getMessage("messages.auctionFormattable.actionBarMessage"), auction);
 
         if (!message.isEmpty()) {
             base.setTitle(message);
@@ -60,6 +59,6 @@ public class ActionBarMessageHandler extends TextualMessageHandler {
                     .filter(recipient -> recipient instanceof Player
                             && !isIgnoring(recipient))
                     .forEach(recipient -> base.send((Player) recipient));
-        }
+        } */
     }
 }
