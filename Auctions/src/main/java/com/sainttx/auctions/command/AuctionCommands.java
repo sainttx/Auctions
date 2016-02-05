@@ -58,7 +58,11 @@ public class AuctionCommands {
         this.manager = plugin.getManager();
     }
 
-    @Command(aliases = "impound", usage = "", desc = "Impound an auction")
+    @Command(
+            aliases = "impound",
+            desc = "Impound the currently active auction.",
+            max = 0
+    )
     @Require("auctions.command.impound")
     public void impound(CommandSender sender) {
         MessageHandler handler = plugin.getManager().getMessageHandler();
@@ -80,7 +84,12 @@ public class AuctionCommands {
         }
     }
 
-    @Command(aliases = "bid", usage = "[amount]", desc = "Bid on an auction")
+    @Command(
+            aliases = "bid",
+            usage = "[amount]",
+            desc = "Bid on the currently active auction.",
+            max = 1
+    )
     @Require("auctions.command.bid")
     public void bid(Player player, @Optional Double amount) {
         MessageHandler handler = plugin.getManager().getMessageHandler();
@@ -111,7 +120,11 @@ public class AuctionCommands {
         }
     }
 
-    @Command(aliases = "cancel", desc = "Cancel an ongoing auction")
+    @Command(
+            aliases = "cancel",
+            desc = "Cancel the ongoing auction.",
+            max = 0
+    )
     @Require("auctions.command.cancel")
     public void cancel(CommandSender sender) {
         AuctionManager manager = plugin.getManager();
@@ -142,7 +155,11 @@ public class AuctionCommands {
         }
     }
 
-    @Command(aliases = "end", desc = "End an ongoing auction")
+    @Command(
+            aliases = "end",
+            desc = "End the current auction.",
+            max = 0
+    )
     @Require("auctions.command.end")
     public void end(CommandSender sender) {
         if (manager.getCurrentAuction() == null) {
@@ -157,7 +174,11 @@ public class AuctionCommands {
         }
     }
 
-    @Command(aliases = "ignore", desc = "Ignore and un-ignore auction messages")
+    @Command(
+            aliases = "ignore",
+            desc = "Ignore and un-ignore auction broadcasts.",
+            max = 0
+    )
     @Require("auctions.command.ignore")
     public void ignore(Player player) {
         MessageHandler handler = plugin.getManager().getMessageHandler();
@@ -171,7 +192,11 @@ public class AuctionCommands {
         }
     }
 
-    @Command(aliases = "info", desc = "View information about the current auction")
+    @Command(
+            aliases = "info",
+            desc = "View information about the current auction.",
+            max = 0
+    )
     @Require("auctions.command.info")
     public void info(CommandSender sender) {
         if (plugin.getManager().getCurrentAuction() == null) {
@@ -181,7 +206,11 @@ public class AuctionCommands {
         }
     }
 
-    @Command(aliases = "queue", desc = "View auctions currently in the queue")
+    @Command(
+            aliases = "queue",
+            desc = "View what auctions are currently in the queue.",
+            max = 0
+    )
     @Require("auctions.command.queue")
     public void queue(CommandSender sender) {
         AuctionManager manager = plugin.getManager();
@@ -202,7 +231,11 @@ public class AuctionCommands {
         }
     }
 
-    @Command(aliases = "reload", desc = "Reload the auctions configuration")
+    @Command(
+            aliases = "reload",
+            desc = "Reload the configuration file of the Auctions plugin.",
+            max = 0
+    )
     @Require("auctions.command.reload")
     public void reload(CommandSender sender) {
         plugin.getMessageHandler().sendMessage(sender, plugin.getMessage("messages.pluginReloaded"));
@@ -210,7 +243,11 @@ public class AuctionCommands {
         // TODO: Reload items.yml
     }
 
-    @Command(aliases = "spam", desc = "Ignore and un-ignore spammy messages")
+    @Command(
+            aliases = "spam",
+            desc = "Ignore and un-ignore spammy messages.",
+            max = 0
+    )
     @Require("auctions.command.spam")
     public void spam(Player player) {
         if (!(plugin.getMessageHandler() instanceof MessageHandlerAddon.SpammyMessagePreventer)) {
@@ -228,7 +265,13 @@ public class AuctionCommands {
         }
     }
 
-    @Command(aliases = "start", usage = "<items> <price> [increment] [autowin]", desc = "Start a new auction")
+    @Command(
+            aliases = "start",
+            usage = "<items> <price> [increment] [autowin]",
+            desc = "Create a new auction using the item in your hand.",
+            min = 2,
+            max = 4
+    )
     @Require("auctions.command.start")
     public void start(Player player, int numItems, double startingPrice, @Optional Double bidIncrement, @Optional Double autoWinPrice) {
         MessageHandler handler = plugin.getManager().getMessageHandler();
@@ -277,7 +320,7 @@ public class AuctionCommands {
                     handler.sendMessage(player, plugin.getMessage("messages.error.notEnoughOfItem")); // not enough
                 } else if (Double.isInfinite(startingPrice) || Double.isNaN(startingPrice) || (autoWinPrice != null && (Double.isInfinite(autoWinPrice) || Double.isNaN(autoWinPrice)))) {
                     handler.sendMessage(player, plugin.getMessage("messages.error.invalidNumberEntered")); // invalid number
-                }else if (startingPrice < plugin.getConfig().getDouble("auctionSettings.minimumStartPrice", 0)) {
+                } else if (startingPrice < plugin.getConfig().getDouble("auctionSettings.minimumStartPrice", 0)) {
                     handler.sendMessage(player, plugin.getMessage("messages.error.startPriceTooLow")); // starting price too low
                 } else if (!player.hasPermission("auctions.bypass.start.maxprice")
                         && startingPrice > plugin.getConfig().getDouble("auctionSettings.maximumStartPrice", 99999)) {
@@ -365,7 +408,11 @@ public class AuctionCommands {
 
     }
 
-    @Command(aliases = "toggle", desc = "Toggles whether or not auctions can be started")
+    @Command(
+            aliases = "toggle",
+            desc = "Toggle global state of auction creation.",
+            max = 0
+    )
     @Require("auctions.command.toggle")
     public void toggle(CommandSender sender) {
         plugin.getManager().setAuctioningDisabled(!plugin.getManager().isAuctioningDisabled());
