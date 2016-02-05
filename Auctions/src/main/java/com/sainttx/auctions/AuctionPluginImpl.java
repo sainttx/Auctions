@@ -278,7 +278,7 @@ public class AuctionPluginImpl extends JavaPlugin implements AuctionPlugin {
 
         // Execute the command. The dispatcher runs asynchronously, allowing parameter bindings
         // to be resolved without blocking the server thread. The command runs synchronously.
-        getExecutorService().execute(() -> {
+        executorService.execute(() -> {
             try {
                 // Execute dispatcher with the fully reconstructed command message.
                 dispatcher.call(message, namespace, Collections.emptyList());
@@ -337,15 +337,6 @@ public class AuctionPluginImpl extends JavaPlugin implements AuctionPlugin {
     @Override
     public Settings getSettings() {
         return settings;
-    }
-
-    /**
-     * Returns the asynchronous task executor
-     *
-     * @return the executor service
-     */
-    public ExecutorService getExecutorService() {
-        return executorService;
     }
 
     @Override
