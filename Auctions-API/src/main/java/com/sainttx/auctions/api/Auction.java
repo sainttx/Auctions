@@ -82,13 +82,6 @@ public interface Auction {
     Reward getReward();
 
     /**
-     * Returns what type of auction this is
-     *
-     * @return the auction type of this auction
-     */
-    AuctionType getType();
-
-    /**
      * Gets the amount of time left in this auction
      *
      * @return amount of time left

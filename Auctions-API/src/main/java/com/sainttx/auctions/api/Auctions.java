@@ -55,14 +55,4 @@ public class Auctions {
     public static MessageHandler getMessageHandler() {
         return manager.getMessageHandler();
     }
-
-    /**
-     * Gets an auction builder for a specific auction type
-     *
-     * @param type the type of auction
-     * @return an auction builder for the specific auction type
-     */
-    public static Auction.Builder getAuctionBuilder(AuctionPlugin plugin, AuctionType type) {
-        throw new UnsupportedOperationException();
-    }
 }

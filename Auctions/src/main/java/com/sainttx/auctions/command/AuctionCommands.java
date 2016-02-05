@@ -23,7 +23,6 @@ package com.sainttx.auctions.command;
 import com.sainttx.auctions.api.Auction;
 import com.sainttx.auctions.api.AuctionManager;
 import com.sainttx.auctions.api.AuctionPlugin;
-import com.sainttx.auctions.api.AuctionType;
 import com.sainttx.auctions.api.event.AuctionCreateEvent;
 import com.sainttx.auctions.api.event.AuctionPreBidEvent;
 import com.sainttx.auctions.api.messages.MessageHandler;
@@ -95,8 +94,6 @@ public class AuctionCommands {
             handler.sendMessage(player, plugin.getMessage("messages.error.bidSyntax"));
         } else if (auction == null) {
             handler.sendMessage(player, plugin.getMessage("messages.error.noCurrentAuction"));
-        } else if (auction.getType() == AuctionType.SEALED && amount == null) {
-            handler.sendMessage(player, plugin.getMessage("messages.error.bidSyntax"));
         } else {
             if (!player.hasPermission("auctions.bypass.general.disabledworld")
                     && plugin.isWorldDisabled(player.getWorld())) {

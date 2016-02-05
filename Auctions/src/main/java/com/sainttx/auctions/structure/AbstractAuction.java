@@ -22,7 +22,6 @@ package com.sainttx.auctions.structure;
 
 import com.sainttx.auctions.api.Auction;
 import com.sainttx.auctions.api.AuctionPlugin;
-import com.sainttx.auctions.api.AuctionType;
 import com.sainttx.auctions.api.event.AuctionStartEvent;
 import com.sainttx.auctions.api.messages.MessageHandler;
 import com.sainttx.auctions.api.module.AuctionModule;
@@ -42,7 +41,6 @@ public abstract class AbstractAuction implements Auction {
 
     // Instance
     protected AuctionPlugin plugin;
-    protected AuctionType type;
     protected Collection<AuctionModule> modules = new HashSet<>();
 
     // Auction owner information
@@ -96,11 +94,6 @@ public abstract class AbstractAuction implements Auction {
     @Override
     public Reward getReward() {
         return reward;
-    }
-
-    @Override
-    public AuctionType getType() {
-        return type;
     }
 
     @Override

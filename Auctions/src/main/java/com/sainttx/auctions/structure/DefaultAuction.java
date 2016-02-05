@@ -21,7 +21,6 @@
 package com.sainttx.auctions.structure;
 
 import com.sainttx.auctions.api.AuctionPlugin;
-import com.sainttx.auctions.api.AuctionType;
 import com.sainttx.auctions.api.event.AuctionEndEvent;
 import com.sainttx.auctions.api.messages.MessageHandler;
 import com.sainttx.auctions.api.module.AuctionModule;
@@ -37,9 +36,8 @@ import java.util.UUID;
  */
 public class DefaultAuction extends AbstractAuction {
 
-    public DefaultAuction(AuctionPlugin plugin, AuctionType type) {
+    public DefaultAuction(AuctionPlugin plugin) {
         this.plugin = plugin;
-        this.type = type;
     }
 
     @Override
