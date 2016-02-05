@@ -89,6 +89,7 @@ public class AuctionPluginImpl extends JavaPlugin implements AuctionPlugin {
 
     private ExecutorService executorService = Executors.newSingleThreadExecutor();
     private Dispatcher dispatcher;
+    private MessageFactory messageFactory;
 
     // All valid commands
     private Map<String, String> commands = new TreeMap<String, String>() {{
@@ -110,6 +111,7 @@ public class AuctionPluginImpl extends JavaPlugin implements AuctionPlugin {
         saveDefaultConfig();
         checkOutdatedConfig();
         settings = new LocalSettings(this);
+        messageFactory = new SimpleMessageFactory(this);
 
         // Set the economy in the next tick so that all plugins are loaded
         Bukkit.getScheduler().runTask(this, () -> {
@@ -329,7 +331,7 @@ public class AuctionPluginImpl extends JavaPlugin implements AuctionPlugin {
 
     @Override
     public MessageFactory getMessageFactory() {
-        return null;
+        return messageFactory;
     }
 
     @Override
