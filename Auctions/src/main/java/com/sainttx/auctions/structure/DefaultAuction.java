@@ -73,11 +73,7 @@ public class DefaultAuction extends AbstractAuction {
             plugin.getMessageHandler().sendMessage(player, message);
 
             // Trigger our modules
-            for (AuctionModule module : modules) {
-                if (module.canTrigger()) {
-                    module.trigger();
-                }
-            }
+            modules.stream().filter(AuctionModule::canTrigger).forEach(AuctionModule::trigger);
         }
     }
 
