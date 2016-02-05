@@ -29,6 +29,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -46,8 +47,7 @@ public class HerochatGroup implements MessageRecipientGroup {
 
     @Override
     public Iterable<? extends CommandSender> getRecipients() {
-        return !isHerochatEnabled() ? new HashSet<Player>()
-                : getChannelPlayers(plugin.getMessage("integration.herochat.channel"));
+        return Collections.emptyList();
     }
 
     /**
