@@ -28,6 +28,11 @@ import java.util.GregorianCalendar;
  */
 public class TimeUtil {
 
+    private static final int[] CALENDAR_TYPES = new int[]{ Calendar.YEAR, Calendar.MONTH, Calendar.DAY_OF_MONTH,
+            Calendar.HOUR_OF_DAY, Calendar.MINUTE, Calendar.SECOND };
+    private static final String[] CALENDAR_NAMES = new String[]{ "year", "years", "month", "months", "day", "days",
+            "hour", "hours", "minute", "minutes", "second", "seconds" };
+
     static int dateDiff(int type, Calendar fromDate, Calendar toDate, boolean future) {
         int diff = 0;
         long savedDate = fromDate.getTimeInMillis();
@@ -57,15 +62,13 @@ public class TimeUtil {
             future = true;
         }
         StringBuilder sb = new StringBuilder();
-        int[] types = new int[]{ Calendar.YEAR, Calendar.MONTH, Calendar.DAY_OF_MONTH, Calendar.HOUR_OF_DAY, Calendar.MINUTE, Calendar.SECOND };
-        String[] names = new String[]{ "year", "years", "month", "months", "day", "days", "hour", "hours", "minute", "minutes", "second", "seconds" };
+
         int accuracy = 0;
-        for (int i = 0 ; i < types.length ; i++) {
+        for (int i = 0 ; i < CALENDAR_TYPES.length ; i++) {
             if (accuracy > 2) {
                 break;
             }
-            int diff = dateDiff(types[i], fromDate, toDate, future);
-
+            int diff = dateDiff(CALENDAR_TYPES[i], fromDate, toDate, future);
             if (diff > 0) {
                 accuracy++;
 
@@ -75,7 +78,7 @@ public class TimeUtil {
                     sb.append(" ").append(diff).append(" ");
                 }
 
-                String name = names[i * 2 + (diff > 1 ? 1 : 0)];
+                String name = CALENDAR_NAMES[i * 2 + (diff > 1 ? 1 : 0)];
                 if (shortened) {
                     name = Character.toString(name.toCharArray()[0]);
                 }
