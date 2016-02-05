@@ -22,15 +22,16 @@ package com.sainttx.auctions.api;
 
 import org.bukkit.command.CommandSender;
 
+import java.util.Collection;
 import java.util.concurrent.Future;
 import java.util.concurrent.RejectedExecutionException;
 
 public interface MessageFactory {
 
     /**
-     * Submits a task to fetch, format, and send a message and returns a Future
-     * representing that task. The Future's {@code get} method will return
-     * {@code null} upon <em>successful</em> completion.
+     * Submits a task to fetch, format, and send a message to a recipient
+     * and returns a Future representing that task. The Future's {@code get}
+     * method will return {@code null} upon <em>successful</em> completion.
      *
      * @param recipient the sender that is receiving the message.
      * @param message the message object to send.
@@ -42,11 +43,11 @@ public interface MessageFactory {
     Future<?> submit(final CommandSender recipient, final Message message);
 
     /**
-     * Submits a task to fetch, format, and send a message and returns a Future
-     * representing that task. The task will format any auction specific
-     * placeholders that the message contains using the variables of the provided
-     * {@link Auction}. The Future's {@code get} method will return {@code null}
-     * upon <em>successful</em> completion.
+     * Submits a task to fetch, format, and send a message to a recipient and
+     * returns a Future representing that task. The task will format any auction
+     * specific placeholders that the message contains using the variables of
+     * the provided {@link Auction}. The Future's {@code get} method will
+     * return {@code null} upon <em>successful</em> completion.
      *
      * @param recipient the sender that is receiving the message.
      * @param message the message object to send.
@@ -56,4 +57,34 @@ public interface MessageFactory {
      * @throws NullPointerException if the task is null
      */
     Future<?> submit(final CommandSender recipient, final Message message, final Auction auction);
+
+    /**
+     * Submits a task to fetch, format, and send a message to a group of recipients
+     * and returns a Future representing that task. The Future's {@code get}
+     * method will return {@code null} upon <em>successful</em> completion.
+     *
+     * @param recipients all recipients to recieve the message.
+     * @param message the message object to send.
+     * @return a Future representing pending completion of the task
+     * @throws RejectedExecutionException if the task cannot be
+     *         scheduled for execution
+     * @throws NullPointerException if the task is null
+     */
+    Future<?> submit(final Collection<CommandSender> recipients, final Message message);
+
+    /**
+     * Submits a task to fetch, format, and send a message to a group of recipients
+     * and returns a Future representing that task. The task will format any auction
+     * specific placeholders that the message contains using the variables of
+     * the provided {@link Auction}. The Future's {@code get} method will
+     * return {@code null} upon <em>successful</em> completion.
+     *
+     * @param recipients all recipients to recieve the message.
+     * @param message the message object to send.
+     * @return a Future representing pending completion of the task
+     * @throws RejectedExecutionException if the task cannot be
+     *         scheduled for execution
+     * @throws NullPointerException if the task is null
+     */
+    Future<?> submit(final Collection<CommandSender> recipients, final Message message, final Auction auction);
 }

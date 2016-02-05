@@ -19,6 +19,8 @@ import org.bukkit.inventory.ItemStack;
 
 import java.lang.reflect.Method;
 import java.text.NumberFormat;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -40,41 +42,51 @@ public class SimpleMessageFactory implements MessageFactory {
 
     @Override
     public Future<?> submit(final CommandSender recipient, final Message message) {
-        final String rawMessage = plugin.getConfig().getString(message.getPath());
-
-        return executorService.submit(() -> {
-            String coloredMessage = ChatColor.translateAlternateColorCodes('&', rawMessage);
-            splitAndSendMessage(recipient, coloredMessage, null);
-        });
+        return submit(Collections.singleton(recipient), message);
     }
 
     @Override
     public Future<?> submit(final CommandSender recipient, final Message message, final Auction auction) {
-        final String rawMessage = plugin.getConfig().getString(message.getPath());
+        return submit(Collections.singleton(recipient), message, auction);
+    }
 
+    @Override
+    public Future<?> submit(Collection<CommandSender> recipients, Message message) {
+        final String rawMessage = plugin.getConfig().getString(message.getPath());
+        return executorService.submit(() -> {
+            String coloredMessage = ChatColor.translateAlternateColorCodes('&', rawMessage);
+            splitAndSendMessage(recipients, coloredMessage, null);
+        });
+    }
+
+    @Override
+    public Future<?> submit(Collection<CommandSender> recipients, Message message, Auction auction) {
+        final String rawMessage = plugin.getConfig().getString(message.getPath());
         return executorService.submit(() -> {
             String coloredMessage = ChatColor.translateAlternateColorCodes('&', rawMessage);
             String formattedMessage = replaceAuctionPlaceholders(coloredMessage, auction);
-            splitAndSendMessage(recipient, formattedMessage, auction);
+            splitAndSendMessage(recipients, formattedMessage, auction);
         });
     }
 
     // Splits a string at its new lines (\n) and sends the resulting array to a recipient
-    private void splitAndSendMessage(CommandSender recipient, String message, Auction auction) {
+    private void splitAndSendMessage(Collection<CommandSender> recipients, String message, Auction auction) {
         String[] messageArray = message.split("\n");
 
         for (String line : messageArray) {
             BaseComponent[] finalMessage = generateMessage(line, auction);
 
-            if (recipient instanceof Player) {
-                Player player = (Player) recipient;
-                // TODO: Check ignoring statuses
-                player.spigot().sendMessage(finalMessage);
-            } else {
-                // Send all the lines to the non-player with all colors stripped
-                String legacyText = TextComponent.toLegacyText(finalMessage);
-                recipient.sendMessage(ChatColor.stripColor(legacyText));
-            }
+            recipients.forEach(recipient -> {
+                if (recipient instanceof Player) {
+                    Player player = (Player) recipient;
+                    // TODO: Check ignoring statuses
+                    player.spigot().sendMessage(finalMessage);
+                } else {
+                    // Send all the lines to the non-player with all colors stripped
+                    String legacyText = TextComponent.toLegacyText(finalMessage);
+                    recipient.sendMessage(ChatColor.stripColor(legacyText));
+                }
+            });
         }
     }
 
