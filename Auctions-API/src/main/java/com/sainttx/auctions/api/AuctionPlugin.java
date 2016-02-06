@@ -97,12 +97,4 @@ public interface AuctionPlugin extends Plugin {
      */
     void removeOfflineReward(UUID uuid);
 
-    /**
-     * Formats a double to english
-     *
-     * @param d the double
-     * @return the english string representation
-     */
-    String formatDouble(double d);
-
 }

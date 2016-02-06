@@ -65,10 +65,8 @@ import org.mcstats.MetricsLite;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.NumberFormat;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.UUID;
@@ -378,14 +376,6 @@ public class AuctionPluginImpl extends JavaPlugin implements AuctionPlugin {
         } catch (IOException ex) {
             getLogger().log(Level.SEVERE, "failed to save offline configuration", ex);
         }
-    }
-
-    @Override
-    public String formatDouble(double d) {
-        NumberFormat format = NumberFormat.getInstance(Locale.ENGLISH);
-        format.setMaximumFractionDigits(2);
-        format.setMinimumFractionDigits(0);
-        return format.format(d);
     }
 
     /**
