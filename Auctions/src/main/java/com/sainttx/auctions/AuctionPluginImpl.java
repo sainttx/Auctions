@@ -36,9 +36,7 @@ import com.sainttx.auctions.listener.AuctionListener;
 import com.sainttx.auctions.listener.PlayerListener;
 import com.sainttx.auctions.structure.messages.group.GlobalChatGroup;
 import com.sainttx.auctions.structure.messages.group.HerochatGroup;
-import com.sainttx.auctions.structure.messages.handler.ActionBarMessageHandler;
 import com.sainttx.auctions.structure.messages.handler.TextualMessageHandler;
-import com.sainttx.auctions.util.ReflectionUtil;
 import com.sk89q.intake.CommandException;
 import com.sk89q.intake.Intake;
 import com.sk89q.intake.InvalidUsageException;
@@ -147,16 +145,6 @@ public class AuctionPluginImpl extends JavaPlugin implements AuctionPlugin {
         try {
             MessageHandlerType type = MessageHandlerType.valueOf(getConfig().getString("chatSettings.handler"));
             switch (type) {
-                case ACTION_BAR:
-                    String version = ReflectionUtil.getVersion();
-                    if (version.startsWith("v1_8_R")) {
-                        manager.setMessageHandler(new ActionBarMessageHandler(this));
-                        getLogger().info("Message handler has been set to ACTION_BAR");
-                        break;
-                    } else {
-                        getLogger().info("Message handler type ACTION_BAR is unavailable for this Minecraft version. " +
-                                "Defaulting to TEXT based message handling");
-                    }
                 case TEXT:
                     manager.setMessageHandler(new TextualMessageHandler(this));
                     getLogger().info("Message handler has been set to TEXT");
