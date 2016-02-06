@@ -20,10 +20,10 @@
 
 package com.sainttx.auctions.structure;
 
+import com.sainttx.auctions.MessagePath;
 import com.sainttx.auctions.api.Auction;
 import com.sainttx.auctions.api.AuctionPlugin;
 import com.sainttx.auctions.api.event.AuctionStartEvent;
-import com.sainttx.auctions.api.messages.MessageHandler;
 import com.sainttx.auctions.api.module.AuctionModule;
 import com.sainttx.auctions.api.reward.Reward;
 import org.bukkit.Bukkit;
@@ -202,9 +202,8 @@ public abstract class AbstractAuction implements Auction {
             if (timeLeft <= 0) {
                 end(true);
             } else if (plugin.getSettings().isBroadcastTime(timeLeft)) {
-                MessageHandler handler = plugin.getManager().getMessageHandler();
-                handler.broadcast(plugin.getMessage("messages.auctionFormattable.timer"), AbstractAuction.this,
-                        true);
+                // TODO: Group message
+                plugin.getMessageFactory().submit(Bukkit.getOnlinePlayers(), MessagePath.AUCTION_TIMER, AbstractAuction.this);
             }
         }
     }

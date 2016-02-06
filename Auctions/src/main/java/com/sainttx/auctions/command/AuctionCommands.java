@@ -20,6 +20,7 @@
 
 package com.sainttx.auctions.command;
 
+import com.sainttx.auctions.MessagePath;
 import com.sainttx.auctions.api.Auction;
 import com.sainttx.auctions.api.AuctionManager;
 import com.sainttx.auctions.api.AuctionPlugin;
@@ -35,6 +36,7 @@ import com.sainttx.auctions.structure.module.AntiSnipeModule;
 import com.sainttx.auctions.structure.module.AutoWinModule;
 import com.sk89q.intake.Command;
 import com.sk89q.intake.Require;
+import com.sk89q.intake.argument.MissingArgumentException;
 import com.sk89q.intake.parametric.annotation.Optional;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -44,7 +46,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
-import java.util.Queue;
 
 public class AuctionCommands {
 
@@ -65,21 +66,19 @@ public class AuctionCommands {
     )
     @Require("auctions.command.impound")
     public void impound(CommandSender sender, @Optional Auction auction) {
-        MessageHandler handler = plugin.getManager().getMessageHandler();
-
         if (!(sender instanceof Player)) { // TODO: Allow console to impound?
             sender.sendMessage("Only players can impound auctions");
         } else if (auction == null) {
-            handler.sendMessage(sender, plugin.getMessage("messages.error.noCurrentAuction"));
+            messageFactory.submit(sender, MessagePath.ERROR_NO_AUCTION);
         } else {
             Player player = (Player) sender;
             Reward reward = auction.getReward();
             auction.impound();
             reward.giveItem(player);
 
-            String message = plugin.getMessage("messages.auctionImpounded")
-                    .replace("[player]", player.getName());
-            handler.broadcast(message, false);
+            // TODO: [player] placeholder
+            // TODO: broadcast this message
+            messageFactory.submit(player, MessagePath.GENERAL_AUCTION_IMPOUNDED);
         }
     }
 
@@ -90,21 +89,19 @@ public class AuctionCommands {
             max = 1
     )
     @Require("auctions.command.bid")
-    public void bid(Player player, @Optional Auction auction, @Optional Double amount) {
-        MessageHandler handler = plugin.getManager().getMessageHandler();
-
+    public void bid(Player player, @Optional Auction auction, @Optional Double amount) throws MissingArgumentException {
         if (amount == null && !plugin.getSettings().canBidAutomatically()) {
-            handler.sendMessage(player, plugin.getMessage("messages.error.bidSyntax"));
+            throw new MissingArgumentException(); // TODO: Check if this is valid
         } else if (auction == null) {
-            handler.sendMessage(player, plugin.getMessage("messages.error.noCurrentAuction"));
+            messageFactory.submit(player, MessagePath.ERROR_NO_AUCTION);
         } else {
             if (!player.hasPermission("auctions.bypass.general.disabledworld")
                     && plugin.getSettings().isDisabledWorld(player.getWorld().getName())) {
-                handler.sendMessage(player, plugin.getMessage("messages.error.cantUsePluginInWorld"));
-            } else if (handler.isIgnoring(player)) {
-                handler.sendMessage(player, plugin.getMessage("messages.error.currentlyIgnoring")); // player is ignoring
+                messageFactory.submit(player, MessagePath.ERROR_DISABLED_WORLD);
+            } else if (manager.getMessageHandler().isIgnoring(player)) {
+                messageFactory.submit(player, MessagePath.ERROR_IGNORING);
             } else if (auction.getOwner().equals(player.getUniqueId())) {
-                handler.sendMessage(player, plugin.getMessage("messages.error.bidOnOwnAuction")); // cant bid on own auction
+                messageFactory.submit(player, MessagePath.ERROR_OWN_AUCTION);
             } else {
                 AuctionPreBidEvent event = new AuctionPreBidEvent(auction, player, amount);
                 Bukkit.getPluginManager().callEvent(event);
@@ -127,24 +124,24 @@ public class AuctionCommands {
 
         if (auction == null) {
             // No auction
-            handler.sendMessage(sender, plugin.getMessage("messages.error.noCurrentAuction"));
+            messageFactory.submit(sender, MessagePath.ERROR_NO_AUCTION);
         } else if (sender instanceof Player && manager.getMessageHandler().isIgnoring(sender)) {
             // Ignoring
-            handler.sendMessage(sender, plugin.getMessage("messages.error.currentlyIgnoring"));
+            messageFactory.submit(sender, MessagePath.ERROR_IGNORING);
         } else if (auction.getTimeLeft() < plugin.getSettings().getMustCancelBeforeTime() // TODO: Check
                 && !sender.hasPermission("auctions.bypass.cancel.timer")) {
             // Can't cancel
-            handler.sendMessage(sender, plugin.getMessage("messages.error.cantCancelNow"));
+            messageFactory.submit(sender, MessagePath.ERROR_CANT_CANCEL);
         } else if (plugin.getSettings().getMustCancelAfterTime() != -1
                 && auction.getTimeLeft() > plugin.getSettings().getMustCancelAfterTime() // TODO: Check
                 && !sender.hasPermission("auctions.bypass.cancel.timer")) {
             // Can't cancel
-            handler.sendMessage(sender, plugin.getMessage("messages.error.cantCancelNow"));
+            messageFactory.submit(sender, MessagePath.ERROR_CANT_CANCEL);
         } else if (sender instanceof Player
                 && !auction.getOwner().equals(((Player) sender).getUniqueId())
                 && !sender.hasPermission("auctions.bypass.cancel.otherauctions")) {
             // Can't cancel other peoples auction
-            handler.sendMessage(sender, plugin.getMessage("messages.error.notYourAuction"));
+            messageFactory.submit(sender, MessagePath.ERROR_OTHER_AUCTION);
         } else {
             auction.cancel();
         }
@@ -158,11 +155,11 @@ public class AuctionCommands {
     @Require("auctions.command.end")
     public void end(CommandSender sender, @Optional Auction auction) {
         if (auction == null) {
-            manager.getMessageHandler().sendMessage(sender, plugin.getMessage("messages.error.noCurrentAuction"));
+            messageFactory.submit(sender, MessagePath.ERROR_NO_AUCTION);
         } else if (!sender.hasPermission("auctions.bypass.end.otherauctions")
                 && sender instanceof Player
                 && !auction.getOwner().equals(((Player) sender).getUniqueId())) {
-            manager.getMessageHandler().sendMessage(sender, plugin.getMessage("messages.error.notYourAuction"));
+            messageFactory.submit(sender, MessagePath.ERROR_OTHER_AUCTION);
         } else {
             auction.end(true);
             manager.setCurrentAuction(null);
@@ -180,10 +177,10 @@ public class AuctionCommands {
 
         if (handler.isIgnoring(player)) {
             handler.removeIgnoring(player);
-            handler.sendMessage(player, plugin.getMessage("messages.noLongerIgnoring"));
+            plugin.getMessageFactory().submit(player, MessagePath.GENERAL_ENABLE_MESSAGES);
         } else {
             handler.addIgnoring(player);
-            handler.sendMessage(player, plugin.getMessage("messages.nowIgnoring"));
+            plugin.getMessageFactory().submit(player, MessagePath.GENERAL_DISABLE_MESSAGES);
         }
     }
 
@@ -195,7 +192,7 @@ public class AuctionCommands {
     @Require("auctions.command.info")
     public void info(CommandSender sender, @Optional Auction auction) {
         if (auction == null) {
-            plugin.getManager().getMessageHandler().sendMessage(sender, plugin.getMessage("messages.error.noCurrentAuction"));
+            messageFactory.submit(sender, MessagePath.ERROR_NO_AUCTION);
         } else {
             plugin.getManager().getMessageHandler().sendAuctionInformation(sender, auction);
         }
@@ -208,21 +205,13 @@ public class AuctionCommands {
     )
     @Require("auctions.command.queue")
     public void queue(CommandSender sender) {
-        AuctionManager manager = plugin.getManager();
-        Queue<Auction> queue = manager.getQueue();
-
-        if (queue.isEmpty()) {
-            manager.getMessageHandler().sendMessage(sender, plugin.getMessage("messages.error.noAuctionsInQueue"));
+        if (manager.getQueue().isEmpty()) {
+            messageFactory.submit(sender, MessagePath.ERROR_QUEUE_EMPTY);
         } else {
-            int queuePosition = 1;
-
-            manager.getMessageHandler().sendMessage(sender, plugin.getMessage("messages.queueInfoHeader"));
-            for (Auction auction : queue) {
-                String message = plugin.getMessage("messages.auctionFormattable.queueInfoLine")
-                        .replace("[queuepos]", Integer.toString(queuePosition));
-                manager.getMessageHandler().sendMessage(sender, message, auction);
-                queuePosition++;
-            }
+            messageFactory.submit(sender, MessagePath.GENERAL_QUEUE_HEADER);
+            // TODO: Change [queuepos] to auction format somehow
+            manager.getQueue()
+                    .forEach(auction -> messageFactory.submit(sender, MessagePath.AUCTION_QUEUE_POSITION, auction));
         }
     }
 
@@ -233,7 +222,7 @@ public class AuctionCommands {
     )
     @Require("auctions.command.reload")
     public void reload(CommandSender sender) {
-        plugin.getMessageHandler().sendMessage(sender, plugin.getMessage("messages.pluginReloaded"));
+        messageFactory.submit(sender, MessagePath.GENERAL_PLUGIN_RELOAD);
         plugin.reloadConfig();
         // TODO: Reload items.yml
     }
@@ -245,17 +234,19 @@ public class AuctionCommands {
     )
     @Require("auctions.command.spam")
     public void spam(Player player) {
+        // TODO: Spam will always be preventable in the future
         if (!(plugin.getMessageHandler() instanceof MessageHandlerAddon.SpammyMessagePreventer)) {
-            plugin.getMessageHandler().sendMessage(player, plugin.getMessage("messages.error.cantHideSpam"));
+            // TODO: Remove this message
+            // plugin.getMessageHandler().sendMessage(player, plugin.getMessage("messages.error.cantHideSpam"));
         } else {
             MessageHandlerAddon.SpammyMessagePreventer preventer = (MessageHandlerAddon.SpammyMessagePreventer) plugin.getMessageHandler();
 
             if (!preventer.isIgnoringSpam(player.getUniqueId())) {
                 preventer.addIgnoringSpam(player.getUniqueId());
-                plugin.getMessageHandler().sendMessage(player, plugin.getMessage("messages.nowHidingSpam"));
+                messageFactory.submit(player, MessagePath.GENERAL_DISABLE_SPAM);
             } else {
                 preventer.removeIgnoringSpam(player.getUniqueId());
-                plugin.getMessageHandler().sendMessage(player, plugin.getMessage("messages.noLongerHidingSpam"));
+                messageFactory.submit(player, MessagePath.GENERAL_ENABLE_SPAM);
             }
         }
     }
@@ -272,86 +263,86 @@ public class AuctionCommands {
         MessageHandler handler = plugin.getManager().getMessageHandler();
 
         if (plugin.getManager().isAuctioningDisabled() && !player.hasPermission("auctions.bypass.general.disabled")) {
-            handler.sendMessage(player, plugin.getMessage("messages.error.auctionsDisabled"));
+            messageFactory.submit(player, MessagePath.ERROR_DISABLED);
         } else if (!player.hasPermission("auctions.bypass.general.disabledworld")
                 && plugin.getSettings().isDisabledWorld(player.getWorld().getName())) {
-            handler.sendMessage(player, plugin.getMessage("messages.error.cantUsePluginInWorld"));
+            messageFactory.submit(player, MessagePath.ERROR_DISABLED_WORLD);
         } else {
             if (handler.isIgnoring(player)) {
-                handler.sendMessage(player, plugin.getMessage("messages.error.currentlyIgnoring")); // player is ignoring
+                messageFactory.submit(player, MessagePath.ERROR_IGNORING); // player is ignoring
             } else if (plugin.getSettings().getStartFee() > plugin.getEconomy().getBalance(player)) { // TODO: Double.compare
-                handler.sendMessage(player, plugin.getMessage("messages.error.insufficientBalance")); // not enough funds
+                messageFactory.submit(player, MessagePath.ERROR_MONEY); // not enough funds
             } else if (player.getGameMode() == GameMode.CREATIVE
                     && !plugin.getSettings().canAuctionInCreative()
                     && !player.hasPermission("auctions.bypass.general.creative")) {
-                handler.sendMessage(player, plugin.getMessage("messages.error.creativeNotAllowed"));
+                messageFactory.submit(player, MessagePath.ERROR_CREATIVE);
             } else {
                 Auction.Builder builder = new StandardAuction.StandardAuctionBuilder(plugin);
 
                 if (bidIncrement != null) {
                     if (!plugin.getSettings().canBidIncrementExceedStartPrice()
                             && bidIncrement > startingPrice) {
-                        handler.sendMessage(player, plugin.getMessage("messages.error.biddingIncrementExceedsStart"));
+                        messageFactory.submit(player, MessagePath.ERROR_INCREMENT_EXCEEDS);
                         return;
                     }
                 }
 
                 if (autoWinPrice != null) {
                     if (autoWinPrice < 0) {
-                        handler.sendMessage(player, plugin.getMessage("messages.error.invalidNumberEntered")); // negative amount
+                        messageFactory.submit(player, MessagePath.ERROR_INVALID_NUMBER);
                         return;
                     } else if (!player.hasPermission("auctions.bypass.start.maxautowin")
                             && autoWinPrice > plugin.getSettings().getMaximumAutowin()) { // TODO: double.compare
-                        handler.sendMessage(player, plugin.getMessage("messages.error.autowinTooHigh"));
+                        messageFactory.submit(player, MessagePath.ERROR_AUTOWIN_TOOHIGH);
                         return;
                     }
                 }
 
                 if (numItems <= 0) {
-                    handler.sendMessage(player, plugin.getMessage("messages.error.invalidNumberEntered")); // negative amount
+                    messageFactory.submit(player, MessagePath.ERROR_INVALID_NUMBER);
                 } else if (numItems > 2304) {
-                    handler.sendMessage(player, plugin.getMessage("messages.error.notEnoughOfItem")); // not enough
+                    messageFactory.submit(player, MessagePath.ERROR_NOT_ENOUGH_ITEM);
                 } else if (Double.isInfinite(startingPrice) || Double.isNaN(startingPrice) || (autoWinPrice != null && (Double.isInfinite(autoWinPrice) || Double.isNaN(autoWinPrice)))) {
-                    handler.sendMessage(player, plugin.getMessage("messages.error.invalidNumberEntered")); // invalid number
+                    messageFactory.submit(player, MessagePath.ERROR_INVALID_NUMBER);
                 } else if (startingPrice < plugin.getSettings().getMinimumStartPrice()) { // TODO: Double.compare
-                    handler.sendMessage(player, plugin.getMessage("messages.error.startPriceTooLow")); // starting price too low
+                    messageFactory.submit(player, MessagePath.ERROR_STARTPRICE_LOW);
                 } else if (!player.hasPermission("auctions.bypass.start.maxprice")
                         && startingPrice > plugin.getSettings().getMaximumStartPrice()) {  // TODO: Double.compare
-                    handler.sendMessage(player, plugin.getMessage("messages.error.startPriceTooHigh")); // starting price too high
+                    messageFactory.submit(player, MessagePath.ERROR_STARTPRICE_HIGH);
                 } else if (plugin.getManager().getQueue().size() >= plugin.getSettings().getAuctionQueueLimit()) {
-                    handler.sendMessage(player, plugin.getMessage("messages.error.auctionQueueFull")); // queue full
+                    messageFactory.submit(player, MessagePath.ERROR_QUEUE_FULL);
                 } else if (bidIncrement != null && (bidIncrement < plugin.getSettings().getMinimumBidIncrement()  // TODO: Double.compare
                         || bidIncrement > plugin.getSettings().getMaximumBidIncrement())) {  // TODO: Double.compare
-                    handler.sendMessage(player, plugin.getMessage("messages.error.invalidBidIncrement"));
+                    messageFactory.submit(player, MessagePath.ERROR_INCREMENT_INVALID);
                 } else if (autoWinPrice != null && !plugin.getSettings().canSpecifyAutowin()) {
-                    handler.sendMessage(player, plugin.getMessage("messages.error.autowinDisabled"));
+                    messageFactory.submit(player, MessagePath.ERROR_AUTOWIN_DISABLED);
                 } else if (autoWinPrice != null && Double.compare(autoWinPrice, startingPrice) <= 0) {
-                    handler.sendMessage(player, plugin.getMessage("messages.error.autowinBelowStart"));
+                    messageFactory.submit(player, MessagePath.ERROR_AUTOWIN_BELOW_START);
                 } else if (plugin.getManager().hasActiveAuction(player)) {
-                    handler.sendMessage(player, plugin.getMessage("messages.error.alreadyHaveAuction"));
+                    messageFactory.submit(player, MessagePath.ERROR_ALREADY_AUCTIONING);
                 } else if (plugin.getManager().hasAuctionInQueue(player)) {
-                    handler.sendMessage(player, plugin.getMessage("messages.error.alreadyInAuctionQueue"));
+                    messageFactory.submit(player, MessagePath.ERROR_IN_QUEUE);
                 } else {
                     ItemStack item = player.getItemInHand().clone();
 
                     if (item == null || item.getType() == Material.AIR) {
-                        handler.sendMessage(player, plugin.getMessage("messages.error.invalidItemType")); // auctioned nothing
+                        messageFactory.submit(player, MessagePath.ERROR_ITEM_INVALID);
                     } else if (!player.hasPermission("auctions.bypass.general.bannedmaterial")
                             && plugin.getSettings().isBlockedMaterial(item.getType())) {
-                        handler.sendMessage(player, plugin.getMessage("messages.error.invalidItemType")); // item type not allowed
+                        messageFactory.submit(player, MessagePath.ERROR_ITEM_INVALID);
                     } else if (!player.hasPermission("auctions.bypass.general.damageditems")
                             && item.getType().getMaxDurability() > 0 && item.getDurability() > 0
                             && !plugin.getSettings().canAuctionDamagedItems()) {
-                        handler.sendMessage(player, plugin.getMessage("messages.error.cantAuctionDamagedItems")); // can't auction damaged
+                        messageFactory.submit(player, MessagePath.ERROR_DAMAGED_ITEM);
                     } else if (!player.getInventory().containsAtLeast(item, numItems)) {
-                        handler.sendMessage(player, plugin.getMessage("messages.error.notEnoughOfItem"));
+                        messageFactory.submit(player, MessagePath.ERROR_NOT_ENOUGH_ITEM);
                     } else if (!player.hasPermission("auctions.bypass.general.nameditems")
                             && !plugin.getSettings().canAuctionNamedItems()
                             && item.getItemMeta().hasDisplayName()) {
-                        handler.sendMessage(player, plugin.getMessage("messages.error.cantAuctionNamedItems")); // cant auction named
+                        messageFactory.submit(player, MessagePath.ERROR_NAMED_ITEM);
                     } else if (!player.hasPermission("auctions.bypass.general.bannedlore") && hasBannedLore(item)) {
                         // The players item contains a piece of denied lore
-                        handler.sendMessage(player, plugin.getMessage("messages.error.cantAuctionBannedLore"));
+                        messageFactory.submit(player, MessagePath.ERROR_BANNED_LORE);
                     } else {
                         item.setAmount(numItems);
                         Reward reward = new ItemReward(plugin, item);
@@ -392,7 +383,7 @@ public class AuctionCommands {
                             plugin.getManager().setCanStartNewAuction(false);
                         } else {
                             plugin.getManager().addAuctionToQueue(created);
-                            handler.sendMessage(player, plugin.getMessage("messages.auctionPlacedInQueue"));
+                            messageFactory.submit(player, MessagePath.GENERAL_PLACED_IN_QUEUE);
                         }
                     }
                 }
@@ -408,9 +399,9 @@ public class AuctionCommands {
     )
     @Require("auctions.command.toggle")
     public void toggle(CommandSender sender) {
-        plugin.getManager().setAuctioningDisabled(!plugin.getManager().isAuctioningDisabled());
-        String message = plugin.getManager().isAuctioningDisabled() ? "messages.auctionsDisabled" : "messages.auctionsEnabled";
-        plugin.getManager().getMessageHandler().broadcast(plugin.getMessage(message), false);
+        manager.setAuctioningDisabled(!manager.isAuctioningDisabled());
+        // TODO: Broadcast this message
+        messageFactory.submit(sender, manager.isAuctioningDisabled() ? MessagePath.GENERAL_DISABLED : MessagePath.GENERAL_ENABLED);
     }
 
     /**

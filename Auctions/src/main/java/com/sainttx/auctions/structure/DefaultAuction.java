@@ -20,6 +20,7 @@
 
 package com.sainttx.auctions.structure;
 
+import com.sainttx.auctions.MessagePath;
 import com.sainttx.auctions.api.AuctionPlugin;
 import com.sainttx.auctions.api.event.AuctionEndEvent;
 import com.sainttx.auctions.api.messages.MessageHandler;
@@ -47,11 +48,11 @@ public class DefaultAuction extends AbstractAuction {
         }
 
         if (bid < (hasBids() ? getTopBid() + getBidIncrement() : getStartPrice())) {
-            plugin.getMessageHandler().sendMessage(player, plugin.getMessage("messages.error.bidTooLow")); // the bid wasnt enough
+            plugin.getMessageFactory().submit(player, MessagePath.ERROR_BID_LOW);
         } else if (plugin.getEconomy().getBalance(player) < bid) {
-            plugin.getMessageHandler().sendMessage(player, plugin.getMessage("messages.error.insufficientBalance")); // insufficient funds
+            plugin.getMessageFactory().submit(player, MessagePath.ERROR_MONEY);
         } else if (player.getUniqueId().equals(getTopBidder())) {
-            plugin.getMessageHandler().sendMessage(player, plugin.getMessage("messages.error.alreadyTopBidder")); // already top bidder
+            plugin.getMessageFactory().submit(player, MessagePath.ERROR_TOP_BIDDER);
         } else {
             if (getTopBidder() != null) { // give the old winner their money back
                 OfflinePlayer oldPlayer = Bukkit.getOfflinePlayer(getTopBidder());
@@ -66,9 +67,8 @@ public class DefaultAuction extends AbstractAuction {
             broadcastBid();
 
             // Tell the player a personal bid message
-            String message = plugin.getMessage("messages.bid")
-                    .replace("[bid]", plugin.formatDouble(bid));
-            plugin.getMessageHandler().sendMessage(player, message);
+            // TODO: Replace [bid] with winningBid
+            plugin.getMessageFactory().submit(player, MessagePath.AUCTION_BID);
 
             // Trigger our modules
             modules.stream().filter(AuctionModule::canTrigger).forEach(AuctionModule::trigger);
@@ -77,14 +77,12 @@ public class DefaultAuction extends AbstractAuction {
 
     @Override
     protected void startMessages() {
-        MessageHandler handler = plugin.getManager().getMessageHandler();
-
-        handler.broadcast(plugin.getMessage("messages.auctionFormattable.start"), this, false);
-        handler.broadcast(plugin.getMessage("messages.auctionFormattable.price"), this, false);
-        handler.broadcast(plugin.getMessage("messages.auctionFormattable.increment"), this, false);
-
+        // TODO: Message groups
+        plugin.getMessageFactory().submit(Bukkit.getOnlinePlayers(), MessagePath.AUCTION_START, this);
+        plugin.getMessageFactory().submit(Bukkit.getOnlinePlayers(), MessagePath.AUCTION_PRICE, this);
+        plugin.getMessageFactory().submit(Bukkit.getOnlinePlayers(), MessagePath.AUCTION_INCREMENT, this);
         if (getAutowin() != -1) {
-            handler.broadcast(plugin.getMessage("messages.auctionFormattable.autowin"), this, false);
+            plugin.getMessageFactory().submit(Bukkit.getOnlinePlayers(), MessagePath.AUCTION_AUTOWIN, this);
         }
     }
 
@@ -115,9 +113,8 @@ public class DefaultAuction extends AbstractAuction {
         // Return the top bidders money
         returnMoneyToAll();
 
-        // Broadcast
-        MessageHandler handler = plugin.getManager().getMessageHandler();
-        handler.broadcast(plugin.getMessage("messages.auctionFormattable.cancelled"), this, false);
+        // TODO: Group message
+        plugin.getMessageFactory().submit(Bukkit.getOnlinePlayers(), MessagePath.AUCTION_CANCELLED, this);
 
         // Return the item to the owner
         if (owner == null) {
@@ -125,7 +122,7 @@ public class DefaultAuction extends AbstractAuction {
             plugin.saveOfflinePlayer(getOwner(), getReward());
         } else {
             getReward().giveItem(owner);
-            handler.sendMessage(owner, plugin.getMessage("messages.ownerItemReturn"));
+            plugin.getMessageFactory().submit(owner, MessagePath.GENERAL_ITEM_RETURN, this);
         }
 
         // Set current auction to null
@@ -154,7 +151,8 @@ public class DefaultAuction extends AbstractAuction {
             Player winner = Bukkit.getPlayer(getTopBidder());
 
             if (broadcast && (autowin == -1 || getTopBid() < getAutowin())) {
-                handler.broadcast(plugin.getMessage("messages.auctionFormattable.end"), this, false);
+                // TODO: Message groups
+                plugin.getMessageFactory().submit(Bukkit.getOnlinePlayers(), MessagePath.AUCTION_END, this);
             }
 
             if (getTopBid() > 0) {
@@ -163,9 +161,9 @@ public class DefaultAuction extends AbstractAuction {
 
                 if (owner != null) {
                     if (plugin.getSettings().getTaxPercent() > 0) {
-                        handler.sendMessage(owner, plugin.getMessage("messages.auctionFormattable.endTax"), this);
+                        plugin.getMessageFactory().submit(owner, MessagePath.AUCTION_END_TAX, this);
                     }
-                    handler.sendMessage(owner, plugin.getMessage("messages.auctionFormattable.endNotifyOwner"), this);
+                    plugin.getMessageFactory().submit(owner, MessagePath.AUCTION_END_OWNERMSG, this);
                 }
             }
 
@@ -175,14 +173,15 @@ public class DefaultAuction extends AbstractAuction {
                 plugin.saveOfflinePlayer(getTopBidder(), getReward());
             } else {
                 getReward().giveItem(winner);
-                handler.sendMessage(winner, plugin.getMessage("messages.auctionFormattable.winner"), this);
+                plugin.getMessageFactory().submit(winner, MessagePath.AUCTION_WINNER, this);
             }
         } else {
             if (broadcast) {
-                handler.broadcast(plugin.getMessage("messages.auctionFormattable.endNoBid"), this, false);
+                // TODO: Group message
+                plugin.getMessageFactory().submit(Bukkit.getOnlinePlayers(), MessagePath.AUCTION_END_NOBID, this);
             }
             if (owner != null) {
-                handler.sendMessage(owner, plugin.getMessage("messages.ownerItemReturn"));
+                plugin.getMessageFactory().submit(owner, MessagePath.GENERAL_ITEM_RETURN);
                 getReward().giveItem(owner);
             } else {
                 plugin.getLogger().info("Saving items of offline player " + getOwnerName() + " (uuid: " + getOwner() + ")");
@@ -204,7 +203,8 @@ public class DefaultAuction extends AbstractAuction {
 
     @Override
     public void broadcastBid() {
-        plugin.getMessageHandler().broadcast(plugin.getMessage("messages.auctionFormattable.bid"), this, true);
+        // TODO: Group message
+        plugin.getMessageFactory().submit(Bukkit.getOnlinePlayers(), MessagePath.AUCTION_BID, this);
     }
 
     @Override

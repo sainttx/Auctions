@@ -21,6 +21,7 @@
 package com.sainttx.auctions.api.reward;
 
 import com.sainttx.auctions.api.AuctionPlugin;
+import com.sainttx.auctions.api.Message;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -34,6 +35,17 @@ public class ItemReward implements Reward {
 
     private AuctionPlugin plugin;
     private ItemStack item;
+    private Message notEnoughRoom = new Message() { // TODO: Default for isSpammy
+        @Override
+        public String getPath() {
+            return "messages.notEnoughRoom";
+        }
+
+        @Override
+        public boolean isSpammy() {
+            return false;
+        }
+    };
 
     /* for deserialization of item rewards */
     public ItemReward(Map<String, Object> itemSerialized) {
@@ -67,7 +79,7 @@ public class ItemReward implements Reward {
         if (!overflow.isEmpty()) {
             overflow.values().forEach((item) -> player.getWorld().dropItem(player.getLocation(), item));
             if (plugin != null) {
-                plugin.getMessageHandler().sendMessage(player, plugin.getMessage("messages.notEnoughRoom"));
+                plugin.getMessageFactory().submit(player, notEnoughRoom);
             }
         }
     }

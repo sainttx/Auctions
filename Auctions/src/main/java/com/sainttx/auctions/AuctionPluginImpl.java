@@ -147,7 +147,7 @@ public class AuctionPluginImpl extends JavaPlugin implements AuctionPlugin {
 
         // Message handler
         try {
-            MessageHandlerType type = MessageHandlerType.valueOf(getMessage("chatSettings.handler"));
+            MessageHandlerType type = MessageHandlerType.valueOf(getConfig().getString("chatSettings.handler"));
             switch (type) {
                 case ACTION_BAR:
                     String version = ReflectionUtil.getVersion();
@@ -337,15 +337,6 @@ public class AuctionPluginImpl extends JavaPlugin implements AuctionPlugin {
     @Override
     public Settings getSettings() {
         return settings;
-    }
-
-    @Override
-    public String getMessage(String path) {
-        if (!getConfig().isString(path)) {
-            return path;
-        }
-
-        return getConfig().getString(path);
     }
 
     @Override

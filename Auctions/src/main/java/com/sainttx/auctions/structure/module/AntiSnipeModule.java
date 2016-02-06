@@ -20,11 +20,11 @@
 
 package com.sainttx.auctions.structure.module;
 
+import com.sainttx.auctions.MessagePath;
 import com.sainttx.auctions.api.Auction;
 import com.sainttx.auctions.api.AuctionPlugin;
 import com.sainttx.auctions.api.event.AuctionAddTimeEvent;
 import com.sainttx.auctions.api.module.AuctionModule;
-import com.sainttx.auctions.util.TimeUtil;
 import org.bukkit.Bukkit;
 
 /**
@@ -67,9 +67,8 @@ public class AntiSnipeModule implements AuctionModule {
 
         snipeCount++;
         auction.setTimeLeft(auction.getTimeLeft() + event.getSecondsToAdd());
-        String message = plugin.getMessage("messages.auctionFormattable.antiSnipeAdd")
-                .replace("[snipetime]", TimeUtil.getFormattedTime(event.getSecondsToAdd(),
-                        plugin.getSettings().shouldUseShortenedTimes()));
-        plugin.getManager().getMessageHandler().broadcast(message, auction, false);
+        // TODO: [snipetime] replaced with TimeUtil.getFormattedTime(event.getSecondsToAdd(), shouldUseShortenedTimes())
+        // TODO: message groups
+        plugin.getMessageFactory().submit(Bukkit.getOnlinePlayers(), MessagePath.AUCTION_ANTISNIPE_ADD, auction);
     }
 }

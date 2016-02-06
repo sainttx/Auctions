@@ -66,14 +66,6 @@ public interface AuctionPlugin extends Plugin {
     Settings getSettings();
 
     /**
-     * Gets a message from configuration
-     *
-     * @param path the path to the message
-     * @return the message at the path
-     */
-    String getMessage(String path);
-
-    /**
      * Gets an items name
      *
      * @param item the item

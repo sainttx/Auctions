@@ -20,9 +20,11 @@
 
 package com.sainttx.auctions.structure.module;
 
+import com.sainttx.auctions.MessagePath;
 import com.sainttx.auctions.api.Auction;
 import com.sainttx.auctions.api.AuctionPlugin;
 import com.sainttx.auctions.api.module.AuctionModule;
+import org.bukkit.Bukkit;
 
 /**
  * A module that ends an auction when a bid higher than
@@ -50,7 +52,8 @@ public class AutoWinModule implements AuctionModule {
 
     @Override
     public void trigger() {
-        plugin.getMessageHandler().broadcast(plugin.getMessage("messages.auctionFormattable.endByAutowin"), auction, false);
+        // TODO: message groups
+        plugin.getMessageFactory().submit(Bukkit.getOnlinePlayers(), MessagePath.AUCTION_END_AUTOWIN, auction);
         auction.end(true);
     }
 }

@@ -21,6 +21,7 @@
 package com.sainttx.auctions.listener;
 
 import com.sainttx.auctions.AuctionPluginImpl;
+import com.sainttx.auctions.MessagePath;
 import com.sainttx.auctions.api.Auction;
 import com.sainttx.auctions.api.reward.Reward;
 import org.bukkit.Bukkit;
@@ -61,7 +62,7 @@ public class PlayerListener implements Listener {
                 if (player1 != null) {
                     plugin.getLogger().info("Giving back saved items of offline player "
                             + player1.getName() + " (uuid: " + player1.getUniqueId() + ")");
-                    plugin.getMessageHandler().sendMessage(player1, plugin.getMessage("messages.savedItemReturn"));
+                    plugin.getMessageFactory().submit(player, MessagePath.GENERAL_SAVED_ITEM_RETURN);
                     reward.giveItem(player1);
                     plugin.removeOfflineReward(player1.getUniqueId());
                 }
@@ -81,16 +82,16 @@ public class PlayerListener implements Listener {
             if (plugin.getSettings().shouldBlockCommandsIfAuctioning()
                     && plugin.getManager().hasActiveAuction(player)) {
                 event.setCancelled(true);
-                plugin.getMessageHandler().sendMessage(player, plugin.getMessage("messages.error.cantUseCommandWhileAuctioning"));
+                plugin.getMessageFactory().submit(player, MessagePath.ERROR_COMMAND_AUCTIONING);
             } else if (plugin.getSettings().shouldBlockCommandsIfQueued()
                     && plugin.getManager().hasAuctionInQueue(player)) {
                 event.setCancelled(true);
-                plugin.getMessageHandler().sendMessage(player, plugin.getMessage("messages.error.cantUseCommandWhileQueued"));
+                plugin.getMessageFactory().submit(player, MessagePath.ERROR_COMMAND_QUEUE);
             } else if (plugin.getSettings().shouldBlockCommandsIfTopBidder()
                     && plugin.getManager().getCurrentAuction() != null
                     && player.getUniqueId().equals(plugin.getManager().getCurrentAuction().getTopBidder())) {
                 event.setCancelled(true);
-                plugin.getMessageHandler().sendMessage(player, plugin.getMessage("messages.error.cantUseCommandWhileTopBidder"));
+                plugin.getMessageFactory().submit(player, MessagePath.ERROR_COMMAND_TOPBIDDER);
             }
         }
     }
@@ -106,13 +107,13 @@ public class PlayerListener implements Listener {
             if (plugin.getManager().hasActiveAuction(player)
                     || plugin.getManager().hasAuctionInQueue(player)) {
                 event.setCancelled(true);
-                plugin.getMessageHandler().sendMessage(player, plugin.getMessage("messages.error.cantTeleportToDisabledWorld"));
+                plugin.getMessageFactory().submit(player, MessagePath.ERROR_DISABLED_TELEPORT);
             } else {
                 Auction auction = plugin.getManager().getCurrentAuction();
 
                 if (auction != null && player.getUniqueId().equals(auction.getTopBidder())) {
                     event.setCancelled(true);
-                    plugin.getMessageHandler().sendMessage(player, plugin.getMessage("messages.error.cantTeleportToDisabledWorld"));
+                    plugin.getMessageFactory().submit(player, MessagePath.ERROR_DISABLED_TELEPORT);
                 }
             }
         }
