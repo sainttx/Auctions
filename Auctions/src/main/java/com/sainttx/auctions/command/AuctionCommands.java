@@ -196,7 +196,23 @@ public class AuctionCommands {
         if (auction == null) {
             messageFactory.submit(sender, MessagePath.ERROR_NO_AUCTION);
         } else {
-            plugin.getManager().getMessageHandler().sendAuctionInformation(sender, auction);
+            plugin.getMessageFactory().submit(sender, MessagePath.AUCTION_INFO, auction);
+            plugin.getMessageFactory().submit(sender, MessagePath.AUCTION_INCREMENT, auction);
+
+            // Send information about any top bidders
+            if (auction.getTopBidder() != null) {
+                plugin.getMessageFactory().submit(sender, MessagePath.AUCTION_INFO_TOPBIDDER, auction);
+            }
+
+            // Send queue information
+            if (sender instanceof Player) {
+                Player player = (Player) sender;
+                int queuePosition = plugin.getManager().getQueuePosition(player);
+                if (queuePosition > 0) {
+                    // TODO: [queuepos] placeholder with queueposition
+                    plugin.getMessageFactory().submit(sender, MessagePath.AUCTION_QUEUE_POSITION, auction);
+                }
+            }
         }
     }
 
