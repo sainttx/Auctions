@@ -28,9 +28,9 @@ import com.sainttx.auctions.api.MessageFactory;
 import com.sainttx.auctions.api.event.AuctionCreateEvent;
 import com.sainttx.auctions.api.event.AuctionPreBidEvent;
 import com.sainttx.auctions.api.messages.MessageHandler;
-import com.sainttx.auctions.api.messages.MessageHandlerAddon;
 import com.sainttx.auctions.api.reward.ItemReward;
 import com.sainttx.auctions.api.reward.Reward;
+import com.sainttx.auctions.misc.MetadataKeys;
 import com.sainttx.auctions.structure.auction.StandardAuction;
 import com.sainttx.auctions.structure.module.AntiSnipeModule;
 import com.sainttx.auctions.structure.module.AutoWinModule;
@@ -44,6 +44,7 @@ import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.metadata.FixedMetadataValue;
 
 import java.util.List;
 
@@ -173,15 +174,19 @@ public class AuctionCommands {
     )
     @Require("auctions.command.ignore")
     public void ignore(Player player) {
-        MessageHandler handler = plugin.getManager().getMessageHandler();
+        toggleIgnoring(player);
+        messageFactory.submit(player, isIgnoring(player)
+                ? MessagePath.GENERAL_DISABLE_MESSAGES : MessagePath.GENERAL_ENABLE_MESSAGES);
+    }
 
-        if (handler.isIgnoring(player)) {
-            handler.removeIgnoring(player);
-            plugin.getMessageFactory().submit(player, MessagePath.GENERAL_ENABLE_MESSAGES);
-        } else {
-            handler.addIgnoring(player);
-            plugin.getMessageFactory().submit(player, MessagePath.GENERAL_DISABLE_MESSAGES);
-        }
+    // Returns whether or not a player is ignoring auctions
+    private boolean isIgnoring(Player player) {
+        return isIgnoring(player, false);
+    }
+
+    // Toggles a players ignoring status
+    private void toggleIgnoring(Player player) {
+        toggleIgnoring(player, false);
     }
 
     @Command(
@@ -233,20 +238,23 @@ public class AuctionCommands {
     )
     @Require("auctions.command.spam")
     public void spam(Player player) {
-        // TODO: Spam will always be preventable in the future
-        if (!(plugin.getMessageHandler() instanceof MessageHandlerAddon.SpammyMessagePreventer)) {
-            // TODO: Remove this message
-            // plugin.getMessageHandler().sendMessage(player, plugin.getMessage("messages.error.cantHideSpam"));
-        } else {
-            MessageHandlerAddon.SpammyMessagePreventer preventer = (MessageHandlerAddon.SpammyMessagePreventer) plugin.getMessageHandler();
+        toggleIgnoring(player, true);
+        messageFactory.submit(player, isIgnoring(player, true)
+                ? MessagePath.GENERAL_DISABLE_SPAM : MessagePath.GENERAL_ENABLE_SPAM);
+    }
 
-            if (!preventer.isIgnoringSpam(player.getUniqueId())) {
-                preventer.addIgnoringSpam(player.getUniqueId());
-                messageFactory.submit(player, MessagePath.GENERAL_DISABLE_SPAM);
-            } else {
-                preventer.removeIgnoringSpam(player.getUniqueId());
-                messageFactory.submit(player, MessagePath.GENERAL_ENABLE_SPAM);
-            }
+    // Returns whether or not a player is ignoring auctions
+    private boolean isIgnoring(Player player, boolean spam) {
+        return player.hasMetadata(spam ? MetadataKeys.AUCTIONS_IGNORING_SPAM : MetadataKeys.AUCTIONS_IGNORING);
+    }
+
+    // Toggles a players ignoring status
+    private void toggleIgnoring(Player player, boolean spam) {
+        String key = spam ? MetadataKeys.AUCTIONS_IGNORING_SPAM : MetadataKeys.AUCTIONS_IGNORING;
+        if (player.hasMetadata(key)) {
+            player.removeMetadata(key, plugin);
+        } else {
+            player.setMetadata(key, new FixedMetadataValue(plugin, true));
         }
     }
 

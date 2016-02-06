@@ -27,6 +27,7 @@ import com.sainttx.auctions.api.MessageFactory;
 import com.sainttx.auctions.api.reward.ItemReward;
 import com.sainttx.auctions.api.reward.Reward;
 import com.sainttx.auctions.misc.DoubleConsts;
+import com.sainttx.auctions.misc.MetadataKeys;
 import com.sainttx.auctions.util.ReflectionUtil;
 import com.sainttx.auctions.util.TimeUtil;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -75,7 +76,7 @@ public class SimpleMessageFactory implements MessageFactory {
         final String rawMessage = plugin.getConfig().getString(message.getPath());
         return executorService.submit(() -> {
             String coloredMessage = ChatColor.translateAlternateColorCodes('&', rawMessage);
-            splitAndSendMessage(recipients, coloredMessage, null);
+            splitAndSendMessage(recipients, coloredMessage, message.isSpammy(), null);
         });
     }
 
@@ -85,12 +86,12 @@ public class SimpleMessageFactory implements MessageFactory {
         return executorService.submit(() -> {
             String coloredMessage = ChatColor.translateAlternateColorCodes('&', rawMessage);
             String formattedMessage = replaceAuctionPlaceholders(coloredMessage, auction);
-            splitAndSendMessage(recipients, formattedMessage, auction);
+            splitAndSendMessage(recipients, formattedMessage, message.isSpammy(), auction);
         });
     }
 
     // Splits a string at its new lines (\n) and sends the resulting array to a recipient
-    private void splitAndSendMessage(Collection<? extends CommandSender> recipients, String message, Auction auction) {
+    private void splitAndSendMessage(Collection<? extends CommandSender> recipients, String message, boolean spam, Auction auction) {
         String[] messageArray = message.split("\n");
 
         for (String line : messageArray) {
@@ -99,8 +100,11 @@ public class SimpleMessageFactory implements MessageFactory {
             recipients.forEach(recipient -> {
                 if (recipient instanceof Player) {
                     Player player = (Player) recipient;
-                    // TODO: Check ignoring statuses
-                    player.spigot().sendMessage(finalMessage);
+                    // Send the message if the player isn't ignoring messages and the player isn't blocking a spammy message
+                    if (!player.hasMetadata(MetadataKeys.AUCTIONS_IGNORING)
+                            && !(spam && !player.hasMetadata(MetadataKeys.AUCTIONS_IGNORING_SPAM))) {
+                        player.spigot().sendMessage(finalMessage);
+                    }
                 } else {
                     // Send all the lines to the non-player with all colors stripped
                     String legacyText = TextComponent.toLegacyText(finalMessage);
