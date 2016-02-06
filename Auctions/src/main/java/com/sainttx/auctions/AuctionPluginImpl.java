@@ -27,7 +27,6 @@ import com.sainttx.auctions.api.Auctions;
 import com.sainttx.auctions.api.MessageFactory;
 import com.sainttx.auctions.api.Settings;
 import com.sainttx.auctions.api.messages.MessageHandler;
-import com.sainttx.auctions.api.messages.MessageHandlerType;
 import com.sainttx.auctions.api.reward.ItemReward;
 import com.sainttx.auctions.api.reward.Reward;
 import com.sainttx.auctions.command.AuctionCommands;
@@ -129,6 +128,7 @@ public class AuctionPluginImpl extends JavaPlugin implements AuctionPlugin {
 
         // Create manager instance
         this.manager = new AuctionManagerImpl();
+        manager.setMessageHandler(new TextualMessageHandler(this));
         Auctions.setManager(manager);
 
         // Message groups
@@ -139,22 +139,6 @@ public class AuctionPluginImpl extends JavaPlugin implements AuctionPlugin {
         if (getConfig().getBoolean("chatSettings.groups.global")) {
             manager.addMessageGroup(new GlobalChatGroup());
             getLogger().info("Added global chat recipient group to the list of broadcast listeners");
-        }
-
-        // Message handler
-        try {
-            MessageHandlerType type = MessageHandlerType.valueOf(getConfig().getString("chatSettings.handler"));
-            switch (type) {
-                case TEXT:
-                    manager.setMessageHandler(new TextualMessageHandler(this));
-                    getLogger().info("Message handler has been set to TEXT");
-                    break;
-            }
-        } catch (Throwable throwable) {
-            getLogger().info("Failed to find a valid message handler, please make sure that your value" +
-                    "for 'chatSettings.handler' is a valid message handler type");
-            getServer().getPluginManager().disablePlugin(this);
-            return;
         }
 
         // Enable plugin metrics
