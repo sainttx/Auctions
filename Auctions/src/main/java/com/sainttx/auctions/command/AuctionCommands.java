@@ -27,7 +27,6 @@ import com.sainttx.auctions.api.AuctionPlugin;
 import com.sainttx.auctions.api.MessageFactory;
 import com.sainttx.auctions.api.event.AuctionCreateEvent;
 import com.sainttx.auctions.api.event.AuctionPreBidEvent;
-import com.sainttx.auctions.api.messages.MessageHandler;
 import com.sainttx.auctions.api.reward.ItemReward;
 import com.sainttx.auctions.api.reward.Reward;
 import com.sainttx.auctions.misc.MetadataKeys;
@@ -99,7 +98,7 @@ public class AuctionCommands {
             if (!player.hasPermission("auctions.bypass.general.disabledworld")
                     && plugin.getSettings().isDisabledWorld(player.getWorld().getName())) {
                 messageFactory.submit(player, MessagePath.ERROR_DISABLED_WORLD);
-            } else if (manager.getMessageHandler().isIgnoring(player)) {
+            } else if (isIgnoring(player)) {
                 messageFactory.submit(player, MessagePath.ERROR_IGNORING);
             } else if (auction.getOwner().equals(player.getUniqueId())) {
                 messageFactory.submit(player, MessagePath.ERROR_OWN_AUCTION);
@@ -121,12 +120,10 @@ public class AuctionCommands {
     )
     @Require("auctions.command.cancel")
     public void cancel(CommandSender sender, @Optional Auction auction) {
-        MessageHandler handler = manager.getMessageHandler();
-
         if (auction == null) {
             // No auction
             messageFactory.submit(sender, MessagePath.ERROR_NO_AUCTION);
-        } else if (sender instanceof Player && manager.getMessageHandler().isIgnoring(sender)) {
+        } else if (sender instanceof Player && isIgnoring((Player) sender)) {
             // Ignoring
             messageFactory.submit(sender, MessagePath.ERROR_IGNORING);
         } else if (auction.getTimeLeft() < plugin.getSettings().getMustCancelBeforeTime() // TODO: Check
@@ -267,15 +264,13 @@ public class AuctionCommands {
     )
     @Require("auctions.command.start")
     public void start(Player player, int numItems, double startingPrice, @Optional Double bidIncrement, @Optional Double autoWinPrice) {
-        MessageHandler handler = plugin.getManager().getMessageHandler();
-
         if (plugin.getManager().isAuctioningDisabled() && !player.hasPermission("auctions.bypass.general.disabled")) {
             messageFactory.submit(player, MessagePath.ERROR_DISABLED);
         } else if (!player.hasPermission("auctions.bypass.general.disabledworld")
                 && plugin.getSettings().isDisabledWorld(player.getWorld().getName())) {
             messageFactory.submit(player, MessagePath.ERROR_DISABLED_WORLD);
         } else {
-            if (handler.isIgnoring(player)) {
+            if (isIgnoring(player)) {
                 messageFactory.submit(player, MessagePath.ERROR_IGNORING); // player is ignoring
             } else if (plugin.getSettings().getStartFee() > plugin.getEconomy().getBalance(player)) { // TODO: Double.compare
                 messageFactory.submit(player, MessagePath.ERROR_MONEY); // not enough funds
