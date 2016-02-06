@@ -21,14 +21,17 @@
 package com.sainttx.auctions;
 
 import com.google.common.base.Joiner;
-import com.sainttx.auctions.api.*;
+import com.sainttx.auctions.api.AuctionManager;
+import com.sainttx.auctions.api.AuctionPlugin;
+import com.sainttx.auctions.api.Auctions;
+import com.sainttx.auctions.api.MessageFactory;
+import com.sainttx.auctions.api.Settings;
 import com.sainttx.auctions.api.messages.MessageHandler;
 import com.sainttx.auctions.api.messages.MessageHandlerType;
 import com.sainttx.auctions.api.reward.ItemReward;
 import com.sainttx.auctions.api.reward.Reward;
 import com.sainttx.auctions.command.AuctionCommands;
 import com.sainttx.auctions.command.module.AuctionsModule;
-import com.sainttx.auctions.hook.PlaceholderAPIHook;
 import com.sainttx.auctions.listener.AuctionListener;
 import com.sainttx.auctions.listener.PlayerListener;
 import com.sainttx.auctions.structure.messages.group.GlobalChatGroup;
@@ -63,7 +66,12 @@ import org.mcstats.MetricsLite;
 import java.io.File;
 import java.io.IOException;
 import java.text.NumberFormat;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
@@ -137,14 +145,6 @@ public class AuctionPluginImpl extends JavaPlugin implements AuctionPlugin {
             getLogger().info("Added global chat recipient group to the list of broadcast listeners");
         }
 
-        // Register placeholders
-        if (canRegisterPlaceholders()) {
-            PlaceholderAPIHook.registerPlaceHolders(this);
-            getLogger().info("Successfully registered PlaceholderAPI placeholders");
-        } else {
-            getLogger().info("PlaceholderAPI was not found, chat hooks have NOT been registered");
-        }
-
         // Message handler
         try {
             MessageHandlerType type = MessageHandlerType.valueOf(getConfig().getString("chatSettings.handler"));
@@ -202,17 +202,6 @@ public class AuctionPluginImpl extends JavaPlugin implements AuctionPlugin {
         getServer().getPluginManager().registerEvents(new AuctionListener(this), this);
         loadConfig();
         loadOfflineRewards();
-    }
-
-    /*
-     * A helper method that determines if placeholders can be registered
-     */
-    private boolean canRegisterPlaceholders() {
-        try {
-            return Class.forName("me.clip.placeholderapi.PlaceholderAPI") != null;
-        } catch (Throwable throwable) {
-            return false;
-        }
     }
 
     /*
