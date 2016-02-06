@@ -224,7 +224,6 @@ public class AuctionCommands {
     public void reload(CommandSender sender) {
         messageFactory.submit(sender, MessagePath.GENERAL_PLUGIN_RELOAD);
         plugin.reloadConfig();
-        // TODO: Reload items.yml
     }
 
     @Command(

@@ -202,6 +202,24 @@ public class AuctionPluginImpl extends JavaPlugin implements AuctionPlugin {
         loadOfflineRewards();
     }
 
+    @Override
+    public void reloadConfig() {
+        super.reloadConfig();
+        loadConfig();
+    }
+
+    // Loads the items.yml file
+    private void loadConfig() {
+        File itemsFile = new File(getDataFolder(), "items.yml");
+
+        // Save items file name
+        if (!itemsFile.exists()) {
+            saveResource("items.yml", false);
+        }
+
+        this.itemsFile = YamlConfiguration.loadConfiguration(itemsFile);
+    }
+
     /*
      * A helper method that determines if a plugins configuration is outdated
      * and prints out the missing pathways in the old config
@@ -376,24 +394,6 @@ public class AuctionPluginImpl extends JavaPlugin implements AuctionPlugin {
         } catch (IOException ex) {
             getLogger().log(Level.SEVERE, "failed to save offline configuration", ex);
         }
-    }
-
-    /**
-     * Loads the configuration
-     */
-    public void loadConfig() {
-        File names = new File(getDataFolder(), "items.yml");
-        File namesFile = new File(getDataFolder(), "items.yml");
-
-        // Save items file name
-        if (!names.exists()) {
-            saveResource("items.yml", false);
-        }
-        if (!namesFile.exists()) {
-            saveResource("items.yml", false);
-        }
-
-        itemsFile = YamlConfiguration.loadConfiguration(namesFile);
     }
 
     /*
