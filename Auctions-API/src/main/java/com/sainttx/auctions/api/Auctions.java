@@ -20,8 +20,6 @@
 
 package com.sainttx.auctions.api;
 
-import com.sainttx.auctions.api.messages.MessageHandler;
-
 /**
  * A central API to handle all external Auction plugin needs
  */
@@ -45,14 +43,5 @@ public class Auctions {
      */
     public static AuctionManager getManager() {
         return manager;
-    }
-
-    /**
-     * Gets the MessageHandler of {@link #getManager()}
-     *
-     * @return the message handler
-     */
-    public static MessageHandler getMessageHandler() {
-        return manager.getMessageHandler();
     }
 }

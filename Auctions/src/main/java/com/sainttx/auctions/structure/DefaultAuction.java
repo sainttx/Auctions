@@ -23,7 +23,6 @@ package com.sainttx.auctions.structure;
 import com.sainttx.auctions.MessagePath;
 import com.sainttx.auctions.api.AuctionPlugin;
 import com.sainttx.auctions.api.event.AuctionEndEvent;
-import com.sainttx.auctions.api.messages.MessageHandler;
 import com.sainttx.auctions.api.module.AuctionModule;
 import com.sainttx.auctions.api.reward.Reward;
 import org.bukkit.Bukkit;
@@ -131,7 +130,6 @@ public class DefaultAuction extends AbstractAuction {
 
     @Override
     public void end(boolean broadcast) {
-        MessageHandler handler = plugin.getManager().getMessageHandler();
         Player owner = Bukkit.getPlayer(getOwner());
 
         AuctionEndEvent event = new AuctionEndEvent(this);

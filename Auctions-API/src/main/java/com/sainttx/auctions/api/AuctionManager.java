@@ -20,7 +20,6 @@
 
 package com.sainttx.auctions.api;
 
-import com.sainttx.auctions.api.messages.MessageHandler;
 import com.sainttx.auctions.api.messages.MessageRecipientGroup;
 import org.bukkit.entity.Player;
 
@@ -66,20 +65,6 @@ public interface AuctionManager {
      * @return the auction queue
      */
     Queue<Auction> getQueue();
-
-    /**
-     * Returns the current message handler
-     *
-     * @return the message handler for auction messages
-     */
-    MessageHandler getMessageHandler();
-
-    /**
-     * Sets the plugins message handler
-     *
-     * @param handler the new message handler
-     */
-    void setMessageHandler(MessageHandler handler);
 
     /**
      * Adds a message recipient group to receive messages

@@ -20,7 +20,6 @@
 
 package com.sainttx.auctions.api;
 
-import com.sainttx.auctions.api.messages.MessageHandler;
 import com.sainttx.auctions.api.reward.Reward;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.inventory.ItemStack;
@@ -36,13 +35,6 @@ public interface AuctionPlugin extends Plugin {
      * @return the manager instance
      */
     AuctionManager getManager();
-
-    /**
-     * Returns the current MessageHandler
-     *
-     * @return the handler instance
-     */
-    MessageHandler getMessageHandler();
 
     /**
      * Returns the Vault economy provider

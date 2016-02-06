@@ -22,7 +22,6 @@ package com.sainttx.auctions;
 
 import com.sainttx.auctions.api.Auction;
 import com.sainttx.auctions.api.AuctionManager;
-import com.sainttx.auctions.api.messages.MessageHandler;
 import com.sainttx.auctions.api.messages.MessageRecipientGroup;
 import org.bukkit.entity.Player;
 
@@ -42,7 +41,6 @@ public class AuctionManagerImpl implements AuctionManager {
     private Auction currentAuction;
     private Set<MessageRecipientGroup> recipientGroups = new HashSet<>();
     private Queue<Auction> auctionQueue = new ConcurrentLinkedQueue<>();
-    private MessageHandler handler;
     private boolean disabled;
     private boolean canAuction = true;
 
@@ -133,20 +131,6 @@ public class AuctionManagerImpl implements AuctionManager {
     @Override
     public void addAuctionToQueue(Auction auction) {
         getQueue().add(auction);
-    }
-
-    @Override
-    public MessageHandler getMessageHandler() {
-        return handler;
-    }
-
-    @Override
-    public void setMessageHandler(MessageHandler handler) {
-        if (handler == null) {
-            throw new IllegalArgumentException("new message handler cannot be null");
-        }
-
-        this.handler = handler;
     }
 
     @Override

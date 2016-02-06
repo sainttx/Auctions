@@ -26,7 +26,6 @@ import com.sainttx.auctions.api.AuctionPlugin;
 import com.sainttx.auctions.api.Auctions;
 import com.sainttx.auctions.api.MessageFactory;
 import com.sainttx.auctions.api.Settings;
-import com.sainttx.auctions.api.messages.MessageHandler;
 import com.sainttx.auctions.api.reward.ItemReward;
 import com.sainttx.auctions.api.reward.Reward;
 import com.sainttx.auctions.command.AuctionCommands;
@@ -35,7 +34,6 @@ import com.sainttx.auctions.listener.AuctionListener;
 import com.sainttx.auctions.listener.PlayerListener;
 import com.sainttx.auctions.structure.messages.group.GlobalChatGroup;
 import com.sainttx.auctions.structure.messages.group.HerochatGroup;
-import com.sainttx.auctions.structure.messages.handler.TextualMessageHandler;
 import com.sk89q.intake.CommandException;
 import com.sk89q.intake.Intake;
 import com.sk89q.intake.InvalidUsageException;
@@ -128,7 +126,6 @@ public class AuctionPluginImpl extends JavaPlugin implements AuctionPlugin {
 
         // Create manager instance
         this.manager = new AuctionManagerImpl();
-        manager.setMessageHandler(new TextualMessageHandler(this));
         Auctions.setManager(manager);
 
         // Message groups
@@ -294,11 +291,6 @@ public class AuctionPluginImpl extends JavaPlugin implements AuctionPlugin {
     @Override
     public AuctionManager getManager() {
         return manager;
-    }
-
-    @Override
-    public MessageHandler getMessageHandler() {
-        return manager.getMessageHandler();
     }
 
     @Override
