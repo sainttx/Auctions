@@ -76,7 +76,7 @@ public class SimpleMessageFactory implements MessageFactory {
         final String rawMessage = plugin.getConfig().getString(message.getPath());
         return executorService.submit(() -> {
             String coloredMessage = ChatColor.translateAlternateColorCodes('&', rawMessage);
-            splitAndSendMessage(recipients, coloredMessage, message.isSpammy(), null);
+            splitAndSendMessage(recipients, coloredMessage, message.isIgnorable(), message.isSpammy(), null);
         });
     }
 
@@ -86,12 +86,13 @@ public class SimpleMessageFactory implements MessageFactory {
         return executorService.submit(() -> {
             String coloredMessage = ChatColor.translateAlternateColorCodes('&', rawMessage);
             String formattedMessage = replaceAuctionPlaceholders(coloredMessage, auction);
-            splitAndSendMessage(recipients, formattedMessage, message.isSpammy(), auction);
+            splitAndSendMessage(recipients, formattedMessage, message.isIgnorable(), message.isSpammy(), auction);
         });
     }
 
     // Splits a string at its new lines (\n) and sends the resulting array to a recipient
-    private void splitAndSendMessage(Collection<? extends CommandSender> recipients, String message, boolean spam, Auction auction) {
+    private void splitAndSendMessage(Collection<? extends CommandSender> recipients, String message,
+                                     boolean ignorable, boolean spammy, Auction auction) {
         String[] messageArray = message.split("\n");
 
         for (String line : messageArray) {
@@ -101,8 +102,7 @@ public class SimpleMessageFactory implements MessageFactory {
                 if (recipient instanceof Player) {
                     Player player = (Player) recipient;
                     // Send the message if the player isn't ignoring messages and the player isn't blocking a spammy message
-                    if (!player.hasMetadata(MetadataKeys.AUCTIONS_IGNORING)
-                            && !(spam && !player.hasMetadata(MetadataKeys.AUCTIONS_IGNORING_SPAM))) {
+                    if (!canIgnoreMessage(player, ignorable, spammy)) {
                         player.spigot().sendMessage(finalMessage);
                     }
                 } else {
@@ -111,6 +111,17 @@ public class SimpleMessageFactory implements MessageFactory {
                     recipient.sendMessage(ChatColor.stripColor(legacyText));
                 }
             });
+        }
+    }
+
+    // Returns whether a player can
+    private boolean canIgnoreMessage(Player player, boolean ignorable, boolean spammy) {
+        if (!ignorable) {
+            return false;
+        } else if (spammy && player.hasMetadata(MetadataKeys.AUCTIONS_IGNORING_SPAM)) {
+            return true;
+        } else {
+            return player.hasMetadata(MetadataKeys.AUCTIONS_IGNORING);
         }
     }
 

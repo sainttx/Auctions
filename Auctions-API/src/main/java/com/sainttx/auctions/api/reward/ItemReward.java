@@ -45,6 +45,11 @@ public class ItemReward implements Reward {
         public boolean isSpammy() {
             return false;
         }
+
+        @Override
+        public boolean isIgnorable() {
+            return false;
+        }
     };
 
     /* for deserialization of item rewards */

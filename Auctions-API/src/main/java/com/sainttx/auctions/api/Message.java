@@ -41,4 +41,11 @@ public interface Message {
      * @return whether this message is considered spammy or not.
      */
     boolean isSpammy();
+
+    /**
+     * Returns whether or not this message can be ignored
+     *
+     * @return whether this message is ignorable or not.
+     */
+    boolean isIgnorable();
 }
