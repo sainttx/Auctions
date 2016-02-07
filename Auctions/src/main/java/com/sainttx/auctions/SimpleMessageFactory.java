@@ -135,7 +135,7 @@ public class SimpleMessageFactory implements MessageFactory {
         }
 
         // Get the item display format
-        String format = plugin.getConfig().getString("messages.auctionFormattable.itemFormat"); // TODO: MessagePath
+        String format = plugin.getConfig().getString(MessagePath.AUCTION_ITEMFORMAT.getPath());
         String formatParsed = format.replace("[itemName]", auction.getReward().getName());
         String formatParsedColored = ChatColor.translateAlternateColorCodes('&', formatParsed);
 
