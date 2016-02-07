@@ -53,12 +53,12 @@ public class AuctionManagerImpl implements AuctionManager {
      */
     void disable() {
         if (getCurrentAuction() != null) {
-            getCurrentAuction().cancel();
+            // TODO: getCurrentAuction().cancel();
         }
 
         // Clear queue
         for (Auction auction : getQueue()) {
-            auction.end(false);
+            // TODO: auction.end(false);
         }
         getQueue().clear();
     }
@@ -148,7 +148,7 @@ public class AuctionManagerImpl implements AuctionManager {
         Auction next = getQueue().poll();
 
         if (next != null) {
-            next.start();
+            // TODO: next.start();
             currentAuction = next;
         }
     }

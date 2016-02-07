@@ -88,8 +88,8 @@ public class PlayerListener implements Listener {
                 event.setCancelled(true);
                 plugin.getMessageFactory().submit(player, MessagePath.ERROR_COMMAND_QUEUE);
             } else if (plugin.getSettings().shouldBlockCommandsIfTopBidder()
-                    && plugin.getManager().getCurrentAuction() != null
-                    && player.getUniqueId().equals(plugin.getManager().getCurrentAuction().getTopBidder())) {
+                    && plugin.getManager().getCurrentAuction() != null) {
+                    // TODO: && player.getUniqueId().equals(plugin.getManager().getCurrentAuction().getTopBidder())) {
                 event.setCancelled(true);
                 plugin.getMessageFactory().submit(player, MessagePath.ERROR_COMMAND_TOPBIDDER);
             }
@@ -111,7 +111,7 @@ public class PlayerListener implements Listener {
             } else {
                 Auction auction = plugin.getManager().getCurrentAuction();
 
-                if (auction != null && player.getUniqueId().equals(auction.getTopBidder())) {
+                if (auction != null && player.getUniqueId().equals(auction.getBidder())) {
                     event.setCancelled(true);
                     plugin.getMessageFactory().submit(player, MessagePath.ERROR_DISABLED_TELEPORT);
                 }

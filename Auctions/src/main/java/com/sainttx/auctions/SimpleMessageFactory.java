@@ -29,7 +29,6 @@ import com.sainttx.auctions.api.reward.Reward;
 import com.sainttx.auctions.misc.DoubleConsts;
 import com.sainttx.auctions.misc.MetadataKeys;
 import com.sainttx.auctions.util.ReflectionUtil;
-import com.sainttx.auctions.util.TimeUtil;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -221,23 +220,23 @@ public class SimpleMessageFactory implements MessageFactory {
                 .replace("[topbiddername]", getTopBidderName(auction))
                 // Format tax information to readable strings
                 .replace("[taxpercent]", formatToReadableNumber(plugin.getSettings().getTaxPercent()))
-                .replace("[taxamount]", formatToReadableNumber(auction.getTaxAmount()))
+                // TODO: .replace("[taxamount]", formatToReadableNumber(auction.getTaxAmount()))
                 // Format truncate-able variables
                 .replace("[autowin]", formatValue(auction.getAutowin()))
                 .replace("[increment]", formatValue(auction.getBidIncrement()))
-                .replace("[topbid]", formatValue(auction.getTopBid()))
-                .replace("[startprice]", formatValue(auction.getStartPrice()))
-                .replace("[winnings]", formatValue(auction.getTopBid() - auction.getTaxAmount()));
+                .replace("[topbid]", formatValue(auction.getBid()))
+                .replace("[startprice]", formatValue(auction.getStartPrice()));
+                // TODO: Tax amount - .replace("[winnings]", formatValue(auction.getBid() - auction.getTaxAmount()));
     }
 
     // Gets the name of the top bidder of an Auction
     private String getTopBidderName(Auction auction) {
-        if (!auction.hasBids()) {
+        if (auction.getBid() == Auction.NO_BID) {
             return "Nobody";
-        } else if (auction.getTopBidderName() == null) {
+        } else if (auction.getBidderName() == null) {
             return "Console";
         } else {
-            return auction.getTopBidderName();
+            return auction.getBidderName();
         }
     }
 
@@ -256,7 +255,7 @@ public class SimpleMessageFactory implements MessageFactory {
 
     // Gets a formatted string with the amount of time left in an auction
     private String getTimeLeft(Auction auction) {
-        return TimeUtil.getFormattedTime(auction.getTimeLeft(), plugin.getSettings().shouldUseShortenedTimes());
+        return "Unknown"; // TODO: TimeUtil.getFormattedTime(auction.getTimeLeft(), plugin.getSettings().shouldUseShortenedTimes());
     }
 
     /**

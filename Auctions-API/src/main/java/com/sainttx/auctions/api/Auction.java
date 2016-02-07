@@ -20,17 +20,19 @@
 
 package com.sainttx.auctions.api;
 
-import com.sainttx.auctions.api.module.AuctionModule;
 import com.sainttx.auctions.api.reward.Reward;
-import org.bukkit.entity.Player;
 
-import java.util.Collection;
 import java.util.UUID;
 
 /**
  * Represents an Auction that players can bid on
  */
 public interface Auction {
+
+    /**
+     * The return value of {@link #getBid()} when no bids have been placed.
+     */
+    double NO_BID = -1;
 
     /**
      * Gets the owner of this auction
@@ -47,32 +49,18 @@ public interface Auction {
     String getOwnerName();
 
     /**
-     * Gets whether or not there have been bids placed on this auction
-     *
-     * @return true if somebody has bid
-     */
-    boolean hasBids();
-
-    /**
-     * Gets whether or not the auction has ended
-     *
-     * @return true if the auction is over
-     */
-    boolean hasEnded();
-
-    /**
      * Gets the {@link UUID} of the current top bidder for this auction
      *
      * @return the current {@link UUID} of the winner
      */
-    UUID getTopBidder();
+    UUID getBidder();
 
     /**
      * Gets the name of the current top bidder
      *
      * @return the top bidders name
      */
-    String getTopBidderName();
+    String getBidderName();
 
     /**
      * Gets the reward that is being auctioned
@@ -82,43 +70,11 @@ public interface Auction {
     Reward getReward();
 
     /**
-     * Gets the amount of time left in this auction
+     * Gets the starting price of this auction
      *
-     * @return amount of time left
+     * @return the starting price
      */
-    int getTimeLeft();
-
-    /**
-     * Sets the amount of time left in this auction
-     *
-     * @param time new amount of time left
-     */
-    void setTimeLeft(int time);
-
-    /**
-     * Starts the auction
-     */
-    void start();
-
-    /**
-     * Stops this auction and returns the money to the top bidder.
-     * Rewards are left unhandled and are thrown unless other action
-     * is taken by plugin implementations
-     */
-    void impound();
-
-    /**
-     * Cancels this auction and returns the items to the owner
-     */
-    void cancel();
-
-    /**
-     * Ends the auction as if the timer ran out
-     *
-     * @param broadcast whether or not to broadcast any
-     * information about this auction ending
-     */
-    void end(boolean broadcast);
+    double getStartPrice();
 
     /**
      * Gets the lowest amount that can be bid on this auction
@@ -135,125 +91,18 @@ public interface Auction {
     double getAutowin();
 
     /**
-     * Gets the current tax impact on the top bid
+     * Returns the current bid on this Auction. This method will return {@link #NO_BID}
+     * when no bid has been placed yet.
      *
-     * @return the current dollar amount that will be removed
-     * from the winnings as a result of tax
+     * @return the current bid by a user
      */
-    double getTaxAmount();
+    double getBid();
 
     /**
-     * Gets the current top bid in this auction
+     * Sets the bid in this auction. This bid must exceed the current value
+     * provided by {@link #getBid()} + {@link #getBidIncrement()}.
      *
-     * @return the top bid
+     * @param bid the new bid
      */
-    double getTopBid();
-
-    /**
-     * Gets the starting price of this auction
-     *
-     * @return the starting price
-     */
-    double getStartPrice();
-
-    /**
-     * Handles the event that a player places a bid.
-     *
-     * @param player the player
-     * @param bid the amount bid by the player
-     */
-    void placeBid(Player player, double bid);
-
-    /**
-     * Gets a deep copy of modules present in this auction
-     *
-     * @return all modules tied to the auction
-     */
-    Collection<AuctionModule> getModules();
-
-    /**
-     * Adds a module to this auction
-     *
-     * @param module the module
-     */
-    void addModule(AuctionModule module);
-
-    /**
-     * Removes a module from this auction. Returns whether a
-     * module was actually removed or not.
-     *
-     * @param module the module
-     * @return if a module was actually removed
-     */
-    boolean removeModule(AuctionModule module);
-
-    /**
-     * Represents an auctions timer
-     */
-    interface Timer extends Runnable {
-
-    }
-
-    /**
-     * Represents an Auction builder
-     */
-    interface Builder {
-
-        /**
-         * Creates the auction
-         *
-         * @return the auction created by the builder
-         */
-        Auction build();
-
-        /**
-         * Sets the initial owner of the auction. If this is
-         * set to null the plugin will think that the auction is
-         * being created by the console/server.
-         *
-         * @param owner the player auctioning the item
-         * @return this builder instance
-         */
-        Builder owner(Player owner);
-
-        /**
-         * Sets the bid increment of the auction that will be created
-         *
-         * @param increment the new bid increment
-         * @return this builder instance
-         */
-        Builder bidIncrement(double increment);
-
-        /**
-         * Sets the auction start time of the auction that will be created
-         *
-         * @param time the new auction start time
-         * @return this builder instance
-         */
-        Builder time(int time);
-
-        /**
-         * Sets the reward of the auction that will be created
-         *
-         * @param reward the new auctioned reward
-         * @return this builder instance
-         */
-        Builder reward(Reward reward);
-
-        /**
-         * Sets the starting top bid of the auction that will be created
-         *
-         * @param bid the new top bid
-         * @return this builder instance
-         */
-        Builder topBid(double bid);
-
-        /**
-         * Sets the autowin amount of the auction that will be created
-         *
-         * @param autowin the new autowin amount
-         * @return this builder instance
-         */
-        Builder autowin(double autowin);
-    }
+    void setBid(double bid);
 }

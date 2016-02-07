@@ -47,6 +47,8 @@ public class AuctionListener implements Listener {
         Auction auction = event.getAuction();
 
         // Check if there must be an auction winner
+        /*
+        TODO:
         if (plugin.getSettings().shouldRunPostAuctionCommandsOnlyIfSold() && auction.getTopBidder() == null) {
             return;
         }
@@ -57,6 +59,6 @@ public class AuctionListener implements Listener {
             command = command.replace("[owner]", auction.getOwnerName());
             command = command.replace("[winner]", winner);
             plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), command);
-        });
+        }); */
     }
 }

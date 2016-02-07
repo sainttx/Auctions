@@ -25,14 +25,10 @@ import com.sainttx.auctions.api.Auction;
 import com.sainttx.auctions.api.AuctionManager;
 import com.sainttx.auctions.api.AuctionPlugin;
 import com.sainttx.auctions.api.MessageFactory;
-import com.sainttx.auctions.api.event.AuctionCreateEvent;
 import com.sainttx.auctions.api.event.AuctionPreBidEvent;
 import com.sainttx.auctions.api.reward.ItemReward;
 import com.sainttx.auctions.api.reward.Reward;
 import com.sainttx.auctions.misc.MetadataKeys;
-import com.sainttx.auctions.structure.auction.StandardAuction;
-import com.sainttx.auctions.structure.module.AntiSnipeModule;
-import com.sainttx.auctions.structure.module.AutoWinModule;
 import com.sk89q.intake.Command;
 import com.sk89q.intake.Require;
 import com.sk89q.intake.argument.MissingArgumentException;
@@ -73,7 +69,7 @@ public class AuctionCommands {
         } else {
             Player player = (Player) sender;
             Reward reward = auction.getReward();
-            auction.impound();
+            // TODO: auction.impound();
             reward.giveItem(player);
 
             // TODO: [player] placeholder
@@ -107,7 +103,7 @@ public class AuctionCommands {
                 Bukkit.getPluginManager().callEvent(event);
 
                 if (!event.isCancelled()) {
-                    auction.placeBid(player, amount);
+                    // TODO: auction.placeBid(player, amount);
                 }
             }
         }
@@ -120,6 +116,7 @@ public class AuctionCommands {
     )
     @Require("auctions.command.cancel")
     public void cancel(CommandSender sender, @Optional Auction auction) {
+        /* TODO:
         if (auction == null) {
             // No auction
             messageFactory.submit(sender, MessagePath.ERROR_NO_AUCTION);
@@ -142,7 +139,7 @@ public class AuctionCommands {
             messageFactory.submit(sender, MessagePath.ERROR_OTHER_AUCTION);
         } else {
             auction.cancel();
-        }
+        } */
     }
 
     @Command(
@@ -159,7 +156,7 @@ public class AuctionCommands {
                 && !auction.getOwner().equals(((Player) sender).getUniqueId())) {
             messageFactory.submit(sender, MessagePath.ERROR_OTHER_AUCTION);
         } else {
-            auction.end(true);
+            // TODO: auction.end(true);
             manager.setCurrentAuction(null);
         }
     }
@@ -200,9 +197,9 @@ public class AuctionCommands {
             plugin.getMessageFactory().submit(sender, MessagePath.AUCTION_INCREMENT, auction);
 
             // Send information about any top bidders
-            if (auction.getTopBidder() != null) {
-                plugin.getMessageFactory().submit(sender, MessagePath.AUCTION_INFO_TOPBIDDER, auction);
-            }
+            // TODO: if (auction.getTopBidder() != null) {
+            // plugin.getMessageFactory().submit(sender, MessagePath.AUCTION_INFO_TOPBIDDER, auction);
+            // }
 
             // Send queue information
             if (sender instanceof Player) {
@@ -295,7 +292,7 @@ public class AuctionCommands {
                     && !player.hasPermission("auctions.bypass.general.creative")) {
                 messageFactory.submit(player, MessagePath.ERROR_CREATIVE);
             } else {
-                Auction.Builder builder = new StandardAuction.StandardAuctionBuilder(plugin);
+                // TODO: Auction.Builder builder = new StandardAuction.StandardAuctionBuilder(plugin);
 
                 if (bidIncrement != null) {
                     if (!plugin.getSettings().canBidIncrementExceedStartPrice()
@@ -365,12 +362,14 @@ public class AuctionCommands {
                         item.setAmount(numItems);
                         Reward reward = new ItemReward(plugin, item);
                         if (bidIncrement != null) {
-                            builder.bidIncrement(bidIncrement);
+                            // TODO: builder.bidIncrement(bidIncrement);
                         }
                         if (autoWinPrice != null) {
-                            builder.autowin(autoWinPrice);
+                            // TODO: builder.autowin(autoWinPrice);
                         }
-                        builder.reward(reward)
+                        /*
+                        TODO: builder.reward(reward)
+
                                 .owner(player)
                                 .topBid(startingPrice);
                         Auction created = builder.build();
@@ -402,7 +401,7 @@ public class AuctionCommands {
                         } else {
                             plugin.getManager().addAuctionToQueue(created);
                             messageFactory.submit(player, MessagePath.GENERAL_PLACED_IN_QUEUE);
-                        }
+                        } */
                     }
                 }
             }
