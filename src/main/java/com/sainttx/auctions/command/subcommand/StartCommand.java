@@ -34,6 +34,7 @@ import com.sainttx.auctions.structure.module.AntiSnipeModule;
 import com.sainttx.auctions.structure.module.AutoWinModule;
 import com.sainttx.auctions.util.AuctionUtil;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
@@ -255,7 +256,7 @@ public class StartCommand extends AuctionSubCommand {
 
                 for (String loreItem : lore) {
                     for (String banned : bannedLore) {
-                        if (loreItem.contains(banned)) {
+                        if (loreItem.contains(ChatColor.translateAlternateColorCodes('&', banned))) {
                             return true;
                         }
                     }
