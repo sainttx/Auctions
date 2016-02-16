@@ -21,10 +21,7 @@
 package com.sainttx.auctions.util;
 
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
@@ -50,11 +47,6 @@ public class ReflectionUtil {
      * Cache of methods that we've found in particular classes
      */
     private static Map<Class<?>, Map<String, Method>> loadedMethods = new HashMap<>();
-
-    /*
-     * Cache of fields that we've found in particular classes
-     */
-    private static Map<Class<?>, Map<String, Field>> loadedFields = new HashMap<>();
 
     /**
      * Gets the version string for NMS & OBC class paths
@@ -122,43 +114,6 @@ public class ReflectionUtil {
     }
 
     /**
-     * Get a Bukkit {@link Player} players NMS playerConnection object
-     *
-     * @param player The player
-     * @return The players connection
-     */
-    public static Object getConnection(Player player) {
-        Method getHandleMethod = getMethod(player.getClass(), "getHandle");
-
-        if (getHandleMethod != null) {
-            try {
-                Object nmsPlayer = getHandleMethod.invoke(player);
-                Field playerConField = getField(nmsPlayer.getClass(), "playerConnection");
-                return playerConField.get(nmsPlayer);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * Get a classes constructor
-     *
-     * @param clazz The constructor class
-     * @param params The parameters in the constructor
-     * @return The constructor object
-     */
-    public static Constructor<?> getConstructor(Class<?> clazz, Class<?>... params) {
-        try {
-            return clazz.getConstructor(params);
-        } catch (NoSuchMethodException e) {
-            return null;
-        }
-    }
-
-    /**
      * Get a method from a class that has the specific paramaters
      *
      * @param clazz The class we are searching
@@ -186,37 +141,6 @@ public class ReflectionUtil {
             e.printStackTrace();
             methods.put(methodName, null);
             loadedMethods.put(clazz, methods);
-            return null;
-        }
-    }
-
-    /**
-     * Get a field with a particular name from a class
-     *
-     * @param clazz The class
-     * @param fieldName The name of the field
-     * @return The field object
-     */
-    public static Field getField(Class<?> clazz, String fieldName) {
-        if (!loadedFields.containsKey(clazz)) {
-            loadedFields.put(clazz, new HashMap<>());
-        }
-
-        Map<String, Field> fields = loadedFields.get(clazz);
-
-        if (fields.containsKey(fieldName)) {
-            return fields.get(fieldName);
-        }
-
-        try {
-            Field field = clazz.getField(fieldName);
-            fields.put(fieldName, field);
-            loadedFields.put(clazz, fields);
-            return field;
-        } catch (Exception e) {
-            e.printStackTrace();
-            fields.put(fieldName, null);
-            loadedFields.put(clazz, fields);
             return null;
         }
     }
