@@ -29,7 +29,7 @@ import java.util.Collection;
 /**
  * Sends messages to all players
  */
-public class GlobalChatGroup implements MessageRecipientGroup {
+public class OnlinePlayersRecipientGroup implements MessageRecipientGroup {
 
     @Override
     public Collection<? extends CommandSender> getRecipients() {

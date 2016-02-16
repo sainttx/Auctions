@@ -126,11 +126,11 @@ public class AuctionPluginImpl extends JavaPlugin implements AuctionPlugin {
 
         // Message groups
         /* if (getConfig().getBoolean("integration.herochat.enable")) {
-            manager.addMessageGroup(new HerochatGroup(this));
+            manager.addMessageGroup(new HerochatChannelRecipientGroup(this));
             getLogger().info("Added Herochat recipient group to the list of broadcast listeners");
         }
         if (getConfig().getBoolean("chatSettings.groups.global")) {
-            manager.addMessageGroup(new GlobalChatGroup());
+            manager.addMessageGroup(new OnlinePlayersRecipientGroup());
             getLogger().info("Added global chat recipient group to the list of broadcast listeners");
         } */
 

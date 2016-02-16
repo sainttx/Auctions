@@ -38,11 +38,11 @@ import java.util.stream.Collectors;
 /**
  * Sends messages to all players inside a specific Herochat channel
  */
-public class HerochatGroup implements MessageRecipientGroup {
+public class HerochatChannelRecipientGroup implements MessageRecipientGroup {
 
     private AuctionPluginImpl plugin;
 
-    public HerochatGroup(AuctionPluginImpl plugin) {
+    public HerochatChannelRecipientGroup(AuctionPluginImpl plugin) {
         this.plugin = plugin;
     }
 
