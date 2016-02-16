@@ -23,7 +23,7 @@ package com.sainttx.auctions.recipient;
 import com.dthielke.herochat.Channel;
 import com.dthielke.herochat.Chatter;
 import com.dthielke.herochat.Herochat;
-import com.sainttx.auctions.AuctionPluginImpl;
+import com.sainttx.auctions.api.AuctionPlugin;
 import com.sainttx.auctions.api.messages.MessageRecipientGroup;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -40,9 +40,9 @@ import java.util.stream.Collectors;
  */
 public class HerochatChannelRecipientGroup implements MessageRecipientGroup {
 
-    private AuctionPluginImpl plugin;
+    private AuctionPlugin plugin;
 
-    public HerochatChannelRecipientGroup(AuctionPluginImpl plugin) {
+    public HerochatChannelRecipientGroup(AuctionPlugin plugin) {
         this.plugin = plugin;
     }
 

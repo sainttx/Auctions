@@ -16,6 +16,7 @@
 
     <modules>
         <module>Auctions-API</module>
+        <module>Auctions-Herochat</module>
         <module>Auctions</module>
     </modules>
 
@@ -23,6 +24,10 @@
         <repository>
             <id>spigot-repo</id>
             <url>https://hub.spigotmc.org/nexus/content/groups/public/</url>
+        </repository>
+        <repository>
+            <id>maven.sainttx.com-snapshot</id>
+            <url>http://maven.sainttx.com/artifactory/libs-snapshot-local</url>
         </repository>
         <repository>
             <id>vault-repo</id>
