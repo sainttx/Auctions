@@ -23,7 +23,6 @@ package com.sainttx.auctions;
 import com.google.common.base.Joiner;
 import com.sainttx.auctions.api.AuctionManager;
 import com.sainttx.auctions.api.AuctionPlugin;
-import com.sainttx.auctions.api.Auctions;
 import com.sainttx.auctions.api.MessageFactory;
 import com.sainttx.auctions.api.Settings;
 import com.sainttx.auctions.api.reward.ItemReward;
@@ -126,7 +125,6 @@ public class AuctionPluginImpl extends JavaPlugin implements AuctionPlugin {
 
         // Create manager instance
         this.manager = new AuctionManagerImpl();
-        Auctions.setManager(manager);
 
         // Message groups
         if (getConfig().getBoolean("integration.herochat.enable")) {
@@ -233,8 +231,6 @@ public class AuctionPluginImpl extends JavaPlugin implements AuctionPlugin {
         } catch (IOException ex) {
             ex.printStackTrace();
         }
-
-        Auctions.setManager(null);
     }
 
     @Override
