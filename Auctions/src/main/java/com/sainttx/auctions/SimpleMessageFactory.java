@@ -32,6 +32,7 @@ import com.sainttx.auctions.util.ReflectionUtil;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -39,8 +40,6 @@ import org.bukkit.inventory.ItemStack;
 
 import java.lang.reflect.Method;
 import java.text.NumberFormat;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -62,58 +61,64 @@ public class SimpleMessageFactory implements MessageFactory {
 
     @Override
     public Future<?> submit(final CommandSender recipient, final Message message) {
-        return submit(Collections.singleton(recipient), message);
+        return submit(recipient, message, null);
     }
 
     @Override
     public Future<?> submit(final CommandSender recipient, final Message message, final Auction auction) {
-        return submit(Collections.singleton(recipient), message, auction);
-    }
-
-    @Override
-    public Future<?> submit(Collection<? extends CommandSender> recipients, Message message) {
-        final String rawMessage = plugin.getConfig().getString(message.getPath());
-        return executorService.submit(() -> {
-            String coloredMessage = ChatColor.translateAlternateColorCodes('&', rawMessage);
-            splitAndSendMessage(recipients, coloredMessage, message.isIgnorable(), message.isSpammy(), null);
-        });
-    }
-
-    @Override
-    public Future<?> submit(Collection<? extends CommandSender> recipients, Message message, Auction auction) {
         final String rawMessage = plugin.getConfig().getString(message.getPath());
         return executorService.submit(() -> {
             String coloredMessage = ChatColor.translateAlternateColorCodes('&', rawMessage);
             String formattedMessage = replaceAuctionPlaceholders(coloredMessage, auction);
-            splitAndSendMessage(recipients, formattedMessage, message.isIgnorable(), message.isSpammy(), auction);
+            BaseComponent[][] messages = splitAndFormatMessage(formattedMessage, auction);
+
+            for (BaseComponent[] component : messages) {
+                if (recipient instanceof Player
+                        && !canIgnoreMessage((Player) recipient, message.isIgnorable(), message.isSpammy())) {
+                    ((Player) recipient).spigot().sendMessage(component);
+                } else {
+                    String legacyText = TextComponent.toLegacyText(component);
+                    recipient.sendMessage(legacyText);
+                }
+            }
         });
     }
 
-    // Splits a string at its new lines (\n) and sends the resulting array to a recipient
-    private void splitAndSendMessage(Collection<? extends CommandSender> recipients, String message,
-                                     boolean ignorable, boolean spammy, Auction auction) {
-        String[] messageArray = message.split("\n");
-
-        for (String line : messageArray) {
-            BaseComponent[] finalMessage = generateMessage(line, auction);
-
-            recipients.forEach(recipient -> {
-                if (recipient instanceof Player) {
-                    Player player = (Player) recipient;
-                    // Send the message if the player isn't ignoring messages and the player isn't blocking a spammy message
-                    if (!canIgnoreMessage(player, ignorable, spammy)) {
-                        player.spigot().sendMessage(finalMessage);
-                    }
-                } else {
-                    // Send all the lines to the non-player with all colors stripped
-                    String legacyText = TextComponent.toLegacyText(finalMessage);
-                    recipient.sendMessage(ChatColor.stripColor(legacyText));
-                }
-            });
-        }
+    @Override
+    public Future<?> submitBroadcast(Message message) {
+        return submitBroadcast(message, null);
     }
 
-    // Returns whether a player can
+    @Override
+    public Future<?> submitBroadcast(Message message, Auction auction) {
+        final String rawMessage = plugin.getConfig().getString(message.getPath());
+        return executorService.submit(() -> {
+            String coloredMessage = ChatColor.translateAlternateColorCodes('&', rawMessage);
+            String formattedMessage = replaceAuctionPlaceholders(coloredMessage, auction);
+            BaseComponent[][] messages = splitAndFormatMessage(formattedMessage, auction);
+
+            for (BaseComponent[] component : messages) {
+                // TODO: Get proper recipients
+                Bukkit.getOnlinePlayers().stream()
+                        .filter(player -> !canIgnoreMessage(player, message.isIgnorable(), message.isSpammy()))
+                        .forEach(player -> player.spigot().sendMessage(component));
+                String legacyText = TextComponent.toLegacyText(component);
+                plugin.getServer().getConsoleSender().sendMessage(ChatColor.stripColor(legacyText)); // Send to console
+            }
+        });
+    }
+
+    // Splits, formats, and returns a message as a BaseComponent[] array
+    private BaseComponent[][] splitAndFormatMessage(String message, Auction auction) {
+        String[] messageArray = message.split("\n");
+        BaseComponent[][] components = new BaseComponent[messageArray.length][];
+        for (int i = 0 ; i < messageArray.length ; i++) {
+            components[i] = generateMessage(messageArray[i], auction);
+        }
+        return components;
+    }
+
+    // Returns whether a player can ignore a message
     private boolean canIgnoreMessage(Player player, boolean ignorable, boolean spammy) {
         if (!ignorable) {
             return false;
@@ -209,6 +214,9 @@ public class SimpleMessageFactory implements MessageFactory {
      */
     public String replaceAuctionPlaceholders(String message, Auction auction) {
         // TODO: Placeholder for enchantments, durability, various item information
+        if (auction == null) {
+            return message;
+        }
         return message
                 // Format reward information placeholders
                 .replace("[itemName]", auction.getReward().getName())
