@@ -18,7 +18,7 @@
  * along with Auctions.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sainttx.auctions.structure.messages.group;
+package com.sainttx.auctions.recipient;
 
 import com.dthielke.herochat.Channel;
 import com.dthielke.herochat.Chatter;
