@@ -22,6 +22,8 @@ package com.sainttx.auctions.api.messages;
 
 import org.bukkit.command.CommandSender;
 
+import java.util.Collection;
+
 /**
  * Represents a group of players that can receive messages from the plugin
  */
@@ -32,5 +34,5 @@ public interface MessageRecipientGroup {
      *
      * @return any players that are in the valid channel to receive the message
      */
-    Iterable<? extends CommandSender> getRecipients();
+    Collection<? extends CommandSender> getRecipients();
 }

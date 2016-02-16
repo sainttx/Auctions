@@ -24,13 +24,15 @@ import com.sainttx.auctions.api.messages.MessageRecipientGroup;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 
+import java.util.Collection;
+
 /**
  * Sends messages to all players
  */
 public class GlobalChatGroup implements MessageRecipientGroup {
 
     @Override
-    public Iterable<? extends CommandSender> getRecipients() {
+    public Collection<? extends CommandSender> getRecipients() {
         return Bukkit.getOnlinePlayers();
     }
 }

@@ -20,12 +20,30 @@
 
 package com.sainttx.auctions.api;
 
+import com.sainttx.auctions.api.messages.MessageRecipientGroup;
 import org.bukkit.command.CommandSender;
 
 import java.util.concurrent.Future;
 import java.util.concurrent.RejectedExecutionException;
 
 public interface MessageFactory {
+
+    /**
+     * Adds a message group to receive messages submitted through
+     * {@link #submitBroadcast(Message)} or {@link #submitBroadcast(Message, Auction)}.
+     *
+     * @param group the group
+     * @return <tt>true</tt> if the groups that are receiving messages changed
+     */
+    boolean addMessageGroup(MessageRecipientGroup group);
+
+    /**
+     * Removes a message group from receiving broadcasts.
+     *
+     * @param group the group
+     * @return <tt>true</tt> if the group was removed as a result of this call
+     */
+    boolean removeMessageGroup(MessageRecipientGroup group);
 
     /**
      * Submits a task to fetch, format, and send a message to a recipient

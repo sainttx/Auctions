@@ -24,6 +24,7 @@ import com.sainttx.auctions.api.Auction;
 import com.sainttx.auctions.api.AuctionPlugin;
 import com.sainttx.auctions.api.Message;
 import com.sainttx.auctions.api.MessageFactory;
+import com.sainttx.auctions.api.messages.MessageRecipientGroup;
 import com.sainttx.auctions.api.reward.ItemReward;
 import com.sainttx.auctions.api.reward.Reward;
 import com.sainttx.auctions.misc.DoubleConsts;
@@ -32,7 +33,6 @@ import com.sainttx.auctions.util.ReflectionUtil;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -40,6 +40,8 @@ import org.bukkit.inventory.ItemStack;
 
 import java.lang.reflect.Method;
 import java.text.NumberFormat;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -51,12 +53,23 @@ public class SimpleMessageFactory implements MessageFactory {
     private ExecutorService executorService = Executors.newSingleThreadExecutor();
     private AuctionPlugin plugin;
     private NumberFormat numberFormat;
+    private Collection<MessageRecipientGroup> recipientGroups = new HashSet<>();
 
     public SimpleMessageFactory(AuctionPlugin plugin) {
         this.plugin = plugin;
         this.numberFormat = NumberFormat.getInstance(Locale.ENGLISH);
         this.numberFormat.setMaximumFractionDigits(2);
         this.numberFormat.setMinimumFractionDigits(0);
+    }
+
+    @Override
+    public boolean addMessageGroup(MessageRecipientGroup group) {
+        return recipientGroups.add(group);
+    }
+
+    @Override
+    public boolean removeMessageGroup(MessageRecipientGroup group) {
+        return recipientGroups.remove(group);
     }
 
     @Override
@@ -73,13 +86,7 @@ public class SimpleMessageFactory implements MessageFactory {
             BaseComponent[][] messages = splitAndFormatMessage(formattedMessage, auction);
 
             for (BaseComponent[] component : messages) {
-                if (recipient instanceof Player
-                        && !canIgnoreMessage((Player) recipient, message.isIgnorable(), message.isSpammy())) {
-                    ((Player) recipient).spigot().sendMessage(component);
-                } else {
-                    String legacyText = TextComponent.toLegacyText(component);
-                    recipient.sendMessage(legacyText);
-                }
+               sendMessageIfApplicable(recipient, component, message);
             }
         });
     }
@@ -98,14 +105,24 @@ public class SimpleMessageFactory implements MessageFactory {
             BaseComponent[][] messages = splitAndFormatMessage(formattedMessage, auction);
 
             for (BaseComponent[] component : messages) {
-                // TODO: Get proper recipients
-                Bukkit.getOnlinePlayers().stream()
-                        .filter(player -> !canIgnoreMessage(player, message.isIgnorable(), message.isSpammy()))
-                        .forEach(player -> player.spigot().sendMessage(component));
-                String legacyText = TextComponent.toLegacyText(component);
-                plugin.getServer().getConsoleSender().sendMessage(ChatColor.stripColor(legacyText)); // Send to console
+                for (MessageRecipientGroup group : recipientGroups) {
+                    group.getRecipients().forEach(recipient -> sendMessageIfApplicable(recipient, component, message));
+                }
+                // Send to console
+                sendMessageIfApplicable(plugin.getServer().getConsoleSender(), component, message);
             }
         });
+    }
+
+    // Sends a message to a player only if the player can receive it
+    private void sendMessageIfApplicable(CommandSender recipient, BaseComponent[] message, Message origin) {
+        if (recipient instanceof Player
+                && !canIgnoreMessage((Player) recipient, origin.isIgnorable(), origin.isSpammy())) {
+            ((Player) recipient).spigot().sendMessage(message);
+        } else {
+            String legacyText = TextComponent.toLegacyText(message);
+            recipient.sendMessage(legacyText);
+        }
     }
 
     // Splits, formats, and returns a message as a BaseComponent[] array

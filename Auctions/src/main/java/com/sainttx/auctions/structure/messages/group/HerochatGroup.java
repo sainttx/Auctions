@@ -29,6 +29,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -46,7 +47,7 @@ public class HerochatGroup implements MessageRecipientGroup {
     }
 
     @Override
-    public Iterable<? extends CommandSender> getRecipients() {
+    public Collection<? extends CommandSender> getRecipients() {
         return Collections.emptyList();
     }
 
