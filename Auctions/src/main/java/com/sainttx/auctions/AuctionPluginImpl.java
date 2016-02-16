@@ -31,8 +31,6 @@ import com.sainttx.auctions.command.AuctionCommands;
 import com.sainttx.auctions.command.module.AuctionsModule;
 import com.sainttx.auctions.listener.AuctionListener;
 import com.sainttx.auctions.listener.PlayerListener;
-import com.sainttx.auctions.structure.messages.group.GlobalChatGroup;
-import com.sainttx.auctions.structure.messages.group.HerochatGroup;
 import com.sk89q.intake.CommandException;
 import com.sk89q.intake.Intake;
 import com.sk89q.intake.InvalidUsageException;
@@ -127,14 +125,14 @@ public class AuctionPluginImpl extends JavaPlugin implements AuctionPlugin {
         this.manager = new AuctionManagerImpl();
 
         // Message groups
-        if (getConfig().getBoolean("integration.herochat.enable")) {
+        /* if (getConfig().getBoolean("integration.herochat.enable")) {
             manager.addMessageGroup(new HerochatGroup(this));
             getLogger().info("Added Herochat recipient group to the list of broadcast listeners");
         }
         if (getConfig().getBoolean("chatSettings.groups.global")) {
             manager.addMessageGroup(new GlobalChatGroup());
             getLogger().info("Added global chat recipient group to the list of broadcast listeners");
-        }
+        } */
 
         // Enable plugin metrics
         try {

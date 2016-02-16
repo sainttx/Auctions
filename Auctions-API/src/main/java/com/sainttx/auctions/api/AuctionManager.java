@@ -20,10 +20,8 @@
 
 package com.sainttx.auctions.api;
 
-import com.sainttx.auctions.api.messages.MessageRecipientGroup;
 import org.bukkit.entity.Player;
 
-import java.util.Collection;
 import java.util.Queue;
 
 /**
@@ -65,20 +63,6 @@ public interface AuctionManager {
      * @return the auction queue
      */
     Queue<Auction> getQueue();
-
-    /**
-     * Adds a message recipient group to receive messages
-     *
-     * @param group the group
-     */
-    void addMessageGroup(MessageRecipientGroup group);
-
-    /**
-     * Returns all registered recipient groups
-     *
-     * @return all recipient groups
-     */
-    Collection<MessageRecipientGroup> getMessageGroups();
 
     /**
      * Adds an auction to the queue

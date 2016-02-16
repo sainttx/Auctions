@@ -22,13 +22,9 @@ package com.sainttx.auctions;
 
 import com.sainttx.auctions.api.Auction;
 import com.sainttx.auctions.api.AuctionManager;
-import com.sainttx.auctions.api.messages.MessageRecipientGroup;
 import org.bukkit.entity.Player;
 
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.Queue;
-import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
@@ -39,7 +35,6 @@ public class AuctionManagerImpl implements AuctionManager {
 
     // Auctions information
     private Auction currentAuction;
-    private Set<MessageRecipientGroup> recipientGroups = new HashSet<>();
     private Queue<Auction> auctionQueue = new ConcurrentLinkedQueue<>();
     private boolean disabled;
     private boolean canAuction = true;
@@ -131,16 +126,6 @@ public class AuctionManagerImpl implements AuctionManager {
     @Override
     public void addAuctionToQueue(Auction auction) {
         getQueue().add(auction);
-    }
-
-    @Override
-    public void addMessageGroup(MessageRecipientGroup group) {
-        recipientGroups.add(group);
-    }
-
-    @Override
-    public Collection<MessageRecipientGroup> getMessageGroups() {
-        return recipientGroups;
     }
 
     @Override
