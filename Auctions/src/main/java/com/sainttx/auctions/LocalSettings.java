@@ -23,6 +23,7 @@ package com.sainttx.auctions;
 import com.sainttx.auctions.api.AuctionPlugin;
 import com.sainttx.auctions.api.Settings;
 import com.sainttx.auctions.misc.DoubleConsts;
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Material;
 
 import java.util.Collection;
@@ -238,7 +239,8 @@ public class LocalSettings implements Settings {
         }
         List<String> blockedLore = plugin.getConfig().getStringList("general.blockedLore");
         for (String blocked : blockedLore) {
-            if (blocked.contains(lore)) {
+            // TODO: Configurable if it should be translated - or use REGEX
+            if (blocked.contains(ChatColor.translateAlternateColorCodes('&', lore))) {
                 return true;
             }
         }
