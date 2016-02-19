@@ -25,24 +25,24 @@ import com.sainttx.auctions.api.Message;
 public enum MessagePath implements Message {
     // Auction formattable messages
     AUCTION_ITEMFORMAT("messages.auctionFormattable.itemFormat"),
-    AUCTION_ANTISNIPE_ADD("messages.auctionFormattable.antiSnipeAdd", true),
-    AUCTION_AUTOWIN("messages.auctionFormattable.autowin", true),
-    AUCTION_BID("messages.auctionFormattable.bid", true, true),
-    AUCTION_CANCELLED("messages.auctionFormattable.cancelled", true),
-    AUCTION_END("messages.auctionFormattable.end", true),
-    AUCTION_END_AUTOWIN("messages.auctionFormattable.endByAutowin", true),
-    AUCTION_END_NOBID("messages.auctionFormattable.endNoBid", true),
+    AUCTION_ANTISNIPE_ADD("messages.auctionFormattable.antiSnipeAdd"),
+    AUCTION_AUTOWIN("messages.auctionFormattable.autowin"),
+    AUCTION_BID("messages.auctionFormattable.bid"),
+    AUCTION_CANCELLED("messages.auctionFormattable.cancelled"),
+    AUCTION_END("messages.auctionFormattable.end"),
+    AUCTION_END_AUTOWIN("messages.auctionFormattable.endByAutowin"),
+    AUCTION_END_NOBID("messages.auctionFormattable.endNoBid"),
     AUCTION_END_OWNERMSG("messages.auctionFormattable.endNotifyOwner"),
-    AUCTION_END_TAX("messages.auctionFormattable.endTax", true),
-    AUCTION_INCREMENT("messages.auctionFormattable.increment", true),
-    AUCTION_INFO("messages.auctionFormattable.info", true),
-    AUCTION_INFO_TOPBIDDER("messages.auctionFormattable.infoTopBidder", true),
-    AUCTION_PRICE("messages.auctionFormattable.price", true),
-    AUCTION_QUEUE_INFO("messages.auctionFormattable.queueInfoLine", true),
-    AUCTION_QUEUE_POSITION("messages.auctionFormattable.queuePosition", true),
-    AUCTION_START("messages.auctionFormattable.start", true),
-    AUCTION_TIMER("messages.auctionFormattable.timer", true, true),
-    AUCTION_WINNER("messages.auctionFormattable.winner", true),
+    AUCTION_END_TAX("messages.auctionFormattable.endTax"),
+    AUCTION_INCREMENT("messages.auctionFormattable.increment"),
+    AUCTION_INFO("messages.auctionFormattable.info"),
+    AUCTION_INFO_TOPBIDDER("messages.auctionFormattable.infoTopBidder"),
+    AUCTION_PRICE("messages.auctionFormattable.price"),
+    AUCTION_QUEUE_INFO("messages.auctionFormattable.queueInfoLine"),
+    AUCTION_QUEUE_POSITION("messages.auctionFormattable.queuePosition"),
+    AUCTION_START("messages.auctionFormattable.start"),
+    AUCTION_TIMER("messages.auctionFormattable.timer"),
+    AUCTION_WINNER("messages.auctionFormattable.winner"),
 
     // Errors - player mistakes
     ERROR_ALREADY_AUCTIONING("messages.error.alreadyHaveAuction"),
@@ -80,7 +80,7 @@ public enum MessagePath implements Message {
     ERROR_STARTPRICE_LOW("messages.error.startPriceTooLow"),
 
     // General messages
-    GENERAL_AUCTION_IMPOUNDED("messages.auctionImpounded", true), // TODO: Should be auction formattable, [player] placeholder wont work
+    GENERAL_AUCTION_IMPOUNDED("messages.auctionImpounded"), // TODO: Should be auction formattable, [player] placeholder wont work
     GENERAL_PLACED_IN_QUEUE("messages.auctionPlacedInQueue"),
     GENERAL_DISABLED("messages.auctionsDisabled"),
     GENERAL_ENABLED("messages.auctionsEnabled"),
@@ -93,25 +93,12 @@ public enum MessagePath implements Message {
     GENERAL_ITEM_RETURN("messages.ownerItemReturn"),
     GENERAL_PLUGIN_RELOAD("messages.pluginReloaded"),
     GENERAL_QUEUE_HEADER("messages.queueInfoHeader"),
-    GENERAL_SAVED_ITEM_RETURN("messages.savedItemReturn")
-    ;
+    GENERAL_SAVED_ITEM_RETURN("messages.savedItemReturn");
 
     private final String path;
-    private final boolean ignorable;
-    private final boolean spammy;
 
     MessagePath(String path) {
-        this(path, false);
-    }
-
-    MessagePath(String path, boolean ignorable) {
-        this(path, ignorable, false);
-    }
-
-    MessagePath(String path, boolean ignorable, boolean spammy) {
         this.path = path;
-        this.ignorable = ignorable;
-        this.spammy = spammy;
     }
 
     @Override
@@ -121,11 +108,37 @@ public enum MessagePath implements Message {
 
     @Override
     public boolean isSpammy() {
-        return spammy;
+        switch (this) {
+            case AUCTION_BID:
+            case AUCTION_TIMER:
+                return true;
+            default:
+                return false;
+        }
     }
 
     @Override
     public boolean isIgnorable() {
-        return ignorable;
+        switch (this) {
+            case AUCTION_ANTISNIPE_ADD:
+            case AUCTION_AUTOWIN:
+            case AUCTION_CANCELLED:
+            case AUCTION_END:
+            case AUCTION_END_AUTOWIN:
+            case AUCTION_END_NOBID:
+            case AUCTION_END_TAX:
+            case AUCTION_INCREMENT:
+            case AUCTION_INFO:
+            case AUCTION_INFO_TOPBIDDER:
+            case AUCTION_PRICE:
+            case AUCTION_QUEUE_INFO:
+            case AUCTION_QUEUE_POSITION:
+            case AUCTION_START:
+            case AUCTION_WINNER:
+            case GENERAL_AUCTION_IMPOUNDED:
+                return true;
+            default:
+                return false;
+        }
     }
 }
