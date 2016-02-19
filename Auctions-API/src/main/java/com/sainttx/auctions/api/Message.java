@@ -22,8 +22,8 @@ package com.sainttx.auctions.api;
 
 /**
  * Represents a configuration message that can be sent to a player.
- * {@link #getPath()} will return the corresponding path inside of
- * config.yml to the actual unformatted message.
+ * {@link #getMessage()} will return the corresponding message as
+ * a string
  */
 public interface Message {
 
@@ -32,7 +32,7 @@ public interface Message {
      *
      * @return the path.
      */
-    String getPath();
+    String getMessage();
 
     /**
      * Returns whether or not this message is considered "spammy". Spammy messages

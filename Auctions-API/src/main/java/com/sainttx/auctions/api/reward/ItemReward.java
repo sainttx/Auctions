@@ -37,7 +37,7 @@ public class ItemReward implements Reward {
     private ItemStack item;
     private Message notEnoughRoom = new Message() { // TODO: Default for isSpammy
         @Override
-        public String getPath() {
+        public String getMessage() {
             return "messages.notEnoughRoom";
         }
 

@@ -79,7 +79,7 @@ public class SimpleMessageFactory implements MessageFactory {
 
     @Override
     public Future<?> submit(final CommandSender recipient, final Message message, final Auction auction) {
-        final String rawMessage = plugin.getConfig().getString(message.getPath());
+        final String rawMessage = message.getMessage();
         return executorService.submit(() -> {
             String coloredMessage = ChatColor.translateAlternateColorCodes('&', rawMessage);
             String formattedMessage = replaceAuctionPlaceholders(coloredMessage, auction);
@@ -98,7 +98,7 @@ public class SimpleMessageFactory implements MessageFactory {
 
     @Override
     public Future<?> submitBroadcast(Message message, Auction auction) {
-        final String rawMessage = plugin.getConfig().getString(message.getPath());
+        final String rawMessage = message.getMessage();
         return executorService.submit(() -> {
             String coloredMessage = ChatColor.translateAlternateColorCodes('&', rawMessage);
             String formattedMessage = replaceAuctionPlaceholders(coloredMessage, auction);
@@ -156,7 +156,7 @@ public class SimpleMessageFactory implements MessageFactory {
         }
 
         // Get the item display format
-        String format = plugin.getConfig().getString(MessagePath.AUCTION_ITEMFORMAT.getPath());
+        String format = MessagePath.AUCTION_ITEMFORMAT.getMessage();
         String formatParsed = format.replace("[itemName]", auction.getReward().getName());
         String formatParsedColored = ChatColor.translateAlternateColorCodes('&', formatParsed);
 

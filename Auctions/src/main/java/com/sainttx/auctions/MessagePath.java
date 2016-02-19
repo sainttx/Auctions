@@ -20,7 +20,9 @@
 
 package com.sainttx.auctions;
 
+import com.sainttx.auctions.api.AuctionPlugin;
 import com.sainttx.auctions.api.Message;
+import org.bukkit.plugin.java.JavaPlugin;
 
 public enum MessagePath implements Message {
     // Auction formattable messages
@@ -102,8 +104,12 @@ public enum MessagePath implements Message {
     }
 
     @Override
-    public String getPath() {
-        return path;
+    public String getMessage() {
+        AuctionPlugin plugin = JavaPlugin.getPlugin(AuctionPluginImpl.class);
+        if (!plugin.getConfig().isString(this.path)) {
+            return this.path;
+        }
+        return plugin.getConfig().getString(this.path);
     }
 
     @Override
