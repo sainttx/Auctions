@@ -330,7 +330,7 @@ public class SimpleMessageFactory implements MessageFactory {
         } else if (Double.compare(val, DoubleConsts.BILLION) <= 0) {
             return formatToReadableNumber(val / DoubleConsts.BILLION) + "B";
         } else {
-            return formatToReadableNumber(val / DoubleConsts.THOUSAND) + "T";
+            return formatToReadableNumber(val / DoubleConsts.TRILLION) + "T";
         }
     }
 }
