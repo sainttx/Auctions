@@ -18,21 +18,21 @@
  * along with Auctions.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sainttx.auctions.recipient;
+package com.sainttx.auctions.api.messages;
 
-import com.sainttx.auctions.api.messages.MessageRecipientGroup;
-import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 
 import java.util.Collection;
 
 /**
- * Sends messages to all players
+ * Represents a group of players that can receive messages from the plugin
  */
-public class OnlinePlayersRecipientGroup implements MessageRecipientGroup {
+public interface MessageGroup {
 
-    @Override
-    public Collection<? extends CommandSender> getRecipients() {
-        return Bukkit.getOnlinePlayers();
-    }
+    /**
+     * Returns all recipients inside the recipient group
+     *
+     * @return any players that are in the valid channel to receive the message
+     */
+    Collection<? extends CommandSender> getRecipients();
 }

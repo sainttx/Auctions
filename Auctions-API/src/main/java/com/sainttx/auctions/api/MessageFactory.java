@@ -20,7 +20,7 @@
 
 package com.sainttx.auctions.api;
 
-import com.sainttx.auctions.api.messages.MessageRecipientGroup;
+import com.sainttx.auctions.api.messages.MessageGroup;
 import org.bukkit.command.CommandSender;
 
 import java.util.concurrent.Future;
@@ -35,7 +35,7 @@ public interface MessageFactory {
      * @param group the group
      * @return <tt>true</tt> if the groups that are receiving messages changed
      */
-    boolean addMessageGroup(MessageRecipientGroup group);
+    boolean addMessageGroup(MessageGroup group);
 
     /**
      * Removes a message group from receiving broadcasts.
@@ -43,7 +43,7 @@ public interface MessageFactory {
      * @param group the group
      * @return <tt>true</tt> if the group was removed as a result of this call
      */
-    boolean removeMessageGroup(MessageRecipientGroup group);
+    boolean removeMessageGroup(MessageGroup group);
 
     /**
      * Submits a task to fetch, format, and send a message to a recipient

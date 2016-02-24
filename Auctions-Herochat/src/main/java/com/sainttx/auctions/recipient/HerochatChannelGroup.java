@@ -24,7 +24,7 @@ import com.dthielke.herochat.Channel;
 import com.dthielke.herochat.Chatter;
 import com.dthielke.herochat.Herochat;
 import com.sainttx.auctions.api.AuctionPlugin;
-import com.sainttx.auctions.api.messages.MessageRecipientGroup;
+import com.sainttx.auctions.api.messages.MessageGroup;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -38,11 +38,11 @@ import java.util.stream.Collectors;
 /**
  * Sends messages to all players inside a specific Herochat channel
  */
-public class HerochatChannelRecipientGroup implements MessageRecipientGroup {
+public class HerochatChannelGroup implements MessageGroup {
 
     private AuctionPlugin plugin;
 
-    public HerochatChannelRecipientGroup(AuctionPlugin plugin) {
+    public HerochatChannelGroup(AuctionPlugin plugin) {
         this.plugin = plugin;
     }
 

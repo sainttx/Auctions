@@ -24,7 +24,7 @@ import com.sainttx.auctions.api.Auction;
 import com.sainttx.auctions.api.AuctionPlugin;
 import com.sainttx.auctions.api.Message;
 import com.sainttx.auctions.api.MessageFactory;
-import com.sainttx.auctions.api.messages.MessageRecipientGroup;
+import com.sainttx.auctions.api.messages.MessageGroup;
 import com.sainttx.auctions.api.reward.ItemReward;
 import com.sainttx.auctions.api.reward.Reward;
 import com.sainttx.auctions.misc.DoubleConsts;
@@ -53,7 +53,7 @@ public class SimpleMessageFactory implements MessageFactory {
     private ExecutorService executorService = Executors.newSingleThreadExecutor();
     private AuctionPlugin plugin;
     private NumberFormat numberFormat;
-    private Collection<MessageRecipientGroup> recipientGroups = new HashSet<>();
+    private Collection<MessageGroup> recipientGroups = new HashSet<>();
 
     public SimpleMessageFactory(AuctionPlugin plugin) {
         this.plugin = plugin;
@@ -63,12 +63,12 @@ public class SimpleMessageFactory implements MessageFactory {
     }
 
     @Override
-    public boolean addMessageGroup(MessageRecipientGroup group) {
+    public boolean addMessageGroup(MessageGroup group) {
         return recipientGroups.add(group);
     }
 
     @Override
-    public boolean removeMessageGroup(MessageRecipientGroup group) {
+    public boolean removeMessageGroup(MessageGroup group) {
         return recipientGroups.remove(group);
     }
 
@@ -105,7 +105,7 @@ public class SimpleMessageFactory implements MessageFactory {
             BaseComponent[][] messages = splitAndFormatMessage(formattedMessage, auction);
 
             for (BaseComponent[] component : messages) {
-                for (MessageRecipientGroup group : recipientGroups) {
+                for (MessageGroup group : recipientGroups) {
                     group.getRecipients().forEach(recipient -> sendMessageIfApplicable(recipient, component, message));
                 }
                 // Send to console
