@@ -38,12 +38,10 @@ public class HerochatChannelGroup implements MessageGroup {
     private Channel channel;
 
     public HerochatChannelGroup(String channel) {
-        this(Herochat.getChannelManager().getChannel(channel));
-    }
-
-    public HerochatChannelGroup(Channel channel) {
         Validate.notNull(channel, "Channel cannot be null");
-        this.channel = channel;
+        Channel ch = Herochat.getChannelManager().getChannel(channel);
+        Validate.notNull(ch, "Invalid channel provided");
+        this.channel = ch;
     }
 
     @Override

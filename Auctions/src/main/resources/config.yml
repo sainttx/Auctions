@@ -6,35 +6,9 @@
 ##     ## ##     ## ##    ##    ##     ##  ##     ## ##   ### ##    ##
 ##     ##  #######   ######     ##    ####  #######  ##    ##  ######
 
-
-
- ######  ##     ##    ###    ########
-##    ## ##     ##   ## ##      ##
-##       ##     ##  ##   ##     ##
-##       ######### ##     ##    ##
-##       ##     ## #########    ##
-##    ## ##     ## ##     ##    ##
- ######  ##     ## ##     ##    ##
-# -------------------------------- #
-#      Control chat settings.      #
-# -------------------------------- #
-
-# Configuration options for various plugin integration
-# settings can be defined in this section. Each integration
-# option has an enable option that tells the plugin whether
-# or not the option should be used. These integrated plugins
-# are essentially the same things as 'chatSettings.groups'
-# and stack with any defined chat setting groups.
-integration:
-  # Herochat plugin integration options
-  # Find the plugin here: http://dev.bukkit.org/bukkit-plugins/herochat/
-  herochat:
-    enable: false
-    # Defines your Herochat chat channel that players must be joined
-    # to receive messages from the auction plugin. Messages that
-    # are only sent to a single player ignore this and will send no
-    # matter what.
-    channel: "auction"
+# ------------------------------------------------------------------ #
+#                  Bukkit Auctions System by SainttX                 #
+# ------------------------------------------------------------------ #
 
 # You are able to define a list of message groups that will give
 # players messages. For example, you can define simple the "global"
