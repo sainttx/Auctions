@@ -18,7 +18,7 @@
  * along with Auctions.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sainttx.auctions.recipient;
+package com.sainttx.auctions.api.messages;
 
 import com.sainttx.auctions.api.messages.MessageGroup;
 import org.bukkit.Bukkit;
