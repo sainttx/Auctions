@@ -36,29 +36,14 @@ integration:
     # matter what.
     channel: "auction"
 
-# Configuration options for various chat group and handler features
-# are defined in this section. As the plugin expands, more options
-# will be added to this section.
-chatSettings:
-  # Configure which plugin groups view messages. All groups stack with
-  # each other so players from multiple groups can be defined to view
-  # messages
-  groups:
-    # 'global' is the standard broadcast group, this groups recipients
-    # is all players online.
-    global: true
-  # The handler is the mechanism for how messages get delivered.
-  # Current options are: TEXT, ACTION_BAR. The ACTION_BAR mechanism
-  # will still send messages through the TEXT channel, however it
-  # unlocks a new message option
-  # ('messages.auctionFormattable.actionBarMessage') that is sent to
-  # players whenever any broadcast message is sent. In the case that
-  # you don't want the TEXT channel sending its respective messages,
-  # you should disable the message by setting the message to "" (empty)
-  handler: TEXT
-  # This allows you to specify whether or not messages sent to the console
-  # should be stripped of their color. Default: true.
-  stripColorsForConsole: true
+# You are able to define a list of message groups that will give
+# players messages. For example, you can define simple the "global"
+# group for all players.
+# Other group formats include:
+# world:<world name>
+# herochat:<channel>
+message-groups:
+- "global"
 
 # Configuration options for various settings specific to auctions
 # ie. times, bid increments, etc.

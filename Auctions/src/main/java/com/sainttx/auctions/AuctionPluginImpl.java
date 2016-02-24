@@ -25,12 +25,16 @@ import com.sainttx.auctions.api.AuctionManager;
 import com.sainttx.auctions.api.AuctionPlugin;
 import com.sainttx.auctions.api.MessageFactory;
 import com.sainttx.auctions.api.Settings;
+import com.sainttx.auctions.api.messages.MessageGroupParser;
 import com.sainttx.auctions.api.reward.ItemReward;
 import com.sainttx.auctions.api.reward.Reward;
 import com.sainttx.auctions.command.AuctionCommands;
 import com.sainttx.auctions.command.module.AuctionsModule;
 import com.sainttx.auctions.listener.AuctionListener;
 import com.sainttx.auctions.listener.PlayerListener;
+import com.sainttx.auctions.parser.HerochatGroupParser;
+import com.sainttx.auctions.parser.OnlinePlayersParser;
+import com.sainttx.auctions.parser.WorldPlayersParser;
 import com.sk89q.intake.CommandException;
 import com.sk89q.intake.Intake;
 import com.sk89q.intake.InvalidUsageException;
@@ -59,7 +63,10 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
@@ -104,6 +111,15 @@ public class AuctionPluginImpl extends JavaPlugin implements AuctionPlugin {
         put("reload", "auctions.command.reload");
     }};
 
+    private Set<MessageGroupParser> parsers = new HashSet<>();
+
+    @Override
+    public void onLoad() {
+        parsers.add(new HerochatGroupParser());
+        parsers.add(new OnlinePlayersParser());
+        parsers.add(new WorldPlayersParser());
+    }
+
     @Override
     public void onEnable() {
         saveDefaultConfig();
@@ -124,15 +140,13 @@ public class AuctionPluginImpl extends JavaPlugin implements AuctionPlugin {
         // Create manager instance
         this.manager = new AuctionManagerImpl();
 
-        // Message groups
-        /* if (getConfig().getBoolean("integration.herochat.enable")) {
-            manager.addMessageGroup(new HerochatChannelRecipientGroup(this));
-            getLogger().info("Added Herochat recipient group to the list of broadcast listeners");
+        // Register message groups
+        List<String> groups = getConfig().getStringList("message-groups");
+        for (String group : groups) {
+            parsers.stream()
+                    .filter(parser -> parser.isValid(group))
+                    .forEach(parser -> getMessageFactory().addMessageGroup(parser.parse(group)));
         }
-        if (getConfig().getBoolean("chatSettings.groups.global")) {
-            manager.addMessageGroup(new OnlinePlayersRecipientGroup());
-            getLogger().info("Added global chat recipient group to the list of broadcast listeners");
-        } */
 
         // Enable plugin metrics
         try {

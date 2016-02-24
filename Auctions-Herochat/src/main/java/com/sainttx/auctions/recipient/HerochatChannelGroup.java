@@ -23,16 +23,11 @@ package com.sainttx.auctions.recipient;
 import com.dthielke.herochat.Channel;
 import com.dthielke.herochat.Chatter;
 import com.dthielke.herochat.Herochat;
-import com.sainttx.auctions.api.AuctionPlugin;
 import com.sainttx.auctions.api.messages.MessageGroup;
-import org.bukkit.Bukkit;
+import org.apache.commons.lang.Validate;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -40,58 +35,19 @@ import java.util.stream.Collectors;
  */
 public class HerochatChannelGroup implements MessageGroup {
 
-    private AuctionPlugin plugin;
+    private Channel channel;
 
-    public HerochatChannelGroup(AuctionPlugin plugin) {
-        this.plugin = plugin;
+    public HerochatChannelGroup(String channel) {
+        this(Herochat.getChannelManager().getChannel(channel));
+    }
+
+    public HerochatChannelGroup(Channel channel) {
+        Validate.notNull(channel, "Channel cannot be null");
+        this.channel = channel;
     }
 
     @Override
     public Collection<? extends CommandSender> getRecipients() {
-        return Collections.emptyList();
-    }
-
-    /**
-     * Returns whether or not Herochat is enabled
-     *
-     * @return true if the plugin is enabled
-     */
-    public boolean isHerochatEnabled() {
-        return Bukkit.getPluginManager().isPluginEnabled("Herochat");
-    }
-
-    /**
-     * Returns whether or not a channel exists
-     *
-     * @param channel the name of the channel
-     * @return true if the channel exists
-     */
-    public boolean isValidChannel(String channel) {
-        Channel ch = Herochat.getChannelManager().getChannel(channel);
-        return ch != null;
-    }
-
-    /**
-     * Returns all players currently in a Herochat channel
-     *
-     * @param channel the name of the channel
-     * @return all participants of the channel
-     */
-    public Set<Player> getChannelPlayers(String channel) {
-        Set<Player> players = new HashSet<>();
-
-        if (!isValidChannel(channel)) {
-            plugin.getLogger().info("\"" + channel + "\" is not a valid channel, sending message to nobody.");
-            return players;
-        }
-
-        Channel ch = Herochat.getChannelManager().getChannel(channel);
-        Set<Chatter> members = ch.getMembers();
-
-        players.addAll(
-                members.stream().map(Chatter::getPlayer).collect(Collectors.toList())
-        );
-
-        return players;
+        return channel.getMembers().stream().map(Chatter::getPlayer).collect(Collectors.toList());
     }
 }
