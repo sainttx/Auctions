@@ -155,6 +155,7 @@ public class AuctionPluginImpl extends JavaPlugin implements AuctionPlugin {
         } catch (Exception ignored) {
         }
 
+        // Init Intake command system
         Injector injector = Intake.createInjector();
         injector.install(new AuctionsModule());
         injector.install(new PrimitivesModule());
@@ -175,6 +176,7 @@ public class AuctionPluginImpl extends JavaPlugin implements AuctionPlugin {
                 .graph()
                 .getDispatcher();
 
+        // Register events and load everything else
         getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
         getServer().getPluginManager().registerEvents(new AuctionListener(this), this);
         loadConfig();

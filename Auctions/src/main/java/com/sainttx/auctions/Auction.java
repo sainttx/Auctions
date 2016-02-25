@@ -36,20 +36,16 @@ public class Auction implements com.sainttx.auctions.api.Auction {
     private double autowin;
     private double bid;
 
-    public Auction(UUID owner, String ownerName, UUID bidder, String bidderName, Reward reward, double startPrice,
-                   double bidIncrement) {
-        this(owner, ownerName, bidder, bidderName, reward, startPrice, bidIncrement, -1D);
+    public Auction(UUID owner, String ownerName, Reward reward, double start, double increment) {
+        this(owner, ownerName, reward, start, increment, -1);
     }
 
-    public Auction(UUID owner, String ownerName, UUID bidder, String bidderName, Reward reward, double startPrice,
-                   double bidIncrement, double autowin) {
+    public Auction(UUID owner, String ownerName, Reward reward, double start, double increment, double autowin) {
         this.owner = owner;
         this.ownerName = ownerName;
-        this.bidder = bidder;
-        this.bidderName = bidderName;
         this.reward = reward;
-        this.startPrice = startPrice;
-        this.bidIncrement = bidIncrement;
+        this.startPrice = start;
+        this.bidIncrement = increment;
         this.autowin = autowin;
         this.bid = com.sainttx.auctions.api.Auction.NO_BID;
     }
@@ -72,6 +68,12 @@ public class Auction implements com.sainttx.auctions.api.Auction {
     @Override
     public String getBidderName() {
         return bidderName;
+    }
+
+    @Override
+    public void setBidder(UUID id, String name) {
+        this.bidder = id;
+        this.bidderName = name;
     }
 
     @Override

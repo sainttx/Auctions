@@ -63,6 +63,14 @@ public interface Auction {
     String getBidderName();
 
     /**
+     * Sets the current top bidder.
+     *
+     * @param id the {@link UUID} of the bidder
+     * @param name the name of the bidder
+     */
+    void setBidder(UUID id, String name);
+
+    /**
      * Gets the reward that is being auctioned
      *
      * @return this auctions reward
