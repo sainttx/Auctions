@@ -25,6 +25,7 @@ import com.sainttx.auctions.api.Auction;
 import com.sainttx.auctions.structure.messages.actionbar.ActionBarObject;
 import com.sainttx.auctions.structure.messages.actionbar.ActionBarObjectv1_8_R1;
 import com.sainttx.auctions.structure.messages.actionbar.ActionBarObjectv1_8_R3;
+import com.sainttx.auctions.structure.messages.actionbar.ActionBarObjectv1_9_R1;
 import com.sainttx.auctions.util.ReflectionUtil;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -44,6 +45,8 @@ public class ActionBarMessageHandler extends TextualMessageHandler {
             this.base = new ActionBarObjectv1_8_R1(plugin);
         } else if (version.startsWith("v1_8_R2") || version.startsWith("v1_8_R3")) {
             this.base = new ActionBarObjectv1_8_R3(plugin);
+        } else if (version.startsWith("v1_9_R1")) {
+            this.base = new ActionBarObjectv1_9_R1(plugin);
         } else {
             throw new IllegalStateException("this server version is unsupported");
         }

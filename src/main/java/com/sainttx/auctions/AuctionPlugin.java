@@ -34,7 +34,6 @@ import com.sainttx.auctions.structure.messages.group.GlobalChatGroup;
 import com.sainttx.auctions.structure.messages.group.HerochatGroup;
 import com.sainttx.auctions.structure.messages.handler.ActionBarMessageHandler;
 import com.sainttx.auctions.structure.messages.handler.TextualMessageHandler;
-import com.sainttx.auctions.util.ReflectionUtil;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -115,15 +114,14 @@ public class AuctionPlugin extends JavaPlugin {
             MessageHandlerType type = MessageHandlerType.valueOf(getMessage("chatSettings.handler"));
             switch (type) {
                 case ACTION_BAR:
-                    String version = ReflectionUtil.getVersion();
-                    if (version.startsWith("v1_8_R")) {
+                    try {
                         manager.setMessageHandler(new ActionBarMessageHandler(this));
                         getLogger().info("Message handler has been set to ACTION_BAR");
-                        break;
-                    } else {
+                    } catch(IllegalStateException e) {
                         getLogger().info("Message handler type ACTION_BAR is unavailable for this Minecraft version. " +
                                 "Defaulting to TEXT based message handling");
                     }
+                break;
                 case TEXT:
                     manager.setMessageHandler(new TextualMessageHandler(this));
                     getLogger().info("Message handler has been set to TEXT");
