@@ -62,9 +62,9 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>org.mcstats</groupId>
+            <groupId>org.mcstats.bukkit</groupId>
             <artifactId>metrics-lite</artifactId>
-            <version>R6</version>
+            <version>R8-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -138,7 +138,7 @@
                     <artifactSet>
                         <includes>
                             <include>mkremins:fanciful</include>
-                            <include>org.mcstats:metrics-lite</include>
+                            <include>org.mcstats.bukkit:metrics-lite</include>
                         </includes>
                     </artifactSet>
                     <relocations>
