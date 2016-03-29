@@ -71,7 +71,8 @@ public class AuctionUtil {
         }
 
         int count = 0;
-        for (ItemStack is : inv) {
+        for (int i = 0 ; i < 36 ; i++) {
+            ItemStack is = inv.getItem(i);
             if (is != null) {
                 if (is.isSimilar(base)) {
                     count += is.getAmount();
