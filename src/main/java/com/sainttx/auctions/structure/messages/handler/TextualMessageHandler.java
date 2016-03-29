@@ -243,7 +243,7 @@ public class TextualMessageHandler implements MessageHandler, SpammyMessagePreve
 
                     if (auction.getReward() instanceof ItemReward) {
                         ItemReward item = (ItemReward) auction.getReward();
-                        ItemStack tooltip = item.getItem().clone();
+                        ItemStack tooltip = new ItemStack(item.getItem());
                         if (tooltip.getItemMeta() instanceof BookMeta) {
                             BookMeta meta = (BookMeta) tooltip.getItemMeta();
                             meta.setPages();

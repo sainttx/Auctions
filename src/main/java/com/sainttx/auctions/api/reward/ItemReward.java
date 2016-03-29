@@ -63,12 +63,12 @@ public class ItemReward implements Reward {
     @Override
     public void giveItem(Player player) {
         Inventory inventory = player.getInventory();
-        ItemStack reward = item.clone();
+        ItemStack reward = new ItemStack(item);
 
         int free = AuctionUtil.getFreeSlots(inventory, reward);
 
         if (free < reward.getAmount()) { /* not enough space in inventory */
-            ItemStack drop = reward.clone();
+            ItemStack drop = new ItemStack(reward);
             drop.setAmount(drop.getAmount() - free);
 
             if (free > 0) {
@@ -92,7 +92,7 @@ public class ItemReward implements Reward {
     private void giveItemToPlayer(Player player, ItemStack item) {
         if (item.getAmount() > item.getMaxStackSize()) {
             while (item.getAmount() > item.getMaxStackSize()) {
-                ItemStack give = item.clone();
+                ItemStack give = new ItemStack(item);
                 give.setAmount(item.getMaxStackSize());
                 player.getInventory().addItem(give);
 
