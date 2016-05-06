@@ -45,7 +45,7 @@ public class AuctionUtil {
         }
 
         int totalFree = 0;
-        for (ItemStack is : inv.getContents()) {
+        for (ItemStack is : inv.getStorageContents()) {
             if (is == null || is.getType() == Material.AIR) {
                 totalFree += base.getMaxStackSize();
             } else if (is.isSimilar(base)) {
