@@ -122,7 +122,7 @@ public class AuctionPlugin extends JavaPlugin {
                                 "Defaulting to TEXT based message handling");
                     }
                 break;
-                case TEXT:
+                default:
                     manager.setMessageHandler(new TextualMessageHandler(this));
                     getLogger().info("Message handler has been set to TEXT");
                     break;
