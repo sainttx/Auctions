@@ -20,6 +20,8 @@
 
 package com.sainttx.auctions.util;
 
+import java.util.Arrays;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -28,6 +30,22 @@ import org.bukkit.inventory.ItemStack;
  * A utility class that handles various item and inventory functions
  */
 public class AuctionUtil {
+
+    //main content + hotbar
+    private static final int INVENTORY_MAX_SIZE = 27 + 9;
+    private static final boolean storageMethodAvailable;
+
+    static {
+        boolean available = false;
+        try {
+            Bukkit.createInventory(null, 10).getStorageContents();
+            available = true;
+        } catch (NoSuchMethodError noMethodEx) {
+            available = false;
+        }
+
+        storageMethodAvailable = available;
+    }
 
     /**
      * Gets the amount of slots available for a particular item
@@ -44,8 +62,15 @@ public class AuctionUtil {
             throw new IllegalArgumentException("base item cannot be null");
         }
 
+        ItemStack[] storageContents;
+        if (storageMethodAvailable) {
+            storageContents = inv.getStorageContents();
+        } else {
+            storageContents = Arrays.copyOfRange(inv.getContents(), 0, INVENTORY_MAX_SIZE);
+        }
+
         int totalFree = 0;
-        for (ItemStack is : inv.getStorageContents()) {
+        for (ItemStack is : storageContents) {
             if (is == null || is.getType() == Material.AIR) {
                 totalFree += base.getMaxStackSize();
             } else if (is.isSimilar(base)) {
