@@ -34,7 +34,19 @@ import com.sainttx.auctions.structure.messages.group.GlobalChatGroup;
 import com.sainttx.auctions.structure.messages.group.HerochatGroup;
 import com.sainttx.auctions.structure.messages.handler.ActionBarMessageHandler;
 import com.sainttx.auctions.structure.messages.handler.TextualMessageHandler;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.text.NumberFormat;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+import java.util.UUID;
+import java.util.logging.Level;
+
 import net.milkbowl.vault.economy.Economy;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -43,15 +55,6 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.mcstats.MetricsLite;
-
-import java.io.File;
-import java.io.IOException;
-import java.text.NumberFormat;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-import java.util.UUID;
-import java.util.logging.Level;
 
 /**
  * The auction plugin class
@@ -172,7 +175,8 @@ public class AuctionPlugin extends JavaPlugin {
     @SuppressWarnings("deprecation")
     private void checkOutdatedConfig() {
         try {
-            Configuration def = YamlConfiguration.loadConfiguration(getResource("config.yml"));
+            InputStreamReader reader = new InputStreamReader(getResource("config.yml"));
+            Configuration def = YamlConfiguration.loadConfiguration(reader);
             int version = def.getInt("general.configurationVersion");
 
             if (getConfig().getInt("general.configurationVersion") < version) {
