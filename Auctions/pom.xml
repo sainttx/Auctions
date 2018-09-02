@@ -27,13 +27,21 @@
             <id>maven.sk89q.com</id>
             <url>http://maven.sk89q.com/repo/</url>
         </repository>
+        <repository>
+            <id>NotFab</id>
+            <url>https://maven.notfab.net/SpigotMC</url>
+        </repository>
+        <repository>
+            <id>vault-repo</id>
+            <url>http://nexus.hc.to/content/repositories/pub_releases</url>
+        </repository>
     </repositories>
 
     <dependencies>
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.8-R0.1-SNAPSHOT</version>
+            <version>1.13-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -59,7 +67,7 @@
         </dependency>
         <dependency>
             <groupId>org.mcstats.bukkit</groupId>
-            <artifactId>metrics-lite</artifactId>
+            <artifactId>metrics</artifactId>
             <version>R8-SNAPSHOT</version>
         </dependency>
     </dependencies>

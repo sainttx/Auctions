@@ -20,16 +20,16 @@
 
     <repositories>
         <repository>
-            <id>maven.sainttx.com-snapshot</id>
-            <url>http://maven.sainttx.com/artifactory/libs-snapshot-local</url>
+            <id>hero</id>
+            <url>http://maven.elmakers.com/repository/</url>
         </repository>
     </repositories>
 
     <dependencies>
         <dependency>
-            <groupId>com.dthielke</groupId>
-            <artifactId>herochat</artifactId>
-            <version>5.6.7-SNAPSHOT</version>
+            <groupId>com.dthielke.herochat</groupId>
+            <artifactId>HeroChat</artifactId>
+            <version>5.6.5-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
