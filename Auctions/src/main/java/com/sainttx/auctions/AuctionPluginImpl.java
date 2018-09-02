@@ -57,10 +57,11 @@ import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.mcstats.MetricsLite;
+import org.mcstats.Metrics;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -150,7 +151,7 @@ public class AuctionPluginImpl extends JavaPlugin implements AuctionPlugin {
 
         // Enable plugin metrics
         try {
-            MetricsLite metrics = new MetricsLite(this);
+            Metrics metrics = new Metrics(this);
             metrics.start();
         } catch (Exception ignored) {
         }
@@ -208,7 +209,7 @@ public class AuctionPluginImpl extends JavaPlugin implements AuctionPlugin {
     @SuppressWarnings("deprecation")
     private void checkOutdatedConfig() {
         try {
-            Configuration def = YamlConfiguration.loadConfiguration(getResource("config.yml"));
+            Configuration def = YamlConfiguration.loadConfiguration(new InputStreamReader(getResource("config.yml")));
             int version = def.getInt("general.configurationVersion");
 
             if (getConfig().getInt("general.configurationVersion") < version) {
